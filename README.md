@@ -320,7 +320,7 @@ ST for Home Assistant uses a **compile-time transpilation approach**:
 
 **Build Status**:
 - TypeScript compilation: ✅ Passing
-- ESLint: ✅ Passing (1 acceptable warning)
+- ESLint: ✅ Passing (0 errors, warnings are expected `any` types in Chevrotain visitor)
 - Bundle size: 602.79 KB (169.88 KB gzipped)
 
 ## Contributing
