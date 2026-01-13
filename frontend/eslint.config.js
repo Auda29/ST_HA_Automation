@@ -15,7 +15,9 @@ export default [
       globals: {
         console: "readonly",
         Event: "readonly",
+        CustomEvent: "readonly",
         HTMLTextAreaElement: "readonly",
+        HTMLDivElement: "readonly",
         HTMLElement: "readonly",
         document: "readonly",
         window: "readonly",

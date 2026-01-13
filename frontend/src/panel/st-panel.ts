@@ -1,7 +1,8 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { LitElement, html, css } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import "../editor";
 
-@customElement('st-panel')
+@customElement("st-panel")
 export class STPanel extends LitElement {
   @property({ attribute: false }) public hass?: any;
   @property({ type: Boolean }) public narrow = false;
@@ -12,11 +13,20 @@ PROGRAM Kitchen_Light
 VAR
     {trigger}
     motion AT %I* : BOOL := 'binary_sensor.kitchen_motion';
+
+    {no_trigger}
+    temperature AT %I* : REAL := 'sensor.kitchen_temperature';
+
+    {persistent}
+    activationCount : INT := 0;
+
     light AT %Q* : BOOL := 'light.kitchen';
 END_VAR
 
+(* Main logic *)
 IF motion THEN
     light := TRUE;
+    activationCount := activationCount + 1;
 ELSE
     light := FALSE;
 END_IF;
@@ -46,25 +56,15 @@ END_PROGRAM`;
     .toolbar h1 {
       margin: 0;
       font-size: 20px;
-      font-weight: 500;
     }
     .editor-container {
       flex: 1;
-      overflow: auto;
+      overflow: hidden;
       padding: 16px;
     }
-    .editor {
-      width: 100%;
+    st-editor {
       height: 100%;
-      min-height: 400px;
-      font-family: 'Fira Code', 'Consolas', monospace;
-      font-size: 14px;
-      padding: 16px;
-      border: 1px solid var(--divider-color);
       border-radius: 4px;
-      background: var(--card-background-color);
-      color: var(--primary-text-color);
-      resize: none;
     }
     .status-bar {
       display: flex;
@@ -74,7 +74,9 @@ END_PROGRAM`;
       border-top: 1px solid var(--divider-color);
       font-size: 12px;
     }
-    .status-ok { color: var(--success-color, #4caf50); }
+    .status-ok {
+      color: var(--success-color, #4caf50);
+    }
     button {
       padding: 8px 16px;
       border: none;
@@ -93,22 +95,26 @@ END_PROGRAM`;
           <button @click=${this._handleDeploy}>▶ Deploy</button>
         </div>
         <div class="editor-container">
-          <textarea class="editor" .value=${this._code} @input=${this._handleCodeChange} spellcheck="false"></textarea>
+          <st-editor
+            .code=${this._code}
+            @code-change=${this._handleCodeChange}
+          ></st-editor>
         </div>
         <div class="status-bar">
           <span class="status-ok">✓ Syntax OK</span>
           <span>Triggers: 1</span>
-          <span>Entities: 2</span>
+          <span>Entities: 3</span>
+          <span>Mode: restart</span>
         </div>
       </div>
     `;
   }
 
-  private _handleCodeChange(e: Event) {
-    this._code = (e.target as HTMLTextAreaElement).value;
+  private _handleCodeChange(e: CustomEvent<{ code: string }>) {
+    this._code = e.detail.code;
   }
 
   private _handleDeploy() {
-    console.log('Deploy:', this._code);
+    console.log("Deploy:", this._code);
   }
 }
