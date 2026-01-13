@@ -53,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 "name": "st-panel",
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"/st_hass/frontend/st-panel.js",
+                "module_url": "/st_hass/frontend/st-panel.js",
             }
         },
         require_admin=True,
