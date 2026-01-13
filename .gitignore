@@ -1,0 +1,13 @@
+node_modules/
+__pycache__/
+*.py[cod]
+dist/
+custom_components/st_hass/frontend/*.js
+custom_components/st_hass/frontend/*.map
+.idea/
+.vscode/
+*.swp
+.DS_Store
+coverage/
+.env
+*.log
