@@ -118,8 +118,8 @@ See the [docs](./docs) folder for detailed documentation:
 
 ```bash
 # Clone repository
-git clone https://github.com/OWNER/st-hass.git
-cd st-hass
+git clone https://github.com/Auda29/ST_HA_Automation.git
+cd ST_HA_Automation
 
 # Install frontend dependencies
 cd frontend
@@ -179,5 +179,5 @@ Inspired by industrial PLC programming and the [CAFE](https://github.com/FezVras
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/OWNER/st-hass/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/OWNER/st-hass/discussions)
+- **Issues**: [GitHub Issues](https://github.com/Auda29/ST_HA_Automation/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Auda29/ST_HA_Automation/discussions)

@@ -2,10 +2,10 @@
   "domain": "st_hass",
   "name": "ST for Home Assistant",
   "version": "0.1.0",
-  "documentation": "https://github.com/OWNER/st-hass",
-  "issue_tracker": "https://github.com/OWNER/st-hass/issues",
+  "documentation": "https://github.com/Auda29/ST_HA_Automation",
+  "issue_tracker": "https://github.com/Auda29/ST_HA_Automation/issues",
   "dependencies": [],
-  "codeowners": ["@OWNER"],
+  "codeowners": ["@Auda29"],
   "requirements": [],
   "iot_class": "local_push",
   "config_flow": true
