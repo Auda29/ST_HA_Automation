@@ -355,8 +355,7 @@ describe("Dependency Analyzer", () => {
       expect(result.metadata.throttle).toBe("1000");
     });
 
-    it.skip("detects timer usage", () => {
-      // TODO: Requires named parameter support in parser (IN := TRUE, PT := T#5s)
+    it("detects timer usage", () => {
       const code = `
         PROGRAM Test
         VAR

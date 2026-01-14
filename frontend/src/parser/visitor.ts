@@ -26,6 +26,7 @@ import type {
   EntityBinding,
   VarSection,
   SourceLocation,
+  FunctionArgument,
 } from "./ast";
 
 const BaseVisitor = parserInstance.getBaseCstVisitorConstructor();
@@ -444,14 +445,13 @@ export class STVisitor extends BaseVisitor {
 
     // If there's a function call (LParen), treat as function call
     if (ctx.LParen) {
-      const args = ctx.argumentList ? this.visit(ctx.argumentList[0]) : [];
+      const args: FunctionArgument[] = ctx.argumentList
+        ? this.visit(ctx.argumentList[0])
+        : [];
       return {
         type: "FunctionCall",
         name: parts[0], // Only use first part for function name
-        arguments: args.map((expr: Expression) => ({
-          type: "FunctionArgument" as const,
-          value: expr,
-        })),
+        arguments: args,
         location: this.getLocation(ctx),
       };
     }
@@ -519,21 +519,34 @@ export class STVisitor extends BaseVisitor {
 
   functionCall(ctx: any): FunctionCall {
     const name = ctx.Identifier[0].image;
-    const args = ctx.argumentList ? this.visit(ctx.argumentList[0]) : [];
+    const args: FunctionArgument[] = ctx.argumentList
+      ? this.visit(ctx.argumentList[0])
+      : [];
 
     return {
       type: "FunctionCall",
       name,
-      arguments: args.map((expr: Expression) => ({
-        type: "FunctionArgument" as const,
-        value: expr,
-      })),
+      arguments: args,
       location: this.getLocation(ctx),
     };
   }
 
-  argumentList(ctx: any): Expression[] {
-    return ctx.expression.map((e: any) => this.visit(e));
+  argumentList(ctx: any): FunctionArgument[] {
+    return ctx.argument.map((a: any) => this.visit(a));
+  }
+
+  argument(ctx: any): FunctionArgument {
+    const name = ctx.argName ? ctx.argName[0].image : undefined;
+    const valueExpr: Expression = ctx.argValue
+      ? this.visit(ctx.argValue[0])
+      : this.visit(ctx.expression[0]);
+
+    return {
+      type: "FunctionArgument",
+      name,
+      value: valueExpr,
+      location: this.getLocation(ctx),
+    };
   }
 
   // Helper methods

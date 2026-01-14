@@ -380,8 +380,9 @@ describe('Transpiler', () => {
 
       // First TOF branch: IN = TRUE → cancel timer + turn Q on
       const firstBranch = chooseAction.choose[0];
+      // Condition should read the motion sensor as a defensive BOOL expression
       expect(firstBranch.conditions[0].value_template).toContain(
-        "states('binary_sensor.motion') == 'on'",
+        "states('binary_sensor.motion') in ['on', 'true', 'True', '1']",
       );
       expect(firstBranch.sequence).toEqual(
         expect.arrayContaining([
@@ -399,7 +400,8 @@ describe('Transpiler', () => {
         conds.some(
           (c: any) =>
             c.condition === 'template' &&
-            String(c.value_template).includes("!= 'on'"),
+            String(c.value_template).includes("binary_sensor.motion") &&
+            String(c.value_template).includes('not ('),
         ),
       ).toBe(true);
       expect(

@@ -468,17 +468,29 @@ class DependencyAnalyzer {
 
   private hasTimerUsage(): boolean {
     let hasTimer = false;
+    const timerTypes = new Set(["TON", "TOF", "TP", "TON_EDGE"]);
 
     walkAST(this.ast, {
       onFunctionCall: (call) => {
-        const name = call.name.toUpperCase();
-        if (
-          name === "TON" ||
-          name === "TOF" ||
-          name === "TP" ||
-          name === "TON_EDGE"
-        ) {
+        if (hasTimer) {
+          return;
+        }
+
+        const callNameUpper = call.name.toUpperCase();
+
+        // Direct calls using FB type name (e.g. TON(IN := ...)
+        if (timerTypes.has(callNameUpper)) {
           hasTimer = true;
+          return;
+        }
+
+        // Instance calls (e.g. myTimer(IN := ..., PT := ...))
+        const varDecl = this.variableMap.get(call.name);
+        if (varDecl) {
+          const typeNameUpper = varDecl.dataType.name.toUpperCase();
+          if (timerTypes.has(typeNameUpper)) {
+            hasTimer = true;
+          }
         }
       },
     });

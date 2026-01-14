@@ -410,11 +410,25 @@ export class STParser extends CstParser {
   });
 
   private argumentList = this.RULE("argumentList", () => {
-    this.SUBRULE(this.expression);
+    this.SUBRULE(this.argument);
     this.MANY(() => {
       this.CONSUME(Comma);
-      this.SUBRULE1(this.expression);
+      this.SUBRULE1(this.argument);
     });
+  });
+
+  /**
+   * Function argument
+   * Supports both positional and named arguments:
+   *   - foo(1, 2)
+   *   - foo(IN := TRUE, PT := T#5s)
+   */
+  private argument = this.RULE("argument", () => {
+    this.OPTION(() => {
+      this.CONSUME(Identifier, { LABEL: "argName" });
+      this.CONSUME(Assign);
+    });
+    this.SUBRULE(this.expression, { LABEL: "argValue" });
   });
 }
 

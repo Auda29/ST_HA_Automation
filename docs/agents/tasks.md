@@ -418,7 +418,7 @@
 
 ### T-018: Enable timer detection in dependency analyzer once parser supports named args
 
-**Status**: WIP  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  
@@ -427,9 +427,9 @@
 **Description**: Once the ST parser supports named arguments for timer function blocks, enable and adapt the currently skipped `hasTimers`-related tests in the dependency analyzer so timer usage is reliably detected and surfaced in analyzer metadata.
 
 **Acceptance Criteria**:
-- [ ] Parser gains support for the named-argument constructs needed by the timer detection tests
-- [ ] The skipped `hasTimers`/timer-detection test in the dependency analyzer test suite is enabled and passes
-- [ ] Analyzer metadata correctly reports `hasTimers` for programs using timer FBs, and this is covered by tests
+- [x] Parser gains support for the named-argument constructs needed by the timer detection tests
+- [x] The skipped `hasTimers`/timer-detection test in the dependency analyzer test suite is enabled and passes
+- [x] Analyzer metadata correctly reports `hasTimers` for programs using timer FBs, and this is covered by tests
 
 **Technical Notes**: Keep the change localized to parser support and analyzer tests/metadata; do not change the acceptance criteria of T-004 itself.
 
