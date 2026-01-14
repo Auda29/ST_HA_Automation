@@ -14701,7 +14701,7 @@ function hA() {
     ff.data.of({ autocomplete: lA })
   ]);
 }
-const Q = {
+const J = {
   bg: "#1e1e1e",
   bgLight: "#252526",
   fg: "#d4d4d4",
@@ -14722,70 +14722,83 @@ const Q = {
 }, cA = I.theme(
   {
     "&": {
-      color: Q.fg,
-      backgroundColor: Q.bg,
+      color: J.fg,
+      backgroundColor: J.bg,
       fontSize: "14px",
       fontFamily: '"Fira Code", "Consolas", monospace'
     },
     ".cm-content": {
-      caretColor: Q.cursor
+      caretColor: J.cursor
     },
     ".cm-cursor": {
-      borderLeftColor: Q.cursor,
+      borderLeftColor: J.cursor,
       borderLeftWidth: "2px"
     },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
-      backgroundColor: `${Q.selection} !important`
+    // Selection highlighting - multiple selectors for compatibility
+    "&.cm-focused .cm-selectionBackground": {
+      backgroundColor: J.selection
+    },
+    ".cm-selectionBackground": {
+      backgroundColor: J.selection
+    },
+    "& .cm-selectionLayer .cm-selectionBackground": {
+      backgroundColor: J.selection
     },
     ".cm-selectionMatch": {
       backgroundColor: "#3a3d41"
     },
-    "& .cm-line ::selection": {
-      backgroundColor: `${Q.selection} !important`
+    // Native selection fallback
+    ".cm-content ::selection": {
+      backgroundColor: J.selection
     },
-    "& .cm-line::selection": {
-      backgroundColor: `${Q.selection} !important`
+    ".cm-line ::selection": {
+      backgroundColor: J.selection
+    },
+    // Ensure selection layer is visible
+    ".cm-selectionLayer": {
+      zIndex: "2",
+      pointerEvents: "none"
     },
     ".cm-activeLine": {
-      backgroundColor: Q.lineHighlight
+      backgroundColor: J.lineHighlight
     },
     ".cm-gutters": {
-      backgroundColor: Q.gutterBg,
-      color: Q.gutterFg,
+      backgroundColor: J.gutterBg,
+      color: J.gutterFg,
       border: "none",
-      borderRight: `1px solid ${Q.border}`
+      borderRight: `1px solid ${J.border}`
     },
     ".cm-activeLineGutter": {
-      backgroundColor: Q.lineHighlight,
-      color: Q.fg
+      backgroundColor: J.lineHighlight,
+      color: J.fg
     },
     ".cm-foldGutter .cm-gutterElement": {
       cursor: "pointer"
     },
     ".cm-tooltip": {
-      backgroundColor: Q.bgLight,
-      border: `1px solid ${Q.border}`
+      backgroundColor: J.bgLight,
+      border: `1px solid ${J.border}`
     },
     ".cm-tooltip-autocomplete ul li[aria-selected]": {
-      backgroundColor: Q.selection
+      backgroundColor: J.selection
     }
   },
   { dark: !0 }
 ), uA = ia.define([
-  { tag: N.keyword, color: Q.keyword, fontWeight: "bold" },
-  { tag: N.typeName, color: Q.type },
+  { tag: N.keyword, color: J.keyword, fontWeight: "bold" },
+  { tag: N.typeName, color: J.type },
   {
     tag: [N.function(N.variableName), N.standard(N.function(N.variableName))],
-    color: Q.function
+    color: J.function
   },
-  { tag: N.className, color: Q.type },
-  { tag: N.variableName, color: Q.variable },
-  { tag: N.propertyName, color: Q.variable },
-  { tag: N.string, color: Q.string },
-  { tag: N.number, color: Q.number },
-  { tag: N.comment, color: Q.comment, fontStyle: "italic" },
-  { tag: N.meta, color: Q.pragma },
-  { tag: N.operator, color: Q.fg },
+  { tag: N.className, color: J.type },
+  { tag: N.variableName, color: J.variable },
+  { tag: N.propertyName, color: J.variable },
+  { tag: N.string, color: J.string },
+  { tag: N.number, color: J.number },
+  { tag: N.comment, color: J.comment, fontStyle: "italic" },
+  { tag: N.meta, color: J.pragma },
+  { tag: N.operator, color: J.fg },
   { tag: N.invalid, color: "#ff0000", textDecoration: "underline wavy" }
 ]);
 function fA() {
@@ -17432,12 +17445,24 @@ NC(Qn, "styles", lc`
     /* Ensure selection highlighting is visible */
     #editor-container .cm-selectionBackground {
       background-color: #264f78 !important;
+      opacity: 1 !important;
     }
     #editor-container .cm-focused .cm-selectionBackground {
       background-color: #264f78 !important;
+      opacity: 1 !important;
     }
     #editor-container .cm-selectionLayer {
-      z-index: 1;
+      z-index: 2 !important;
+    }
+    #editor-container .cm-selectionLayer .cm-selectionBackground {
+      background-color: #264f78 !important;
+    }
+    /* Native selection as fallback */
+    #editor-container .cm-content ::selection {
+      background-color: #264f78 !important;
+    }
+    #editor-container .cm-line ::selection {
+      background-color: #264f78 !important;
     }
   `);
 ha([
@@ -23927,7 +23952,7 @@ class vM extends br {
     n.outputCst = !0, super(e, n);
   }
 }
-const J = (i, e) => M({ name: i, pattern: new RegExp(`\\b${e}\\b`, "i") }), EM = M({
+const Q = (i, e) => M({ name: i, pattern: new RegExp(`\\b${e}\\b`, "i") }), EM = M({
   name: "WhiteSpace",
   pattern: /\s+/,
   group: De.SKIPPED
@@ -23973,7 +23998,7 @@ const J = (i, e) => M({ name: i, pattern: new RegExp(`\\b${e}\\b`, "i") }), EM =
 }), my = M({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), gy = J("Program", "PROGRAM"), OM = J("Function", "FUNCTION"), yy = J("Var", "VAR"), IM = J("Constant", "CONSTANT"), by = J("If", "IF"), Sh = J("Then", "THEN"), Sy = J("Elsif", "ELSIF"), Th = J("Else", "ELSE"), Ty = J("Case", "CASE"), vy = J("Of", "OF"), Ey = J("For", "FOR"), Ay = J("To", "TO"), xy = J("By", "BY"), vh = J("Do", "DO"), Cy = J("While", "WHILE"), wy = J("Repeat", "REPEAT"), ky = J("Until", "UNTIL"), Oy = J("Return", "RETURN"), Iy = J("Exit", "EXIT"), RM = J("Continue", "CONTINUE"), Eh = J("At", "AT"), Ry = J("And", "AND"), Ny = J("Or", "OR"), NM = J("Xor", "XOR"), My = J("Not", "NOT"), Ly = J("Mod", "MOD"), _y = J("True", "TRUE"), Py = J("False", "FALSE"), Dy = J("TypeBool", "BOOL"), By = M({
+}), gy = Q("Program", "PROGRAM"), OM = Q("Function", "FUNCTION"), yy = Q("Var", "VAR"), IM = Q("Constant", "CONSTANT"), by = Q("If", "IF"), Sh = Q("Then", "THEN"), Sy = Q("Elsif", "ELSIF"), Th = Q("Else", "ELSE"), Ty = Q("Case", "CASE"), vy = Q("Of", "OF"), Ey = Q("For", "FOR"), Ay = Q("To", "TO"), xy = Q("By", "BY"), vh = Q("Do", "DO"), Cy = Q("While", "WHILE"), wy = Q("Repeat", "REPEAT"), ky = Q("Until", "UNTIL"), Oy = Q("Return", "RETURN"), Iy = Q("Exit", "EXIT"), RM = Q("Continue", "CONTINUE"), Eh = Q("At", "AT"), Ry = Q("And", "AND"), Ny = Q("Or", "OR"), NM = Q("Xor", "XOR"), My = Q("Not", "NOT"), Ly = Q("Mod", "MOD"), _y = Q("True", "TRUE"), Py = Q("False", "FALSE"), Dy = Q("TypeBool", "BOOL"), By = M({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
 }), $y = M({

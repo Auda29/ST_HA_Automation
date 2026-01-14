@@ -77,12 +77,24 @@ export class STEditor extends LitElement {
     /* Ensure selection highlighting is visible */
     #editor-container .cm-selectionBackground {
       background-color: #264f78 !important;
+      opacity: 1 !important;
     }
     #editor-container .cm-focused .cm-selectionBackground {
       background-color: #264f78 !important;
+      opacity: 1 !important;
     }
     #editor-container .cm-selectionLayer {
-      z-index: 1;
+      z-index: 2 !important;
+    }
+    #editor-container .cm-selectionLayer .cm-selectionBackground {
+      background-color: #264f78 !important;
+    }
+    /* Native selection as fallback */
+    #editor-container .cm-content ::selection {
+      background-color: #264f78 !important;
+    }
+    #editor-container .cm-line ::selection {
+      background-color: #264f78 !important;
     }
   `;
 

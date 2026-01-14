@@ -45,17 +45,30 @@ export const stEditorTheme = EditorView.theme(
       borderLeftColor: colors.cursor,
       borderLeftWidth: "2px",
     },
-    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
-      backgroundColor: `${colors.selection} !important`,
+    // Selection highlighting - multiple selectors for compatibility
+    "&.cm-focused .cm-selectionBackground": {
+      backgroundColor: colors.selection,
+    },
+    ".cm-selectionBackground": {
+      backgroundColor: colors.selection,
+    },
+    "& .cm-selectionLayer .cm-selectionBackground": {
+      backgroundColor: colors.selection,
     },
     ".cm-selectionMatch": {
       backgroundColor: "#3a3d41",
     },
-    "& .cm-line ::selection": {
-      backgroundColor: `${colors.selection} !important`,
+    // Native selection fallback
+    ".cm-content ::selection": {
+      backgroundColor: colors.selection,
     },
-    "& .cm-line::selection": {
-      backgroundColor: `${colors.selection} !important`,
+    ".cm-line ::selection": {
+      backgroundColor: colors.selection,
+    },
+    // Ensure selection layer is visible
+    ".cm-selectionLayer": {
+      zIndex: "2",
+      pointerEvents: "none",
     },
     ".cm-activeLine": {
       backgroundColor: colors.lineHighlight,
