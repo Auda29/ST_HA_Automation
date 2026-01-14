@@ -54,8 +54,29 @@ Erstelle einen Storage Analyzer mit:
 │                   → HA input_* Helper Entity                         │
 │                   Beispiel: {persistent} counter : INT := 0;        │
 │                                                                      │
+│  PERSISTENT (FB)  Function Block Instanzen                          │
+│  ──────────────   TON, TOF, TP, R_TRIG, F_TRIG, etc.               │
+│                   → Markiert als PERSISTENT, aber KEIN Helper       │
+│                      (Helper Manager serialisiert später)            │
+│                   Beispiel: timer1 : TON;                           │
+│                                                                      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+### Function Block Instance Persistence
+
+Function Block (FB) instances such as `TON`, `TOF`, `TP`, `R_TRIG`, and `F_TRIG` are automatically marked as **PERSISTENT** by the Storage Analyzer because they maintain internal state that must survive across automation runs. However, these FB instances **do not generate direct helper configs** in the Storage Analyzer phase.
+
+**Why FBs don't get helpers in Storage Analyzer:**
+- FB instances have complex internal state (e.g., timer state, edge detection flags) that cannot be represented by a simple `input_boolean` or `input_number` helper
+- Timer FBs (TON/TOF/TP) are handled by the Timer Transpiler, which generates specialized timer entities and helper outputs
+- Edge trigger FBs (R_TRIG/F_TRIG) are handled at the trigger generation level
+- The Helper Manager (in the deploy phase) handles serialization of FB state when needed
+
+**Storage Decision for FBs:**
+- FB instances receive a `StorageDecision` with `type: PERSISTENT` but **without** `helperId` or `helperType` fields
+- This signals that the variable needs persistence but requires special handling
+- The `generateHelperConfigs` method skips FB instances (they don't have a `helperType` in their storage decision)
 
 ---
 
@@ -276,7 +297,17 @@ export function isTimeType(stType: string): boolean {
 
 /**
  * Generate Helper ID following namespace convention
- * Format: input_<type>.st_<project>_<program>_<variable>
+ * 
+ * Format: <helperType>.st_<project>_<program>_<variable>
+ * 
+ * Examples:
+ * - input_number.st_home_kitchen_light_counter
+ * - input_boolean.st_default_test_flag
+ * - input_text.st_myproject_program_message
+ * 
+ * The helperType is used as-is (e.g., "input_number", "input_boolean").
+ * All components (project, program, variable) are sanitized to lowercase
+ * with non-alphanumeric characters replaced by underscores.
  */
 export function generateHelperId(
   projectName: string,
@@ -286,7 +317,6 @@ export function generateHelperId(
 ): string {
   const sanitize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '_');
   
-  const prefix = helperType.replace('input_', '');
   const id = `st_${sanitize(projectName)}_${sanitize(programName)}_${sanitize(variableName)}`;
   
   return `${helperType}.${id}`;

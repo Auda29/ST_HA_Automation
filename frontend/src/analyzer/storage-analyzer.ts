@@ -31,6 +31,7 @@ import {
   getHelperType,
   isFunctionBlockType,
   generateHelperConfig,
+  generateHelperId,
   getDefaultValue,
   convertToHelperValue,
 } from "./helper-mapping";
@@ -303,8 +304,13 @@ export class StorageAnalyzer {
       };
     }
 
-    const helperId =
-      `input_${helperType.replace("input_", "")}.st_${this.projectName}_${this.ast.name}_${varDecl.name}`.toLowerCase();
+    // Use the standard helper ID generation function for consistency
+    const helperId = generateHelperId(
+      this.projectName,
+      this.ast.name,
+      varDecl.name,
+      helperType,
+    );
 
     // Extract initial value
     let initialValue = getDefaultValue(varDecl.dataType.name);

@@ -465,7 +465,7 @@
 
 ### T-020: Document storage analyzer & helper ID conventions
 
-**Status**: WIP  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  
@@ -474,9 +474,9 @@
 **Description**: Update the storage analyzer and helper-related docs to clarify (a) that FB instances (TON, R_TRIG, etc.) are marked PERSISTENT but do not generate helpers because they are serialized by the Helper Manager later, and (b) the exact helper ID format used in `helper-mapping.ts` so specs and implementation are aligned.
 
 **Acceptance Criteria**:
-- [ ] Docs explicitly describe why FB instances are PERSISTENT without direct helper configs and how the Helper Manager handles their serialization
-- [ ] The helper ID naming convention (including the current `input_${helperType.replace("input_", "")}.st_...` pattern) is documented and consistent across code and docs
-- [ ] Any discrepancies between archived examples and current ID format are resolved or clearly called out as intentional
+- [x] Docs explicitly describe why FB instances are PERSISTENT without direct helper configs and how the Helper Manager handles their serialization
+- [x] The helper ID naming convention (including the current `input_${helperType.replace("input_", "")}.st_...` pattern) is documented and consistent across code and docs
+- [x] Any discrepancies between archived examples and current ID format are resolved or clearly called out as intentional
 
 **Technical Notes**: Prefer adjusting docs to match the existing, stable implementation over changing IDs, unless a strong reason emerges during review.
 
@@ -491,11 +491,43 @@
 
 Ideas and future tasks that are not yet scheduled:
 
-- Implement authentication system
-- Add logging framework
-- Create deployment pipeline
-- Setup monitoring
-- Add API documentation generator
+### UI/UX Enhancements
+
+- **Entity Browser with WebSocket Integration**: Implement a sidebar panel that lists all available HA entities (via WebSocket subscription), allows filtering/searching, and provides drag-and-drop functionality to bind entities to ST variables (AT %I*, AT %Q*). This was explicitly mentioned in Phase 2 of the project plan but deferred to backlog.
+
+- **Project Explorer / Multi-File Structure**: Extend the current single-file editor to support multiple ST program files organized in a project structure. Add a file tree sidebar, file tabs, and the ability to manage multiple programs within a single HA integration instance. Partially covered by existing panel/editor structure, but UI-specific extensions remain.
+
+- **Advanced Online Mode Features**: Extend T-012's online mode with force-values (ability to override entity states for testing) and breakpoints (pause execution at specific lines). These were explicitly marked as out of scope for T-012 but remain valuable for debugging.
+
+### Language & Parser Extensions
+
+- **FUNCTION_BLOCK Support**: Implement full IEC 61131-3 FUNCTION_BLOCK syntax support in the parser, including FB instantiation, input/output parameters, and internal state management. This is mentioned in Phase 3 of the project plan but not yet fully implemented.
+
+- **Extended Built-in Functions**: Add support for additional IEC 61131-3 built-in functions beyond the current set (e.g., trigonometric functions, string manipulation, date/time operations).
+
+### Testing & Quality
+
+- **Golden Master Test Suite Expansion**: Create comprehensive golden master tests for all built-in functions, edge cases, and complex transpilation scenarios to ensure regression-free development.
+
+- **End-to-End Integration Tests**: Add full-stack E2E tests that verify the complete workflow from ST code → parsing → analysis → transpilation → deployment → execution in a real HA environment.
+
+### Documentation & Developer Experience
+
+- **User Documentation & Examples**: Create comprehensive user-facing documentation with step-by-step tutorials, common patterns, troubleshooting guides, and a library of example ST programs for typical HA automation scenarios.
+
+- **Developer API Documentation**: Generate and maintain API documentation for all public modules (parser, analyzer, transpiler, deploy) to facilitate contributions and integrations.
+
+### Performance & Optimization
+
+- **Parser Performance Optimization**: Profile and optimize the Chevrotain parser for large ST programs (1000+ lines) to ensure responsive editing experience.
+
+- **Bundle Size Optimization**: Analyze and reduce frontend bundle size through code splitting, lazy loading, and tree-shaking optimizations.
+
+### Advanced Features
+
+- **Visual Program Flow Editor**: Create a visual representation of ST program flow (control structures, dependencies) as an alternative or complement to the text editor.
+
+- **Import/Export Functionality**: Add ability to export ST programs to files and import from files, enabling version control and sharing of ST programs outside of HA.
 
 ---
 
