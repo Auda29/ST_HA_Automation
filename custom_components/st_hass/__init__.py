@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -32,17 +33,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up ST for Home Assistant from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
-    # Register frontend panel using lovelace panel registration
+    # Register static path for frontend files
     await hass.http.async_register_static_paths(
         [
-            {
-                "url_path": "/st_hass/frontend",
-                "path": str(Path(__file__).parent / "frontend"),
-            }
+            StaticPathConfig(
+                url_path="/st_hass/frontend",
+                path=str(Path(__file__).parent / "frontend"),
+                cache_headers=True,
+            )
         ]
     )
 
-    # Register custom panel
+    # Register custom panel in sidebar
     hass.components.frontend.async_register_built_in_panel(
         component_name="custom",
         sidebar_title=PANEL_TITLE,
