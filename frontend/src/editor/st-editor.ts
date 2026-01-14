@@ -3,7 +3,7 @@
  */
 
 import { LitElement, html, css, PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { EditorState, Extension, Compartment } from "@codemirror/state";
 import {
   EditorView,
@@ -51,8 +51,6 @@ export class STEditor extends LitElement {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @property({ attribute: false }) declare hass?: any;
 
-  @query("#editor-container") private _container!: HTMLDivElement;
-
   private _editor: EditorView | null = null;
   private _readOnlyCompartment = new Compartment();
   private _onlineManager: OnlineStateManager | null = null;
@@ -87,10 +85,13 @@ export class STEditor extends LitElement {
   protected async firstUpdated(
     _changedProperties: PropertyValues,
   ): Promise<void> {
+    console.log("STEditor.firstUpdated called");
     // Wait for the update to complete, then initialize editor
     await this.updateComplete;
+    console.log("STEditor: updateComplete resolved");
     // Additional frame to ensure DOM is painted
     await new Promise((resolve) => requestAnimationFrame(resolve));
+    console.log("STEditor: requestAnimationFrame resolved");
     this._initEditor();
   }
 
@@ -161,8 +162,12 @@ export class STEditor extends LitElement {
   }
 
   private _initEditor(): void {
-    console.log("STEditor._initEditor called, container:", this._container);
-    if (!this._container) {
+    // Query the shadow DOM directly instead of relying on @query decorator
+    const container = this.shadowRoot?.querySelector(
+      "#editor-container",
+    ) as HTMLDivElement | null;
+    console.log("STEditor._initEditor called, container:", container);
+    if (!container) {
       console.error("STEditor: container not found!");
       return;
     }
@@ -199,7 +204,7 @@ export class STEditor extends LitElement {
 
     this._editor = new EditorView({
       state: EditorState.create({ doc: this.code, extensions }),
-      parent: this._container,
+      parent: container,
       dispatch: (tr) => {
         this._editor!.update([tr]);
         if (tr.docChanged) {
