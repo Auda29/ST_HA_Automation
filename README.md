@@ -125,14 +125,16 @@ This creates an automation that:
 
 Detailed documentation is available in the [docs](./docs) folder:
 
+### Active Documentation
+- [Project Overview](./docs/00_Project_Overview.md) - High-level architecture and design decisions
+- [Agents Documentation](./docs/agents/agents.md) - Agent-based development workflow, roles, and responsibilities
+- [Agent Tasks](./docs/agents/tasks.md) - Current task list and status
+
 ### Archived (Completed Tasks)
 - [Repository Setup](./docs/archive/01_Repository_Setup.md) - Initial project structure
 - [CodeMirror Integration](./docs/archive/02_CodeMirror_Spike.md) - Editor implementation
 - [Parser Implementation](./docs/archive/03_Parser_Spike.md) - Chevrotain parser
 - [Dependency Analyzer](./docs/archive/04_Dependency_Analyzer.md) - Automatic trigger generation and entity dependency analysis
-
-### Active Documentation
-- [Project Overview](./docs/00_Project_Overview.md) - High-level architecture and design decisions
 
 ## Development
 
@@ -346,6 +348,31 @@ and planning documents under `docs/` intentionally remain in German for historic
 examples (see `docs/language_policy.md` for details and grep commands to audit new changes).
 
 ### Development Workflow
+
+This project uses an **agent-based development workflow** with specialized AI agents handling different aspects of development:
+
+- **Taskmaster**: Plans tasks, assigns work (changes TODO → WIP), and monitors progress
+- **Dev1 (Core Developer)**: Implements core business logic and domain models
+- **Dev2 (Integration Developer)**: Builds APIs, UI components, and integrations
+- **Testing**: Writes and executes tests, reports findings
+- **Review**: Reviews code quality and architecture compliance
+- **DevOps**: Handles merges, CI/CD, and deployment
+
+For detailed agent roles, responsibilities, and workflow rules, see [Agents Documentation](./docs/agents/agents.md).
+
+#### Standard Development Flow
+
+1. **Taskmaster** creates tasks and assigns them to Dev1 or Dev2 (automatically changes status from **TODO → WIP**)
+2. **Dev1/Dev2** work on tasks in **WIP** status and automatically promote to **TESTING** when implementation is complete
+3. **Testing** writes tests, executes them, and:
+   - On success: automatically promotes to **REVIEW**
+   - On failure: writes error summary and lets Taskmaster create follow-up subtasks
+4. **Review** evaluates code and:
+   - On approval: automatically promotes to **APPROVED**
+   - On changes requested: writes change summary and lets Taskmaster create follow-up subtasks
+5. **DevOps** merges approved changes and marks tasks as **COMPLETED**
+
+#### Manual Development (Without Agents)
 
 ```bash
 # Create feature branch

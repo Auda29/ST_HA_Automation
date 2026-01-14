@@ -92,30 +92,30 @@ This system is a state machine. Agents MUST move tasks to specific states when h
 
 | Current State | Agent Action | Next State | Next Agent |
 |---------------|--------------|------------|------------|
-| **TODO** | Dev1/Dev2 starts work on their own assigned task | **WIP** | (Self) |
+| **TODO** | Taskmaster assigns task to Dev1/Dev2 and marks it as in progress | **WIP** | Dev1/Dev2 |
 | **WIP** | Dev1/Dev2 finishes implementation | **TESTING** | Testing |
-| **TESTING** | Testing validates and records results | **TESTING** (unchanged) | Taskmaster (for follow-up subtasks) |
-| **REVIEW** | Review evaluates and records results | **REVIEW** (unchanged) | Taskmaster (for follow-up subtasks) |
+| **TESTING** | Testing passes all checks | **REVIEW** | Review |
+| **TESTING** | Testing fails (found bugs) | **TESTING** (unchanged) | Taskmaster (creates subtasks) |
+| **REVIEW** | Review approves code | **APPROVED** | DevOps |
+| **REVIEW** | Review requests changes | **REVIEW** (unchanged) | Taskmaster (creates subtasks) |
 | **APPROVED** | DevOps merges to dev | **COMPLETED** | None |
 
 ### Task Selection Rules by Agent
 
 - **Dev1 & Dev2**
-  - Only pick up and work on tasks that are **explicitly assigned to them**.
+  - Only pick up and work on tasks that are **explicitly assigned to them** and already in status **WIP** (set by Taskmaster).
   - Do **not** start work on tasks assigned to other agents.
   - When they finish implementation, they **must immediately** update the task status to **TESTING** (not REVIEW or APPROVED) and hand it over to Testing.
 
 - **Testing**
   - Works on **all tasks in status `TESTING`**, **regardless of which agent is assigned**.
-  - **Does not change the main task status.**
-  - Writes a **structured summary of conclusions or errors** for the specific task into the designated per-task testing notes file.
-  - Hands control back to **Taskmaster**, who will create any necessary follow-up subtasks based on the recorded results.
+  - When all tests pass, Testing **must immediately** promote the task to **REVIEW**.
+  - When tests fail, Testing **does not demote** the task. Instead, it writes a **structured summary of errors** for the specific task into the designated per-task testing notes file and hands control back to **Taskmaster**, who will create any necessary follow-up subtasks based on the recorded results.
 
 - **Review**
   - Works on **all tasks in status `REVIEW`**, **regardless of which agent is assigned**.
-  - **Does not change the main task status.**
-  - Writes a **structured summary of conclusions, approvals, or requested changes** for the specific task into the designated per-task review notes file.
-  - Hands control back to **Taskmaster**, who will create any necessary follow-up subtasks based on the recorded results.
+  - When the review is approved, Review **must immediately** promote the task to **APPROVED**.
+  - When changes are requested, Review **does not demote** the task. Instead, it writes a **structured summary of requested changes** for the specific task into the designated per-task review notes file and hands control back to **Taskmaster**, who will create any necessary follow-up subtasks based on the recorded results.
 
 - **DevOps**
   - Only works on:
@@ -124,8 +124,13 @@ This system is a state machine. Agents MUST move tasks to specific states when h
   - When integration/merge is complete, DevOps **must immediately** promote the task to **COMPLETED**.
 
 - **Automatic Status Promotion**
-  - **Dev1, Dev2, and DevOps** are responsible for **updating task status themselves as soon as they finish their part of the work** (e.g., `TODO → WIP → TESTING`, `APPROVED → COMPLETED`).
-  - **Testing and Review do not promote or demote task status**; they only record findings and hand back to Taskmaster.
+  - **All agents** are responsible for **updating task status themselves as soon as they finish their part of the work**:
+    - Taskmaster: `TODO → WIP` (when assigning a task to Dev1/Dev2)
+    - Dev1/Dev2: `WIP → TESTING`
+    - Testing: `TESTING → REVIEW` (on success)
+    - Review: `REVIEW → APPROVED` (on approval)
+    - DevOps: `APPROVED → COMPLETED`
+  - **Testing and Review do not demote tasks** on failure; they write summaries and let Taskmaster create subtasks.
   - Agents **must not wait for additional user input** to perform their own part of status management, according to the rules above.
 
 ---
@@ -307,8 +312,8 @@ OK Testing. Ready to validate code.
 4. **Write appropriate tests** (unit, integration, or E2E as needed) for the implemented functionality
 5. Run the test suite to execute the newly written tests
 6. Document test results
-7. Write a **structured summary of conclusions or errors** for this task into the appropriate per-task testing notes file
-8. Notify Taskmaster (and optionally Review/Dev1/Dev2) that new testing results are available for this task
+7. **If all tests pass**: **Immediately** update task status to **REVIEW** and notify Review agent
+8. **If tests fail**: Write a **structured summary of errors** for this task into the appropriate per-task testing notes file and notify Taskmaster (who will create follow-up subtasks)
 
 **Test types and when to use them**:
 
@@ -400,8 +405,8 @@ OK Review. Ready to review code.
 2. Check out the relevant branch to review
 3. Analyze code changes
 4. Provide structured feedback
-5. Write a **structured summary of conclusions, approvals, or requested changes** for this task into the appropriate per-task review notes file
-6. Notify Taskmaster that new review results are available for this task (and, if relevant, notify DevOps or Dev1/Dev2)
+5. **If review is approved**: **Immediately** update task status to **APPROVED** and notify DevOps
+6. **If changes are requested**: Write a **structured summary of requested changes** for this task into the appropriate per-task review notes file and notify Taskmaster (who will create follow-up subtasks)
 
 **Review checklist**:
 
