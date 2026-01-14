@@ -92,13 +92,41 @@ This system is a state machine. Agents MUST move tasks to specific states when h
 
 | Current State | Agent Action | Next State | Next Agent |
 |---------------|--------------|------------|------------|
-| **TODO** | Dev1/Dev2 starts work | **WIP** | (Self) |
+| **TODO** | Dev1/Dev2 starts work on their own assigned task | **WIP** | (Self) |
 | **WIP** | Dev1/Dev2 finishes implementation | **TESTING** | Testing |
-| **TESTING** | Testing passes all checks | **REVIEW** | Review |
-| **TESTING** | Testing fails (found bugs) | **TODO** | Dev1/Dev2 (assigned back) |
-| **REVIEW** | Review approves code | **APPROVED** | DevOps |
-| **REVIEW** | Review requests changes | **TODO** | Dev1/Dev2 (assigned back) |
+| **TESTING** | Testing validates and records results | **TESTING** (unchanged) | Taskmaster (for follow-up subtasks) |
+| **REVIEW** | Review evaluates and records results | **REVIEW** (unchanged) | Taskmaster (for follow-up subtasks) |
 | **APPROVED** | DevOps merges to dev | **COMPLETED** | None |
+
+### Task Selection Rules by Agent
+
+- **Dev1 & Dev2**
+  - Only pick up and work on tasks that are **explicitly assigned to them**.
+  - Do **not** start work on tasks assigned to other agents.
+  - When they finish implementation, they **must immediately** update the task status to **TESTING** (not REVIEW or APPROVED) and hand it over to Testing.
+
+- **Testing**
+  - Works on **all tasks in status `TESTING`**, **regardless of which agent is assigned**.
+  - **Does not change the main task status.**
+  - Writes a **structured summary of conclusions or errors** for the specific task into the designated per-task testing notes file.
+  - Hands control back to **Taskmaster**, who will create any necessary follow-up subtasks based on the recorded results.
+
+- **Review**
+  - Works on **all tasks in status `REVIEW`**, **regardless of which agent is assigned**.
+  - **Does not change the main task status.**
+  - Writes a **structured summary of conclusions, approvals, or requested changes** for the specific task into the designated per-task review notes file.
+  - Hands control back to **Taskmaster**, who will create any necessary follow-up subtasks based on the recorded results.
+
+- **DevOps**
+  - Only works on:
+    - Tasks **assigned to DevOps** that are in status **WIP**, or
+    - Tasks in status **APPROVED** (regardless of assignment).
+  - When integration/merge is complete, DevOps **must immediately** promote the task to **COMPLETED**.
+
+- **Automatic Status Promotion**
+  - **Dev1, Dev2, and DevOps** are responsible for **updating task status themselves as soon as they finish their part of the work** (e.g., `TODO → WIP → TESTING`, `APPROVED → COMPLETED`).
+  - **Testing and Review do not promote or demote task status**; they only record findings and hand back to Taskmaster.
+  - Agents **must not wait for additional user input** to perform their own part of status management, according to the rules above.
 
 ---
 
@@ -158,8 +186,8 @@ OK Dev1. Ready for task assignment.
 4. Implement the feature/fix
 5. Self-test the changes
 6. Commit with descriptive message
-7. Update task status to "Testing" in `/repo/agents/tasks.md`
-8. Notify Testing agent
+7. **Immediately** update the task status to **TESTING** in `/repo/agents/tasks.md` when implementation is finished
+8. Notify Testing agent that the task is ready
 
 **Example implementation checklist**:
 - [ ] Read task requirements (T-XXX)
@@ -214,8 +242,8 @@ OK Dev2. Ready for task assignment.
 4. Test integration points
 5. Document API contracts
 6. Commit changes
-7. Update task status
-8. Notify Testing
+7. **Immediately** update the task status to **TESTING** when implementation is finished
+8. Notify Testing that the task is ready
 
 **API implementation checklist**:
 - [ ] Define endpoint paths and methods
@@ -252,12 +280,12 @@ OK Dev2. Ready for task assignment.
 
 ### Testing
 
-**Purpose**: Ensure code quality through comprehensive testing and quality assurance.
+**Purpose**: Ensure code quality through comprehensive testing and quality assurance. **Testing writes tests** for code implemented by Dev1 and Dev2, then executes them to validate functionality.
 
 
 **Responsibilities**:
-1. Write unit tests for core logic
-2. Write integration tests for APIs
+1. **Write unit tests** for core logic implemented by Dev1/Dev2
+2. **Write integration tests** for APIs and UI components implemented by Dev1/Dev2
 3. Create test fixtures and mocks
 4. Execute test suites
 5. Report bugs and issues
@@ -273,14 +301,14 @@ OK Testing. Ready to validate code.
 ```
 
 **Typical workflow**:
-1. Receive notification that code is ready for testing
+1. Receive notification that code is ready for testing (or pull any task in status **TESTING**, regardless of assigned agent)
 2. Pull changes from Dev1/Dev2 branches
-3. Review implementation
-4. Write appropriate tests
-5. Run test suite
-6. Document results
-7. Update task status (pass/fail)
-8. Notify Review agent or report issues back to Dev1/Dev2
+3. Review implementation to understand what needs to be tested
+4. **Write appropriate tests** (unit, integration, or E2E as needed) for the implemented functionality
+5. Run the test suite to execute the newly written tests
+6. Document test results
+7. Write a **structured summary of conclusions or errors** for this task into the appropriate per-task testing notes file
+8. Notify Taskmaster (and optionally Review/Dev1/Dev2) that new testing results are available for this task
 
 **Test types and when to use them**:
 
@@ -368,13 +396,12 @@ OK Review. Ready to review code.
 ```
 
 **Typical workflow**:
-1. Receive notification that task passed testing
+1. Receive notification that task passed testing (or pull any task in status **REVIEW**, regardless of assigned agent)
 2. Check out the relevant branch to review
 3. Analyze code changes
 4. Provide structured feedback
-5. Approve or request changes
-6. Update task status
-7. Notify DevOps if approved, or Dev1/Dev2 if changes needed
+5. Write a **structured summary of conclusions, approvals, or requested changes** for this task into the appropriate per-task review notes file
+6. Notify Taskmaster that new review results are available for this task (and, if relevant, notify DevOps or Dev1/Dev2)
 
 **Review checklist**:
 
@@ -481,14 +508,14 @@ OK DevOps. Ready for integration tasks.
 ```
 
 **Typical workflow**:
-1. Receive notification that code is approved by Review
+1. Receive notification that code is approved by Review (or pick a task in status **APPROVED** or a DevOps-assigned task in **WIP**)
 2. Verify all checks passed
 3. Switch to `dev` branch
 4. Pull latest changes
 5. Merge branch
 6. Run final integration tests
 7. Push to origin
-8. Update task status to "completed"
+8. **Immediately** update task status to **COMPLETED**
 9. Clean up merged branch (optional)
 
 ,,,
@@ -630,8 +657,9 @@ If you encounter issues:
 
 - One task, one owner at a time (unless explicitly parallel)
 - Use task status in `tasks.md` as the source of truth
-- Don't start work on tasks assigned to others
-- Update status immediately after completing work
+- Dev1 and Dev2 **must not** start work on tasks assigned to other agents
+- Testing and Review **may** work on any task in status **TESTING**/**REVIEW** respectively, regardless of assignment
+- All agents **must update status immediately after completing their work**, without waiting for additional user input
 
 ---
 

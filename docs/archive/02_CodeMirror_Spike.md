@@ -3,6 +3,8 @@
 ## Kontext
 
 Du implementierst Syntax-Highlighting für Structured Text (IEC 61131-3) in CodeMirror 6 für das "ST for Home Assistant" Projekt.
+Dieses Spike-Dokument fokussiert primär auf den Editor (Language, Theme, Web Component) und das Panel-Wiring.
+Die eigentliche Parser- und Analyzer-Logik wird in separaten Tasks und Dokumenten beschrieben.
 
 **Projektpfad:** `C:\##\Projects\ST_HA_Automation`
 **Voraussetzung:** Repository ist aufgesetzt (01_Repository_Setup.md abgeschlossen)
@@ -670,8 +672,20 @@ npm run dev
 
 ---
 
-## Nicht in diesem Task
+## Nicht in diesem Task (ursprünglicher Scope)
 
 - Parser Implementation (→ 03_Parser_Spike.md)
 - Linting/Fehleranzeige
 - Entity-Browser Integration
+
+> **Hinweis (Stand: Implementierung)**  
+> Die aktuelle `st-panel.ts`-Implementierung integriert bereits:
+> - den **Parser** (`parse` aus `frontend/src/parser`) und  
+> - den **Dependency Analyzer** (`analyzeDependencies` aus `frontend/src/analyzer`)  
+> um Syntaxfehler, Triggers, Metadaten und Diagnostik im Panel anzuzeigen.
+>
+> Das ist eine **bewusste Scope-Erweiterung** gegenüber diesem ursprünglichen Spike:
+> - Der Editor-Spike definiert weiterhin nur den ST-Editor (CodeMirror Language/Theme/Component)  
+> - Die Analyse- und Trigger-Logik bleibt fachlich in den Analyzer‑Tasks (`T-004`, `T-005`, `T-007` usw.)  
+> - `st-panel.ts` fungiert als Integrationspunkt, der Editor, Parser und Analyzer zusammenführt, ohne deren Verantwortlichkeiten zu vermischen.
+

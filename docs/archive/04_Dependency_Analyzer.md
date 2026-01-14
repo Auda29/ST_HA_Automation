@@ -1331,9 +1331,9 @@ npm run build
 
 ---
 
-## Nächste Integration
+## Integration in das ST-Panel
 
-Nach Abschluss kann der Analyzer in das Panel integriert werden:
+Der Dependency Analyzer ist bereits im `st-panel.ts` als **reine Fachlogik** eingebunden (siehe auch `02_CodeMirror_Spike.md` für die Scope-Erweiterung):
 
 ```typescript
 // In st-panel.ts
@@ -1341,11 +1341,52 @@ import { parse } from '../parser';
 import { analyzeDependencies } from '../analyzer';
 
 private _analyzeCode() {
-  const { ast, errors } = parse(this._code);
-  if (ast) {
-    const analysis = analyzeDependencies(ast);
-    this._triggers = analysis.triggers;
-    this._diagnostics = [...errors, ...analysis.diagnostics];
+  const diagnostics: CombinedDiagnostic[] = [];
+
+  // 1) Parser
+  const parseResult = parse(this._code);
+  if (parseResult.errors.length > 0) {
+    for (const error of parseResult.errors) {
+      diagnostics.push({
+        severity: "Error",
+        message: error.message,
+        line: error.line,
+        column: error.column,
+      });
+    }
   }
+
+  this._syntaxOk = parseResult.success && parseResult.ast !== undefined;
+
+  // 2) Analyzer
+  if (parseResult.success && parseResult.ast) {
+    const analysis = analyzeDependencies(parseResult.ast);
+
+    for (const diag of analysis.diagnostics) {
+      diagnostics.push({
+        severity: diag.severity,
+        code: diag.code,
+        message: diag.message,
+        line: diag.location?.line,
+        column: diag.location?.column,
+      });
+    }
+
+    this._triggers = analysis.triggers;
+    this._metadata = analysis.metadata;
+    this._entityCount = analysis.dependencies.length;
+  } else {
+    this._triggers = [];
+    this._metadata = null;
+    this._entityCount = 0;
+  }
+
+  this._diagnostics = diagnostics;
 }
 ```
+
+Damit ist die Verantwortung klar getrennt:
+
+- **Parser**: ST → AST + Parser-Fehler (siehe `03_Parser_Spike.md`, Task T‑003)  
+- **Analyzer**: AST → Triggers, Dependencies, Diagnostics, Metadata (dieses Dokument, Task T‑004/T‑005/T‑007)  
+- **Panel**: UI-/UX‑Schicht, die Editor, Parser und Analyzer zusammensetzt und Ergebnisse visualisiert.

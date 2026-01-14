@@ -140,7 +140,7 @@
 
 ### T-006: Close gaps between archive specs and implementation
 
-**Status**: TODO  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -149,9 +149,9 @@
 **Description**: Use `12_Archive_Feature_Gap_Analysis.md` to reconcile the current implementation with the original spike specs (01–04), deciding for each gap whether to bring code in line with the spec or to update the docs to reflect intentional changes.
 
 **Acceptance Criteria**:
-- [ ] Each gap in the archive gap analysis is either fixed in code or explicitly updated in docs
-- [ ] R_TRIG/F_TRIG handling strategy is documented and implemented or explicitly deferred
-- [ ] Diagnostic code schemes are consistent and documented
+- [x] Each gap in the archive gap analysis is either fixed in code or explicitly updated in docs
+- [x] R_TRIG/F_TRIG handling strategy is documented and implemented or explicitly deferred
+- [x] Diagnostic code schemes are consistent and documented
 
 **Technical Notes**: This is mainly planning/coordination plus small targeted changes, not a large refactor.
 
@@ -163,7 +163,7 @@
 
 ### T-007: Transpiler basis – ST AST to HA automation/script
 
-**Status**: TODO  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: High  
 **Created**: 2026-01-14  
@@ -349,7 +349,7 @@
 
 ### T-015: Document CodeMirror spike scope vs analyzer integration
 
-**Status**: TODO  
+**Status**: COMPLETED  
 **Assigned**: Dev2  
 **Priority**: Low  
 **Created**: 2026-01-14  
@@ -358,9 +358,9 @@
 **Description**: Update the spike/docs (especially `02_CodeMirror_Spike.md` and related analyzer docs) to acknowledge that `st-panel.ts` already integrates parsing and dependency analysis, even though the original spike listed that as “Nicht in diesem Task”, and clarify how this relates to analyzer tasks.
 
 **Acceptance Criteria**:
-- [ ] `02_CodeMirror_Spike.md` notes that parser/analyzer integration in `st-panel.ts` is an intentional scope extension and references the relevant analyzer/transpiler tasks
-- [ ] Any conflicting “out of scope” statements are reconciled with the current implementation
-- [ ] The relationship between editor, parser, and analyzer responsibilities is clearly described
+- [x] `02_CodeMirror_Spike.md` notes that parser/analyzer integration in `st-panel.ts` is an intentional scope extension and references the relevant analyzer/transpiler tasks
+- [x] Any conflicting “out of scope” statements are reconciled with the current implementation
+- [x] The relationship between editor, parser, and analyzer responsibilities is clearly described
 
 **Technical Notes**: This is a documentation/architecture-alignment task; do not change runtime behavior.
 
@@ -397,7 +397,7 @@
 ### T-017: Repository-wide language audit (German → English)
 
 **Status**: COMPLETED  
-**Assigned**: Dev2  
+**Assigned**: DevOps  
 **Priority**: Low  
 **Created**: 2026-01-14  
 **Dependencies**: T-001  

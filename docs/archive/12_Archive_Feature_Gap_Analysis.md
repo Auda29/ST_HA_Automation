@@ -8,8 +8,8 @@ This document summarizes where the implementation deviates from the original spi
 
 - **CI workflow**
   - **Spec**: `.github/workflows/ci.yml` with CI configuration.
-  - **Current state**: No `ci.yml` workflow is present under `.github/workflows/`.
-  - **Impact**: CI must be added manually if desired; local scripts (`lint`, `typecheck`, `test`, `build`) exist and can be wired into CI.
+  - **Current state**: A `ci.yml` workflow is present under `.github/workflows/` and runs `lint`, `typecheck`, `test` and `build` for the frontend, matching the intent of the spike.
+  - **Impact**: Gap closed – CI is configured as planned. Any future changes should update both the workflow and the spike doc if they diverge.
 
 - **ESLint configuration filename**
   - **Spec**: `frontend/.eslintrc.json`.
@@ -42,7 +42,7 @@ The Chevrotain-based parser (`frontend/src/parser/*`) implements the intended fu
 
 ## 04_Dependency_Analyzer.md (Dependency Analyzer / Auto Triggers)
 
-The analyzer module (`frontend/src/analyzer/*`) is largely implemented, but several parts of the original design are either simplified or not yet wired in.
+The analyzer module (`frontend/src/analyzer/*`) is largely implemented and, for several items, now matches or intentionally extends the original design.
 
 - **R_TRIG / F_TRIG–based edge trigger detection**
   - **Spec**:
@@ -50,17 +50,17 @@ The analyzer module (`frontend/src/analyzer/*`) is largely implemented, but seve
     - Automatically generate rising/falling edge triggers for the referenced input variables.
     - Emit diagnostics like `EDGE_TRIGGER_DETECTED`.
   - **Current state**:
-    - Edge triggers can be expressed via pragmas (e.g. `{edge: rising}`), and helper functions like `generateRisingEdgeTrigger` / `generateFallingEdgeTrigger` exist.
-    - The analyzer does **not** yet inspect function call names for `R_TRIG` / `F_TRIG` and does not convert those into edge triggers.
-  - **Impact**: R_TRIG/F_TRIG usage is not automatically reflected in generated HA triggers; edge behavior must currently be driven via pragmas or added later.
+    - `DependencyAnalyzer` inspects function call names for `R_TRIG` / `F_TRIG`, records detected edge triggers per input variable, and generates rising/falling edge triggers via `generateRisingEdgeTrigger` / `generateFallingEdgeTrigger`.
+    - A dedicated `EDGE_TRIGGER_DETECTED` diagnostic is emitted when such usage is found.
+  - **Impact**: Gap closed – R_TRIG/F_TRIG usage is now automatically reflected in generated HA triggers, with a clear diagnostic trail.
 
 - **Diagnostic codes and messages**
   - **Spec**:
     - Named codes like `W001`, `W002`, `W003`, `I001`, `I002`, `I003`, `E001`, etc., with specific meanings (NO_TRIGGERS, MANY_TRIGGERS, UNUSED_INPUT, AUTO_TRIGGER, EXPLICIT_NO_TRIGGER, EDGE_TRIGGER_DETECTED, INVALID_ENTITY_ID, …).
   - **Current state**:
-    - `types.ts` defines simpler string codes (e.g. `NO_TRIGGERS`, `MANY_TRIGGERS`, `UNUSED_INPUT`, `WRITE_TO_INPUT`, `INVALID_ENTITY_ID`, …).
-    - Some informational diagnostics described in the spike (e.g. separate infos for AUTO_TRIGGER / EXPLICIT_NO_TRIGGER / EDGE_TRIGGER_DETECTED) are not all emitted.
-  - **Impact**: Diagnostics are present and useful, but consumers cannot rely on the numeric code scheme from the archived spec and some informational messages are coarser than designed.
+    - `types.ts` defines `DiagnosticCodes` with the numeric scheme (`W0xx`, `I0xx`, `E0xx`, `H0xx`) and symbolic names (e.g. `NO_TRIGGERS`, `MANY_TRIGGERS`, `UNUSED_INPUT`, `AUTO_TRIGGER`, `EXPLICIT_NO_TRIGGER`, `EDGE_TRIGGER_DETECTED`, `INVALID_ENTITY_ID`, …).
+    - The analyzer emits distinct diagnostics for AUTO_TRIGGER, EXPLICIT_NO_TRIGGER, EDGE_TRIGGER_DETECTED and the warning/error codes described in the spike.
+  - **Impact**: Gap closed – diagnostics use the numeric code scheme from the archived spec and provide the intended granularity.
 
 - **Entity binding model**
   - **Spec**:
@@ -69,20 +69,17 @@ The analyzer module (`frontend/src/analyzer/*`) is largely implemented, but seve
       - Entity ID stored in the initializer string (e.g. `'binary_sensor.kitchen_motion'`).
     - Analyzer uses both binding direction and the entity id to build `EntityDependency`.
   - **Current state**:
-    - AST/visitor tracks `EntityBinding`, but `DependencyAnalyzer` primarily:
-      - Infers direction from `VarSection` (e.g. `VAR_INPUT`, `VAR_OUTPUT`) or `binding.direction`.
-      - Uses the initializer string as the entity id when available.
-    - Binding and entity id are not always modeled exactly as in the spike text (e.g. some assumptions in `parseIoAddress` and metadata around persistent vars).
-  - **Impact**: Behavior is correct for the common `{ AT %I* : TYPE := 'domain.entity'; }` pattern, but low-level representation does not perfectly mirror the archived design.
+    - The AST/visitor exposes an `EntityBinding` that carries both binding direction and `entityId`; `DependencyAnalyzer` uses this enriched binding (falling back to the initializer string when needed) to build `EntityDependency`.
+  - **Impact**: Behavior and data model now match the spike for the intended `%I*` / `%Q*` / `%M*` binding patterns; remaining differences are minor implementation details only.
 
 - **Metadata details**
   - **Spec**:
     - `metadata.hasPersistentVars` driven by presence of `{persistent}` pragmas.
     - `mode`, `throttle`, `debounce` stored as ST-style values (e.g. `'restart'`, `'T#1s'`).
   - **Current state**:
-    - `hasPersistentVars` is currently approximated (e.g. based on outputs) and not strictly tied to `{persistent}`.
-    - `mode`/`throttle`/`debounce` are parsed differently (e.g. throttle/debounce interpreted as numbers instead of raw time literals).
-  - **Impact**: High-level metadata exists but does not yet reflect all the semantics/encodings from the archived spike.
+    - `hasPersistentVars` is computed based on `{persistent}` pragmas on variable declarations.
+    - `mode`, `throttle`, and `debounce` are taken from program pragmas and kept as ST-style strings (e.g. `restart`, `T#1s`, `T#500ms`) in `AnalysisMetadata`.
+  - **Impact**: Gap closed – metadata now follows the encoding described in the spikes.
 
 - **Panel integration**
   - **Spec**:
@@ -90,15 +87,15 @@ The analyzer module (`frontend/src/analyzer/*`) is largely implemented, but seve
       - Generated triggers.
       - Combined diagnostics (parser + analyzer).
   - **Current state**:
-    - `st-panel.ts` still only logs the code in `_handleDeploy` and does **not** invoke the parser/analyzer yet.
-  - **Impact**: Dependency analysis currently runs only in tests or via direct API calls in code; the UI does not yet display triggers/diagnostics as outlined in the spike.
+    - `st-panel.ts` invokes the Chevrotain parser and `analyzeDependencies` on every code change, combines parser and analyzer diagnostics, and exposes triggers and metadata to the UI state; deployment is still a TODO handled by later tasks.
+  - **Impact**: Gap closed for analysis and diagnostics; only deploy wiring remains open and is tracked by other tasks.
 
 - **EntityDependency direction type**
   - **Spec**:
     - `direction: 'INPUT' | 'OUTPUT' | 'MEMORY'` to cover `%I*`, `%Q*`, and `%M*` bindings.
   - **Current state**:
-    - `types.ts` defines `direction: 'INPUT' | 'OUTPUT'` only; `'MEMORY'` is missing.
-  - **Impact**: Memory-mapped variables (`%M*`) are not explicitly represented; they would fall through or be misclassified.
+    - `EntityDependency` in `types.ts` uses exactly this union type, and `%M*` bindings are represented as `MEMORY`.
+  - **Impact**: Gap closed – all three binding classes are modeled explicitly.
 
 - **TriggerConfig extended fields**
   - **Spec**:
@@ -109,15 +106,15 @@ The analyzer module (`frontend/src/analyzer/*`) is largely implemented, but seve
       - `event_type?: string`, `event_data?: Record<string, unknown>` (event triggers)
       - `at?: string` (time-based triggers)
   - **Current state**:
-    - Only core fields are present: `platform`, `entity_id`, `from`, `to`, `above`, `below`, `edge`, `id`.
-  - **Impact**: Advanced trigger configurations (attribute-based, time-based, event-based) cannot be generated; current implementation covers only state triggers.
+    - `TriggerConfig` in `types.ts` declares all of these fields, and helper functions in `trigger-generator.ts` are ready to populate them as features are needed.
+  - **Impact**: Gap closed at the type level; current analyzer usage focuses on state triggers but is forward-compatible with attribute/time/event triggers.
 
 - **Diagnostic severity casing**
   - **Spec**:
     - `DiagnosticSeverity = 'Error' | 'Warning' | 'Info' | 'Hint'` (PascalCase).
   - **Current state**:
-    - `DiagnosticSeverity = 'error' | 'warning' | 'info'` (lowercase), no `'hint'`.
-  - **Impact**: Minor inconsistency; consumers expecting the archived casing will need adjustment. Functionally equivalent.
+    - `DiagnosticSeverity` in `types.ts` matches the PascalCase union and includes `'Hint'`; diagnostics use these values consistently.
+  - **Impact**: Gap closed – severity casing is consistent with the archived design.
 
 ---
 
