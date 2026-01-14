@@ -88,9 +88,17 @@ export class STVisitor extends BaseVisitor {
     const initialValue = ctx.expression
       ? this.visit(ctx.expression[0])
       : undefined;
-    const binding = ctx.IoAddress
-      ? this.parseIoAddress(ctx.IoAddress[0].image)
-      : undefined;
+    
+    // Create binding if IO address is present
+    let binding = undefined;
+    if (ctx.IoAddress) {
+      binding = this.parseIoAddress(ctx.IoAddress[0].image);
+      
+      // Extract entity ID from initialValue if it's a string literal
+      if (initialValue && initialValue.type === "Literal" && initialValue.kind === "string") {
+        binding.entityId = initialValue.value as string;
+      }
+    }
 
     return {
       type: "VariableDeclaration",
@@ -537,15 +545,17 @@ export class STVisitor extends BaseVisitor {
   }
 
   private parseIoAddress(address: string): EntityBinding {
-    // Parse %I0.0, %Q0.1, etc.
+    // Parse %I0.0, %Q0.1, %M*, etc.
+    // Remove the % prefix to get the IO address
+    const ioAddress = address.substring(1);
     const direction =
       address[1] === "I" ? "INPUT" : address[1] === "Q" ? "OUTPUT" : "MEMORY";
-    const entityId = address.substring(1);
 
     return {
       type: "EntityBinding",
       direction,
-      entityId,
+      ioAddress,
+      // entityId will be set from initialValue if present
     };
   }
 

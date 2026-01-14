@@ -290,6 +290,39 @@ describe("Dependency Analyzer", () => {
         ),
       ).toBe(true);
     });
+
+    it("uses enriched EntityBinding with both ioAddress and entityId", () => {
+      const code = `
+        PROGRAM Test
+        VAR_INPUT
+          motion AT %I* : BOOL := 'binary_sensor.motion';
+          temp AT %I0.1 : REAL := 'sensor.temperature';
+        END_VAR
+        END_PROGRAM
+      `;
+
+      const ast = parse(code).ast!;
+      
+      // Verify AST has enriched bindings
+      const motionVar = ast.variables.find(v => v.name === "motion");
+      const tempVar = ast.variables.find(v => v.name === "temp");
+      
+      expect(motionVar?.binding).toBeDefined();
+      expect(motionVar?.binding?.ioAddress).toBe("I*");
+      expect(motionVar?.binding?.direction).toBe("INPUT");
+      expect(motionVar?.binding?.entityId).toBe("binary_sensor.motion");
+      
+      expect(tempVar?.binding).toBeDefined();
+      expect(tempVar?.binding?.ioAddress).toBe("I0.1");
+      expect(tempVar?.binding?.direction).toBe("INPUT");
+      expect(tempVar?.binding?.entityId).toBe("sensor.temperature");
+      
+      // Verify analyzer uses the enriched binding
+      const result = analyzeDependencies(ast);
+      expect(result.dependencies).toHaveLength(2);
+      expect(result.dependencies.find(d => d.variableName === "motion")?.entityId).toBe("binary_sensor.motion");
+      expect(result.dependencies.find(d => d.variableName === "temp")?.entityId).toBe("sensor.temperature");
+    });
   });
 
   describe("Metadata Extraction", () => {

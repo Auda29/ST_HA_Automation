@@ -63,7 +63,8 @@ export interface DataType extends ASTNode {
 export interface EntityBinding extends ASTNode {
   type: 'EntityBinding';
   direction: 'INPUT' | 'OUTPUT' | 'MEMORY';  // %I, %Q, %M
-  entityId: string;
+  ioAddress: string;  // The IO address from AT clause (e.g., "I0.0" from %I0.0)
+  entityId?: string;  // The actual HA entity ID from initializer (e.g., 'binary_sensor.motion')
 }
 
 // ============================================================================

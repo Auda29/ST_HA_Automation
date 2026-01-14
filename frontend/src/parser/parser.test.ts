@@ -103,7 +103,44 @@ describe("ST Parser", () => {
         console.log("Errors:", result.errors);
       }
       expect(result.success).toBe(true);
-      expect(result.ast?.variables[0].binding?.entityId).toBe("I0.0");
+      expect(result.ast?.variables[0].binding?.ioAddress).toBe("I0.0");
+      expect(result.ast?.variables[0].binding?.direction).toBe("INPUT");
+    });
+
+    it("should parse I/O bindings with entity ID from initializer", () => {
+      const code = `
+        PROGRAM Test
+        VAR
+          motion AT %I* : BOOL := 'binary_sensor.motion';
+        END_VAR
+        END_PROGRAM
+      `;
+
+      const result = parse(code);
+      expect(result.success).toBe(true);
+      const binding = result.ast?.variables[0].binding;
+      expect(binding).toBeDefined();
+      expect(binding?.ioAddress).toBe("I*");
+      expect(binding?.direction).toBe("INPUT");
+      expect(binding?.entityId).toBe("binary_sensor.motion");
+    });
+
+    it("should parse I/O bindings without entity ID (ioAddress only)", () => {
+      const code = `
+        PROGRAM Test
+        VAR
+          sensor AT %I0.0 : BOOL;
+        END_VAR
+        END_PROGRAM
+      `;
+
+      const result = parse(code);
+      expect(result.success).toBe(true);
+      const binding = result.ast?.variables[0].binding;
+      expect(binding).toBeDefined();
+      expect(binding?.ioAddress).toBe("I0.0");
+      expect(binding?.direction).toBe("INPUT");
+      expect(binding?.entityId).toBeUndefined();
     });
 
     it("should parse variable pragmas", () => {

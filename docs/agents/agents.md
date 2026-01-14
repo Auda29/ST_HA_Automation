@@ -158,7 +158,7 @@ OK Dev1. Ready for task assignment.
 4. Implement the feature/fix
 5. Self-test the changes
 6. Commit with descriptive message
-7. Update task status to "ready-for-testing" in `/repo/agents/tasks.md`
+7. Update task status to "Testing" in `/repo/agents/tasks.md`
 8. Notify Testing agent
 
 **Example implementation checklist**:

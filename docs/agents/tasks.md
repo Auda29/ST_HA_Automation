@@ -116,7 +116,7 @@
 
 ### T-005: Storage analyzer – persistence decisions and helper mapping
 
-**Status**: WIP  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: High  
 **Created**: 2026-01-14  
@@ -372,7 +372,7 @@
 
 ### T-016: Parser docs and entity binding enhancements
 
-**Status**: WIP  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  
@@ -460,6 +460,30 @@
 - `docs/archive/04_Dependency_Analyzer.md`
 - `docs/archive/12_Archive_Feature_Gap_Analysis.md`
 - `frontend/src/analyzer/*`
+
+---
+
+### T-020: Document storage analyzer & helper ID conventions
+
+**Status**: TODO  
+**Assigned**: Dev1  
+**Priority**: Low  
+**Created**: 2026-01-14  
+**Dependencies**: T-005, T-008, T-019  
+
+**Description**: Update the storage analyzer and helper-related docs to clarify (a) that FB instances (TON, R_TRIG, etc.) are marked PERSISTENT but do not generate helpers because they are serialized by the Helper Manager later, and (b) the exact helper ID format used in `helper-mapping.ts` so specs and implementation are aligned.
+
+**Acceptance Criteria**:
+- [ ] Docs explicitly describe why FB instances are PERSISTENT without direct helper configs and how the Helper Manager handles their serialization
+- [ ] The helper ID naming convention (including the current `input_${helperType.replace("input_", "")}.st_...` pattern) is documented and consistent across code and docs
+- [ ] Any discrepancies between archived examples and current ID format are resolved or clearly called out as intentional
+
+**Technical Notes**: Prefer adjusting docs to match the existing, stable implementation over changing IDs, unless a strong reason emerges during review.
+
+**Files Changed**:
+- `docs/archive/05_Storage_Analyzer.md`
+- `docs/archive/07_Helper_Manager_Deploy.md`
+- `frontend/src/analyzer/helper-mapping.ts`
 
 ---
 

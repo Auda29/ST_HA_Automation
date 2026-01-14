@@ -111,7 +111,8 @@ class DependencyAnalyzer {
       return;
     }
     for (const varDecl of this.ast.variables) {
-      const entityId = this.extractEntityId(varDecl);
+      // Use enriched EntityBinding if available, otherwise extract from initialValue
+      const entityId = varDecl.binding?.entityId || this.extractEntityId(varDecl);
 
       // Only process variables with entity bindings (those with entity IDs)
       if (!entityId && !varDecl.binding) {
@@ -159,6 +160,10 @@ class DependencyAnalyzer {
     }
   }
 
+  /**
+   * Fallback method to extract entity ID from initialValue
+   * Used when EntityBinding doesn't have entityId set (backward compatibility)
+   */
   private extractEntityId(varDecl: VariableDeclaration): string | undefined {
     // Entity ID is stored in initialValue as a string literal
     // Example: motion AT %I* : BOOL := 'binary_sensor.motion';
