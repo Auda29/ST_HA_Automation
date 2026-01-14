@@ -19,8 +19,8 @@ import { stTheme } from './st-theme';
 
 @customElement('st-editor')
 export class STEditor extends LitElement {
-  @property({ type: String }) code: string = '';
-  @property({ type: Boolean, attribute: 'read-only' }) readOnly: boolean = false;
+  @property({ type: String }) declare code: string;
+  @property({ type: Boolean, attribute: 'read-only' }) declare readOnly: boolean;
 
   @query('#editor-container') private _container!: HTMLDivElement;
 
@@ -46,6 +46,12 @@ export class STEditor extends LitElement {
       overflow: auto;
     }
   `;
+
+  constructor() {
+    super();
+    this.code = '';
+    this.readOnly = false;
+  }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     this._initEditor();

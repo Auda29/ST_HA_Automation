@@ -5,26 +5,22 @@
  * based on entity types and pragmas found in the code.
  */
 
-import type {
-  TriggerConfig,
-  TriggerPragmaOptions,
-  ParsedPragma,
-} from "./types";
+import type { TriggerConfig, ParsedPragma } from "./types";
 import type { PragmaNode } from "../parser/ast";
 
 /**
  * Generate a standard state trigger
- * Fires when an entity changes state (excluding to/from specified states if provided)
+ * Fires when an entity changes state (excluding unavailable/unknown states)
  */
 export function generateStateTrigger(
   entityId: string,
-  options?: { from?: string; to?: string; id?: string },
+  options?: { id?: string },
 ): TriggerConfig {
   return {
     platform: "state",
     entity_id: entityId,
-    not_from: options?.from,
-    not_to: options?.to,
+    not_from: ["unavailable", "unknown"],
+    not_to: ["unavailable", "unknown"],
     id: options?.id,
   };
 }
@@ -132,14 +128,16 @@ export function hasPragma(pragmas: ParsedPragma[], name: string): boolean {
 }
 
 /**
- * Get pragma value
+ * Get pragma value as string
  */
 export function getPragmaValue(
   pragmas: ParsedPragma[],
   name: string,
 ): string | undefined {
   const pragma = pragmas.find((p) => p.name === name);
-  return pragma?.value;
+  if (pragma?.value === undefined) return undefined;
+  // Convert to string if not already
+  return String(pragma.value);
 }
 
 // ============================================================================

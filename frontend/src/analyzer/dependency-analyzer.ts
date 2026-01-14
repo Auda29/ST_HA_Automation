@@ -5,18 +5,14 @@
  * 1. Extract entity dependencies from variable bindings
  * 2. Analyze variable usage patterns (reads/writes)
  * 3. Automatically generate Home Assistant triggers
- * 4. Detect edge triggers (rising/falling)
+ * 4. Detect edge triggers (rising/falling) including R_TRIG/F_TRIG
  * 5. Validate usage patterns and report diagnostics
  */
 
 import type {
   ProgramNode,
   VariableDeclaration,
-  AssignmentStatement,
   FunctionCall,
-  VariableRef,
-  Expression,
-  Literal,
 } from "../parser/ast";
 import type {
   TriggerConfig,
@@ -24,7 +20,7 @@ import type {
   AnalysisResult,
   AnalysisMetadata,
   Diagnostic,
-  EdgeTrigger,
+  DiagnosticSeverity,
 } from "./types";
 import { DiagnosticCodes } from "./types";
 import { walkAST, findVariableRefs } from "./ast-visitor";
@@ -34,10 +30,19 @@ import {
   generateFallingEdgeTrigger,
   shouldTrigger,
   isValidEntityId,
-  isBooleanEntity,
   parsePragmas,
   getPragmaValue,
+  hasPragma,
 } from "./trigger-generator";
+
+/**
+ * Detected edge trigger from R_TRIG/F_TRIG function block usage
+ */
+interface DetectedEdgeTrigger {
+  variableName: string;
+  edge: "rising" | "falling";
+  location?: { line: number; column: number };
+}
 
 /**
  * Main dependency analyzer class
@@ -50,6 +55,7 @@ class DependencyAnalyzer {
   private readVariables = new Set<string>();
   private writtenVariables = new Set<string>();
   private variableMap = new Map<string, VariableDeclaration>();
+  private detectedEdgeTriggers: DetectedEdgeTrigger[] = [];
 
   constructor(ast: ProgramNode) {
     this.ast = ast;
@@ -65,7 +71,7 @@ class DependencyAnalyzer {
     // Step 2: Extract entity dependencies from variable bindings
     this.extractDependencies();
 
-    // Step 3: Analyze variable usage (reads/writes)
+    // Step 3: Analyze variable usage (reads/writes) and detect R_TRIG/F_TRIG
     this.analyzeUsage();
 
     // Step 4: Generate triggers for INPUT variables
@@ -142,7 +148,7 @@ class DependencyAnalyzer {
       // Validate entity ID
       if (entityId && !isValidEntityId(entityId)) {
         this.addDiagnostic(
-          "error",
+          "Error",
           DiagnosticCodes.INVALID_ENTITY_ID,
           `Invalid entity ID format: ${entityId}`,
           dependency.location,
@@ -170,6 +176,7 @@ class DependencyAnalyzer {
 
   /**
    * Analyze variable usage patterns throughout the code
+   * Also detects R_TRIG/F_TRIG function block usage for edge triggers
    */
   private analyzeUsage(): void {
     walkAST(this.ast, {
@@ -192,33 +199,62 @@ class DependencyAnalyzer {
           }
         }
 
-        // Check for edge trigger pattern: IF NOT oldValue AND newValue THEN
-        this.handleEdgeTrigger(stmt);
+        // Track variable refs in assignment value
+        const refs = findVariableRefs(stmt.value, {
+          scope: "PROGRAM",
+          inCondition: false,
+          inLoop: false,
+          path: [],
+        });
+        for (const ref of refs) {
+          this.readVariables.add(ref.name);
+        }
       },
 
       onFunctionCall: (call) => {
-        // Some FBs might modify their inputs (IN_OUT parameters)
         const name = call.name.toUpperCase();
-        // Timer FBs (TON, TOF, TP) don't modify state, but TON_EDGE does
-        // We'll handle this in a more sophisticated way later
+
+        // Detect R_TRIG / F_TRIG function block usage
+        if (name === "R_TRIG" || name === "F_TRIG") {
+          this.handleEdgeTriggerFB(call, name === "R_TRIG" ? "rising" : "falling");
+        }
       },
     });
   }
 
-  private handleEdgeTrigger(stmt: AssignmentStatement): void {
-    // TODO: Detect pattern like "IF NOT prev AND curr THEN" for rising edge
-    // For now, we rely on pragmas
-    const refs = findVariableRefs(stmt.value, {
-      scope: "PROGRAM",
-      inCondition: false,
-      inLoop: false,
-      path: [],
-    });
-    for (const ref of refs) {
-      const dep = this.dependencies.find((d) => d.variableName === ref.name);
-      if (dep) {
-        // Mark as read
-        this.readVariables.add(ref.name);
+  /**
+   * Handle R_TRIG/F_TRIG function block detection
+   * When these FBs are used on input variables, automatically generate edge triggers
+   */
+  private handleEdgeTriggerFB(call: FunctionCall, edge: "rising" | "falling"): void {
+    // R_TRIG/F_TRIG typically take an input variable as first argument
+    // or are called as: myRTrig(CLK := inputVar)
+    if (call.arguments.length > 0) {
+      const refs = findVariableRefs(call.arguments[0].value, {
+        scope: "PROGRAM",
+        inCondition: false,
+        inLoop: false,
+        path: [],
+      });
+
+      for (const ref of refs) {
+        const dep = this.dependencies.find((d) => d.variableName === ref.name);
+        if (dep && dep.direction === "INPUT") {
+          // Record the detected edge trigger
+          this.detectedEdgeTriggers.push({
+            variableName: ref.name,
+            edge,
+            location: dep.location,
+          });
+
+          // Emit diagnostic
+          this.addDiagnostic(
+            "Info",
+            DiagnosticCodes.EDGE_TRIGGER_DETECTED,
+            `${edge === "rising" ? "R_TRIG" : "F_TRIG"} detected on '${ref.name}' - will generate ${edge} edge trigger`,
+            dep.location,
+          );
+        }
       }
     }
   }
@@ -238,6 +274,25 @@ class DependencyAnalyzer {
 
       // Check pragma for explicit trigger control
       const triggerDecision = shouldTrigger(varDecl.pragmas);
+      const parsedPragmas = parsePragmas(varDecl.pragmas);
+
+      // Emit info diagnostic for explicit pragmas
+      if (hasPragma(parsedPragmas, "trigger")) {
+        this.addDiagnostic(
+          "Info",
+          DiagnosticCodes.AUTO_TRIGGER,
+          `Variable '${dep.variableName}' explicitly marked as trigger`,
+          dep.location,
+        );
+      }
+      if (hasPragma(parsedPragmas, "no_trigger")) {
+        this.addDiagnostic(
+          "Info",
+          DiagnosticCodes.EXPLICIT_NO_TRIGGER,
+          `Variable '${dep.variableName}' explicitly excluded from triggers`,
+          dep.location,
+        );
+      }
 
       if (triggerDecision === false) {
         // Explicit no_trigger
@@ -248,7 +303,12 @@ class DependencyAnalyzer {
         continue;
       }
 
-      const trigger = this.createTrigger(dep, triggerDecision);
+      // Check if R_TRIG/F_TRIG was detected for this variable
+      const detectedEdge = this.detectedEdgeTriggers.find(
+        (e) => e.variableName === dep.variableName,
+      );
+
+      const trigger = this.createTrigger(dep, triggerDecision, detectedEdge?.edge);
       if (trigger) {
         this.triggers.push(trigger);
         dep.isTrigger = true;
@@ -263,7 +323,9 @@ class DependencyAnalyzer {
     const seen = new Set<string>();
     return triggers.filter((t) => {
       // Create a unique key based on platform, entity_id, from, to
-      const key = `${t.platform}:${t.entity_id}:${t.from || ""}:${t.to || ""}:${t.edge || ""}`;
+      const fromStr = Array.isArray(t.from) ? t.from.join(",") : t.from || "";
+      const toStr = Array.isArray(t.to) ? t.to.join(",") : t.to || "";
+      const key = `${t.platform}:${t.entity_id}:${fromStr}:${toStr}:${t.edge || ""}`;
       if (seen.has(key)) {
         return false;
       }
@@ -275,14 +337,20 @@ class DependencyAnalyzer {
   private createTrigger(
     dep: EntityDependency,
     triggerDecision: boolean | "rising" | "falling" | null,
+    detectedEdge?: "rising" | "falling",
   ): TriggerConfig | null {
     if (!dep.entityId) return null;
 
+    // Priority: pragma edge > detected edge (R_TRIG/F_TRIG) > default state trigger
+    const edge = triggerDecision === "rising" || triggerDecision === "falling"
+      ? triggerDecision
+      : detectedEdge;
+
     // Handle edge triggers
-    if (triggerDecision === "rising") {
+    if (edge === "rising") {
       return generateRisingEdgeTrigger(dep.entityId, dep.variableName);
     }
-    if (triggerDecision === "falling") {
+    if (edge === "falling") {
       return generateFallingEdgeTrigger(dep.entityId, dep.variableName);
     }
 
@@ -297,18 +365,20 @@ class DependencyAnalyzer {
     // Check if any triggers were generated
     if (this.triggers.length === 0) {
       this.addDiagnostic(
-        "warning",
+        "Warning",
         DiagnosticCodes.NO_TRIGGERS,
-        "No triggers detected. Program may not run automatically.",
+        "No triggers detected. Program will never execute automatically. " +
+          "Add {trigger} pragma to input variables or ensure inputs are read in code.",
       );
     }
 
     // Check for too many triggers
     if (this.triggers.length > 10) {
       this.addDiagnostic(
-        "warning",
+        "Info",
         DiagnosticCodes.MANY_TRIGGERS,
-        `Many triggers detected (${this.triggers.length}). Consider using fewer inputs or explicit {no_trigger} pragmas.`,
+        `Program triggers on ${this.triggers.length} entities. ` +
+          "Consider using {no_trigger} pragma on less important inputs.",
       );
     }
 
@@ -319,9 +389,9 @@ class DependencyAnalyzer {
         !this.readVariables.has(dep.variableName)
       ) {
         this.addDiagnostic(
-          "warning",
+          "Warning",
           DiagnosticCodes.UNUSED_INPUT,
-          `Input variable '${dep.variableName}' is never read.`,
+          `Input variable '${dep.variableName}' is declared but never read`,
           dep.location,
         );
       }
@@ -334,9 +404,25 @@ class DependencyAnalyzer {
         this.writtenVariables.has(dep.variableName)
       ) {
         this.addDiagnostic(
-          "warning",
+          "Warning",
           DiagnosticCodes.WRITE_TO_INPUT,
-          `Input variable '${dep.variableName}' should not be written to.`,
+          `Writing to input variable '${dep.variableName}' - this may not update the entity`,
+          dep.location,
+        );
+      }
+    }
+
+    // Check for reads from OUTPUT without writes
+    for (const dep of this.dependencies) {
+      if (
+        dep.direction === "OUTPUT" &&
+        this.readVariables.has(dep.variableName) &&
+        !this.writtenVariables.has(dep.variableName)
+      ) {
+        this.addDiagnostic(
+          "Warning",
+          DiagnosticCodes.READ_FROM_OUTPUT,
+          `Reading from output variable '${dep.variableName}' without writing - value may be stale`,
           dep.location,
         );
       }
@@ -350,20 +436,28 @@ class DependencyAnalyzer {
     const deps = this.dependencies;
     const programPragmas = parsePragmas(this.ast.pragmas);
 
+    // Check for {persistent} pragma on any variable
+    const hasPersistentVars = this.ast.variables.some((v) => {
+      const varPragmas = parsePragmas(v.pragmas);
+      return hasPragma(varPragmas, "persistent");
+    });
+
     return {
       programName: this.ast.name,
       inputCount: deps.filter((d) => d.direction === "INPUT").length,
       outputCount: deps.filter((d) => d.direction === "OUTPUT").length,
       triggerCount: this.triggers.length,
-      hasPersistentVars: deps.some((d) => d.direction === "OUTPUT"),
+      hasPersistentVars,
       hasTimers: this.hasTimerUsage(),
-      mode: getPragmaValue(programPragmas, "mode") as any,
-      throttle: getPragmaValue(programPragmas, "throttle")
-        ? parseInt(getPragmaValue(programPragmas, "throttle")!)
-        : undefined,
-      debounce: getPragmaValue(programPragmas, "debounce")
-        ? parseInt(getPragmaValue(programPragmas, "debounce")!)
-        : undefined,
+      mode: getPragmaValue(programPragmas, "mode") as
+        | "single"
+        | "restart"
+        | "queued"
+        | "parallel"
+        | undefined,
+      // Keep throttle/debounce as ST-style time literals (strings)
+      throttle: getPragmaValue(programPragmas, "throttle"),
+      debounce: getPragmaValue(programPragmas, "debounce"),
     };
   }
 
@@ -391,7 +485,7 @@ class DependencyAnalyzer {
    * Add a diagnostic message
    */
   private addDiagnostic(
-    severity: "error" | "warning" | "info",
+    severity: DiagnosticSeverity,
     code: string,
     message: string,
     location?: { line: number; column: number },

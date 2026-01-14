@@ -318,7 +318,8 @@ describe("Dependency Analyzer", () => {
       expect(result.metadata.inputCount).toBe(2);
       expect(result.metadata.outputCount).toBe(1);
       expect(result.metadata.mode).toBe("single");
-      expect(result.metadata.throttle).toBe(1000);
+      // Throttle stored as ST-style string value (per archived spec)
+      expect(result.metadata.throttle).toBe("1000");
     });
 
     it.skip("detects timer usage", () => {

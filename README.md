@@ -139,7 +139,7 @@ Detailed documentation is available in the [docs](./docs) folder:
 ### Prerequisites
 - Node.js 20+
 - npm 10+
-- Python 3.11+
+- Python 3.12+ (matches CI configuration)
 - Home Assistant development environment (optional)
 
 ### Setup
@@ -338,6 +338,12 @@ Contributions are welcome! Please:
 3. Follow the existing code style (TypeScript + Lit)
 4. Add tests for new features
 5. Update documentation as needed
+
+### Language Policy
+
+The **codebase, tests, UI strings, and README** are maintained in English. Some older architecture
+and planning documents under `docs/` intentionally remain in German for historical reasons and
+examples (see `docs/language_policy.md` for details and grep commands to audit new changes).
 
 ### Development Workflow
 
