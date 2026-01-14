@@ -110,18 +110,28 @@ export class STParser extends CstParser {
   private variableDeclaration = this.RULE("variableDeclaration", () => {
     this.MANY(() => this.SUBRULE(this.pragma));
     this.CONSUME(Identifier, { LABEL: "varName" });
+
+    // Support both: "name AT %addr : type" and "name : type AT %addr"
     this.OPTION(() => {
-      this.CONSUME(Colon);
-      this.SUBRULE(this.typeSpec);
-    });
-    this.OPTION1(() => {
-      this.CONSUME(Assign);
-      this.SUBRULE(this.expression);
-    });
-    this.OPTION2(() => {
       this.CONSUME(At);
       this.CONSUME(IoAddress);
     });
+
+    this.OPTION1(() => {
+      this.CONSUME(Colon);
+      this.SUBRULE(this.typeSpec);
+    });
+
+    this.OPTION2(() => {
+      this.CONSUME(Assign);
+      this.SUBRULE(this.expression);
+    });
+
+    this.OPTION3(() => {
+      this.CONSUME1(At);
+      this.CONSUME1(IoAddress);
+    });
+
     this.CONSUME(Semicolon);
   });
 

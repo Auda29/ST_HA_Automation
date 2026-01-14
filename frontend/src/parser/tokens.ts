@@ -199,7 +199,7 @@ export const StringLiteral = createToken({
 
 export const IoAddress = createToken({
   name: "IoAddress",
-  pattern: /%[IQM][XBWDLxbwdl]?[\d.]+/i,
+  pattern: /%[IQM][XBWDLxbwdl]?(?:[\d.]+|\*)/i,
 });
 
 // ============================================================================

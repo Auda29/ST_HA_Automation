@@ -129,6 +129,7 @@ Detailed documentation is available in the [docs](./docs) folder:
 - [Repository Setup](./docs/archive/01_Repository_Setup.md) - Initial project structure
 - [CodeMirror Integration](./docs/archive/02_CodeMirror_Spike.md) - Editor implementation
 - [Parser Implementation](./docs/archive/03_Parser_Spike.md) - Chevrotain parser
+- [Dependency Analyzer](./docs/archive/04_Dependency_Analyzer.md) - Automatic trigger generation and entity dependency analysis
 
 ### Active Documentation
 - [Project Overview](./docs/00_Project_Overview.md) - High-level architecture and design decisions
@@ -198,7 +199,12 @@ ST_HA_Automation/
 │   │   │   ├── visitor.ts       # CST → AST
 │   │   │   ├── ast.ts           # AST types
 │   │   │   └── index.ts         # Public API
-│   │   ├── analyzer/            # (TODO) Semantic analysis
+│   │   ├── analyzer/            # ✅ Dependency analyzer
+│   │   │   ├── types.ts         # Analysis types
+│   │   │   ├── ast-visitor.ts   # AST traversal
+│   │   │   ├── trigger-generator.ts  # HA trigger generation
+│   │   │   ├── dependency-analyzer.ts  # Main analyzer
+│   │   │   └── index.ts         # Public API
 │   │   ├── transpiler/          # (TODO) ST → HA YAML
 │   │   ├── deploy/              # (TODO) Deployment
 │   │   └── panel/               # Main UI panel
