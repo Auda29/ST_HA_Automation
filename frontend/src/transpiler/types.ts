@@ -237,16 +237,9 @@ export interface TranspilerResult {
   diagnostics: TranspilerDiagnostic[];
 }
 
-export interface SourceMap {
-  entries: SourceMapEntry[];
-}
-
-export interface SourceMapEntry {
-  yamlPath: string;
-  stFile: string;
-  stLine: number;
-  stColumn?: number;
-}
+// SourceMap types are now imported from sourcemap module
+import type { SourceMap } from '../sourcemap/source-map-types';
+export type { SourceMap };
 
 export interface TranspilerDiagnostic {
   severity: 'Error' | 'Warning' | 'Info';

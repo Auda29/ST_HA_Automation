@@ -15,9 +15,9 @@ import type {
   TranspilerContext,
   VariableInfo,
   EntityInfo,
-  SourceMap,
   TranspilerDiagnostic,
   HATrigger,
+  HAAction,
 } from "./types";
 import { analyzeDependencies } from "../analyzer/dependency-analyzer";
 import { analyzeStorage } from "../analyzer/storage-analyzer";
@@ -26,6 +26,7 @@ import { parsePragmas } from "../analyzer/trigger-generator";
 import { TimerTranspiler, TimerOutputResolver } from "./timer-transpiler";
 import { walkAST } from "../analyzer/ast-visitor";
 import type { TimerInstance, TimerInputs } from "./timer-types";
+import { SourceMapBuilder } from "../sourcemap/source-map";
 
 export class Transpiler {
   private ast: ProgramNode;
@@ -33,16 +34,27 @@ export class Transpiler {
   private depAnalysis!: AnalysisResult;
   private storageAnalysis!: StorageAnalysisResult;
   private context!: TranspilerContext;
-  private sourceMap: SourceMap = { entries: [] };
+  private sourceMapBuilder?: SourceMapBuilder;
   private diagnostics: TranspilerDiagnostic[] = [];
   private timerTranspiler?: TimerTranspiler;
   private timerResolver?: TimerOutputResolver;
   private timerHelpers: HelperConfig[] = [];
   private additionalAutomations: HAAutomation[] = [];
+  private timerMainActions: HAAction[] = [];
 
-  constructor(ast: ProgramNode, projectName: string = 'default') {
+  constructor(ast: ProgramNode, projectName: string = 'default', sourceContent?: string) {
     this.ast = ast;
     this.projectName = projectName;
+    
+    // Initialize source map builder if source content is provided
+    if (sourceContent) {
+      this.sourceMapBuilder = new SourceMapBuilder({
+        project: projectName,
+        program: ast.name,
+        sourceFile: `${ast.name}.st`,
+        sourceContent: sourceContent, // Explicitly use parameter to avoid TS6133
+      });
+    }
   }
 
   /**
@@ -86,12 +98,24 @@ export class Transpiler {
     // Phase 6: Collect helpers (storage + timers)
     const helpers = [...this.storageAnalysis.helpers, ...this.timerHelpers];
 
+    // Phase 7: Build source map
+    const sourceMap = this.sourceMapBuilder
+      ? this.sourceMapBuilder.build(automation.id, script.alias.replace(/\[ST\]\s*/, '').toLowerCase().replace(/[^a-z0-9_]/g, '_'))
+      : {
+          version: 1 as const,
+          project: this.projectName,
+          program: this.ast.name,
+          automationId: automation.id,
+          generatedAt: new Date().toISOString(),
+          mappings: {},
+        };
+
     return {
       automation,
       script,
       helpers,
       additionalAutomations: this.additionalAutomations,
-      sourceMap: this.sourceMap,
+      sourceMap,
       diagnostics: this.diagnostics,
     };
   }
@@ -191,6 +215,7 @@ export class Transpiler {
 
         this.timerHelpers.push(...result.helpers);
         this.additionalAutomations.push(result.finishedAutomation);
+        this.timerMainActions.push(...result.mainActions);
         this.timerResolver!.registerTimer(instance.name, result.outputMappings);
       },
     });
@@ -334,7 +359,7 @@ export class Transpiler {
     const mode =
       (pragmas.find((p) => p.name === "mode")?.value as string) || "restart";
 
-    const actionGenerator = new ActionGenerator(this.context, this.timerResolver);
+    const actionGenerator = new ActionGenerator(this.context, this.timerResolver, this.sourceMapBuilder);
 
     const script: HAScript = {
       alias: `[ST] ${this.ast.name} Logic`,
@@ -349,8 +374,36 @@ export class Transpiler {
       script.variables = initVars;
     }
 
-    // Generate actions from body
-    script.sequence = actionGenerator.generateActions(this.ast.body);
+    // Generate actions from body and prepend timer main actions
+    // Set up source map path context for script sequence
+    if (this.sourceMapBuilder) {
+      this.sourceMapBuilder.pushPath('sequence');
+    }
+    const bodyActions = actionGenerator.generateActions(this.ast.body);
+    if (this.sourceMapBuilder) {
+      this.sourceMapBuilder.popPath();
+    }
+    script.sequence = [...this.timerMainActions, ...bodyActions];
+
+    // Embed source map in script variables if available
+    // Note: Embedded source map is stored as JSON string to match Record<string, string> type
+    if (this.sourceMapBuilder) {
+      const embedded = this.sourceMapBuilder.buildEmbedded();
+      if (script.variables) {
+        script.variables = {
+          ...script.variables,
+          _st_source_map: JSON.stringify(embedded._st_source_map),
+          _st_source_file: embedded._st_source_file,
+          _st_source_hash: embedded._st_source_hash,
+        };
+      } else {
+        script.variables = {
+          _st_source_map: JSON.stringify(embedded._st_source_map),
+          _st_source_file: embedded._st_source_file,
+          _st_source_hash: embedded._st_source_hash,
+        };
+      }
+    }
 
     return script;
   }
@@ -392,7 +445,7 @@ export class Transpiler {
 /**
  * Transpile an ST program to HA automation and script
  */
-export function transpile(ast: ProgramNode, projectName?: string): TranspilerResult {
-  const transpiler = new Transpiler(ast, projectName);
+export function transpile(ast: ProgramNode, projectName?: string, sourceContent?: string): TranspilerResult {
+  const transpiler = new Transpiler(ast, projectName, sourceContent);
   return transpiler.transpile();
 }

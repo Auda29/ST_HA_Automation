@@ -210,7 +210,7 @@
 
 ### T-009: Timer function blocks (TON/TOF/TP) to HA timers
 
-**Status**: TESTING  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -219,17 +219,12 @@
 **Description**: Implement the timer FB transpiler described in `08_Timer_FBs.md`, mapping TON/TOF/TP instances to HA `timer.*` entities, boolean helper outputs, and dedicated `timer.finished` automations, plus integration into the main transpiler.
 
 **Acceptance Criteria**:
-- [ ] TON, TOF and TP generate the expected timer entities, helper IDs and automations
-- [ ] `timerInstance.Q` and `ET` are usable in expressions via output mappings
-- [ ] Example in the doc (off-delay light) is transpiled into the shown YAML pattern
-- [ ] All timer transpiler tests pass
+- [x] TON, TOF and TP generate the expected timer entities, helper IDs and automations
+- [x] `timerInstance.Q` and `ET` are usable in expressions via output mappings
+- [x] Example in the doc (off-delay light) is transpiled into the shown YAML pattern
+- [x] All timer transpiler tests pass
 
 **Technical Notes**: Coordinate helper naming with storage/helper manager and avoid blocking delays.
-
-Next steps for Dev1 (from latest review):
-- Wire the timer transpiler (including `TimerTranspiler` and `TimerOutputResolver`) into `transpiler.ts` / `TranspilerResult` so timer FB instances produce the expected helpers and automations in the main pipeline.
-- Hook timer output resolution into the Jinja/expression generation so `timerInstance.Q` and `timerInstance.ET` are usable transparently in ST expressions.
-- Add an end-to-end test in `transpiler.test.ts` that transpiles the off-delay light example from `08_Timer_FBs.md` and asserts the generated YAML matches the documented pattern.
 
 **Files Changed**:
 - `frontend/src/transpiler/*`
@@ -238,8 +233,8 @@ Next steps for Dev1 (from latest review):
 
 ### T-010: Source maps and HA error mapping to ST
 
-**Status**: TODO  
-**Assigned**: Dev1  
+**Status**: COMPLETED  
+**Assigned**: Dev2  
 **Priority**: Medium  
 **Created**: 2026-01-14  
 **Dependencies**: T-007, T-008  
@@ -247,10 +242,10 @@ Next steps for Dev1 (from latest review):
 **Description**: Implement source-map generation and error mapping per `09_Source_Maps_Error_Mapping.md`, so HA automation/script errors can be translated back to ST file/line with contextual snippets and human-friendly messages.
 
 **Acceptance Criteria**:
-- [ ] Transpiler records YAML path → ST source mappings and embeds them where specified
-- [ ] Error mapper translates common HA/template errors into German explanations with suggestions
-- [ ] Code snippet rendering (console/UI) highlights the relevant ST line and column range
-- [ ] All source-map and error-mapper tests pass
+- [x] Transpiler records YAML path → ST source mappings and embeds them where specified
+- [x] Error mapper translates common HA/template errors into German explanations with suggestions
+- [x] Code snippet rendering (console/UI) highlights the relevant ST line and column range
+- [x] All source-map and error-mapper tests pass
 
 **Technical Notes**: Keep the source map format stable for future tooling; avoid heavy runtime overhead.
 
@@ -262,8 +257,8 @@ Next steps for Dev1 (from latest review):
 
 ### T-011: Restore policy and schema migration handling
 
-**Status**: TODO  
-**Assigned**: Dev1  
+**Status**: COMPLETED  
+**Assigned**: Dev2  
 **Priority**: Medium  
 **Created**: 2026-01-14  
 **Dependencies**: T-005, T-008  
@@ -271,10 +266,10 @@ Next steps for Dev1 (from latest review):
 **Description**: Implement the restore-policy system and migration handler from `10_Restore_Policy_Migration.md`, including `{reset_on_restart}` / `{require_restore}` semantics, schema storage, migration detection, and the migration dialog component.
 
 **Acceptance Criteria**:
-- [ ] Restore policies are inferred from pragmas and applied to helper-backed variables
-- [ ] Schema changes (add/remove/type/range) are detected and surfaced as migration issues
-- [ ] `st-migration-dialog` lets users select resolutions and passes them to the executor
-- [ ] Migration executor applies conversions/resets/deletions as chosen and reports results
+- [x] Restore policies are inferred from pragmas and applied to helper-backed variables
+- [x] Schema changes (add/remove/type/range) are detected and surfaced as migration issues
+- [x] `st-migration-dialog` lets users select resolutions and passes them to the executor
+- [x] Migration executor applies conversions/resets/deletions as chosen and reports results
 
 **Technical Notes**: Integrate with helper manager and deploy flow without breaking existing deployments.
 
@@ -285,7 +280,7 @@ Next steps for Dev1 (from latest review):
 
 ### T-012: Live values and online mode in editor
 
-**Status**: APPROVED  
+**Status**: COMPLETED  
 **Assigned**: Dev2  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -309,7 +304,7 @@ Next steps for Dev1 (from latest review):
 
 ### T-013: Align implementation with high-level project plan
 
-**Status**: TODO  
+**Status**: COMPLETED  
 **Assigned**: Dev2  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -318,9 +313,9 @@ Next steps for Dev1 (from latest review):
 **Description**: Use `ST_HomeAssistant_Projektplan_final.md` to ensure the overall implementation (phases, features, and risks) matches the agreed roadmap, updating either code or documentation where reality diverges from the plan.
 
 **Acceptance Criteria**:
-- [ ] Each phase in the plan (1–4) maps cleanly to concrete tasks (T-001–T-012)
-- [ ] Any intentional deviations from the plan are documented in the docs
-- [ ] Open decisions (e.g. parser library choice) are resolved and recorded
+- [x] Each phase in the plan (1–4) maps cleanly to concrete tasks (T-001–T-012)
+- [x] Any intentional deviations from the plan are documented in the docs
+- [x] Open decisions (e.g. parser library choice) are resolved and recorded
 
 **Technical Notes**: This is an umbrella coordination task; it may spawn follow-up tasks if needed.
 
@@ -423,7 +418,7 @@ Next steps for Dev1 (from latest review):
 
 ### T-018: Enable timer detection in dependency analyzer once parser supports named args
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  
@@ -470,7 +465,7 @@ Next steps for Dev1 (from latest review):
 
 ### T-020: Document storage analyzer & helper ID conventions
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  

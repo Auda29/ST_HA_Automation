@@ -371,6 +371,68 @@ describe('Transpiler', () => {
         ),
       );
       expect(finished).toBeDefined();
+
+      // Script should contain timer logic (choose block) and light assignment
+      const chooseAction = result.script.sequence.find(
+        (a) => 'choose' in a,
+      ) as any;
+      expect(chooseAction).toBeDefined();
+
+      // First TOF branch: IN = TRUE → cancel timer + turn Q on
+      const firstBranch = chooseAction.choose[0];
+      expect(firstBranch.conditions[0].value_template).toContain(
+        "states('binary_sensor.motion') == 'on'",
+      );
+      expect(firstBranch.sequence).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ service: 'timer.cancel' }),
+          expect.objectContaining({
+            service: 'input_boolean.turn_on',
+          }),
+        ]),
+      );
+
+      // Second TOF branch: IN = FALSE, Q on, timer idle → start timer
+      const secondBranch = chooseAction.choose[1];
+      const conds = secondBranch.conditions;
+      expect(
+        conds.some(
+          (c: any) =>
+            c.condition === 'template' &&
+            String(c.value_template).includes("!= 'on'"),
+        ),
+      ).toBe(true);
+      expect(
+        conds.some(
+          (c: any) =>
+            c.condition === 'state' &&
+            c.entity_id ===
+              'input_boolean.st_default_light_control_offdelay_q' &&
+            c.state === 'on',
+        ),
+      ).toBe(true);
+      expect(
+        conds.some(
+          (c: any) =>
+            c.condition === 'state' &&
+            c.entity_id ===
+              'timer.st_default_light_control_offdelay' &&
+            c.state === 'idle',
+        ),
+      ).toBe(true);
+      expect(secondBranch.sequence).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ service: 'timer.start' }),
+        ]),
+      );
+
+      // Light assignment should use the Q helper mapping in its Jinja template
+      const lightAction = result.script.sequence.find(
+        (a) => 'service' in a && (a as any).service.includes('light.turn'),
+      ) as any;
+      expect(lightAction).toBeDefined();
+      expect(String(lightAction.service)).toContain('light.turn');
+      expect(lightAction.target.entity_id).toBe('light.kitchen');
     });
   });
 });

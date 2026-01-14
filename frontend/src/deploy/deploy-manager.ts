@@ -13,16 +13,25 @@ import type {
 import { HAApiClient } from './ha-api';
 import { HelperManager } from './helper-manager';
 import { BackupManager } from './backup-manager';
+import {
+  SchemaStorage,
+  MigrationDetector,
+} from '../restore/migration-handler';
+import type { ProgramSchema, VariableSchema, MigrationPlan } from '../restore/migration-types';
 
 export class DeployManager {
   private readonly api: HAApiClient;
   private readonly helperManager: HelperManager;
   private readonly backupManager: BackupManager;
+  private readonly schemaStorage: SchemaStorage;
+  private readonly migrationDetector: MigrationDetector;
 
   constructor(api: HAApiClient) {
     this.api = api;
     this.helperManager = new HelperManager(api);
     this.backupManager = new BackupManager(api);
+    this.schemaStorage = new SchemaStorage();
+    this.migrationDetector = new MigrationDetector();
   }
 
   async deploy(
@@ -223,6 +232,49 @@ export class DeployManager {
     }
 
     return operations;
+  }
+
+  /**
+   * Build a ProgramSchema from current helper configuration.
+   * This does not change deploy behaviour and can be used by UI code
+   * to drive migration flows.
+   */
+  public buildProgramSchema(result: TranspilerResult): ProgramSchema {
+    const programName = result.automation.alias.replace('[ST] ', '');
+    const projectName = 'default';
+
+    const variables: VariableSchema[] = result.helpers.map((helper) => ({
+      name: helper.id,
+      dataType: helper.type,
+      helperId: helper.id,
+      helperType: helper.type === 'counter' ? 'input_number' : (helper.type as VariableSchema['helperType']),
+      initialValue: helper.initial,
+      restorePolicy: 0 as never, // restore policy is assigned at analysis time; not wired here yet
+      min: helper.min,
+      max: helper.max,
+      step: helper.step,
+    }));
+
+    return {
+      programName,
+      projectName,
+      variables,
+      version: '1.0',
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Create a migration plan based on previous and current schemas.
+   * Intended to be called by higher-level UI logic before executing a deploy.
+   */
+  public createMigrationPlan(result: TranspilerResult): MigrationPlan {
+    const schema = this.buildProgramSchema(result);
+    const programId = result.automation.id;
+    const previous = this.schemaStorage.load(programId);
+    const plan = this.migrationDetector.detectIssues(previous, schema);
+    this.schemaStorage.save(programId, schema);
+    return plan;
   }
 
   private generateId(): string {

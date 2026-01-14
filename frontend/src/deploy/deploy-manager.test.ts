@@ -87,7 +87,14 @@ function makeTranspilerResult(): TranspilerResult {
       sequence: [],
     },
     helpers: [],
-    sourceMap: { entries: [] },
+    sourceMap: {
+      version: 1,
+      project: 'test',
+      program: 'prog',
+      automationId: 'st_test_prog',
+      generatedAt: new Date().toISOString(),
+      mappings: {},
+    },
     diagnostics: [],
   };
 }

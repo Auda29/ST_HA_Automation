@@ -14,11 +14,11 @@
 |------------|-------------|------------|--------|
 | Editor | CodeMirror 6 | Leichtgewichtig (~300KB), modular, gut erweiterbar | ✅ Entschieden |
 | Frontend | TypeScript + Lit | HA-Panel Integration | ✅ Entschieden |
-| Parser | **Chevrotain oder Nearley.js** | Moderner Parser-Generator für JS/TS | ⚠️ **Offen** |
+| Parser | Chevrotain | Moderner Parser-Generator für JS/TS, bessere Error-Recovery & Debugging (siehe `03_Parser_Spike.md`, T-003, T-016) | ✅ Entschieden |
 | Backend | Python (HA Integration) | Native HA-Kompatibilität | ✅ Entschieden |
 | Kommunikation | HA WebSocket API | Entity-Zugriff, Live-Daten | ✅ Entschieden |
 
-### ⚠️ Offene Entscheidung: Parser-Bibliothek
+### Entscheidung: Parser-Bibliothek (Chevrotain)
 
 | Kriterium | Chevrotain | Nearley.js |
 |-----------|------------|------------|
@@ -29,8 +29,8 @@
 | **Debugging** | Gute Stack Traces | Schwieriger |
 | **Bundle Size** | ~100KB | ~50KB |
 
-**Empfehlung:** Chevrotain für bessere Error-Recovery und Debugging.
-**Entscheidung:** Im Parser-Spike evaluieren, dann festlegen.
+**Empfehlung (historisch):** Chevrotain für bessere Error-Recovery und Debugging.
+**Entscheidung (aktuell):** Chevrotain wurde im Parser-Spike evaluiert und als Parser-Bibliothek festgelegt (umgesetzt in T-003, dokumentiert in T-016).
 
 ---
 
@@ -882,6 +882,48 @@ UI zeigt Migration-Dialog mit Optionen:
 │  • Dokumentation und Beispiele                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Phasen ↔ Aufgaben (T-001–T-012)
+
+Diese Zuordnung beschreibt, wie die im Plan definierten Phasen 1–4 durch die konkreten Aufgaben T-001–T-012 abgedeckt sind:
+
+- **Phase 1: Foundation**
+  - Projekt-Setup (HACS-Struktur, Build-Pipeline) → **T-001**
+  - CodeMirror 6 Integration mit ST Syntax-Highlighting → **T-002**
+  - Basis-Parser (Lexer + AST) → **T-003**
+  - Einfache Transpilation (IF/ELSE → `choose`) + defensive Jinja → **T-007**
+  - Dependency Analyzer (automatische Trigger-Generierung) → **T-004**
+  - Konsolidierung mit Archiv-Specs → **T-006**
+
+- **Phase 2: Core Features**
+  - Vollständiger Parser (CASE, FOR, WHILE, Operatoren) → **T-003**, **T-016**
+  - Built-in Funktionen mit Null-Safety, Typkonvertierungen → **T-007**
+  - R_TRIG / F_TRIG Umsetzung → **T-004**, **T-007**
+  - Loop Safety Guards → **T-007**
+  - Golden Master Test Suite für Built-ins → **T-007**
+  - Entity-Browser und Drag & Drop AT-Bindings → **noch nicht vollständig umgesetzt, vorgesehene UI/Integration-Aufgabe außerhalb T-001–T-012 (Backlog)** 
+
+- **Phase 3: FB & Projekt-Struktur**
+  - Storage Analyzer (Persistenz-Erkennung) → **T-005**
+  - Helper Manager mit Sync & Cleanup → **T-008**, **T-020**
+  - Hybrid-Architektur (Trigger-Automation + Logic-Script) → **T-007**
+  - Mode-Strategie (default: `restart`) → **T-007**
+  - Throttle/Debounce Generator → **T-007**
+  - Projekt-Explorer / Multi-File-Struktur → **teilweise durch bestehende Panel/Editor-Struktur abgedeckt, UI-spezifische Erweiterungen verbleiben im Backlog**
+
+- **Phase 4: Polish & Advanced**
+  - Timer-FBs (TON, TOF, TP) → **T-009**
+  - Source Maps für Error-Mapping → **T-010**
+  - Error Translation (HA-Fehler → ST-Kontext) → **T-010**
+  - Restore-Policy System (`{reset_on_restart}`, `{require_restore}`) → **T-011**
+  - Migration-Handler für Schema-Änderungen → **T-011**
+  - Transactional Deploy + Backup-Manager → **T-008**
+  - Live-Werte im Editor (Online-Modus) → **T-012**
+  - Dokumentation und Beispiele → verteilt über **T-006**, **T-015**, **T-019**, **T-020**
+
+**Abweichungen vom ursprünglichen Plan:**
+- UI-spezifische Features wie der **Entity-Browser mit Drag & Drop** sind im Projektplan weiterhin als Ziel beschrieben, werden aber bewusst **nicht** durch T-001–T-012 abgedeckt und verbleiben im Backlog.
+- Mehrere Spezifikations-Themen (z.B. erweiterte Analyzer/Transpiler-APIs) wurden in der Praxis über zusätzliche Dokumentations-Tasks (**T-006, T-015, T-019, T-020**) gelöst und sind damit explizit als Design-Evolution gegenüber den frühen Archiv-Specs dokumentiert.
 
 ---
 
@@ -2003,7 +2045,7 @@ class MigrationHandler {
 | Parser-Komplexität | 🟡 Mittel | Iterativ erweitern, mit Minimum starten |
 | **YAML-Datei-Manipulation** | 🟢 Gelöst | **NUR HA Storage API verwenden** |
 | **Throttle-Helper leer** | 🟢 Gelöst | **Fallback in Template + Init bei Deploy** |
-| **Parser-Wahl** | 🟡 Offen | **Im Spike evaluieren (Chevrotain vs Nearley)** |
+| **Parser-Wahl** | 🟢 Gelöst | Chevrotain gewählt (siehe `03_Parser_Spike.md`, T-003, T-016) |
 
 ---
 

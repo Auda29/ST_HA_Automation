@@ -27,23 +27,37 @@ import type {
 } from "./types";
 import { JinjaGenerator } from "./jinja-generator";
 import type { TimerOutputResolver } from "./timer-transpiler";
+import type { SourceMapBuilder } from "../sourcemap/source-map";
 
 const MAX_LOOP_ITERATIONS = 1000;
 
 export class ActionGenerator {
   private context: TranspilerContext;
   private jinja: JinjaGenerator;
+  private sourceMap?: SourceMapBuilder;
 
-  constructor(context: TranspilerContext, timerResolver?: TimerOutputResolver) {
+  constructor(context: TranspilerContext, timerResolver?: TimerOutputResolver, sourceMap?: SourceMapBuilder) {
     this.context = context;
     this.jinja = new JinjaGenerator(context, timerResolver);
+    this.sourceMap = sourceMap;
   }
 
   /**
    * Generate HA actions from ST statements
    */
   generateActions(statements: Statement[]): HAAction[] {
-    return statements.map(stmt => this.generateAction(stmt)).flat();
+    const actions: HAAction[] = [];
+    statements.forEach((stmt, index) => {
+      if (this.sourceMap) {
+        this.sourceMap.pushPath(String(index));
+      }
+      const stmtActions = this.generateAction(stmt);
+      actions.push(...stmtActions);
+      if (this.sourceMap) {
+        this.sourceMap.popPath();
+      }
+    });
+    return actions;
   }
 
   /**
@@ -89,6 +103,11 @@ export class ActionGenerator {
   // ==========================================================================
 
   private generateAssignment(stmt: AssignmentStatement): HAAction[] {
+    // Record source map for assignment
+    if (this.sourceMap && stmt.location) {
+      this.sourceMap.recordNode(stmt, 'Assignment');
+    }
+
     const targetName = typeof stmt.target === 'string' 
       ? stmt.target 
       : this.getTargetName(stmt.target);
@@ -225,6 +244,11 @@ export class ActionGenerator {
   // ==========================================================================
 
   private generateIf(stmt: IfStatement): HAChooseAction {
+    // Record source map for IF statement
+    if (this.sourceMap && stmt.location) {
+      this.sourceMap.recordNode(stmt, 'IF statement');
+    }
+
     const options: HAChooseAction['choose'] = [];
 
     // Main IF branch
@@ -252,6 +276,11 @@ export class ActionGenerator {
   }
 
   private generateCase(stmt: CaseStatement): HAChooseAction {
+    // Record source map for CASE statement
+    if (this.sourceMap && stmt.location) {
+      this.sourceMap.recordNode(stmt, 'CASE statement');
+    }
+
     const selectorExpr = this.jinja.generateExpression(stmt.selector);
     const options: HAChooseAction['choose'] = [];
 
@@ -286,6 +315,11 @@ export class ActionGenerator {
   }
 
   private generateFor(stmt: ForStatement): HARepeatAction {
+    // Record source map for FOR statement
+    if (this.sourceMap && stmt.location) {
+      this.sourceMap.recordNode(stmt, 'FOR statement');
+    }
+
     // Calculate iteration count
     const fromExpr = this.jinja.generateExpression(stmt.from);
     const toExpr = this.jinja.generateExpression(stmt.to);
@@ -320,6 +354,11 @@ export class ActionGenerator {
   }
 
   private generateWhile(stmt: WhileStatement): HARepeatAction {
+    // Record source map for WHILE statement
+    if (this.sourceMap && stmt.location) {
+      this.sourceMap.recordNode(stmt, 'WHILE statement');
+    }
+
     // Add safety counter to prevent infinite loops
     const safetyVar = `_while_safety_${this.context.safetyCounters++}`;
 
@@ -350,6 +389,11 @@ export class ActionGenerator {
   }
 
   private generateRepeat(stmt: RepeatStatement): HARepeatAction {
+    // Record source map for REPEAT statement
+    if (this.sourceMap && stmt.location) {
+      this.sourceMap.recordNode(stmt, 'REPEAT statement');
+    }
+
     // Add safety counter
     const safetyVar = `_repeat_safety_${this.context.safetyCounters++}`;
 
@@ -400,8 +444,10 @@ export class ActionGenerator {
       case 'TON':
       case 'TOF':
       case 'TP':
-        // Timer FBs need special handling (→ Phase 4)
-        return this.generateTimerFBCall(stmt.call);
+        // Timer FB side effects (timer.start/cancel, helper writes) are handled
+        // globally by the main Transpiler's timer processing. The call itself
+        // does not emit additional actions here.
+        return [];
 
       default:
         // Custom function call - might be a script call
@@ -410,14 +456,6 @@ export class ActionGenerator {
           data: this.buildFunctionCallData(stmt.call),
         }];
     }
-  }
-
-  private generateTimerFBCall(call: FunctionCall): HAAction[] {
-    // Placeholder - detailed implementation in Phase 4
-    return [{
-      service: 'system_log.write',
-      data: { message: `Timer FB ${call.name} not yet implemented` },
-    }];
   }
 
   private buildFunctionCallData(call: FunctionCall): Record<string, unknown> {
