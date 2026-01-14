@@ -5,10 +5,10 @@ This document provides a comprehensive testing checklist for the st-editor compo
 ## Core Editor Functionality
 
 ### Basic Editing
-- [ ] Type code and verify it appears correctly
-- [ ] Undo (Ctrl+Z)
-- [ ] Redo (Ctrl+Y)
-- [ ] Copy/Paste operations
+- [x] Type code and verify it appears correctly
+- [x] Undo (Ctrl+Z)
+- [x] Redo (Ctrl+Y)
+- [x] Copy/Paste operations  - Works partially the copy/paste works but the highlighting of the marked code doesnt work
 - [ ] Multi-cursor editing (Ctrl+Click)
 
 ### Line Features

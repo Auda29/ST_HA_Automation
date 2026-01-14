@@ -74,6 +74,16 @@ export class STEditor extends LitElement {
     #editor-container .cm-scroller {
       overflow: auto;
     }
+    /* Ensure selection highlighting is visible */
+    #editor-container .cm-selectionBackground {
+      background-color: #264f78 !important;
+    }
+    #editor-container .cm-focused .cm-selectionBackground {
+      background-color: #264f78 !important;
+    }
+    #editor-container .cm-selectionLayer {
+      z-index: 1;
+    }
   `;
 
   constructor() {
