@@ -218,6 +218,12 @@ export class STEditor extends LitElement {
         }
       },
     });
+
+    // Stop keyboard events from propagating to Home Assistant's global handlers
+    // HA uses shortcuts like 'a' for assistant, 'm' for menu, etc.
+    container.addEventListener("keydown", (e) => e.stopPropagation());
+    container.addEventListener("keyup", (e) => e.stopPropagation());
+    container.addEventListener("keypress", (e) => e.stopPropagation());
   }
 
   getCode(): string {

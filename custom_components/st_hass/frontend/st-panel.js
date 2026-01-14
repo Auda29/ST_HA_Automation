@@ -17379,7 +17379,7 @@ let Qn = class extends cn {
           })
         );
       }
-    });
+    }), e.addEventListener("keydown", (s) => s.stopPropagation()), e.addEventListener("keyup", (s) => s.stopPropagation()), e.addEventListener("keypress", (s) => s.stopPropagation());
   }
   getCode() {
     var e;
