@@ -2,8 +2,9 @@ node_modules/
 __pycache__/
 *.py[cod]
 dist/
-custom_components/st_hass/frontend/*.js
-custom_components/st_hass/frontend/*.map
+# Build output for frontend is now tracked for HACS distribution
+# custom_components/st_hass/frontend/*.js
+# custom_components/st_hass/frontend/*.map
 .idea/
 .vscode/
 *.swp
