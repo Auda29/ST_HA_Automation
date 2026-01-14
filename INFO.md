@@ -1,8 +1,11 @@
 # ST for Home Assistant
 
-**Current Version: 0.1.6.2**
+**Current Version: 0.1.6.3**
 
 ## Recent Changes
+
+### 0.1.6.3
+- Made selection highlighting semi-transparent so text remains visible
 
 ### 0.1.6.2
 - Improved selection highlighting CSS with multiple fallback selectors

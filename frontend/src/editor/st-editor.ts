@@ -74,27 +74,22 @@ export class STEditor extends LitElement {
     #editor-container .cm-scroller {
       overflow: auto;
     }
-    /* Ensure selection highlighting is visible */
+    /* Ensure selection highlighting is visible but not covering text */
     #editor-container .cm-selectionBackground {
-      background-color: #264f78 !important;
-      opacity: 1 !important;
+      background-color: rgba(38, 79, 120, 0.5) !important;
     }
     #editor-container .cm-focused .cm-selectionBackground {
-      background-color: #264f78 !important;
-      opacity: 1 !important;
-    }
-    #editor-container .cm-selectionLayer {
-      z-index: 2 !important;
+      background-color: rgba(38, 79, 120, 0.5) !important;
     }
     #editor-container .cm-selectionLayer .cm-selectionBackground {
-      background-color: #264f78 !important;
+      background-color: rgba(38, 79, 120, 0.5) !important;
     }
     /* Native selection as fallback */
     #editor-container .cm-content ::selection {
-      background-color: #264f78 !important;
+      background-color: rgba(38, 79, 120, 0.5) !important;
     }
     #editor-container .cm-line ::selection {
-      background-color: #264f78 !important;
+      background-color: rgba(38, 79, 120, 0.5) !important;
     }
   `;
 

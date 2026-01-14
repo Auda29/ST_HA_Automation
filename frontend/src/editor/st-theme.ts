@@ -45,30 +45,25 @@ export const stEditorTheme = EditorView.theme(
       borderLeftColor: colors.cursor,
       borderLeftWidth: "2px",
     },
-    // Selection highlighting - multiple selectors for compatibility
+    // Selection highlighting - semi-transparent so text remains visible
     "&.cm-focused .cm-selectionBackground": {
-      backgroundColor: colors.selection,
+      backgroundColor: "rgba(38, 79, 120, 0.5)",
     },
     ".cm-selectionBackground": {
-      backgroundColor: colors.selection,
+      backgroundColor: "rgba(38, 79, 120, 0.5)",
     },
     "& .cm-selectionLayer .cm-selectionBackground": {
-      backgroundColor: colors.selection,
+      backgroundColor: "rgba(38, 79, 120, 0.5)",
     },
     ".cm-selectionMatch": {
-      backgroundColor: "#3a3d41",
+      backgroundColor: "rgba(58, 61, 65, 0.5)",
     },
     // Native selection fallback
     ".cm-content ::selection": {
-      backgroundColor: colors.selection,
+      backgroundColor: "rgba(38, 79, 120, 0.5)",
     },
     ".cm-line ::selection": {
-      backgroundColor: colors.selection,
-    },
-    // Ensure selection layer is visible
-    ".cm-selectionLayer": {
-      zIndex: "2",
-      pointerEvents: "none",
+      backgroundColor: "rgba(38, 79, 120, 0.5)",
     },
     ".cm-activeLine": {
       backgroundColor: colors.lineHighlight,
