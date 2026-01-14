@@ -39,7 +39,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-021: Entity Browser with WebSocket Integration
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev2  
 **Priority**: High  
 **Created**: 2026-01-14  
 **Dependencies**: -  
@@ -73,7 +73,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-022: Project Explorer and Multi-File Support
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev2  
 **Priority**: High  
 **Created**: 2026-01-14  
 **Dependencies**: T-021  
@@ -107,7 +107,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-023: User Documentation and Tutorials
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev2  
 **Priority**: High  
 **Created**: 2026-01-14  
 **Dependencies**: -  
@@ -147,7 +147,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-024: FUNCTION_BLOCK Definition Support
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev1  
 **Priority**: Medium  
 **Created**: 2026-01-14  
 **Dependencies**: -  
@@ -182,7 +182,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-025: Bundle Size Optimization
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: DevOps  
 **Priority**: Medium  
 **Created**: 2026-01-14  
 **Dependencies**: -  
@@ -214,7 +214,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-026: End-to-End Integration Tests
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Testing  
 **Priority**: Medium  
 **Created**: 2026-01-14  
 **Dependencies**: T-021, T-022  
@@ -249,7 +249,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-027: Advanced Online Mode - Force Values
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev2  
 **Priority**: Low  
 **Created**: 2026-01-14  
 **Dependencies**: -  
@@ -279,7 +279,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-028: Developer API Documentation
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev2  
 **Priority**: Low  
 **Created**: 2026-01-14  
 **Dependencies**: -  
@@ -309,7 +309,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-029: Import/Export Functionality
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: Dev2  
 **Priority**: Low  
 **Created**: 2026-01-14  
 **Dependencies**: T-022  
@@ -340,7 +340,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 ### T-030: HACS Publication Preparation
 
 **Status**: TODO  
-**Assigned**: -  
+**Assigned**: DevOps  
 **Priority**: High  
 **Created**: 2026-01-14  
 **Dependencies**: T-023, T-025  
