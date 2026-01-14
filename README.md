@@ -16,6 +16,34 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 - **Timer Support**: TON, TOF, TP function blocks using HA timer entities
 - **Live Editor**: CodeMirror 6-based editor with syntax highlighting and autocomplete
 - **Complete Parser**: Full Chevrotain-based parser supporting all IEC 61131-3 ST features
+- **Online Mode**: Real-time entity value display in the editor
+- **Transactional Deploy**: Atomic deployment with backup and rollback support
+
+## Project Status
+
+**Current Version**: 0.1.0 (Alpha)  
+**Status**: Feature-Complete, Ready for Beta Testing
+
+### Test Coverage
+
+| Component | Tests | Status |
+|-----------|-------|--------|
+| Parser | 25 | ✅ Passing |
+| Dependency Analyzer | 16 | ✅ Passing |
+| Storage Analyzer | 23 | ✅ Passing |
+| Transpiler | 24 | ✅ Passing |
+| Deploy/Helper Manager | 5 | ✅ Passing |
+| Restore/Migration | 20 | ✅ Passing |
+| Online Mode | 10 | ✅ Passing |
+| Error Mapping | 10 | ✅ Passing |
+| Source Maps | 11 | ✅ Passing |
+| **Total** | **145** | **✅ 100% Passing** |
+
+### Build Status
+
+- **TypeScript**: ✅ Passing (strict mode)
+- **ESLint**: ✅ Passing (0 errors)
+- **Bundle Size**: 245 KB (gzipped)
 
 ## Installation
 
@@ -43,25 +71,22 @@ After installation, a new "ST Editor" panel will appear in your Home Assistant s
 ### Example Program
 
 ```iecst
-{trigger: state_change}
 {mode: restart}
+{throttle: T#1s}
 PROGRAM Kitchen_Light
-VAR_INPUT
-    motion AT %I0.0 : BOOL := 'binary_sensor.kitchen_motion';
-END_VAR
-
-VAR_OUTPUT
-    light AT %Q0.0 : BOOL := 'light.kitchen';
-END_VAR
-
 VAR
+    {trigger}
+    motion AT %I* : BOOL := 'binary_sensor.kitchen_motion';
+    
+    light AT %Q* : BOOL := 'light.kitchen';
+    
     {persistent}
-    timer: TIME;
+    activationCount : INT := 0;
 END_VAR
 
 IF motion THEN
     light := TRUE;
-    timer := T#5m;
+    activationCount := activationCount + 1;
 ELSE
     light := FALSE;
 END_IF;
@@ -70,9 +95,9 @@ END_PROGRAM
 ```
 
 This creates an automation that:
-- Triggers on motion sensor state changes
+- Triggers on motion sensor state changes (max once per second)
 - Controls the kitchen light based on motion
-- Stores timer value persistently using HA helpers
+- Counts activations persistently using an HA helper
 
 ## Supported Language Features
 
@@ -104,44 +129,104 @@ This creates an automation that:
 - `AT %M*` - Memory/helper binding
 
 ### Pragmas (ST-HA Extensions)
-- `{trigger: state_change}` - Trigger on any variable state change
-- `{trigger: time}` - Time-based trigger
-- `{no_trigger}` - Exclude variable from trigger generation
-- `{persistent}` - Persist value across runs (creates input_number/input_boolean)
-- `{transient}` - Don't persist value (default)
-- `{mode: restart}` - Set automation mode (restart, single, queued, parallel)
-- `{throttle: T#1s}` - Rate limiting
-- `{debounce: T#500ms}` - Debouncing
+| Pragma | Description |
+|--------|-------------|
+| `{trigger}` | Entity change triggers automation |
+| `{no_trigger}` | Entity is read but doesn't trigger |
+| `{persistent}` | Value stored in HA helper |
+| `{transient}` | Value only during run (default) |
+| `{reset_on_restart}` | Always use initial value after HA restart |
+| `{require_restore}` | Error if no stored value exists |
+| `{mode: restart\|single\|queued\|parallel}` | Script execution mode |
+| `{throttle: T#duration}` | Rate limiting |
+| `{debounce: T#duration}` | Debouncing |
+
+### Function Blocks
+- `R_TRIG` - Rising edge detection
+- `F_TRIG` - Falling edge detection
+- `SR` / `RS` - Set-Reset flip-flops
+- `TON` - On-delay timer
+- `TOF` - Off-delay timer
+- `TP` - Pulse timer
+
+### Built-in Functions
+- **Selection**: `SEL`, `MUX`
+- **Limits**: `LIMIT`, `MIN`, `MAX`
+- **Math**: `ABS`, `SQRT`, `TRUNC`, `ROUND`
+- **Conversion**: `TO_INT`, `TO_DINT`, `TO_REAL`, `TO_LREAL`, `TO_STRING`, `TO_BOOL`
 
 ### Expressions & Operators
 - Arithmetic: `+`, `-`, `*`, `/`, `MOD`
 - Comparison: `=`, `<>`, `<`, `<=`, `>`, `>=`
 - Logical: `AND`, `OR`, `XOR`, `NOT`
-- Function calls with arguments
-- Parenthesized expressions
-- Member access for structured data types
 
 ## Documentation
 
 Detailed documentation is available in the [docs](./docs) folder:
 
-### Active Documentation
-- [Project Overview](./docs/00_Project_Overview.md) - High-level architecture and design decisions
-- [Agents Documentation](./docs/agents/agents.md) - Agent-based development workflow, roles, and responsibilities
-- [Agent Tasks](./docs/agents/tasks.md) - Current task list and status
+### Core Documentation
+- [Project Overview](./docs/00_Project_Overview.md) - Architecture, design decisions, MUST-DO's and MUST-NOT-DO's
+- [Product Requirements Document](./docs/PRD_ST_HomeAssistant.md) - Comprehensive specifications and implementation details
 
-### Archived (Completed Tasks)
+### Development Documentation
+- [Agents Documentation](./docs/agents/agents.md) - Agent-based development workflow
+- [Agent Tasks](./docs/agents/tasks.md) - Task list and status tracking
+
+### Archived Documentation (Completed Tasks)
 - [Repository Setup](./docs/archive/01_Repository_Setup.md) - Initial project structure
 - [CodeMirror Integration](./docs/archive/02_CodeMirror_Spike.md) - Editor implementation
 - [Parser Implementation](./docs/archive/03_Parser_Spike.md) - Chevrotain parser
-- [Dependency Analyzer](./docs/archive/04_Dependency_Analyzer.md) - Automatic trigger generation and entity dependency analysis
+- [Dependency Analyzer](./docs/archive/04_Dependency_Analyzer.md) - Trigger generation
+- [Storage Analyzer](./docs/archive/05_Storage_Analyzer.md) - Persistence detection
+- And more in the [archive folder](./docs/archive/)
+
+## Architecture
+
+ST for Home Assistant uses a **compile-time transpilation approach**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    ST for Home Assistant Pipeline                       │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ST Code Editor        Parser          Analyzers      Transpiler       │
+│  (CodeMirror 6)       (Chevrotain)    (Dependency)   (AST → YAML)     │
+│                                       (Storage)                        │
+│       ↓                  ↓               ↓              ↓              │
+│    Editor UI         AST Nodes       Analysis       HA Automation     │
+│                                      Results       + Script Config    │
+│                                                     + Helpers         │
+│                        ↓────────────────────────────────┘             │
+│                                                         ↓             │
+│                                     Deploy Manager                    │
+│                                     (Backup/Restore/Rollback)        │
+│                                            ↓                          │
+│                                    Home Assistant                     │
+│                                    (WebSocket API)                    │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Components
+
+| Component | Description |
+|-----------|-------------|
+| **Lexer/Parser** | Chevrotain-based parser with full IEC 61131-3 ST support |
+| **Dependency Analyzer** | Extracts entity dependencies and generates triggers |
+| **Storage Analyzer** | Determines which variables need persistent helpers |
+| **Transpiler** | Converts ST logic to Home Assistant YAML/Jinja2 |
+| **Timer Transpiler** | Handles TON/TOF/TP using HA timer entities |
+| **Deploy Manager** | Transactional deployment with backup and rollback |
+| **Helper Manager** | Synchronizes helpers with code requirements |
+| **Source Mapper** | Maps YAML paths back to ST source lines |
+| **Error Mapper** | Translates HA errors to ST context |
+| **Online Mode** | Real-time entity state display in editor |
 
 ## Development
 
 ### Prerequisites
 - Node.js 20+
 - npm 10+
-- Python 3.12+ (matches CI configuration)
+- Python 3.12+
 - Home Assistant development environment (optional)
 
 ### Setup
@@ -191,24 +276,14 @@ ST_HA_Automation/
 ├── frontend/                     # TypeScript frontend
 │   ├── src/
 │   │   ├── editor/              # CodeMirror editor
-│   │   │   ├── st-language.ts   # Syntax highlighting
-│   │   │   ├── st-theme.ts      # Editor theme
-│   │   │   └── st-editor.ts     # Editor component
 │   │   ├── parser/              # Chevrotain parser
-│   │   │   ├── tokens.ts        # Token definitions
-│   │   │   ├── lexer.ts         # Lexer
-│   │   │   ├── parser.ts        # Parser rules
-│   │   │   ├── visitor.ts       # CST → AST
-│   │   │   ├── ast.ts           # AST types
-│   │   │   └── index.ts         # Public API
-│   │   ├── analyzer/            # ✅ Dependency analyzer
-│   │   │   ├── types.ts         # Analysis types
-│   │   │   ├── ast-visitor.ts   # AST traversal
-│   │   │   ├── trigger-generator.ts  # HA trigger generation
-│   │   │   ├── dependency-analyzer.ts  # Main analyzer
-│   │   │   └── index.ts         # Public API
-│   │   ├── transpiler/          # (TODO) ST → HA YAML
-│   │   ├── deploy/              # (TODO) Deployment
+│   │   ├── analyzer/            # Dependency & storage analysis
+│   │   ├── transpiler/          # ST → HA YAML conversion
+│   │   ├── deploy/              # Deployment & helper management
+│   │   ├── online/              # Live value updates
+│   │   ├── restore/             # Migration & restore
+│   │   ├── error-mapping/       # Error translation
+│   │   ├── sourcemap/           # Source map generation
 │   │   └── panel/               # Main UI panel
 │   ├── package.json
 │   ├── tsconfig.json
@@ -217,150 +292,61 @@ ST_HA_Automation/
 └── tests/                        # Integration tests
 ```
 
-## Architecture
-
-ST for Home Assistant uses a **compile-time transpilation approach**:
-
-```
-┌─────────────┐
-│   ST Code   │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────┐     ┌──────────────┐
-│   Lexer     │────▶│   Tokens     │
-└─────────────┘     └──────┬───────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │   Parser     │
-                    └──────┬───────┘
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │     AST      │
-                    └──────┬───────┘
-                           │
-       ┌───────────────────┴───────────────────┐
-       │                                       │
-       ▼                                       ▼
-┌─────────────────┐                   ┌─────────────────┐
-│ Dependency      │                   │ Storage         │
-│ Analyzer        │                   │ Analyzer        │
-└────────┬────────┘                   └────────┬────────┘
-         │                                     │
-         └─────────────┬───────────────────────┘
-                       │
-                       ▼
-                ┌──────────────┐
-                │  Transpiler  │
-                └──────┬───────┘
-                       │
-                       ▼
-                ┌──────────────┐
-                │  HA YAML     │
-                │  (Automation)│
-                └──────┬───────┘
-                       │
-                       ▼
-                ┌──────────────┐
-                │Deploy Manager│
-                └──────────────┘
-```
-
-### Key Components
-
-1. **Lexer/Parser**: Chevrotain-based parser with full IEC 61131-3 ST support
-2. **AST**: Strongly-typed Abstract Syntax Tree representing the program structure
-3. **Dependency Analyzer**: Extracts entity dependencies and generates triggers
-4. **Storage Analyzer**: Determines which variables need persistent helpers
-5. **Transpiler**: Converts ST logic to Home Assistant YAML/Jinja2
-6. **Deploy Manager**: Handles transactional deployment with rollback support
-
-## Project Status
-
-**Current Version**: 0.1.0 (Alpha)
-
-This project is in active development. The parser and editor are functional. Analyzer, transpiler, and deployment components are in various stages of development. See the [Project Overview](./docs/00_Project_Overview.md) for detailed architecture information.
-
-## Test Coverage
-
-**Parser Tests**: 23/23 passing ✅
-- Program structure parsing
-- Variable declarations (VAR, VAR_INPUT, VAR_OUTPUT, VAR_IN_OUT, VAR_GLOBAL)
-- I/O bindings
-- Pragmas
-- Control flow (IF/ELSIF/ELSE, CASE, FOR, WHILE, REPEAT)
-- Expressions (arithmetic, comparison, logical)
-- Function calls
-- Error reporting
-
-**Build Status**:
-- TypeScript compilation: ✅ Passing
-- ESLint: ✅ Passing (0 errors, warnings are expected `any` types in Chevrotain visitor)
-- Bundle size: 602.79 KB (169.88 KB gzipped)
-
 ## Contributing
 
 Contributions are welcome! Please:
 
 1. Read the [Project Overview](./docs/00_Project_Overview.md) to understand design decisions
-2. Check archived documentation for implementation details
-3. Follow the existing code style (TypeScript + Lit)
-4. Add tests for new features
-5. Update documentation as needed
+2. Review the [PRD](./docs/PRD_ST_HomeAssistant.md) for detailed specifications
+3. Check archived documentation for implementation details
+4. Follow the existing code style (TypeScript + Lit)
+5. Add tests for new features
+6. Update documentation as needed
 
 ### Language Policy
 
-The **codebase, tests, UI strings, and README** are maintained in English. Some older architecture
-and planning documents under `docs/` intentionally remain in German for historical reasons and
-examples (see `docs/language_policy.md` for details and grep commands to audit new changes).
+The **codebase, tests, UI strings, and README** are maintained in English. See `docs/language_policy.md` for details.
 
 ### Development Workflow
 
-This project uses an **agent-based development workflow** with specialized AI agents handling different aspects of development:
+This project uses an **agent-based development workflow** with specialized roles:
 
-- **Taskmaster**: Plans tasks, assigns work (changes TODO → WIP), and monitors progress
-- **Dev1 (Core Developer)**: Implements core business logic and domain models
-- **Dev2 (Integration Developer)**: Builds APIs, UI components, and integrations
-- **Testing**: Writes and executes tests, reports findings
-- **Review**: Reviews code quality and architecture compliance
-- **DevOps**: Handles merges, CI/CD, and deployment
+- **Taskmaster**: Plans tasks, assigns work, monitors progress
+- **Dev1 (Core)**: Implements core business logic
+- **Dev2 (Integration)**: Builds APIs, UI, integrations
+- **Testing**: Writes and executes tests
+- **Review**: Reviews code quality
+- **DevOps**: Handles merges and deployment
 
-For detailed agent roles, responsibilities, and workflow rules, see [Agents Documentation](./docs/agents/agents.md).
+See [Agents Documentation](./docs/agents/agents.md) for details.
 
-#### Standard Development Flow
+## Critical Design Decisions
 
-1. **Taskmaster** creates tasks and assigns them to Dev1 or Dev2 (automatically changes status from **TODO → WIP**)
-2. **Dev1/Dev2** work on tasks in **WIP** status and automatically promote to **TESTING** when implementation is complete
-3. **Testing** writes tests, executes them, and:
-   - On success: automatically promotes to **REVIEW**
-   - On failure: writes error summary and lets Taskmaster create follow-up subtasks
-4. **Review** evaluates code and:
-   - On approval: automatically promotes to **APPROVED**
-   - On changes requested: writes change summary and lets Taskmaster create follow-up subtasks
-5. **DevOps** merges approved changes and marks tasks as **COMPLETED**
+The project follows strict guidelines documented in [00_Project_Overview.md](./docs/00_Project_Overview.md):
 
-#### Manual Development (Without Agents)
+### MUST-DO's
+1. Cycle → Event transformation via dependency analysis
+2. State persistence with tiered storage strategy
+3. Defensive Jinja generation for null-safety
+4. Loop safety guards with iteration limits
+5. Script mode: restart as default
+6. Transactional deploy with rollback
+7. Source maps for debugging
+8. Timer as entity + event pattern
+9. Deploy via HA APIs only (no file manipulation)
+10. Throttle helper initialization with fallback
 
-```bash
-# Create feature branch
-git checkout -b feature/my-feature
-
-# Make changes
-npm run build:watch  # In one terminal
-# Edit code in another terminal
-
-# Test changes
-npm run typecheck
-npm run lint
-npm test
-
-# Commit and push
-git add .
-git commit -m "feat: description"
-git push origin feature/my-feature
-```
+### MUST-NOT-DO's
+1. No polling/cycle-time patterns
+2. No helper explosion
+3. No mode: single for logic scripts
+4. No naive Jinja without null checks
+5. No infinite loops without safety
+6. No hardcoded entity IDs
+7. No deploy without backup
+8. No direct HA API without abstraction
+9. No direct YAML file manipulation
+10. No unchecked throttle templates
 
 ## License
 
@@ -383,7 +369,3 @@ MIT License - See [LICENSE](LICENSE) file for details
 - **Issues**: [GitHub Issues](https://github.com/Auda29/ST_HA_Automation/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Auda29/ST_HA_Automation/discussions)
 - **Documentation**: [docs folder](./docs)
-
----
-
-**Note**: This project is in active development. See the [Project Status](#project-status) section above for current status.

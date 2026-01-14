@@ -1,89 +1,89 @@
-# ST for Home Assistant - Projektplan
+# ST for Home Assistant - Product Requirements Document
 
-## Projektübersicht
+## Project Overview
 
-**Ziel:** Eine HACS-Integration die das Programmieren von Home Assistant Automationen in Structured Text (IEC 61131-3, orientiert an TwinCAT) ermöglicht.
+**Goal:** A HACS integration that enables programming Home Assistant automations using Structured Text (IEC 61131-3, oriented towards TwinCAT).
 
-**Architektur-Ansatz:** Transpilation (wie CAFE) – ST-Code wird in native HA-Automationen übersetzt, kein Runtime-Overhead.
+**Architecture Approach:** Transpilation (like CAFE) – ST code is translated into native HA automations, no runtime overhead.
 
 ---
 
 ## Tech Stack
 
-| Komponente | Technologie | Begründung | Status |
-|------------|-------------|------------|--------|
-| Editor | CodeMirror 6 | Leichtgewichtig (~300KB), modular, gut erweiterbar | ✅ Entschieden |
-| Frontend | TypeScript + Lit | HA-Panel Integration | ✅ Entschieden |
-| Parser | Chevrotain | Moderner Parser-Generator für JS/TS, bessere Error-Recovery & Debugging (siehe `03_Parser_Spike.md`, T-003, T-016) | ✅ Entschieden |
-| Backend | Python (HA Integration) | Native HA-Kompatibilität | ✅ Entschieden |
-| Kommunikation | HA WebSocket API | Entity-Zugriff, Live-Daten | ✅ Entschieden |
+| Component | Technology | Rationale | Status |
+|-----------|------------|-----------|--------|
+| Editor | CodeMirror 6 | Lightweight (~300KB), modular, highly extensible | ✅ Decided |
+| Frontend | TypeScript + Lit | HA Panel Integration | ✅ Decided |
+| Parser | Chevrotain | Modern parser generator for JS/TS, better error recovery & debugging (see `03_Parser_Spike.md`, T-003, T-016) | ✅ Decided |
+| Backend | Python (HA Integration) | Native HA compatibility | ✅ Decided |
+| Communication | HA WebSocket API | Entity access, live data | ✅ Decided |
 
-### Entscheidung: Parser-Bibliothek (Chevrotain)
+### Decision: Parser Library (Chevrotain)
 
-| Kriterium | Chevrotain | Nearley.js |
+| Criterion | Chevrotain | Nearley.js |
 |-----------|------------|------------|
-| **Ansatz** | Handgeschriebene Parser-Klasse | Deklarative BNF-Grammatik |
-| **Performance** | Sehr schnell | Gut |
-| **Error Recovery** | Eingebaut | Manuell |
-| **Lernkurve** | Mittel | Steil |
-| **Debugging** | Gute Stack Traces | Schwieriger |
+| **Approach** | Hand-written parser class | Declarative BNF grammar |
+| **Performance** | Very fast | Good |
+| **Error Recovery** | Built-in | Manual |
+| **Learning Curve** | Medium | Steep |
+| **Debugging** | Good stack traces | More difficult |
 | **Bundle Size** | ~100KB | ~50KB |
 
-**Empfehlung (historisch):** Chevrotain für bessere Error-Recovery und Debugging.
-**Entscheidung (aktuell):** Chevrotain wurde im Parser-Spike evaluiert und als Parser-Bibliothek festgelegt (umgesetzt in T-003, dokumentiert in T-016).
+**Recommendation (historical):** Chevrotain for better error recovery and debugging.
+**Decision (current):** Chevrotain was evaluated in the parser spike and selected as the parser library (implemented in T-003, documented in T-016).
 
 ---
 
-## Sprachfeatures (Scope)
+## Language Features (Scope)
 
-### Datentypen
-| Typ | HA-Mapping |
-|-----|------------|
-| `BOOL` | `true/false`, Entity-States `on/off` |
-| `INT` | Integer-Templates |
-| `REAL` | Float-Templates |
-| `STRING` | String-Templates |
+### Data Types
+| Type | HA Mapping |
+|------|------------|
+| `BOOL` | `true/false`, Entity states `on/off` |
+| `INT` | Integer templates |
+| `REAL` | Float templates |
+| `STRING` | String templates |
 
-### Kontrollstrukturen
-| ST-Feature | HA-Äquivalent |
+### Control Structures
+| ST Feature | HA Equivalent |
 |------------|---------------|
-| `IF/ELSIF/ELSE/END_IF` | `choose` mit conditions |
-| `CASE...OF/END_CASE` | `choose` mit mehreren branches |
-| `FOR...TO...DO/END_FOR` | `repeat` mit count |
-| `WHILE...DO/END_WHILE` | `repeat` mit while-condition |
+| `IF/ELSIF/ELSE/END_IF` | `choose` with conditions |
+| `CASE...OF/END_CASE` | `choose` with multiple branches |
+| `FOR...TO...DO/END_FOR` | `repeat` with count |
+| `WHILE...DO/END_WHILE` | `repeat` with while-condition |
 
-### Operatoren & Funktionen
-| Kategorie | Features |
-|-----------|----------|
-| Arithmetik | `+`, `-`, `*`, `/`, `MOD` |
-| Vergleich | `=`, `<>`, `<`, `>`, `<=`, `>=` |
-| Logisch | `AND`, `OR`, `XOR`, `NOT` |
-| Auswahl | `SEL` (2-Wege), `MUX` (n-Wege) |
-| Mathematik | `ABS`, `SQRT`, `TRUNC`, `ROUND`, `MIN`, `MAX`, `LIMIT` |
-| Konvertierung | `TO_INT`, `TO_DINT`, `TO_REAL`, `TO_LREAL`, `TO_STRING`, `TO_BOOL` |
+### Operators & Functions
+| Category | Features |
+|----------|----------|
+| Arithmetic | `+`, `-`, `*`, `/`, `MOD` |
+| Comparison | `=`, `<>`, `<`, `>`, `<=`, `>=` |
+| Logical | `AND`, `OR`, `XOR`, `NOT` |
+| Selection | `SEL` (2-way), `MUX` (n-way) |
+| Mathematics | `ABS`, `SQRT`, `TRUNC`, `ROUND`, `MIN`, `MAX`, `LIMIT` |
+| Conversion | `TO_INT`, `TO_DINT`, `TO_REAL`, `TO_LREAL`, `TO_STRING`, `TO_BOOL` |
 
-### Funktionsbausteine (Built-in)
-| FB | Funktion | HA-Umsetzung |
-|----|----------|--------------|
-| `R_TRIG` | Steigende Flanke | `trigger: state: from 'off' to 'on'` |
-| `F_TRIG` | Fallende Flanke | `trigger: state: from 'on' to 'off'` |
-| `SR` | Setzen-dominant | Helper + Logik |
-| `RS` | Rücksetzen-dominant | Helper + Logik |
-| `TON` | Einschaltverzögerung | Timer-Entity + Event-Automation |
-| `TOF` | Ausschaltverzögerung | Timer-Entity + Event-Automation |
-| `TP` | Impuls | Timer-Entity + Event-Automation |
+### Function Blocks (Built-in)
+| FB | Function | HA Implementation |
+|----|----------|-------------------|
+| `R_TRIG` | Rising edge | `trigger: state: from 'off' to 'on'` |
+| `F_TRIG` | Falling edge | `trigger: state: from 'on' to 'off'` |
+| `SR` | Set-dominant | Helper + Logic |
+| `RS` | Reset-dominant | Helper + Logic |
+| `TON` | On-delay timer | Timer entity + Event automation |
+| `TOF` | Off-delay timer | Timer entity + Event automation |
+| `TP` | Pulse timer | Timer entity + Event automation |
 
 ---
 
-## Kritische Design-Entscheidungen
+## Critical Design Decisions
 
-### 1. Zyklus vs. Event (Das "Herzschlag"-Problem)
+### 1. Cycle vs. Event (The "Heartbeat" Problem)
 
-**Problem:** ST-Programme "prüfen immer" (zyklisch), HA-Automationen "schlafen bis Event".
+**Problem:** ST programs "always check" (cyclically), HA automations "sleep until event".
 
-**Lösung: Dependency Analysis mit automatischer Trigger-Generierung**
+**Solution: Dependency Analysis with Automatic Trigger Generation**
 
-Der Transpiler analysiert den Code statisch und erkennt alle gelesenen Entity-Variablen. Für jede wird automatisch ein State-Change-Trigger generiert.
+The transpiler statically analyzes the code and detects all read entity variables. A state-change trigger is automatically generated for each.
 
 ```typescript
 // dependency-analyzer.ts
@@ -92,10 +92,10 @@ class DependencyAnalyzer {
   analyzeProgram(ast: Program): TriggerSet {
     const triggers = new TriggerSet();
     
-    // Alle gelesenen Entity-Variablen finden
+    // Find all read entity variables
     const readEntities = this.findReadEntities(ast);
     
-    // Für jede gelesene Entity einen State-Trigger generieren
+    // Generate a state trigger for each read entity
     for (const entity of readEntities) {
       triggers.add({
         platform: "state",
@@ -105,7 +105,7 @@ class DependencyAnalyzer {
       });
     }
     
-    // Explizite R_TRIG/F_TRIG überschreiben generische Trigger
+    // Explicit R_TRIG/F_TRIG override generic triggers
     const explicitTrigs = this.findExplicitTriggers(ast);
     triggers.mergeExplicit(explicitTrigs);
     
@@ -114,46 +114,46 @@ class DependencyAnalyzer {
 }
 ```
 
-**Pragma für manuelle Kontrolle:**
+**Pragma for Manual Control:**
 ```iecst
 PROGRAM Kitchen
 VAR
-    {trigger}  // Explizit: Dieser Input löst Automation aus
+    {trigger}  // Explicit: This input triggers the automation
     motion AT %I* : BOOL := 'binary_sensor.motion';
     
-    {no_trigger}  // Explizit: Kein Trigger, nur lesen
+    {no_trigger}  // Explicit: No trigger, read only
     temperature AT %I* : REAL := 'sensor.temp';
 END_VAR
 ```
 
-**Compiler-Warnungen:**
-- `W010`: Keine Trigger erkannt - Programm wird nie ausgeführt
-- `I010`: Viele Trigger (>10) - Performance-Hinweis
+**Compiler Warnings:**
+- `W010`: No triggers detected - Program will never execute
+- `I010`: Many triggers (>10) - Performance hint
 
 ---
 
-### 2. State Management: Persistenz vs. Amnesie
+### 2. State Management: Persistence vs. Amnesia
 
-**Problem:** ST-Variablen behalten ihren Wert, HA-Variablen leben nur Millisekunden.
+**Problem:** ST variables retain their value, HA variables only live milliseconds.
 
-**Lösung: Tiered Storage Strategy**
+**Solution: Tiered Storage Strategy**
 
 ```typescript
 enum StorageType {
-  TRANSIENT,    // Nur innerhalb eines Runs (HA variables:)
-  PERSISTENT,   // Überlebt Runs (input_* Helper)
-  DERIVED       // Wird aus Entity-State gelesen
+  TRANSIENT,    // Only within a run (HA variables:)
+  PERSISTENT,   // Survives runs (input_* helper)
+  DERIVED       // Read from entity state
 }
 ```
 
-**Automatische Erkennung:**
-- Entity-gebundene Variablen → `DERIVED`
-- Selbst-Referenz (`counter := counter + 1`) → `PERSISTENT`
-- FB-Instanzen → `PERSISTENT`
-- Timer-bezogen (TON, SR, etc.) → `PERSISTENT`
-- Alles andere → `TRANSIENT`
+**Automatic Detection:**
+- Entity-bound variables → `DERIVED`
+- Self-reference (`counter := counter + 1`) → `PERSISTENT`
+- FB instances → `PERSISTENT`
+- Timer-related (TON, SR, etc.) → `PERSISTENT`
+- Everything else → `TRANSIENT`
 
-**Explizite Pragmas:**
+**Explicit Pragmas:**
 ```iecst
 VAR
     {persistent}
@@ -164,39 +164,39 @@ VAR
 END_VAR
 ```
 
-**Namespace-Konvention:**
+**Namespace Convention:**
 ```
-input_number.st_<projekt>_<programm>_<variable>
-input_boolean.st_<projekt>_<programm>_<variable>
+input_number.st_<project>_<program>_<variable>
+input_boolean.st_<project>_<program>_<variable>
 ```
 
-**Automatisches Cleanup:**
-Der Helper-Manager synchronisiert bei jedem Deploy:
-1. Benötigte Helper aus Code ermitteln
-2. Existierende ST-Helper finden (`st_` Prefix)
-3. Diff berechnen (create, delete, update)
-4. User-Bestätigung für Löschungen einholen
+**Automatic Cleanup:**
+The helper manager synchronizes on each deploy:
+1. Determine required helpers from code
+2. Find existing ST helpers (`st_` prefix)
+3. Calculate diff (create, delete, update)
+4. Request user confirmation for deletions
 
 ---
 
-### 3. Zeit-Logik: Timer & Loops
+### 3. Time Logic: Timers & Loops
 
-#### Timer (TON, TOF, TP)
+#### Timers (TON, TOF, TP)
 
-**Problem:** HA `delay` ist nicht unterbrechbar, ST-Timer schon.
+**Problem:** HA `delay` is not interruptible, ST timers are.
 
-**Lösung: Timer-Entity + Separate Event-Automation**
+**Solution: Timer Entity + Separate Event Automation**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  TON Umsetzung                                                  │
+│  TON Implementation                                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  Benötigte Entities:                                            │
+│  Required Entities:                                             │
 │  • timer.st_<prog>_<instance>         (HA Timer)                │
-│  • input_boolean.st_<prog>_<instance>_q  (Output-State)         │
+│  • input_boolean.st_<prog>_<instance>_q  (Output State)         │
 │                                                                 │
-│  Haupt-Automation:                                              │
+│  Main Automation:                                               │
 │  ┌───────────────────────────────────────────────────────────┐ │
 │  │ IF IN = TRUE AND timer.idle:                              │ │
 │  │   → timer.start(duration)                                 │ │
@@ -217,14 +217,14 @@ Der Helper-Manager synchronisiert bei jedem Deploy:
 
 #### Loops (FOR, WHILE)
 
-**Problem:** Schleifen blockieren den Ausführungs-Thread, Endlosschleifen frieren ein.
+**Problem:** Loops block the execution thread, infinite loops freeze the system.
 
-**Lösung: Safety Guards**
+**Solution: Safety Guards**
 
 ```typescript
 const MAX_ITERATIONS = 1000;
 
-// WHILE bekommt automatischen Safety Counter
+// WHILE gets automatic safety counter
 repeat:
   while:
     - "{{ original_condition }}"
@@ -235,17 +235,17 @@ repeat:
     - # ... original body
 ```
 
-**Compiler-Warnungen:**
-- `W020`: WHILE ohne garantierte Exit-Bedingung
-- `E020`: FOR mit >1000 Iterationen
+**Compiler Warnings:**
+- `W020`: WHILE without guaranteed exit condition
+- `E020`: FOR with >1000 iterations
 
 ---
 
-### 4. Transpilation & Jinja-Sicherheit
+### 4. Transpilation & Jinja Safety
 
-**Problem:** Sensoren können `unavailable`, `unknown`, `none` sein → Jinja-Fehler.
+**Problem:** Sensors can be `unavailable`, `unknown`, `none` → Jinja errors.
 
-**Lösung: Defensive Jinja-Generierung**
+**Solution: Defensive Jinja Generation**
 
 ```typescript
 class JinjaGenerator {
@@ -271,35 +271,35 @@ class JinjaGenerator {
 }
 ```
 
-**Built-in Funktionen mit Null-Safety:**
+**Built-in Functions with Null-Safety:**
 ```typescript
-// LIMIT mit Fallback
+// LIMIT with fallback
 LIMIT: `{% set _v = ${val} %}` +
        `{% if _v is number %}{{ [[${mn}, _v] | max, ${mx}] | min }}` +
        `{% else %}{{ ${mn} }}{% endif %}`
 
-// SQRT mit Negativzahl-Check
+// SQRT with negative number check
 SQRT: `{% set _v = ${arg} %}` +
       `{% if _v is number and _v >= 0 %}{{ _v | sqrt }}` +
       `{% else %}{{ 0 }}{% endif %}`
 ```
 
 **Golden Master Tests:**
-Jede Built-in Funktion wird mit Edge Cases getestet:
-- Normale Werte
+Each built-in function is tested with edge cases:
+- Normal values
 - `unavailable`, `unknown`, `none`, `""`
-- Typ-Coercion (`"5.5"` → `5.5`)
-- Grenzwerte
+- Type coercion (`"5.5"` → `5.5`)
+- Boundary values
 
 ---
 
-### 5. Deployment-Architektur
+### 5. Deployment Architecture
 
-**Empfehlung: Trigger-Dispatcher + Logic-Script (Hybrid)**
+**Recommendation: Trigger Dispatcher + Logic Script (Hybrid)**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Architektur                                                    │
+│  Architecture                                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  automation:                      script:                       │
@@ -316,45 +316,45 @@ Jede Built-in Funktion wird mit Edge Cases getestet:
 │  │ mode: single        │         │ mode: restart           │   │
 │  └─────────────────────┘         └─────────────────────────┘   │
 │                                                                 │
-│  Vorteile:                                                      │
-│  • Saubere Trennung Trigger/Logik                               │
-│  • Scripts einzeln testbar                                      │
-│  • Separater Trace für Debugging                                │
-│  • Wiederverwendbar                                             │
-│  • Script mode: restart = SPS-like (neuer Input wichtiger)      │
+│  Benefits:                                                      │
+│  • Clean separation of triggers/logic                           │
+│  • Scripts individually testable                                │
+│  • Separate trace for debugging                                 │
+│  • Reusable                                                     │
+│  • Script mode: restart = PLC-like (new input takes priority)   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### 6. Concurrency & Mode-Strategie
+### 6. Concurrency & Mode Strategy
 
-**Problem:** Was passiert bei Trigger-Stürmen?
+**Problem:** What happens during trigger storms?
 
 ```
-Trigger 1 ──▶ Script läuft (mit delay)
+Trigger 1 ──▶ Script running (with delay)
 Trigger 2 ──▶ ???
 Trigger 3 ──▶ ???
 ```
 
-**Mode-Optionen in HA:**
+**Mode Options in HA:**
 
-| Mode | Verhalten | SPS-Analogie |
-|------|-----------|--------------|
-| `single` | Ignoriert neue Trigger während Lauf | ❌ Input Loss |
-| `restart` | Bricht ab, startet neu | ✅ Neuer Wert wichtiger |
-| `queued` | Reiht ein (max 10) | Für sequentielle Aufgaben |
-| `parallel` | Mehrere Instanzen gleichzeitig | ⚠️ Race Conditions |
+| Mode | Behavior | PLC Analogy |
+|------|----------|-------------|
+| `single` | Ignores new triggers during run | ❌ Input loss |
+| `restart` | Aborts, restarts | ✅ New value takes priority |
+| `queued` | Queues (max 10) | For sequential tasks |
+| `parallel` | Multiple instances simultaneously | ⚠️ Race conditions |
 
-**Lösung: Konfigurierbar mit Default `restart`**
+**Solution: Configurable with Default `restart`**
 
 ```iecst
-// Pragma für Mode-Kontrolle
-{mode: restart}  // Default - SPS-like
+// Pragma for mode control
+{mode: restart}  // Default - PLC-like
 PROGRAM Kitchen
 
-// Oder für spezielle Fälle:
+// Or for special cases:
 {mode: queued, max_queued: 5}
 PROGRAM NotificationHandler
 
@@ -362,47 +362,47 @@ PROGRAM NotificationHandler
 PROGRAM IndependentTasks
 ```
 
-**Generierte YAML:**
+**Generated YAML:**
 ```yaml
-# Trigger-Automation (nur Dispatcher)
+# Trigger automation (dispatcher only)
 alias: "[ST] Kitchen"
 mode: single
 
-# Logic-Script (hier zählt es!)
+# Logic script (this is what matters!)
 alias: "[ST] Kitchen_Logic"
 mode: restart
 ```
 
 ---
 
-### 7. Trigger-Throttling & Debounce
+### 7. Trigger Throttling & Debounce
 
-**Problem:** Dependency Analysis auf viele Entities + schnelle Sensoren = "Disco"
+**Problem:** Dependency analysis on many entities + fast sensors = "disco"
 
 ```
-5 Entities erkannt:
-- sensor.temperature (alle 10s)
-- sensor.humidity (alle 10s)  
-- binary_sensor.motion (flattert)
-- sensor.power (jede Sekunde!)
+5 entities detected:
+- sensor.temperature (every 10s)
+- sensor.humidity (every 10s)  
+- binary_sensor.motion (flapping)
+- sensor.power (every second!)
 - light.status
 
-→ Worst Case: 60+ Trigger pro Minute
+→ Worst case: 60+ triggers per minute
 ```
 
-**Lösung: Programm-Level Throttle/Debounce**
+**Solution: Program-Level Throttle/Debounce**
 
 ```iecst
-// Throttle: Max 1 Ausführung pro Sekunde
+// Throttle: Max 1 execution per second
 {throttle: T#1s}
 PROGRAM Kitchen
 
-// Debounce: Warte bis 500ms Ruhe
+// Debounce: Wait until 500ms of quiet
 {debounce: T#500ms}
 PROGRAM MotionHandler
 ```
 
-**Implementation Throttle:**
+**Throttle Implementation:**
 ```typescript
 class ThrottleGenerator {
   
@@ -414,7 +414,7 @@ class ThrottleGenerator {
       mode: "single",
       trigger: triggers,
       
-      // WICHTIG: Robustes Template mit Fallback für ersten Run!
+      // IMPORTANT: Robust template with fallback for first run!
       condition: [{
         condition: "template",
         value_template: `{% set last = states('${lastRunHelper}') %}
@@ -426,13 +426,13 @@ class ThrottleGenerator {
       }],
       
       action: [
-        // Timestamp updaten
+        // Update timestamp
         {
           service: "input_datetime.set_datetime",
           target: { entity_id: lastRunHelper },
           data: { datetime: "{{ now().isoformat() }}" }
         },
-        // Script aufrufen
+        // Call script
         {
           service: "script.turn_on",
           target: { entity_id: `script.st_${program.name}_logic` }
@@ -441,7 +441,7 @@ class ThrottleGenerator {
     };
   }
   
-  // Helper beim Deploy initialisieren falls nicht existent
+  // Initialize helper on deploy if not existing
   async ensureThrottleHelper(program: Program): Promise<void> {
     const helperId = `input_datetime.st_${program.name}_last_run`;
     const exists = await this.helperExists(helperId);
@@ -452,7 +452,7 @@ class ThrottleGenerator {
         name: `ST ${program.name} Last Run`,
         has_date: true,
         has_time: true,
-        // Initial: Jetzt minus 1 Stunde → erster Run erlaubt
+        // Initial: Now minus 1 hour → first run allowed
         initial: new Date(Date.now() - 3600000).toISOString()
       });
     }
@@ -460,18 +460,18 @@ class ThrottleGenerator {
 }
 ```
 
-**Implementation Debounce:**
+**Debounce Implementation:**
 ```typescript
 generateDebouncedAutomation(program: Program, debounce: Duration): HAAutomation {
   return {
     alias: `[ST] ${program.name}`,
-    mode: "restart",  // Restart = Debounce-Effekt!
+    mode: "restart",  // Restart = Debounce effect!
     trigger: triggers,
     
     action: [
-      // Warte (wird bei neuem Trigger abgebrochen)
+      // Wait (aborted on new trigger)
       { delay: { seconds: debounce.seconds } },
-      // Erst dann Script
+      // Then call script
       {
         service: "script.turn_on",
         target: { entity_id: `script.st_${program.name}_logic` }
@@ -481,7 +481,7 @@ generateDebouncedAutomation(program: Program, debounce: Duration): HAAutomation 
 }
 ```
 
-**Kombination mit Trigger-Pragmas:**
+**Combination with Trigger Pragmas:**
 ```iecst
 {throttle: T#2s}
 PROGRAM ClimateControl
@@ -490,51 +490,51 @@ VAR
     temperature AT %I* : REAL := 'sensor.temp';
     {trigger}
     humidity AT %I* : REAL := 'sensor.humidity';
-    {no_trigger}  // Wird gelesen, triggert aber nicht
+    {no_trigger}  // Read but doesn't trigger
     power AT %I* : REAL := 'sensor.power';
 END_VAR
 ```
 
 ---
 
-### 8. Deploy-Mechanismus: NUR über HA-APIs!
+### 8. Deploy Mechanism: ONLY via HA APIs!
 
-**⚠️ KRITISCH: KEINE direkte YAML-Datei-Manipulation!**
+**⚠️ CRITICAL: NO direct YAML file manipulation!**
 
 ```python
-# ❌ FALSCH - Niemals so!
+# ❌ WRONG - Never do this!
 with open('/config/automations.yaml', 'w') as f:
     yaml.dump(automation, f)
 
-# ❌ FALSCH - Auch nicht so!
+# ❌ WRONG - Not this either!
 shutil.copy(generated_yaml, '/config/automations.yaml')
 ```
 
-**Probleme bei Datei-Manipulation:**
-- Überschreibt User-Kommentare und Formatierung
-- HA trackt Änderungen nicht
-- Kein Rollback bei Fehler möglich
-- Race Conditions mit HA-Core
-- Sicherheitsrisiko
+**Problems with File Manipulation:**
+- Overwrites user comments and formatting
+- HA doesn't track changes
+- No rollback on error possible
+- Race conditions with HA Core
+- Security risk
 
-**✅ RICHTIG: HA Storage API / WebSocket Services**
+**✅ CORRECT: HA Storage API / WebSocket Services**
 
 ```typescript
-// Automation erstellen/updaten
+// Create/update automation
 await hass.callWS({
   type: 'config/automation/config',
   automation_id: 'st_kitchen',
   config: generatedAutomation
 });
 
-// Script erstellen/updaten  
+// Create/update script  
 await hass.callWS({
   type: 'config/script/config',
   script_id: 'st_kitchen_logic',
   config: generatedScript
 });
 
-// Helper erstellen
+// Create helper
 await hass.callService('input_number', 'create', {
   name: 'ST Kitchen Counter',
   min: 0,
@@ -542,34 +542,34 @@ await hass.callService('input_number', 'create', {
   mode: 'box'
 });
 
-// Nach Änderungen reloaden
+// Reload after changes
 await hass.callService('automation', 'reload', {});
 await hass.callService('script', 'reload', {});
 ```
 
-**Vorteile:**
-- HA verwaltet Speicherung selbst
-- Änderungen werden getrackt
-- Rollback über HA möglich
-- Keine Konflikte mit manuellen Edits
+**Benefits:**
+- HA manages storage itself
+- Changes are tracked
+- Rollback via HA possible
+- No conflicts with manual edits
 
 ---
 
-### 9. Deploy-Sicherheit: Atomic & Rollback
+### 9. Deploy Safety: Atomic & Rollback
 
-**Problem:** Deploy-Prozess kann halb durchlaufen und System inkonsistent hinterlassen.
+**Problem:** Deploy process can run halfway and leave system in inconsistent state.
 
 ```
-Deploy-Prozess:
-1. ✓ Helper A erstellt
-2. ✓ Helper B erstellt  
-3. ✓ Automation erstellt
-4. ✗ Script-Erstellung FEHLER!
+Deploy Process:
+1. ✓ Helper A created
+2. ✓ Helper B created  
+3. ✓ Automation created
+4. ✗ Script creation ERROR!
 
-→ System in inkonsistentem Zustand!
+→ System in inconsistent state!
 ```
 
-**Lösung: Transactional Deploy mit Rollback**
+**Solution: Transactional Deploy with Rollback**
 
 ```typescript
 // deploy-manager.ts
@@ -591,29 +591,29 @@ class DeployManager {
     };
     
     try {
-      // Phase 1: Validierung (keine Änderungen)
+      // Phase 1: Validation (no changes)
       await this.validateAll(project);
       
-      // Phase 2: Backup aktueller Zustand
+      // Phase 2: Backup current state
       const backup = await this.createBackup(project);
       
-      // Phase 3: Änderungen sammeln (noch nicht anwenden)
+      // Phase 3: Collect changes (don't apply yet)
       const changes = await this.calculateChanges(project);
       transaction.operations = changes;
       
-      // Phase 4: Änderungen anwenden (mit Tracking)
+      // Phase 4: Apply changes (with tracking)
       for (const op of changes) {
         try {
           await this.applyOperation(op);
           op.status = 'applied';
         } catch (error) {
-          // Rollback aller bisherigen Operationen
+          // Rollback all previous operations
           await this.rollback(transaction);
           throw new DeployError(`Failed at ${op.entityId}`, transaction);
         }
       }
       
-      // Phase 5: Verifikation
+      // Phase 5: Verification
       const verification = await this.verifyDeployment(project);
       if (!verification.success) {
         await this.rollback(transaction);
@@ -634,7 +634,7 @@ class DeployManager {
   }
   
   async rollback(transaction: DeployTransaction): Promise<void> {
-    // Operationen in umgekehrter Reihenfolge rückgängig machen
+    // Revert operations in reverse order
     const appliedOps = transaction.operations
       .filter(op => op.status === 'applied')
       .reverse();
@@ -662,7 +662,7 @@ class DeployManager {
 }
 ```
 
-**Backup-Manager:**
+**Backup Manager:**
 ```typescript
 class BackupManager {
   
@@ -692,7 +692,7 @@ class BackupManager {
     // ... automations, scripts
   }
   
-  // Automatische Backup-Rotation (behalte letzte 5)
+  // Automatic backup rotation (keep last 5)
   async cleanupOldBackups(keepCount: number = 5): Promise<void> {
     const backups = await this.listBackups();
     const toDelete = backups
@@ -730,7 +730,7 @@ class BackupManager {
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Nach fehlgeschlagenem Deploy:**
+**After Failed Deploy:**
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │  ❌ Deploy Failed                                                        │
@@ -751,14 +751,14 @@ class BackupManager {
 
 ---
 
-### 9. Debugging & Error-Mapping
+### 10. Debugging & Error Mapping
 
-**Problem:** HA-Fehler zeigen YAML-Zeile, nicht ST-Zeile.
+**Problem:** HA errors show YAML line, not ST line.
 
-**Lösung: Source Maps**
+**Solution: Source Maps**
 
 ```yaml
-# Generiertes YAML
+# Generated YAML
 variables:
   _st_source_map:
     "action.0.choose.0": { st_line: 7, st_file: "kitchen.st" }
@@ -769,16 +769,16 @@ variables:
 ```typescript
 const translations = [
   [/UndefinedError: '(\w+)' is undefined/, 
-   "Variable '$1' nicht deklariert oder Entity nicht gefunden"],
+   "Variable '$1' not declared or entity not found"],
   [/could not convert string to float/,
-   "Sensor-Wert ist kein gültiger Zahlenwert (evtl. 'unavailable')"],
+   "Sensor value is not a valid number (possibly 'unavailable')"],
 ];
 ```
 
-**UI zeigt:**
+**UI Shows:**
 ```
-❌ Fehler in kitchen.st Zeile 7:
-   Variable 'sensor_temp' nicht deklariert oder Entity nicht gefunden
+❌ Error in kitchen.st line 7:
+   Variable 'sensor_temp' not declared or entity not found
    
    7 │ IF sensor_temp > 25.0 THEN
        ^^^^^^^^^^^
@@ -786,28 +786,28 @@ const translations = [
 
 ---
 
-### 10. Restart/Init-Semantik
+### 11. Restart/Init Semantics
 
-**Problem:** Was passiert mit persistenten Variablen nach HA-Restart?
+**Problem:** What happens to persistent variables after HA restart?
 
-**Lösung: Explizite Restore-Policies via Pragmas**
+**Solution: Explicit Restore Policies via Pragmas**
 
 ```iecst
 VAR
-    // Default: Restore wenn vorhanden, sonst Initialwert
+    // Default: Restore if available, otherwise initial value
     counter : INT := 0;
     
-    // Immer mit Initialwert starten
+    // Always start with initial value
     {reset_on_restart}
     sessionCounter : INT := 0;
     
-    // Muss vorherigen Wert haben, Fehler wenn nicht
+    // Must have previous value, error if not
     {require_restore}
     criticalState : BOOL;
 END_VAR
 ```
 
-**Restore-Logik:**
+**Restore Logic:**
 ```typescript
 enum RestorePolicy {
   RESTORE_OR_INIT,  // Default
@@ -816,120 +816,120 @@ enum RestorePolicy {
 }
 ```
 
-**Migration bei Schema-Änderungen:**
+**Migration on Schema Changes:**
 
-Der Transpiler erkennt:
-- Typ-Änderungen (`INT` → `REAL`)
-- Entfernte Variablen
-- Range-Änderungen
+The transpiler detects:
+- Type changes (`INT` → `REAL`)
+- Removed variables
+- Range changes
 
-UI zeigt Migration-Dialog mit Optionen:
-- Wert konvertieren
-- Auf Initialwert zurücksetzen
-- Alten Helper behalten (orphaned)
+UI shows migration dialog with options:
+- Convert value
+- Reset to initial value
+- Keep old helper (orphaned)
 
 ---
 
-## Phasenplan
+## Phase Plan
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Phase 1: Foundation                                                        │
 │  ════════════════════                                                       │
-│  • Projekt-Setup (HACS-Struktur, Build-Pipeline)                            │
-│  • CodeMirror 6 Integration mit ST Syntax-Highlighting                      │
-│  • Basis-Parser (Lexer + AST) für Kern-Syntax                               │
-│  • Einfache Transpilation: IF/ELSE → choose                                 │
-│  • Proof-of-Concept: Eine ST-Datei → Eine HA-Automation                     │
-│  • Dependency Analyzer (automatische Trigger-Generierung)                   │
-│  • Defensive Jinja-Generierung für Entity-Reads                             │
+│  • Project setup (HACS structure, build pipeline)                           │
+│  • CodeMirror 6 integration with ST syntax highlighting                     │
+│  • Basic parser (Lexer + AST) for core syntax                               │
+│  • Simple transpilation: IF/ELSE → choose                                   │
+│  • Proof-of-concept: One ST file → One HA automation                        │
+│  • Dependency analyzer (automatic trigger generation)                       │
+│  • Defensive Jinja generation for entity reads                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Phase 2: Core Features                                                     │
 │  ══════════════════════                                                     │
-│  • Entity-Browser mit WebSocket-Anbindung                                   │
-│  • Drag & Drop Entity-Binding (AT %I* / %Q* Syntax)                         │
-│  • Vollständiger Parser (CASE, FOR, WHILE, alle Operatoren)                 │
-│  • Built-in Funktionen mit Null-Safety (SEL, MUX, LIMIT, etc.)              │
-│  • Typkonvertierungen                                                       │
-│  • R_TRIG / F_TRIG Umsetzung                                                │
-│  • Loop Safety Guards                                                       │
-│  • Golden Master Test Suite für Built-ins                                   │
+│  • Entity browser with WebSocket connection                                 │
+│  • Drag & drop entity binding (AT %I* / %Q* syntax)                         │
+│  • Complete parser (CASE, FOR, WHILE, all operators)                        │
+│  • Built-in functions with null-safety (SEL, MUX, LIMIT, etc.)              │
+│  • Type conversions                                                         │
+│  • R_TRIG / F_TRIG implementation                                           │
+│  • Loop safety guards                                                       │
+│  • Golden master test suite for built-ins                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Phase 3: FB & Projekt-Struktur                                             │
+│  Phase 3: FB & Project Structure                                            │
 │  ══════════════════════════════                                             │
-│  • FUNCTION_BLOCK Definition und Instanziierung                             │
-│  • FUNCTION Support (ohne Instanz)                                          │
-│  • Projekt-Explorer UI (Programme, FBs, GVLs)                               │
-│  • Multi-File Support                                                       │
-│  • SR/RS Flip-Flop FBs                                                      │
-│  • Import/Export von ST-Projekten                                           │
-│  • Storage Analyzer (automatische Persistenz-Erkennung)                     │
-│  • Helper Manager mit Sync & Cleanup                                        │
-│  • Hybrid-Architektur (Trigger-Automation + Logic-Script)                   │
-│  • Mode-Strategie (default: restart)                                        │
-│  • Throttle/Debounce Generator                                              │
+│  • FUNCTION_BLOCK definition and instantiation                              │
+│  • FUNCTION support (without instance)                                      │
+│  • Project explorer UI (programs, FBs, GVLs)                                │
+│  • Multi-file support                                                       │
+│  • SR/RS flip-flop FBs                                                      │
+│  • Import/export of ST projects                                             │
+│  • Storage analyzer (automatic persistence detection)                       │
+│  • Helper manager with sync & cleanup                                       │
+│  • Hybrid architecture (trigger automation + logic script)                  │
+│  • Mode strategy (default: restart)                                         │
+│  • Throttle/debounce generator                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Phase 4: Polish & Advanced                                                 │
 │  ══════════════════════════                                                 │
-│  • Timer-FBs (TON, TOF, TP) mit Timer-Entity Pattern                        │
-│  • Source Maps für Error-Mapping                                            │
-│  • Error Translation (HA-Fehler → ST-Kontext)                               │
-│  • Restore-Policy System ({reset_on_restart}, {require_restore})            │
-│  • Migration-Handler für Schema-Änderungen                                  │
-│  • Transactional Deploy mit Rollback                                        │
-│  • Backup-Manager                                                           │
-│  • Live-Werte im Editor (Online-Modus)                                      │
-│  • Dokumentation und Beispiele                                              │
+│  • Timer FBs (TON, TOF, TP) with timer entity pattern                       │
+│  • Source maps for error mapping                                            │
+│  • Error translation (HA errors → ST context)                               │
+│  • Restore policy system ({reset_on_restart}, {require_restore})            │
+│  • Migration handler for schema changes                                     │
+│  • Transactional deploy with rollback                                       │
+│  • Backup manager                                                           │
+│  • Live values in editor (online mode)                                      │
+│  • Documentation and examples                                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Phasen ↔ Aufgaben (T-001–T-012)
+### Phase ↔ Task Mapping (T-001–T-012)
 
-Diese Zuordnung beschreibt, wie die im Plan definierten Phasen 1–4 durch die konkreten Aufgaben T-001–T-012 abgedeckt sind:
+This mapping describes how the phases 1–4 defined in the plan are covered by the concrete tasks T-001–T-012:
 
 - **Phase 1: Foundation**
-  - Projekt-Setup (HACS-Struktur, Build-Pipeline) → **T-001**
-  - CodeMirror 6 Integration mit ST Syntax-Highlighting → **T-002**
-  - Basis-Parser (Lexer + AST) → **T-003**
-  - Einfache Transpilation (IF/ELSE → `choose`) + defensive Jinja → **T-007**
-  - Dependency Analyzer (automatische Trigger-Generierung) → **T-004**
-  - Konsolidierung mit Archiv-Specs → **T-006**
+  - Project setup (HACS structure, build pipeline) → **T-001**
+  - CodeMirror 6 integration with ST syntax highlighting → **T-002**
+  - Basic parser (Lexer + AST) → **T-003**
+  - Simple transpilation (IF/ELSE → `choose`) + defensive Jinja → **T-007**
+  - Dependency analyzer (automatic trigger generation) → **T-004**
+  - Consolidation with archive specs → **T-006**
 
 - **Phase 2: Core Features**
-  - Vollständiger Parser (CASE, FOR, WHILE, Operatoren) → **T-003**, **T-016**
-  - Built-in Funktionen mit Null-Safety, Typkonvertierungen → **T-007**
-  - R_TRIG / F_TRIG Umsetzung → **T-004**, **T-007**
-  - Loop Safety Guards → **T-007**
-  - Golden Master Test Suite für Built-ins → **T-007**
-  - Entity-Browser und Drag & Drop AT-Bindings → **noch nicht vollständig umgesetzt, vorgesehene UI/Integration-Aufgabe außerhalb T-001–T-012 (Backlog)** 
+  - Complete parser (CASE, FOR, WHILE, operators) → **T-003**, **T-016**
+  - Built-in functions with null-safety, type conversions → **T-007**
+  - R_TRIG / F_TRIG implementation → **T-004**, **T-007**
+  - Loop safety guards → **T-007**
+  - Golden master test suite for built-ins → **T-007**
+  - Entity browser and drag & drop AT bindings → **Not fully implemented, planned UI/integration task outside T-001–T-012 (Backlog)** 
 
-- **Phase 3: FB & Projekt-Struktur**
-  - Storage Analyzer (Persistenz-Erkennung) → **T-005**
-  - Helper Manager mit Sync & Cleanup → **T-008**, **T-020**
-  - Hybrid-Architektur (Trigger-Automation + Logic-Script) → **T-007**
-  - Mode-Strategie (default: `restart`) → **T-007**
-  - Throttle/Debounce Generator → **T-007**
-  - Projekt-Explorer / Multi-File-Struktur → **teilweise durch bestehende Panel/Editor-Struktur abgedeckt, UI-spezifische Erweiterungen verbleiben im Backlog**
+- **Phase 3: FB & Project Structure**
+  - Storage analyzer (persistence detection) → **T-005**
+  - Helper manager with sync & cleanup → **T-008**, **T-020**
+  - Hybrid architecture (trigger automation + logic script) → **T-007**
+  - Mode strategy (default: `restart`) → **T-007**
+  - Throttle/debounce generator → **T-007**
+  - Project explorer / multi-file structure → **Partially covered by existing panel/editor structure, UI-specific extensions remain in backlog**
 
 - **Phase 4: Polish & Advanced**
-  - Timer-FBs (TON, TOF, TP) → **T-009**
-  - Source Maps für Error-Mapping → **T-010**
-  - Error Translation (HA-Fehler → ST-Kontext) → **T-010**
-  - Restore-Policy System (`{reset_on_restart}`, `{require_restore}`) → **T-011**
-  - Migration-Handler für Schema-Änderungen → **T-011**
-  - Transactional Deploy + Backup-Manager → **T-008**
-  - Live-Werte im Editor (Online-Modus) → **T-012**
-  - Dokumentation und Beispiele → verteilt über **T-006**, **T-015**, **T-019**, **T-020**
+  - Timer FBs (TON, TOF, TP) → **T-009**
+  - Source maps for error mapping → **T-010**
+  - Error translation (HA errors → ST context) → **T-010**
+  - Restore policy system (`{reset_on_restart}`, `{require_restore}`) → **T-011**
+  - Migration handler for schema changes → **T-011**
+  - Transactional deploy + backup manager → **T-008**
+  - Live values in editor (online mode) → **T-012**
+  - Documentation and examples → Distributed across **T-006**, **T-015**, **T-019**, **T-020**
 
-**Abweichungen vom ursprünglichen Plan:**
-- UI-spezifische Features wie der **Entity-Browser mit Drag & Drop** sind im Projektplan weiterhin als Ziel beschrieben, werden aber bewusst **nicht** durch T-001–T-012 abgedeckt und verbleiben im Backlog.
-- Mehrere Spezifikations-Themen (z.B. erweiterte Analyzer/Transpiler-APIs) wurden in der Praxis über zusätzliche Dokumentations-Tasks (**T-006, T-015, T-019, T-020**) gelöst und sind damit explizit als Design-Evolution gegenüber den frühen Archiv-Specs dokumentiert.
+**Deviations from Original Plan:**
+- UI-specific features like the **Entity Browser with Drag & Drop** are still described as goals in the project plan but are intentionally **not** covered by T-001–T-012 and remain in the backlog.
+- Several specification topics (e.g., extended analyzer/transpiler APIs) were resolved in practice through additional documentation tasks (**T-006, T-015, T-019, T-020**) and are thus explicitly documented as design evolution compared to the early archive specs.
 
 ---
 
-## Phase 1: Foundation - Detailplan
+## Phase 1: Foundation - Detailed Plan
 
-### 1.1 Projekt-Setup
+### 1.1 Project Setup
 
 ```
 st-hass/
@@ -944,14 +944,14 @@ st-hass/
 │   │   ├── editor/
 │   │   │   ├── st-editor.ts     # CodeMirror Wrapper
 │   │   │   ├── st-language.ts   # ST Language Mode
-│   │   │   └── st-theme.ts      # TwinCAT-ähnliches Theme
+│   │   │   └── st-theme.ts      # TwinCAT-like Theme
 │   │   ├── parser/
-│   │   │   ├── lexer.ts         # Token-Definitionen
-│   │   │   ├── parser.ts        # AST-Generator
+│   │   │   ├── lexer.ts         # Token Definitions
+│   │   │   ├── parser.ts        # AST Generator
 │   │   │   └── ast.ts           # AST Node Types
 │   │   ├── analyzer/
-│   │   │   ├── dependency-analyzer.ts  # Trigger-Erkennung
-│   │   │   └── storage-analyzer.ts     # Persistenz-Erkennung
+│   │   │   ├── dependency-analyzer.ts  # Trigger Detection
+│   │   │   └── storage-analyzer.ts     # Persistence Detection
 │   │   ├── transpiler/
 │   │   │   ├── transpiler.ts    # AST → HA YAML
 │   │   │   ├── jinja-generator.ts  # Defensive Jinja
@@ -961,16 +961,16 @@ st-hass/
 │   │   │   ├── backup-manager.ts   # Backup & Restore
 │   │   │   └── helper-manager.ts   # Helper Sync
 │   │   └── panel/
-│   │       └── st-panel.ts      # Haupt-Panel Komponente
+│   │       └── st-panel.ts      # Main Panel Component
 │   ├── package.json
 │   └── tsconfig.json
 ├── hacs.json
 └── README.md
 ```
 
-### 1.2 CodeMirror 6 ST-Mode
+### 1.2 CodeMirror 6 ST Mode
 
-**Syntax-Highlighting Regeln:**
+**Syntax Highlighting Rules:**
 
 ```typescript
 // st-language.ts
@@ -1006,9 +1006,9 @@ const stPragmas = [
 ];
 ```
 
-### 1.3 Parser-Architektur
+### 1.3 Parser Architecture
 
-**Lexer Token-Typen:**
+**Lexer Token Types:**
 
 ```typescript
 enum TokenType {
@@ -1043,7 +1043,7 @@ enum TokenType {
   AT,                 // AT
   PERCENT_I,          // %I*
   PERCENT_Q,          // %Q*
-  PRAGMA,             // {keyword} oder {key: value}
+  PRAGMA,             // {keyword} or {key: value}
   
   // Comments
   COMMENT_LINE,       // // comment
@@ -1053,7 +1053,7 @@ enum TokenType {
 }
 ```
 
-**AST Node-Struktur:**
+**AST Node Structure:**
 
 ```typescript
 // ast.ts
@@ -1151,10 +1151,10 @@ class DependencyAnalyzer {
     const triggers: TriggerConfig[] = [];
     const diagnostics: Diagnostic[] = [];
     
-    // 1. Alle Entity-Reads finden
+    // 1. Find all entity reads
     const readEntities = this.findReadEntities(ast);
     
-    // 2. Pragma-gesteuerte Trigger
+    // 2. Pragma-controlled triggers
     for (const entity of readEntities) {
       const varDecl = this.lookupVariable(ast, entity.varName);
       
@@ -1170,7 +1170,7 @@ class DependencyAnalyzer {
       }
     }
     
-    // 3. Explizite R_TRIG/F_TRIG
+    // 3. Explicit R_TRIG/F_TRIG
     const explicitTrigs = this.findExplicitTriggers(ast);
     for (const trig of explicitTrigs) {
       const idx = triggers.findIndex(t => t.entity_id === trig.entity_id);
@@ -1178,7 +1178,7 @@ class DependencyAnalyzer {
       else triggers.push(trig);
     }
     
-    // 4. Warnungen
+    // 4. Warnings
     if (triggers.length === 0) {
       diagnostics.push({
         severity: "Warning",
@@ -1281,50 +1281,50 @@ class JinjaGenerator {
 }
 ```
 
-### 1.6 Transpiler Basis
+### 1.6 Transpiler Basics
 
-**Beispiel-Transformation:**
+**Example Transformation:**
 
 ```
-ST-Code                          HA-YAML Output
-═══════════════════════════════  ═══════════════════════════════════════
-{mode: restart}                  # Automation (Dispatcher)
-{throttle: T#1s}                 alias: "[ST] Test"
-PROGRAM Test                     id: "st_test"
-VAR                              mode: single
-  {trigger}                      trigger:
-  motion AT %I* : BOOL             - platform: state
-    := 'binary_sensor.pir';          entity_id: binary_sensor.pir
-  light AT %Q* : BOOL                id: dep_motion
-    := 'light.lamp';             condition:
-END_VAR                            - condition: template
-                                     value_template: >-
-IF motion THEN                         {{ (now() - states('input_datetime...
-  light := TRUE;                 action:
-ELSE                               - service: input_datetime.set_datetime
-  light := FALSE;                    ...
-END_IF;                            - service: script.turn_on
-                                     target:
-END_PROGRAM                            entity_id: script.st_test_logic
+ST Code                              HA YAML Output
+═══════════════════════════════      ═══════════════════════════════════════
+{mode: restart}                      # Automation (Dispatcher)
+{throttle: T#1s}                     alias: "[ST] Test"
+PROGRAM Test                         id: "st_test"
+VAR                                  mode: single
+  {trigger}                          trigger:
+  motion AT %I* : BOOL                 - platform: state
+    := 'binary_sensor.pir';              entity_id: binary_sensor.pir
+  light AT %Q* : BOOL                    id: dep_motion
+    := 'light.lamp';                 condition:
+END_VAR                                - condition: template
+                                         value_template: >-
+IF motion THEN                             {{ (now() - states('input_datetime...
+  light := TRUE;                     action:
+ELSE                                   - service: input_datetime.set_datetime
+  light := FALSE;                        ...
+END_IF;                                - service: script.turn_on
+                                         target:
+END_PROGRAM                                entity_id: script.st_test_logic
 
-                                 # Script (Logic)
-                                 alias: "[ST] Test_Logic"
-                                 mode: restart
-                                 sequence:
-                                   - choose:
-                                       - conditions:
-                                           - condition: template
-                                             value_template: >-
-                                               {{ states('binary_sensor.pir') 
-                                                  in ['on', 'true', '1'] }}
-                                         sequence:
-                                           - service: light.turn_on
+                                     # Script (Logic)
+                                     alias: "[ST] Test_Logic"
+                                     mode: restart
+                                     sequence:
+                                       - choose:
+                                           - conditions:
+                                               - condition: template
+                                                 value_template: >-
+                                                   {{ states('binary_sensor.pir') 
+                                                      in ['on', 'true', '1'] }}
+                                             sequence:
+                                               - service: light.turn_on
+                                                 target:
+                                                   entity_id: light.lamp
+                                         default:
+                                           - service: light.turn_off
                                              target:
                                                entity_id: light.lamp
-                                     default:
-                                       - service: light.turn_off
-                                         target:
-                                           entity_id: light.lamp
 ```
 
 ### 1.7 Minimal UI
@@ -1356,9 +1356,9 @@ END_PROGRAM                            entity_id: script.st_test_logic
 
 ---
 
-## Phase 2: Core Features - Detailplan
+## Phase 2: Core Features - Detailed Plan
 
-### 2.1 Entity-Browser
+### 2.1 Entity Browser
 
 **WebSocket Integration:**
 
@@ -1409,7 +1409,7 @@ class EntityBrowser {
 }
 ```
 
-**UI-Komponente:**
+**UI Component:**
 
 ```
 ┌─────────────────────────────────┐
@@ -1418,11 +1418,11 @@ class EntityBrowser {
 │  Domain: [All ▼]                │
 ├─────────────────────────────────┤
 │ ▼ 💡 light (12)                 │
-│   │ ○ light.kitchen        ON   │ ← Drag für Output
+│   │ ○ light.kitchen        ON   │ ← Drag for output
 │   │ ○ light.bedroom        OFF  │
 │                                 │
 │ ▼ 📡 binary_sensor (8)          │
-│   │ ● binary_sensor.motion ON   │ ← Drag für Input
+│   │ ● binary_sensor.motion ON   │ ← Drag for input
 │   │ ● binary_sensor.door   OFF  │
 │                                 │
 │ ▶ 🌡️ sensor (24)                │
@@ -1437,21 +1437,21 @@ class EntityBrowser {
 ○ = Output (controllable)
 ```
 
-### 2.2 Vollständiger Parser
+### 2.2 Complete Parser
 
-**Operator-Precedence (IEC 61131-3):**
+**Operator Precedence (IEC 61131-3):**
 
-| Priorität | Operatoren |
-|-----------|------------|
-| 1 (höchste) | `()`, Funktionsaufruf |
-| 2 | `NOT`, `-` (unär) |
+| Priority | Operators |
+|----------|-----------|
+| 1 (highest) | `()`, function call |
+| 2 | `NOT`, `-` (unary) |
 | 3 | `*`, `/`, `MOD` |
 | 4 | `+`, `-` |
 | 5 | `<`, `>`, `<=`, `>=` |
 | 6 | `=`, `<>` |
 | 7 | `AND`, `&` |
 | 8 | `XOR` |
-| 9 (niedrigste) | `OR` |
+| 9 (lowest) | `OR` |
 
 ### 2.3 Loop Safety Guards
 
@@ -1539,13 +1539,13 @@ describe('Built-in Functions', () => {
     });
   });
   
-  // Weitere Built-ins...
+  // Additional built-ins...
 });
 ```
 
 ---
 
-## Phase 3: FB & Projekt-Struktur - Detailplan
+## Phase 3: FB & Project Structure - Detailed Plan
 
 ### 3.1 Storage Analyzer
 
@@ -1561,12 +1561,12 @@ class StorageAnalyzer {
   
   analyzeVariable(varDecl: VariableDeclaration, usages: Usage[]): StorageDecision {
     
-    // 1. Entity-gebunden → DERIVED
+    // 1. Entity-bound → DERIVED
     if (varDecl.binding) {
       return { type: StorageType.DERIVED };
     }
     
-    // 2. Explizite Pragmas
+    // 2. Explicit pragmas
     if (varDecl.pragmas?.some(p => p.name === "persistent")) {
       return { type: StorageType.PERSISTENT, reason: "Explicit pragma" };
     }
@@ -1574,7 +1574,7 @@ class StorageAnalyzer {
       return { type: StorageType.TRANSIENT, reason: "Explicit pragma" };
     }
     
-    // 3. Automatische Erkennung
+    // 3. Automatic detection
     const needsPersistence = 
       this.hasSelfReference(varDecl, usages) ||
       this.isFBInstance(varDecl) ||
@@ -1684,7 +1684,7 @@ class ThrottleGenerator {
 }
 ```
 
-### 3.4 Projekt-Explorer UI
+### 3.4 Project Explorer UI
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1723,9 +1723,9 @@ class ThrottleGenerator {
 
 ---
 
-## Phase 4: Polish & Advanced - Detailplan
+## Phase 4: Polish & Advanced - Detailed Plan
 
-### 4.1 Timer-FB Transpiler
+### 4.1 Timer FB Transpiler
 
 ```typescript
 // timer-transpiler.ts
@@ -1806,17 +1806,17 @@ class DeployManager {
     };
     
     try {
-      // Phase 1: Validierung
+      // Phase 1: Validation
       await this.validateAll(project);
       
       // Phase 2: Backup
       const backup = await this.backupManager.createBackup(project);
       
-      // Phase 3: Änderungen berechnen
+      // Phase 3: Calculate changes
       const changes = await this.calculateChanges(project);
       transaction.operations = changes;
       
-      // Phase 4: Anwenden mit Tracking
+      // Phase 4: Apply with tracking
       for (const op of changes) {
         try {
           await this.applyOperation(op);
@@ -1827,7 +1827,7 @@ class DeployManager {
         }
       }
       
-      // Phase 5: Verifikation
+      // Phase 5: Verification
       const verification = await this.verifyDeployment(project);
       if (!verification.success) {
         await this.rollback(transaction);
@@ -1885,9 +1885,9 @@ class ErrorMapper {
   
   private translations: [RegExp, string][] = [
     [/UndefinedError: '(\w+)' is undefined/,
-     "Variable '$1' nicht deklariert oder Entity nicht gefunden"],
+     "Variable '$1' not declared or entity not found"],
     [/could not convert string to float/,
-     "Sensor-Wert ist kein gültiger Zahlenwert (evtl. 'unavailable')"],
+     "Sensor value is not a valid number (possibly 'unavailable')"],
   ];
   
   async mapError(haError: HALogEntry): Promise<MappedError | null> {
@@ -1970,7 +1970,7 @@ class MigrationHandler {
 }
 ```
 
-### 4.5 Live-Werte / Online-Modus
+### 4.5 Live Values / Online Mode
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -2001,63 +2001,63 @@ class MigrationHandler {
 
 ---
 
-## Pragma-Referenz
+## Pragma Reference
 
-### Trigger-Kontrolle
-| Pragma | Kontext | Beschreibung |
-|--------|---------|--------------|
-| `{trigger}` | Variable | Entity-Änderung löst Automation aus |
-| `{no_trigger}` | Variable | Entity wird gelesen, löst aber nicht aus |
+### Trigger Control
+| Pragma | Context | Description |
+|--------|---------|-------------|
+| `{trigger}` | Variable | Entity change triggers automation |
+| `{no_trigger}` | Variable | Entity is read but doesn't trigger |
 
-### Persistenz
-| Pragma | Kontext | Beschreibung |
-|--------|---------|--------------|
-| `{persistent}` | Variable | Wert wird in Helper gespeichert |
-| `{transient}` | Variable | Wert nur während Run (default) |
-| `{reset_on_restart}` | Variable | Immer Initialwert nach HA-Restart |
-| `{require_restore}` | Variable | Fehler wenn kein gespeicherter Wert |
+### Persistence
+| Pragma | Context | Description |
+|--------|---------|-------------|
+| `{persistent}` | Variable | Value is stored in helper |
+| `{transient}` | Variable | Value only during run (default) |
+| `{reset_on_restart}` | Variable | Always use initial value after HA restart |
+| `{require_restore}` | Variable | Error if no stored value exists |
 
 ### Concurrency & Throttling
-| Pragma | Kontext | Beschreibung | Default |
-|--------|---------|--------------|---------|
-| `{mode: restart\|single\|queued\|parallel}` | Program | Script-Ausführungsmodus | `restart` |
-| `{max_queued: N}` | Program | Max Queue-Größe (bei `queued`) | `10` |
-| `{max_parallel: N}` | Program | Max parallele Instanzen | `3` |
-| `{throttle: TIME}` | Program | Min. Zeit zwischen Ausführungen | - |
-| `{debounce: TIME}` | Program | Warte auf Ruhe vor Ausführung | - |
+| Pragma | Context | Description | Default |
+|--------|---------|-------------|---------|
+| `{mode: restart\|single\|queued\|parallel}` | Program | Script execution mode | `restart` |
+| `{max_queued: N}` | Program | Max queue size (with `queued`) | `10` |
+| `{max_parallel: N}` | Program | Max parallel instances | `3` |
+| `{throttle: TIME}` | Program | Min time between executions | - |
+| `{debounce: TIME}` | Program | Wait for quiet before execution | - |
 
 ---
 
-## Risiken & Mitigationen
+## Risks & Mitigations
 
-| Risiko | Status | Mitigation |
-|--------|--------|------------|
-| Zyklus vs Event | 🟢 Gelöst | Dependency Analysis + Trigger-Pragmas |
-| State Persistenz | 🟢 Gelöst | Tiered Storage + Auto-Cleanup + Pragmas |
-| Timer-Komplexität | 🟡 Mittel | Timer-Entity Pattern + separate Automations |
-| Loop-Blockierung | 🟢 Gelöst | Safety Guards + Compiler-Warnings |
-| Jinja-Fallen | 🟢 Gelöst | Defensive Generation + Golden Master Tests |
-| Debugging | 🟢 Gelöst | Source Maps + Error Translation |
-| Restart-Semantik | 🟢 Gelöst | Explizite Pragmas + Migration UI |
-| Trigger-Stürme | 🟢 Gelöst | Throttle/Debounce Pragmas |
-| Race Conditions | 🟢 Gelöst | Mode-Strategie (default: restart) |
-| Deploy-Inkonsistenz | 🟢 Gelöst | Transactional Deploy + Rollback + Backup |
-| Parser-Komplexität | 🟡 Mittel | Iterativ erweitern, mit Minimum starten |
-| **YAML-Datei-Manipulation** | 🟢 Gelöst | **NUR HA Storage API verwenden** |
-| **Throttle-Helper leer** | 🟢 Gelöst | **Fallback in Template + Init bei Deploy** |
-| **Parser-Wahl** | 🟢 Gelöst | Chevrotain gewählt (siehe `03_Parser_Spike.md`, T-003, T-016) |
+| Risk | Status | Mitigation |
+|------|--------|------------|
+| Cycle vs Event | 🟢 Solved | Dependency Analysis + Trigger Pragmas |
+| State Persistence | 🟢 Solved | Tiered Storage + Auto-Cleanup + Pragmas |
+| Timer Complexity | 🟡 Medium | Timer Entity Pattern + Separate Automations |
+| Loop Blocking | 🟢 Solved | Safety Guards + Compiler Warnings |
+| Jinja Pitfalls | 🟢 Solved | Defensive Generation + Golden Master Tests |
+| Debugging | 🟢 Solved | Source Maps + Error Translation |
+| Restart Semantics | 🟢 Solved | Explicit Pragmas + Migration UI |
+| Trigger Storms | 🟢 Solved | Throttle/Debounce Pragmas |
+| Race Conditions | 🟢 Solved | Mode Strategy (default: restart) |
+| Deploy Inconsistency | 🟢 Solved | Transactional Deploy + Rollback + Backup |
+| Parser Complexity | 🟡 Medium | Extend iteratively, start with minimum |
+| **YAML File Manipulation** | 🟢 Solved | **ONLY use HA Storage API** |
+| **Throttle Helper Empty** | 🟢 Solved | **Fallback in template + Init on deploy** |
+| **Parser Choice** | 🟢 Solved | Chevrotain selected (see `03_Parser_Spike.md`, T-003, T-016) |
 
 ---
 
-## Ressourcen & Links
+## Resources & Links
 
 **Parser:**
 - Chevrotain: https://chevrotain.io/
 - Nearley.js: https://nearley.js.org/
-- IEC 61131-3 Grammatik-Referenz
+- IEC 61131-3 Grammar Reference
 
 **CodeMirror 6:**
-- Dokumentation: https://codemirror.net/
+- Documentation: https://codemirror.net/
 - Language Support: https://codemirror.net/examples/lang-package/
 
 **Home Assistant:**
@@ -2065,16 +2065,16 @@ class MigrationHandler {
 - Custom Panels: https://developers.home-assistant.io/docs/frontend/custom-ui/creating-custom-panels
 - HACS: https://hacs.xyz/docs/publish/start
 
-**Referenz-Projekte:**
+**Reference Projects:**
 - CAFE: https://github.com/FezVrasta/cafe-hass
 - HA Frontend: https://github.com/home-assistant/frontend
 
 ---
 
-## Nächste Schritte
+## Next Steps
 
-1. **Repository erstellen** mit Basis-Struktur
-2. **Dev-Environment aufsetzen** (Node, Python, HA Dev Container)
-3. **CodeMirror 6 Spike** - ST Syntax-Highlighting PoC
-4. **Parser Spike** - Minimaler IF/THEN Parser mit Chevrotain
-5. **Dependency Analyzer Spike** - Automatische Trigger-Erkennung
+1. **Create repository** with basic structure
+2. **Set up dev environment** (Node, Python, HA Dev Container)
+3. **CodeMirror 6 spike** - ST syntax highlighting PoC
+4. **Parser spike** - Minimal IF/THEN parser with Chevrotain
+5. **Dependency analyzer spike** - Automatic trigger detection

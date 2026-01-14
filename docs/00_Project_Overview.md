@@ -1,16 +1,14 @@
-# ST for Home Assistant - Projekt-Übersicht
+# ST for Home Assistant - Project Overview
 
-## Projektbeschreibung
+## Project Description
 
-**ST for Home Assistant** ist eine HACS-Integration, die es ermöglicht, Home Assistant Automationen in **Structured Text (IEC 61131-3)** zu programmieren - der Sprache, die in industriellen SPSen (TwinCAT, Siemens, etc.) verwendet wird.
+**ST for Home Assistant** is a HACS integration that enables programming Home Assistant automations in **Structured Text (IEC 61131-3)** - the language used in industrial PLCs (TwinCAT, Siemens, etc.).
 
-**Kernidee:** ST-Code wird zu nativen HA-Automationen **transpiliert** (nicht interpretiert), sodass kein Runtime-Overhead entsteht.
-
-**Projektpfad:** `C:\##\Projects\ST_HA_Automation`
+**Core Concept:** ST code is **transpiled** (not interpreted) to native HA automations, resulting in zero runtime overhead.
 
 ---
 
-## Architektur-Übersicht
+## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -18,7 +16,7 @@
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │   ┌─────────────┐    ┌──────────────┐    ┌─────────────┐    ┌───────────┐  │
-│   │ ST Code     │───▶│ Parser       │───▶│ AST         │───▶│ Analyzer  │  │
+│   │ ST Code     │───▶│ Parser       │───▶│ AST         │───▶│ Analyzers │  │
 │   │ (Editor)    │    │ (Chevrotain) │    │             │    │           │  │
 │   └─────────────┘    └──────────────┘    └─────────────┘    └─────┬─────┘  │
 │                                                                    │        │
@@ -35,51 +33,27 @@
 
 ## Tech Stack
 
-| Komponente | Technologie | Version | Status |
-|------------|-------------|---------|--------|
-| Editor | CodeMirror 6 | ^6.0 | ✅ Entschieden |
-| Parser | **Chevrotain ODER Nearley.js** | ^11.0 / ^2.20 | ⚠️ **OFFEN** |
-<!-- UPDATE 2025-01-13: Entscheidung für Chevrotain gefallen, vollständig implementiert mit 23/23 Tests -->
-| Frontend | TypeScript + Lit | 5.x / 3.x | ✅ Entschieden |
-| Build | Vite | ^5.0 | ✅ Entschieden |
-| Backend | Python (HA Custom Component) | 3.11+ | ✅ Entschieden |
-| HA Integration | HACS | - | ✅ Entschieden |
-
-### ⚠️ Offene Entscheidung: Parser
-
-| Kriterium | Chevrotain | Nearley.js |
-|-----------|------------|------------|
-| **Ansatz** | Handgeschriebene Parser-Klasse | Deklarative Grammatik (BNF) |
-| **Performance** | Sehr schnell | Gut |
-| **Error Recovery** | Eingebaut | Manuell |
-| **Lernkurve** | Mittel | Steil (Grammatik-Syntax) |
-| **Debugging** | Gute Stack Traces | Schwieriger |
-| **Bundle Size** | ~100KB | ~50KB |
-
-**Empfehlung:** Chevrotain für bessere Error-Recovery und Debugging.  
-**Entscheidung:** Beim Parser-Spike evaluieren, dann festlegen.
-
-<!-- UPDATE 2025-01-13: 
-✅ Entscheidung: Chevrotain gewählt und vollständig implementiert
-✅ Parser unterstützt vollständiges IEC 61131-3 ST (weit über ursprünglichen Scope hinaus)
-✅ 23/23 Unit Tests bestanden
-✅ Unterstützt: PROGRAM, VAR/VAR_INPUT/VAR_OUTPUT/VAR_IN_OUT/VAR_GLOBAL, 
-   IF/ELSIF/ELSE, CASE, FOR, WHILE, REPEAT, alle Operatoren, Function Calls,
-   I/O Bindings (AT %), Pragmas, komplexe Expressions
--->
+| Component | Technology | Version | Status |
+|-----------|------------|---------|--------|
+| Editor | CodeMirror 6 | ^6.0 | ✅ Implemented |
+| Parser | Chevrotain | ^11.0 | ✅ Implemented |
+| Frontend | TypeScript + Lit | 5.x / 3.x | ✅ Implemented |
+| Build | Vite | ^5.0 | ✅ Implemented |
+| Backend | Python (HA Custom Component) | 3.11+ | ✅ Implemented |
+| HA Integration | HACS | - | ✅ Implemented |
 
 ---
 
-## Kern-Features
+## Core Features
 
-### Sprachfeatures
-- **Datentypen:** BOOL, INT, DINT, REAL, LREAL, STRING, TIME
-- **Kontrollstrukturen:** IF/ELSIF/ELSE, CASE, FOR, WHILE, REPEAT
-- **Operatoren:** Arithmetik, Vergleich, Logik (AND, OR, XOR, NOT)
-- **Built-in Funktionen:** SEL, MUX, LIMIT, MIN, MAX, ABS, SQRT, etc.
+### Language Features
+- **Data Types:** BOOL, INT, DINT, LINT, SINT, REAL, LREAL, STRING, TIME
+- **Control Structures:** IF/ELSIF/ELSE, CASE, FOR, WHILE, REPEAT
+- **Operators:** Arithmetic, comparison, logical (AND, OR, XOR, NOT)
+- **Built-in Functions:** SEL, MUX, LIMIT, MIN, MAX, ABS, SQRT, etc.
 - **Function Blocks:** R_TRIG, F_TRIG, TON, TOF, TP, SR, RS
 
-### Entity-Binding
+### Entity Binding
 ```iecst
 VAR
     motion AT %I* : BOOL := 'binary_sensor.kitchen_motion';  // Input
@@ -87,66 +61,66 @@ VAR
 END_VAR
 ```
 
-### Pragmas (ST-HASS Erweiterungen)
+### Pragmas (ST-HA Extensions)
 ```iecst
-{mode: restart}           // Script-Ausführungsmodus
-{throttle: T#1s}          // Rate-Limiting
-{debounce: T#500ms}       // Debounce
-{trigger}                 // Diese Variable triggert Automation
-{no_trigger}              // Variable triggert nicht
-{persistent}              // Wert überdauert Runs (→ Helper)
-{transient}               // Nur während Run gültig
-{reset_on_restart}        // Immer Initialwert nach HA-Restart
-{require_restore}         // Fehler wenn kein gespeicherter Wert
+{mode: restart}           // Script execution mode
+{throttle: T#1s}          // Rate limiting
+{debounce: T#500ms}       // Debouncing
+{trigger}                 // This variable triggers automation
+{no_trigger}              // Variable doesn't trigger
+{persistent}              // Value persists across runs (→ Helper)
+{transient}               // Only valid during run
+{reset_on_restart}        // Always use initial value after HA restart
+{require_restore}         // Error if no stored value exists
 ```
 
 ---
 
-## ⚠️ MUST-DO's (Kritisch!)
+## MUST-DO's (Critical Requirements)
 
-### 1. Zyklus → Event Transformation
+### 1. Cycle → Event Transformation
 ```
-ST denkt:        "Ich prüfe kontinuierlich"
-HA denkt:        "Ich schlafe bis ein Event kommt"
+ST thinks:       "I continuously check"
+HA thinks:       "I sleep until an event comes"
 ```
 
-**MUST:** Dependency Analysis implementieren
-- Alle gelesenen Entity-Variablen automatisch als Trigger registrieren
-- `{trigger}` / `{no_trigger}` Pragmas respektieren
-- Warnung wenn keine Trigger erkannt → Programm läuft nie
+**MUST:** Implement Dependency Analysis
+- Automatically register all read entity variables as triggers
+- Respect `{trigger}` / `{no_trigger}` pragmas
+- Warning when no triggers detected → program never runs
 
 ```typescript
-// RICHTIG
+// CORRECT
 trigger:
   - platform: state
-    entity_id: binary_sensor.motion  // Auto-generiert aus AT %I*
+    entity_id: binary_sensor.motion  // Auto-generated from AT %I*
 ```
 
-### 2. State-Persistenz mit Helpers
+### 2. State Persistence with Helpers
 ```
-ST:    Variablen behalten Wert zwischen Zyklen
-HA:    Variablen leben nur Millisekunden
+ST:    Variables retain value between cycles
+HA:    Variables only live milliseconds
 ```
 
 **MUST:** Tiered Storage Strategy
-- `DERIVED` → Entity-gebundene Variablen (kein Helper)
-- `PERSISTENT` → Self-Reference, FB-Instanzen, Timer (→ input_* Helper)
-- `TRANSIENT` → Alles andere (HA variables:)
+- `DERIVED` → Entity-bound variables (no helper)
+- `PERSISTENT` → Self-reference, FB instances, timers (→ input_* helper)
+- `TRANSIENT` → Everything else (HA variables:)
 
-**MUST:** Namespace-Konvention
+**MUST:** Namespace Convention
 ```
-input_number.st_<projekt>_<programm>_<variable>
-```
-
-**MUST:** Cleanup-Mechanismus für nicht mehr benötigte Helper
-
-### 3. Defensive Jinja-Generierung
-```
-Sensor kann sein: "unavailable", "unknown", "none", ""
-→ Jinja-Fehler oder falsches Ergebnis
+input_number.st_<project>_<program>_<variable>
 ```
 
-**MUST:** Null-Safe Templates generieren
+**MUST:** Cleanup mechanism for obsolete helpers
+
+### 3. Defensive Jinja Generation
+```
+Sensor can be: "unavailable", "unknown", "none", ""
+→ Jinja error or wrong result
+```
+
+**MUST:** Generate null-safe templates
 ```jinja
 {{ states('sensor.temp') | float(default=0.0) 
    if states('sensor.temp') not in ['unavailable', 'unknown', 'none', ''] 
@@ -155,77 +129,77 @@ Sensor kann sein: "unavailable", "unknown", "none", ""
 
 ### 4. Loop Safety Guards
 ```
-WHILE ohne Exit → HA eingefroren
+WHILE without exit → HA frozen
 ```
 
-**MUST:** Automatische Iteration-Limits
+**MUST:** Automatic iteration limits
 ```yaml
 repeat:
   while:
     - "{{ original_condition }}"
-    - "{{ _safety_counter < 1000 }}"  # AUTO-EINGEFÜGT
+    - "{{ _safety_counter < 1000 }}"  # AUTO-INSERTED
 ```
 
-**MUST:** Compiler-Warnung bei WHILE ohne garantiertem Exit
+**MUST:** Compiler warning for WHILE without guaranteed exit
 
 ### 5. Script Mode: restart (Default)
 ```
-mode: single   → Input Loss (schlecht!)
-mode: restart  → Neuer Wert wichtiger (SPS-like, gut!)
+mode: single   → Input loss (bad!)
+mode: restart  → New value takes priority (PLC-like, good!)
 ```
 
-**MUST:** Default `mode: restart` für alle generierten Scripts
+**MUST:** Default `mode: restart` for all generated scripts
 
 ### 6. Transactional Deploy
 ```
-Deploy halb durch + Fehler → Inkonsistenter Zustand
+Deploy halfway through + error → Inconsistent state
 ```
 
 **MUST:** 
-- Backup vor Deploy
-- Rollback bei Fehler
-- Alle Änderungen oder keine
+- Backup before deploy
+- Rollback on error
+- All changes or none
 
-### 7. Source Maps für Debugging
+### 7. Source Maps for Debugging
 ```
-HA-Fehler zeigt: "Error in automation.yaml line 47"
-User denkt:      "Welche ST-Zeile ist das?"
+HA error shows: "Error in automation.yaml line 47"
+User thinks:    "Which ST line is that?"
 ```
 
-**MUST:** Source Maps in generiertem YAML
+**MUST:** Source maps in generated YAML
 ```yaml
 variables:
   _st_source_map:
     "action.0.choose.0": { st_line: 7, st_file: "kitchen.st" }
 ```
 
-### 8. Timer als Entity + Event
+### 8. Timer as Entity + Event
 ```
-HA delay ist NICHT unterbrechbar
-ST Timer (TON) sind rücksetzbar
-```
-
-**MUST:** Timer-FBs mit `timer.*` Entity + `timer.finished` Event implementieren
-
-### 9. Deploy über HA-Services (NICHT Datei-Manipulation!)
-```
-FALSCH:  Direkt automations.yaml editieren
-RICHTIG: HA-Services nutzen
+HA delay is NOT interruptible
+ST timers (TON) are resettable
 ```
 
-**MUST:** Deployment ausschließlich über HA-APIs
-- `automation.reload` nach Änderungen
-- `input_number.set_value` für Helper
-- WebSocket API für Entity-Erstellung
+**MUST:** Implement timer FBs with `timer.*` entity + `timer.finished` event
 
-**WARUM:** 
-- Datei-Manipulation ist fragil (Formatierung, Kommentare, Merges)
-- HA kann Änderungen nicht tracken
-- Kein Rollback möglich bei direkter Datei-Änderung
-- User-Editierungen werden überschrieben
+### 9. Deploy via HA Services (NOT File Manipulation!)
+```
+WRONG:   Directly edit automations.yaml
+CORRECT: Use HA services
+```
+
+**MUST:** Deployment exclusively via HA APIs
+- `automation.reload` after changes
+- `input_number.set_value` for helpers
+- WebSocket API for entity creation
+
+**WHY:** 
+- File manipulation is fragile (formatting, comments, merges)
+- HA cannot track changes
+- No rollback possible with direct file changes
+- User edits get overwritten
 
 ```typescript
-// RICHTIG - Über HA Storage API
+// CORRECT - Via HA Storage API
 await hass.callWS({
   type: 'config/automation/config',
   automation_id: 'st_kitchen',
@@ -233,18 +207,18 @@ await hass.callWS({
 });
 ```
 
-### 10. Throttle-Helper Initialisierung
+### 10. Throttle Helper Initialization
 ```
-Erster Run: input_datetime ist leer/unavailable
-→ Template crasht oder gibt falsches Ergebnis
+First run: input_datetime is empty/unavailable
+→ Template crashes or gives wrong result
 ```
 
-**MUST:** Robuste Throttle-Condition mit Fallback
+**MUST:** Robust throttle condition with fallback
 ```jinja
-{# FALSCH - crasht bei leerem Helper #}
+{# WRONG - crashes with empty helper #}
 {{ (now() - states('input_datetime.st_last_run') | as_datetime).total_seconds() > 1 }}
 
-{# RICHTIG - mit Fallback für ersten Run #}
+{# CORRECT - with fallback for first run #}
 {% set last = states('input_datetime.st_last_run') %}
 {% if last in ['unknown', 'unavailable', ''] %}
   true
@@ -253,187 +227,194 @@ Erster Run: input_datetime ist leer/unavailable
 {% endif %}
 ```
 
-**MUST:** Helper bei Deploy initialisieren wenn nicht existent
+**MUST:** Initialize helper on deploy if not existing
 
 ---
 
-## 🚫 MUST-NOT-DO's (Vermeiden!)
+## MUST-NOT-DO's (Avoid These!)
 
-### 1. KEIN Polling / Cycle-Time Pattern
+### 1. NO Polling / Cycle-Time Pattern
 ```python
-# FALSCH - Anti-Pattern in HA!
+# WRONG - Anti-pattern in HA!
 while True:
     check_conditions()
     sleep(0.1)  # 100ms cycle time
 ```
 
-**WARUM:** Blockiert HA, Performance-Killer, unnötiger CPU-Verbrauch
+**WHY:** Blocks HA, performance killer, unnecessary CPU usage
 
-**STATTDESSEN:** Event-basierte Trigger aus Dependency Analysis
+**INSTEAD:** Event-based triggers from dependency analysis
 
-### 2. KEINE Helper-Explosion
+### 2. NO Helper Explosion
 ```yaml
-# FALSCH - Jede Variable als Helper
+# WRONG - Every variable as helper
 input_number.st_temp_var_1
 input_number.st_temp_var_2
 input_number.st_loop_counter
-# ... 50+ Helper für ein Programm
+# ... 50+ helpers for one program
 ```
 
-**WARUM:** Müllt HA-Instanz voll, schwer zu warten
+**WHY:** Clutters HA instance, hard to maintain
 
-**STATTDESSEN:** Nur PERSISTENT Variablen als Helper, Rest in `variables:`
+**INSTEAD:** Only PERSISTENT variables as helpers, rest in `variables:`
 
-### 3. KEINE mode: single für Logic-Scripts
+### 3. NO mode: single for Logic Scripts
 ```yaml
-# FALSCH
+# WRONG
 script:
   st_kitchen_logic:
-    mode: single  # ← Trigger werden ignoriert während Lauf!
+    mode: single  # ← Triggers are ignored during run!
 ```
 
-**WARUM:** Input Loss, nicht SPS-like
+**WHY:** Input loss, not PLC-like
 
-**STATTDESSEN:** `mode: restart` (oder `queued` für spezielle Fälle)
+**INSTEAD:** `mode: restart` (or `queued` for special cases)
 
-### 4. KEIN naives Jinja ohne Null-Checks
+### 4. NO Naive Jinja Without Null Checks
 ```jinja
-# FALSCH
-{{ states('sensor.temp') * 2 }}  # Crasht bei "unavailable"
+# WRONG
+{{ states('sensor.temp') * 2 }}  # Crashes on "unavailable"
 ```
 
-**WARUM:** Jinja-Fehler, falsches Ergebnis (z.B. "unavailable" * 2)
+**WHY:** Jinja errors, wrong results (e.g., "unavailable" * 2)
 
-**STATTDESSEN:** Immer defensive Templates mit `| float(default=0.0)`
+**INSTEAD:** Always defensive templates with `| float(default=0.0)`
 
-### 5. KEINE Endlos-Loops ohne Safety
+### 5. NO Infinite Loops Without Safety
 ```iecst
-// FALSCH - Kann HA einfrieren
+// WRONG - Can freeze HA
 WHILE NOT sensor DO
-    // warte...
+    // wait...
 END_WHILE;
 ```
 
-**WARUM:** Blockiert Automation-Thread
+**WHY:** Blocks automation thread
 
-**STATTDESSEN:** Automatischer Safety-Counter, max 1000 Iterationen
+**INSTEAD:** Automatic safety counter, max 1000 iterations
 
-### 6. KEINE hartcodierten Entity-IDs im Transpiler
+### 6. NO Hardcoded Entity IDs in Transpiler
 ```typescript
-// FALSCH
+// WRONG
 const trigger = { entity_id: "binary_sensor.motion" };
 ```
 
-**WARUM:** Nicht portabel, schwer zu testen
+**WHY:** Not portable, hard to test
 
-**STATTDESSEN:** Aus AST EntityBinding extrahieren
+**INSTEAD:** Extract from AST EntityBinding
 
-### 7. KEIN Deploy ohne Backup
+### 7. NO Deploy Without Backup
 ```python
-# FALSCH
+# WRONG
 async def deploy():
     await delete_old_helpers()
-    await create_new_helpers()  # ← Fehler hier = Datenverlust!
+    await create_new_helpers()  # ← Error here = data loss!
 ```
 
-**WARUM:** Inkonsistenter Zustand, Datenverlust
+**WHY:** Inconsistent state, data loss
 
-**STATTDESSEN:** Backup → Änderungen → Verify → Commit (oder Rollback)
+**INSTEAD:** Backup → Changes → Verify → Commit (or Rollback)
 
-### 8. KEINE direkte HA-API Manipulation ohne Abstraktion
+### 8. NO Direct HA API Manipulation Without Abstraction
 ```typescript
-// FALSCH
+// WRONG
 await hass.callService('input_number', 'set_value', {...});
 ```
 
-**WARUM:** Schwer zu testen, API-Änderungen brechen Code
+**WHY:** Hard to test, API changes break code
 
-**STATTDESSEN:** Helper-Manager Abstraction Layer
+**INSTEAD:** Helper Manager abstraction layer
 
-### 9. KEINE direkte YAML-Datei-Manipulation
+### 9. NO Direct YAML File Manipulation
 ```python
-# FALSCH - Niemals!
+# WRONG - Never!
 with open('/config/automations.yaml', 'w') as f:
     yaml.dump(automation, f)
 ```
 
-**WARUM:** 
-- Überschreibt User-Kommentare und Formatierung
-- HA trackt Änderungen nicht
-- Kein Rollback bei Fehler
-- Race Conditions mit HA-Core
-- Sicherheitsrisiko
+**WHY:** 
+- Overwrites user comments and formatting
+- HA doesn't track changes
+- No rollback on error
+- Race conditions with HA Core
+- Security risk
 
-**STATTDESSEN:** HA Storage API / WebSocket Services
+**INSTEAD:** HA Storage API / WebSocket services
 
-### 10. KEINE ungeprüften Throttle-Templates
+### 10. NO Unchecked Throttle Templates
 ```jinja
-# FALSCH - crasht bei erstem Run
+# WRONG - crashes on first run
 {{ (now() - states('input_datetime.x') | as_datetime).total_seconds() }}
 ```
 
-**WARUM:** `input_datetime` kann `unknown`/`unavailable` sein
+**WHY:** `input_datetime` can be `unknown`/`unavailable`
 
-**STATTDESSEN:** Immer Fallback für leeren/neuen Helper
-
----
-
-## Phasenplan
-
-### Phase 1: Foundation
-<!-- STATUS 2025-01-13: 3 von 5 Tasks abgeschlossen -->
-- ✅ Repository-Setup (HACS-Struktur) <!-- COMPLETE: manifest.json, __init__.py, config_flow.py, translations -->
-- ✅ CodeMirror 6 mit ST Syntax-Highlighting <!-- COMPLETE: st-language.ts, st-theme.ts, st-editor.ts, TwinCAT-inspired theme -->
-- ✅ Chevrotain Parser (PROGRAM, VAR, IF/ELSE, Assignments) <!-- COMPLETE: Vollständiger Parser mit CASE, Loops, 23/23 Tests -->
-- ❌ Basis-Transpilation: IF → choose <!-- TODO: transpiler/ Verzeichnis existiert, aber leer -->
-- ❌ Dependency Analyzer (Trigger-Generierung) <!-- TODO: analyzer/ Verzeichnis existiert, aber leer -->
-
-### Phase 2: Core Features
-<!-- ANMERKUNG 2025-01-13: "Vollständiger Parser" wurde bereits in Phase 1 implementiert -->
-- Entity-Browser mit WebSocket
-- Drag & Drop Entity-Binding
-- ✅ Vollständiger Parser (CASE, FOR, WHILE) <!-- Bereits in Phase 1 abgeschlossen -->
-- Built-in Funktionen mit Null-Safety
-- R_TRIG / F_TRIG
-- Loop Safety Guards
-- Golden Master Tests
-
-### Phase 3: FB & Projekt-Struktur
-- FUNCTION_BLOCK Support
-- Projekt-Explorer UI
-- Storage Analyzer (Persistenz-Erkennung)
-- Helper Manager mit Sync & Cleanup
-- Hybrid-Architektur (Automation + Script)
-- Throttle/Debounce Generator
-
-### Phase 4: Polish & Advanced
-- Timer-FBs (TON, TOF, TP)
-- Source Maps & Error Mapping
-- Restore-Policy System
-- Migration-Handler
-- Transactional Deploy + Rollback
-- Live-Werte im Editor
+**INSTEAD:** Always fallback for empty/new helper
 
 ---
 
-## Risiko-Matrix
+## Implementation Status
 
-| Risiko | Impact | Wahrscheinlichkeit | Mitigation |
-|--------|--------|-------------------|------------|
-| Zyklus→Event nicht korrekt | 🔴 Hoch | Mittel | Dependency Analyzer + Tests |
-| State-Verlust ohne Persistenz | 🔴 Hoch | Hoch | Storage Analyzer + Helper |
-| Timer nicht unterbrechbar | 🟡 Mittel | Hoch | Timer-Entity Pattern |
-| Jinja-Fehler bei unavailable | 🟡 Mittel | Hoch | Defensive Templates |
-| Loop-Blockierung | 🔴 Hoch | Mittel | Safety Guards |
-| Deploy-Inkonsistenz | 🟡 Mittel | Niedrig | Transactional Deploy |
-| Parser-Komplexität | 🟡 Mittel | Mittel | Iterativ erweitern |
-| **Datei-Manipulation statt API** | 🔴 Hoch | Niedrig | Nur HA Storage API verwenden |
-| **Throttle-Helper leer** | 🟡 Mittel | Hoch | Fallback in Template |
-| **Parser-Wahl falsch** | 🟡 Mittel | Niedrig | Spike mit Evaluation |
+### Completed Features (All 20 Core Tasks)
+
+| Task | Description | Status |
+|------|-------------|--------|
+| T-001 | Repository Setup (HACS structure) | ✅ Complete |
+| T-002 | CodeMirror 6 ST Editor | ✅ Complete |
+| T-003 | Chevrotain Parser | ✅ Complete |
+| T-004 | Dependency Analyzer | ✅ Complete |
+| T-005 | Storage Analyzer | ✅ Complete |
+| T-006 | Archive Gap Analysis | ✅ Complete |
+| T-007 | Transpiler Basis | ✅ Complete |
+| T-008 | Helper Manager & Deploy | ✅ Complete |
+| T-009 | Timer FBs (TON/TOF/TP) | ✅ Complete |
+| T-010 | Source Maps & Error Mapping | ✅ Complete |
+| T-011 | Restore Policy & Migration | ✅ Complete |
+| T-012 | Live Values & Online Mode | ✅ Complete |
+
+### Test Coverage
+
+| Module | Tests | Status |
+|--------|-------|--------|
+| Parser | 25 | ✅ Passing |
+| Dependency Analyzer | 16 | ✅ Passing |
+| Storage Analyzer | 23 | ✅ Passing |
+| Transpiler | 15 | ✅ Passing |
+| Timer Transpiler | 9 | ✅ Passing |
+| Deploy Manager | 2 | ✅ Passing |
+| Helper Manager | 2 | ✅ Passing |
+| Restore/Migration | 20 | ✅ Passing |
+| Online Mode | 10 | ✅ Passing |
+| Error Mapping | 10 | ✅ Passing |
+| Source Maps | 11 | ✅ Passing |
+| **Total** | **145** | **✅ 100% Passing** |
+
+### Build Status
+
+- **TypeScript Compilation:** ✅ Passing (strict mode)
+- **ESLint:** ✅ Passing (0 errors)
+- **Bundle Size:** 923.60 KB (245.16 KB gzipped)
+- **Build Time:** ~2s
 
 ---
 
-## Dateistruktur (Ziel)
+## Risk Matrix
+
+| Risk | Impact | Probability | Mitigation | Status |
+|------|--------|-------------|------------|--------|
+| Cycle→Event incorrect | 🔴 High | Medium | Dependency Analyzer + Tests | ✅ Solved |
+| State loss without persistence | 🔴 High | High | Storage Analyzer + Helpers | ✅ Solved |
+| Timer not interruptible | 🟡 Medium | High | Timer Entity Pattern | ✅ Solved |
+| Jinja errors on unavailable | 🟡 Medium | High | Defensive Templates | ✅ Solved |
+| Loop blocking | 🔴 High | Medium | Safety Guards | ✅ Solved |
+| Deploy inconsistency | 🟡 Medium | Low | Transactional Deploy | ✅ Solved |
+| Parser complexity | 🟡 Medium | Medium | Iterative expansion | ✅ Solved |
+| File manipulation instead of API | 🔴 High | Low | Only HA Storage API | ✅ Solved |
+| Throttle helper empty | 🟡 Medium | High | Fallback in template | ✅ Solved |
+| Parser choice wrong | 🟡 Medium | Low | Spike with evaluation | ✅ Solved |
+
+---
+
+## File Structure
 
 ```
 ST_HA_Automation/
@@ -443,9 +424,9 @@ ST_HA_Automation/
 │       ├── manifest.json
 │       ├── config_flow.py
 │       ├── const.py
-│       ├── translations/
+│       ├── strings.json
 │       └── frontend/
-│           └── st-panel.js (gebaut)
+│           └── st-panel.js (built)
 ├── frontend/
 │   ├── src/
 │   │   ├── index.ts
@@ -464,35 +445,51 @@ ST_HA_Automation/
 │   │   ├── analyzer/
 │   │   │   ├── dependency-analyzer.ts
 │   │   │   ├── storage-analyzer.ts
+│   │   │   ├── trigger-generator.ts
+│   │   │   ├── helper-mapping.ts
 │   │   │   └── index.ts
 │   │   ├── transpiler/
 │   │   │   ├── transpiler.ts
+│   │   │   ├── action-generator.ts
 │   │   │   ├── jinja-generator.ts
-│   │   │   ├── trigger-generator.ts
 │   │   │   ├── timer-transpiler.ts
 │   │   │   └── index.ts
 │   │   ├── deploy/
 │   │   │   ├── deploy-manager.ts
 │   │   │   ├── backup-manager.ts
 │   │   │   ├── helper-manager.ts
+│   │   │   ├── ha-api.ts
+│   │   │   └── index.ts
+│   │   ├── online/
+│   │   │   ├── state-manager.ts
+│   │   │   ├── live-decorations.ts
+│   │   │   └── index.ts
+│   │   ├── restore/
+│   │   │   ├── restore-policy.ts
+│   │   │   ├── migration-handler.ts
+│   │   │   └── index.ts
+│   │   ├── error-mapping/
+│   │   │   ├── error-mapper.ts
+│   │   │   └── index.ts
+│   │   ├── sourcemap/
+│   │   │   ├── source-map.ts
 │   │   │   └── index.ts
 │   │   └── panel/
 │   │       └── st-panel.ts
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── vite.config.ts
-├── tests/
-│   ├── frontend/
-│   │   ├── parser.test.ts
-│   │   ├── transpiler.test.ts
-│   │   └── builtins.test.ts
-│   └── integration/
 ├── docs/
-│   ├── 00_Project_Overview.md (diese Datei)
-│   ├── archive/  <!-- UPDATE 2025-01-13: Abgeschlossene Dokumentation verschoben -->
-│   │   ├── 01_Repository_Setup.md  <!-- ✅ Phase 1 abgeschlossen -->
-│   │   ├── 02_CodeMirror_Spike.md  <!-- ✅ Phase 1 abgeschlossen -->
-│   │   └── 03_Parser_Spike.md      <!-- ✅ Phase 1 abgeschlossen -->
+│   ├── 00_Project_Overview.md (this file)
+│   ├── PRD_ST_HomeAssistant.md
+│   ├── agents/
+│   │   ├── agents.md
+│   │   └── tasks.md
+│   └── archive/
+│       ├── 01_Repository_Setup.md
+│       ├── 02_CodeMirror_Spike.md
+│       ├── 03_Parser_Spike.md
+│       └── ... (completed task documentation)
 ├── hacs.json
 ├── README.md
 └── LICENSE
@@ -500,91 +497,36 @@ ST_HA_Automation/
 
 ---
 
-## Referenz-Links
+## Reference Links
 
 - **Chevrotain:** https://chevrotain.io/
 - **CodeMirror 6:** https://codemirror.net/
 - **HA WebSocket API:** https://developers.home-assistant.io/docs/api/websocket
 - **HACS:** https://hacs.xyz/docs/publish/start
 - **IEC 61131-3:** Wikipedia / Beckhoff Infosys
-- **CAFE (Referenz):** https://github.com/FezVrasta/cafe-hass
+- **CAFE (Reference):** https://github.com/FezVrasta/cafe-hass
 
 ---
 
-## Checkliste für neue Entwickler
+## Checklist for New Developers
 
-- [ ] Repository geklont
-- [ ] Node.js 20+ installiert
-- [ ] `cd frontend && npm install` ausgeführt
-- [ ] `npm run build` erfolgreich
-- [ ] Home Assistant Entwicklungsumgebung (optional)
-- [ ] 00_Project_Overview.md gelesen
-- [ ] MUST-DO's und MUST-NOT-DO's verstanden
+- [ ] Repository cloned
+- [ ] Node.js 20+ installed
+- [ ] `cd frontend && npm install` executed
+- [ ] `npm run build` successful
+- [ ] Home Assistant development environment (optional)
+- [ ] 00_Project_Overview.md read
+- [ ] MUST-DO's and MUST-NOT-DO's understood
+- [ ] PRD_ST_HomeAssistant.md reviewed for detailed specifications
 
 ---
 
-## Kontakt & Support
+## Contact & Support
 
 - **Issues:** GitHub Issues
-- **Diskussionen:** GitHub Discussions
-- **Dokumentation:** `/docs` Ordner
+- **Discussions:** GitHub Discussions
+- **Documentation:** `/docs` folder
 
 ---
 
----
-
-<!-- 
-======================================================================================
-IMPLEMENTATION STATUS UPDATE - 2025-01-13
-======================================================================================
-
-PHASE 1 ZUSAMMENFASSUNG:
-- Status: 3 von 5 Tasks abgeschlossen (60%)
-- Implementierte Features übertreffen ursprünglichen Scope deutlich
-
-ABGESCHLOSSEN:
-✅ Repository-Setup (HACS-Struktur)
-   - custom_components/st_hass mit manifest.json, __init__.py, config_flow.py
-   - Moderne HA 2024+ APIs (async_register_static_paths, module_url)
-   - Translations, HACS-kompatibel
-
-✅ CodeMirror 6 Editor
-   - st-language.ts: Vollständige ST Syntax-Highlighting
-   - st-theme.ts: TwinCAT-inspiriertes Theme (Dark Blue)
-   - st-editor.ts: Editor-Komponente mit Autocomplete
-   - Integration in Lit-basiertes Panel
-
-✅ Chevrotain Parser (deutlich über Scope hinaus)
-   - Vollständiger IEC 61131-3 ST Parser
-   - 23/23 Unit Tests bestehen
-   - Unterstützt: PROGRAM, alle VAR-Typen, IF/ELSIF/ELSE, CASE, FOR, WHILE, REPEAT
-   - Expressions: Arithmetik, Vergleich, Logik, Function Calls, Unary
-   - I/O Bindings: AT %I*, AT %Q*, AT %M*
-   - Pragmas: {mode}, {trigger}, {persistent}, etc.
-   - CST → AST Visitor vollständig implementiert
-   - Token-Lexer mit Word Boundaries für Keywords
-   - Error Recovery eingebaut
-
-NOCH OFFEN (für Phase 2):
-❌ Basis-Transpilation (IF → choose)
-   - Verzeichnis frontend/src/transpiler/ existiert (leer)
-   
-❌ Dependency Analyzer (Trigger-Generierung)
-   - Verzeichnis frontend/src/analyzer/ existiert (leer)
-
-BUILD STATUS:
-- TypeScript Compilation: ✅ Pass
-- ESLint: ✅ Pass (0 Errors, expected warnings in Chevrotain visitor)
-- Tests: ✅ 23/23 passing
-- Bundle: 602.79 kB (169.88 kB gzipped)
-
-NÄCHSTE SCHRITTE:
-1. Dependency Analyzer implementieren (kritisch für MUST-DO #1)
-2. Basis-Transpilation IF → choose
-3. Storage Analyzer (MUST-DO #2)
-4. Jinja-Generator mit Null-Safety (MUST-DO #3)
-
-======================================================================================
--->
-
-*Letzte Aktualisierung: Januar 2025*
+*Last updated: January 2026*

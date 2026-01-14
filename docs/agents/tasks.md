@@ -1,6 +1,9 @@
-# Tasks Documentation
+# Tasks Documentation - Phase 2
 
 **Source of Truth:** `tasks.md`
+
+**Phase 1 Archive:** See [tasks_phase1.md](../archive/tasks_phase1.md) for completed Phase 1 tasks (T-001 through T-020).
+
 ---
 
 ## Task Status Legend
@@ -18,516 +21,372 @@
 
 ---
 
+## Phase 2 Overview
+
+Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **production readiness**. The core transpilation pipeline is complete from Phase 1; Phase 2 extends user-facing capabilities and prepares for HACS publication.
+
+### Phase 2 Goals
+- Entity Browser with drag-and-drop binding
+- Project Explorer for multi-file support
+- User documentation and tutorials
+- Performance optimization
+- Beta testing readiness
+
+---
+
 ## Active Tasks
 
-### T-001: Align repository with foundation & CI plan
+### T-021: Entity Browser with WebSocket Integration
 
-**Status**: COMPLETED  
-**Assigned**: DevOps  
+**Status**: TODO  
+**Assigned**: -  
 **Priority**: High  
 **Created**: 2026-01-14  
 **Dependencies**: -  
 
-**Description**: Review the actual repo against `01_Repository_Setup.md` and `ST_HomeAssistant_Projektplan_final.md`, add/adjust the CI workflow, lint/typecheck/test scripts integration, and ensure HACS/HA metadata and basic docs match the agreed structure.
+**Description**: Implement a sidebar panel that lists all available HA entities via WebSocket subscription, allows filtering/searching by domain and name, and provides drag-and-drop functionality to bind entities to ST variables.
 
 **Acceptance Criteria**:
-- [x] `.github/workflows/ci.yml` runs lint, typecheck, tests and build for frontend
-- [x] HACS/manifest metadata match current repository URLs and naming
-- [x] README reflects current architecture and phases
+- [ ] `EntityBrowser` component subscribes to HA entity state updates via WebSocket
+- [ ] Entities are grouped by domain (light, sensor, binary_sensor, switch, etc.)
+- [ ] Search/filter functionality allows finding entities by name or ID
+- [ ] Drag-and-drop from entity list to editor inserts proper AT binding syntax
+- [ ] Entity icons and current state are displayed
+- [ ] Data type inference suggests appropriate ST type (BOOL for binary_sensor, REAL for numeric sensor)
+- [ ] Performance remains smooth with 500+ entities
 
-**Technical Notes**: Focus on pipeline wiring and configuration, not on feature implementation.
+**Technical Notes**: 
+- Use `home-assistant-js-websocket` for subscriptions
+- Follow the design mockup in PRD section 2.1
+- Consider virtualized list for large entity counts
 
-**Files Changed**:
-- `.github/workflows/ci.yml`
-- `frontend/package.json`
-- `README.md`
+**Files to Create/Modify**:
+- `frontend/src/entity-browser/entity-browser.ts` (new)
+- `frontend/src/entity-browser/entity-list.ts` (new)
+- `frontend/src/entity-browser/entity-item.ts` (new)
+- `frontend/src/entity-browser/types.ts` (new)
+- `frontend/src/entity-browser/index.ts` (new)
+- `frontend/src/panel/st-panel.ts` (integrate sidebar)
 
 ---
 
-### T-002: Finalize CodeMirror ST editor and UX polish
+### T-022: Project Explorer and Multi-File Support
 
-**Status**: COMPLETED  
-**Assigned**: DevOps  
+**Status**: TODO  
+**Assigned**: -  
 **Priority**: High  
 **Created**: 2026-01-14  
-**Dependencies**: T-001  
+**Dependencies**: T-021  
 
-**Description**: Ensure the CodeMirror 6 integration from `02_CodeMirror_Spike.md` matches the planned behavior: ST language mode, TwinCAT-like theme, `st-editor` web component, and updated `st-panel` wiring, including keyboard shortcuts and basic editor ergonomics.
+**Description**: Extend the single-file editor to support multiple ST program files organized in a project structure. Add a file tree sidebar, file tabs, and the ability to manage multiple programs.
 
 **Acceptance Criteria**:
-- [ ] ST keywords, types, pragmas and IO addresses are highlighted as specified
-- [ ] `st-editor` wraps CodeMirror with config from the spike and emits `code-change` events
-- [ ] `st-panel` uses `st-editor` instead of `<textarea>` and compiles with no TS errors
-- [ ] Example program in the spike renders correctly and is editable without lag
+- [ ] Project structure stored in HA (via helper or config entry storage)
+- [ ] File tree sidebar shows all ST files in the project
+- [ ] Tabs allow switching between open files
+- [ ] New file / rename / delete operations
+- [ ] Changes are persisted and survive HA restarts
+- [ ] Deploy can target individual programs or the entire project
+- [ ] Unsaved changes indicator on tabs
 
-**Technical Notes**: Keep bundle size reasonable; do not yet integrate parser/analyzers here.
+**Technical Notes**:
+- Consider using HA's `storage` API for persisting project structure
+- File content could be stored as text helpers or custom storage
+- Keep backward compatibility with single-file mode
 
-**Files Changed**:
-- `frontend/src/editor/*`
-- `frontend/src/panel/st-panel.ts`
+**Files to Create/Modify**:
+- `frontend/src/project/project-explorer.ts` (new)
+- `frontend/src/project/file-tree.ts` (new)
+- `frontend/src/project/project-storage.ts` (new)
+- `frontend/src/project/types.ts` (new)
+- `frontend/src/panel/st-panel.ts` (integrate tabs)
+- `frontend/src/editor/st-editor.ts` (multi-instance support)
 
 ---
 
-### T-003: Chevrotain ST parser MVP and tests
+### T-023: User Documentation and Tutorials
 
-**Status**: COMPLETED  
-**Assigned**: Dev1  
+**Status**: TODO  
+**Assigned**: -  
 **Priority**: High  
 **Created**: 2026-01-14  
-**Dependencies**: T-001, T-002  
+**Dependencies**: -  
 
-**Description**: Implement or align the Chevrotain-based parser as described in `03_Parser_Spike.md`, including tokens, lexer, parser, AST, CST→AST visitor and parser tests, and choose Chevrotain as the primary parser per the project plan.
+**Description**: Create comprehensive user-facing documentation with step-by-step tutorials, common automation patterns, and a library of example ST programs for typical HA scenarios.
 
 **Acceptance Criteria**:
-- [ ] `frontend/src/parser/*` matches the spike’s feature scope (PROGRAM/VAR blocks, IF/CASE/loops, expressions, pragmas, bindings)
-- [ ] `parser.test.ts` covers the scenarios from the spike (pragmas, variables, statements, errors)
-- [ ] Public `parse()` API returns AST and error list that downstream modules can consume
+- [ ] Quickstart guide completed (docs/quickstart.md) - ✅ Already done
+- [ ] Tutorial: Basic motion-activated light
+- [ ] Tutorial: Thermostat with hysteresis control
+- [ ] Tutorial: Multi-zone HVAC coordination
+- [ ] Tutorial: Timer-based staircase lighting
+- [ ] Tutorial: Presence-based automation
+- [ ] Common patterns reference (edge detection, debouncing, state machines)
+- [ ] Pragma reference with examples for each pragma
+- [ ] Troubleshooting guide with common errors and solutions
+- [ ] FAQ section
 
-**Technical Notes**: Prioritize clear AST shapes that match analyzer/transpiler needs over strict 1:1 with spike types.
+**Technical Notes**:
+- Use clear, consistent formatting
+- Include complete, copy-pasteable code examples
+- Screenshots of editor UI where helpful
 
-**Files Changed**:
-- `frontend/src/parser/*`
+**Files to Create/Modify**:
+- `docs/tutorials/01-motion-light.md` (new)
+- `docs/tutorials/02-thermostat.md` (new)
+- `docs/tutorials/03-hvac.md` (new)
+- `docs/tutorials/04-staircase-timer.md` (new)
+- `docs/tutorials/05-presence.md` (new)
+- `docs/reference/patterns.md` (new)
+- `docs/reference/pragmas.md` (new)
+- `docs/troubleshooting.md` (new)
+- `docs/faq.md` (new)
 
 ---
 
-### T-004: Dependency analyzer – automatic trigger generation
+### T-024: FUNCTION_BLOCK Definition Support
 
-**Status**: COMPLETED  
-**Assigned**: Dev1  
+**Status**: TODO  
+**Assigned**: -  
+**Priority**: Medium  
+**Created**: 2026-01-14  
+**Dependencies**: -  
+
+**Description**: Implement full IEC 61131-3 FUNCTION_BLOCK syntax support, allowing users to define custom FBs with internal state, input/output parameters, and instantiation in programs.
+
+**Acceptance Criteria**:
+- [ ] Parser supports FUNCTION_BLOCK...END_FUNCTION_BLOCK syntax
+- [ ] FB can have VAR, VAR_INPUT, VAR_OUTPUT, VAR_IN_OUT sections
+- [ ] FB instantiation syntax supported in PROGRAM VAR blocks
+- [ ] FB instance calls with input/output assignments
+- [ ] FB internal state is properly persisted (via helpers)
+- [ ] Multiple instances of the same FB maintain independent state
+- [ ] Transpiler generates appropriate HA constructs
+- [ ] Tests cover FB definition, instantiation, and state management
+
+**Technical Notes**:
+- This is Phase 3 content from the original plan, but highly requested
+- Consider scoping to simple FBs first (no nested FB calls)
+- Internal state requires helper generation per instance
+
+**Files to Create/Modify**:
+- `frontend/src/parser/parser.ts` (extend)
+- `frontend/src/parser/ast.ts` (add FB nodes)
+- `frontend/src/parser/visitor.ts` (extend)
+- `frontend/src/analyzer/fb-analyzer.ts` (new)
+- `frontend/src/transpiler/fb-transpiler.ts` (new)
+- `frontend/src/parser/parser.test.ts` (extend)
+
+---
+
+### T-025: Bundle Size Optimization
+
+**Status**: TODO  
+**Assigned**: -  
+**Priority**: Medium  
+**Created**: 2026-01-14  
+**Dependencies**: -  
+
+**Description**: Analyze and reduce frontend bundle size through code splitting, lazy loading, tree-shaking, and dependency optimization. Current bundle is 923 KB (245 KB gzipped).
+
+**Acceptance Criteria**:
+- [ ] Bundle analysis report generated (using rollup-plugin-visualizer or similar)
+- [ ] Identify largest dependencies and optimization opportunities
+- [ ] Implement code splitting for non-critical modules
+- [ ] Lazy load entity browser and project explorer
+- [ ] Remove unused exports from dependencies
+- [ ] Target: <600 KB uncompressed, <180 KB gzipped
+- [ ] No functionality regression
+- [ ] Load time remains acceptable (<2s on typical hardware)
+
+**Technical Notes**:
+- CodeMirror and Chevrotain are the largest dependencies
+- Consider dynamic imports for analyzer/transpiler (not needed until deploy)
+- Document optimization decisions for future reference
+
+**Files to Create/Modify**:
+- `frontend/vite.config.ts` (optimization settings)
+- `frontend/src/index.ts` (dynamic imports)
+- `frontend/package.json` (dependency audit)
+
+---
+
+### T-026: End-to-End Integration Tests
+
+**Status**: TODO  
+**Assigned**: -  
+**Priority**: Medium  
+**Created**: 2026-01-14  
+**Dependencies**: T-021, T-022  
+
+**Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a simulated or real HA environment.
+
+**Acceptance Criteria**:
+- [ ] E2E test framework set up (Playwright or Cypress)
+- [ ] Test: Write ST program → Parse → Analyze → Transpile → Deploy
+- [ ] Test: Deployed automation triggers correctly on entity state change
+- [ ] Test: Persistent variable survives automation reruns
+- [ ] Test: Timer FB fires after specified duration
+- [ ] Test: Rollback on deploy failure
+- [ ] Test: Online mode shows live values
+- [ ] CI integration for E2E tests (may run in separate workflow)
+
+**Technical Notes**:
+- Consider using HA dev container for real HA environment
+- Mock WebSocket for faster unit-level E2E tests
+- Document test setup requirements
+
+**Files to Create/Modify**:
+- `frontend/e2e/` (new directory)
+- `frontend/e2e/deploy.spec.ts` (new)
+- `frontend/e2e/automation.spec.ts` (new)
+- `frontend/e2e/online-mode.spec.ts` (new)
+- `frontend/playwright.config.ts` or `cypress.config.ts` (new)
+- `.github/workflows/e2e.yml` (new)
+
+---
+
+### T-027: Advanced Online Mode - Force Values
+
+**Status**: TODO  
+**Assigned**: -  
+**Priority**: Low  
+**Created**: 2026-01-14  
+**Dependencies**: -  
+
+**Description**: Extend the online mode to allow force-values (temporarily override entity states for testing) without actually changing the HA entity.
+
+**Acceptance Criteria**:
+- [ ] UI to set force value on any input variable
+- [ ] Forced values shown with distinct styling in editor
+- [ ] Transpiled logic uses forced value instead of actual entity state
+- [ ] Force can be cleared to return to live value
+- [ ] Force values persist only during online session (not saved)
+- [ ] Warning indicator when any forces are active
+
+**Technical Notes**:
+- This is for testing/debugging, not production use
+- Consider security implications (force shouldn't affect actual entities)
+- May require modified Jinja templates that check force state
+
+**Files to Create/Modify**:
+- `frontend/src/online/force-manager.ts` (new)
+- `frontend/src/online/online-toolbar.ts` (extend)
+- `frontend/src/online/live-decorations.ts` (extend)
+
+---
+
+### T-028: Developer API Documentation
+
+**Status**: TODO  
+**Assigned**: -  
+**Priority**: Low  
+**Created**: 2026-01-14  
+**Dependencies**: -  
+
+**Description**: Generate and maintain API documentation for all public modules (parser, analyzer, transpiler, deploy) using TypeDoc or similar.
+
+**Acceptance Criteria**:
+- [ ] TypeDoc or similar configured in project
+- [ ] All public exports have JSDoc comments
+- [ ] Generated documentation hosted (GitHub Pages or similar)
+- [ ] Documentation auto-updates on merge to main
+- [ ] Getting started guide for contributors
+- [ ] Architecture diagram with module relationships
+
+**Technical Notes**:
+- Focus on public APIs that external tools might use
+- Include code examples in JSDoc where helpful
+
+**Files to Create/Modify**:
+- `frontend/typedoc.json` (new)
+- `frontend/src/**/*.ts` (add JSDoc)
+- `.github/workflows/docs.yml` (new)
+- `docs/api/` (generated)
+
+---
+
+### T-029: Import/Export Functionality
+
+**Status**: TODO  
+**Assigned**: -  
+**Priority**: Low  
+**Created**: 2026-01-14  
+**Dependencies**: T-022  
+
+**Description**: Add ability to export ST programs to files and import from files, enabling version control and sharing of ST programs outside of HA.
+
+**Acceptance Criteria**:
+- [ ] Export single file as `.st` file download
+- [ ] Export entire project as `.zip` archive
+- [ ] Import `.st` file into editor
+- [ ] Import `.zip` project archive
+- [ ] Handle naming conflicts on import (rename/overwrite/skip)
+- [ ] Preserve pragmas and formatting on round-trip
+
+**Technical Notes**:
+- Use browser File API for download/upload
+- Consider standard ST file encoding (UTF-8)
+- Project export should include metadata (version, dependencies)
+
+**Files to Create/Modify**:
+- `frontend/src/import-export/exporter.ts` (new)
+- `frontend/src/import-export/importer.ts` (new)
+- `frontend/src/import-export/types.ts` (new)
+- `frontend/src/panel/st-panel.ts` (integrate menu options)
+
+---
+
+### T-030: HACS Publication Preparation
+
+**Status**: TODO  
+**Assigned**: -  
 **Priority**: High  
 **Created**: 2026-01-14  
-**Dependencies**: T-003  
+**Dependencies**: T-023, T-025  
 
-**Description**: Implement and refine the dependency analyzer from `04_Dependency_Analyzer.md` so it reliably extracts entity dependencies from the AST, applies `{trigger}` / `{no_trigger}` pragmas, detects R_TRIG/F_TRIG edge cases, and emits diagnostic codes as specified.
+**Description**: Prepare the repository for official HACS publication, including final documentation review, branding assets, release automation, and HACS default repository submission.
 
 **Acceptance Criteria**:
-- [ ] INPUT bindings with valid entity IDs generate state triggers with `not_from` / `not_to` filters
-- [ ] `{trigger}` forces triggers and `{no_trigger}` suppresses them
-- [ ] R_TRIG/F_TRIG calls produce rising/falling edge trigger configs where applicable
-- [ ] Diagnostics cover NO_TRIGGERS, MANY_TRIGGERS, UNUSED_INPUT, WRITE_TO_INPUT, INVALID_ENTITY_ID with stable codes
-- [ ] All tests in `dependency-analyzer.test.ts` pass
+- [ ] README is polished and user-friendly
+- [ ] All documentation is complete and reviewed
+- [ ] HACS manifest is correct and complete
+- [ ] info.md for HACS store page created
+- [ ] Logo/icon assets created (if needed)
+- [ ] Release workflow creates proper GitHub releases
+- [ ] Changelog is maintained
+- [ ] Submitted to HACS default repository (PR to hacs/default)
+- [ ] Version bumped to 1.0.0 for release
 
-**Technical Notes**: Ensure the analyzer’s public types remain stable for the transpiler and UI.
+**Technical Notes**:
+- Review HACS submission requirements: https://hacs.xyz/docs/publish/include
+- Test fresh installation on clean HA instance
+- Consider beta testing period before 1.0.0
 
-**Files Changed**:
-- `frontend/src/analyzer/*`
+**Files to Create/Modify**:
+- `hacs.json` (review)
+- `custom_components/st_hass/manifest.json` (version bump)
+- `info.md` (new - HACS store description)
+- `CHANGELOG.md` (new)
+- `.github/workflows/release.yml` (new or update)
+- `assets/` (new - logo, screenshots)
 
 ---
 
-### T-005: Storage analyzer – persistence decisions and helper mapping
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: High  
-**Created**: 2026-01-14  
-**Dependencies**: T-003, T-004  
-
-**Description**: Implement the storage analyzer from `05_Storage_Analyzer.md` to classify variables as DERIVED/TRANSIENT/PERSISTENT, infer appropriate HA helper types, and produce helper configs plus diagnostics for suspicious persistence patterns.
-
-**Acceptance Criteria**:
-- [ ] Entity-bound variables are marked DERIVED and never get helpers
-- [ ] Self-referencing, FB-instance, and timer-related vars become PERSISTENT by default
-- [ ] `{persistent}` / `{transient}` pragmas override heuristics, with conflicts reported
-- [ ] Helper configs follow the namespace convention and encode min/max/step correctly
-- [ ] All tests in `storage-analyzer.test.ts` pass
-
-**Technical Notes**: Coordinate helper IDs and types with the transpiler and helper manager.
-
-**Files Changed**:
-- `frontend/src/analyzer/*`
-
----
-
-### T-006: Close gaps between archive specs and implementation
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: Medium  
-**Created**: 2026-01-14  
-**Dependencies**: T-001–T-005  
-
-**Description**: Use `12_Archive_Feature_Gap_Analysis.md` to reconcile the current implementation with the original spike specs (01–04), deciding for each gap whether to bring code in line with the spec or to update the docs to reflect intentional changes.
-
-**Acceptance Criteria**:
-- [x] Each gap in the archive gap analysis is either fixed in code or explicitly updated in docs
-- [x] R_TRIG/F_TRIG handling strategy is documented and implemented or explicitly deferred
-- [x] Diagnostic code schemes are consistent and documented
-
-**Technical Notes**: This is mainly planning/coordination plus small targeted changes, not a large refactor.
-
-**Files Changed**:
-- `docs/archive/*`
-- `frontend/src/analyzer/*`
-
----
-
-### T-007: Transpiler basis – ST AST to HA automation/script
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: High  
-**Created**: 2026-01-14  
-**Dependencies**: T-004, T-005  
-
-**Description**: Implement the core transpiler as described in `06_Transpiler_Basis.md`: map ST control flow to HA `choose`/`repeat`, handle assignments to entities/helpers/variables, integrate dependency and storage analysis, and generate defensive Jinja templates.
-
-**Acceptance Criteria**:
-- [ ] IF/ELSIF/ELSE, CASE, FOR/WHILE/REPEAT map to the expected HA action structures
-- [ ] Output assignments result in correct HA service calls; persistent vars use helper services; transient vars use `variables:`
-- [ ] Mode/throttle/debounce pragmas influence automation/script as planned
-- [ ] Example program from the doc round-trips to the shown YAML (modulo formatting)
-- [ ] All `transpiler` tests and type checks pass
-
-**Technical Notes**: Keep a clear separation between trigger automation and logic script per the project plan.
-
-**Files Changed**:
-- `frontend/src/transpiler/*`
-
----
-
-### T-008: Helper manager and transactional deploy system
-
-**Status**: COMPLETED  
-**Assigned**: DevOps  
-**Priority**: High  
-**Created**: 2026-01-14  
-**Dependencies**: T-005, T-007  
-
-**Description**: Implement the helper manager and deploy manager from `07_Helper_Manager_Deploy.md`, including HA WebSocket wrappers, helper sync (create/update/delete), backup/restore, and transactional deploy with rollback and verification.
-
-**Acceptance Criteria**:
-- [x] Helper sync computes toCreate/toUpdate/toDelete for ST helpers based on transpiler output
-- [x] Deploy operation applies automation, script, and helper changes atomically, with rollback on error
-- [x] Backups can be created, listed, restored and pruned as described
-- [x] All deploy-related tests and type checks pass
-
-**Technical Notes**: Absolutely no direct YAML file writes; all changes go through HA WebSocket APIs.
-
-**Files Changed**:
-- `frontend/src/deploy/*`
-
----
-
-### T-009: Timer function blocks (TON/TOF/TP) to HA timers
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: Medium  
-**Created**: 2026-01-14  
-**Dependencies**: T-007, T-008  
-
-**Description**: Implement the timer FB transpiler described in `08_Timer_FBs.md`, mapping TON/TOF/TP instances to HA `timer.*` entities, boolean helper outputs, and dedicated `timer.finished` automations, plus integration into the main transpiler.
-
-**Acceptance Criteria**:
-- [x] TON, TOF and TP generate the expected timer entities, helper IDs and automations
-- [x] `timerInstance.Q` and `ET` are usable in expressions via output mappings
-- [x] Example in the doc (off-delay light) is transpiled into the shown YAML pattern
-- [x] All timer transpiler tests pass
-
-**Technical Notes**: Coordinate helper naming with storage/helper manager and avoid blocking delays.
-
-**Files Changed**:
-- `frontend/src/transpiler/*`
-
----
-
-### T-010: Source maps and HA error mapping to ST
-
-**Status**: COMPLETED  
-**Assigned**: Dev2  
-**Priority**: Medium  
-**Created**: 2026-01-14  
-**Dependencies**: T-007, T-008  
-
-**Description**: Implement source-map generation and error mapping per `09_Source_Maps_Error_Mapping.md`, so HA automation/script errors can be translated back to ST file/line with contextual snippets and human-friendly messages.
-
-**Acceptance Criteria**:
-- [x] Transpiler records YAML path → ST source mappings and embeds them where specified
-- [x] Error mapper translates common HA/template errors into German explanations with suggestions
-- [x] Code snippet rendering (console/UI) highlights the relevant ST line and column range
-- [x] All source-map and error-mapper tests pass
-
-**Technical Notes**: Keep the source map format stable for future tooling; avoid heavy runtime overhead.
-
-**Files Changed**:
-- `frontend/src/sourcemap/*`
-- `frontend/src/error-mapping/*`
-
----
-
-### T-011: Restore policy and schema migration handling
-
-**Status**: COMPLETED  
-**Assigned**: Dev2  
-**Priority**: Medium  
-**Created**: 2026-01-14  
-**Dependencies**: T-005, T-008  
-
-**Description**: Implement the restore-policy system and migration handler from `10_Restore_Policy_Migration.md`, including `{reset_on_restart}` / `{require_restore}` semantics, schema storage, migration detection, and the migration dialog component.
-
-**Acceptance Criteria**:
-- [x] Restore policies are inferred from pragmas and applied to helper-backed variables
-- [x] Schema changes (add/remove/type/range) are detected and surfaced as migration issues
-- [x] `st-migration-dialog` lets users select resolutions and passes them to the executor
-- [x] Migration executor applies conversions/resets/deletions as chosen and reports results
-
-**Technical Notes**: Integrate with helper manager and deploy flow without breaking existing deployments.
-
-**Files Changed**:
-- `frontend/src/restore/*`
-
----
-
-### T-012: Live values and online mode in editor
-
-**Status**: COMPLETED  
-**Assigned**: Dev2  
-**Priority**: Medium  
-**Created**: 2026-01-14  
-**Dependencies**: T-007, T-008  
-
-**Description**: Implement the online mode described in `11_Live_Values_Online_Mode.md`, including entity state subscriptions, live value widgets in the editor, an online toolbar, and pause/resume and settings controls.
-
-**Acceptance Criteria**:
-- [x] `OnlineStateManager` subscribes to HA entity updates and tracks bound variable values
-- [x] CodeMirror decorations display formatted live values next to variable declarations
-- [x] Toolbar shows connection status, lets the user connect, pause, stop, and tweak settings
-- [x] All online mode tests pass and the UI remains responsive
-
-**Technical Notes**: Start with read-only live display; force-values and breakpoints are out of scope here.
-
-**Files Changed**:
-- `frontend/src/online/*`
-- `frontend/src/editor/st-editor.ts`
-
----
-
-### T-013: Align implementation with high-level project plan
-
-**Status**: COMPLETED  
-**Assigned**: Dev2  
-**Priority**: Medium  
-**Created**: 2026-01-14  
-**Dependencies**: T-001–T-012  
-
-**Description**: Use `ST_HomeAssistant_Projektplan_final.md` to ensure the overall implementation (phases, features, and risks) matches the agreed roadmap, updating either code or documentation where reality diverges from the plan.
-
-**Acceptance Criteria**:
-- [x] Each phase in the plan (1–4) maps cleanly to concrete tasks (T-001–T-012)
-- [x] Any intentional deviations from the plan are documented in the docs
-- [x] Open decisions (e.g. parser library choice) are resolved and recorded
-
-**Technical Notes**: This is an umbrella coordination task; it may spawn follow-up tasks if needed.
-
-**Files Changed**:
-- `docs/ST_HomeAssistant_Projektplan_final.md`
-- `docs/archive/*`
-
----
-
-### T-014: Align README Python version with CI configuration
-
-**Status**: COMPLETED  
-**Assigned**: DevOps  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-001  
-
-**Description**: Adjust the documented Python version in `README.md` so it explicitly matches or clearly explains the CI configuration (currently using Python 3.12), keeping developer setup and pipeline expectations consistent.
-
-**Acceptance Criteria**:
-- [ ] README states a Python version range that is consistent with the CI `python-version` configuration
-- [ ] No other docs contradict the chosen Python version requirement
-- [ ] Dev environment instructions remain valid for both local dev and CI
-
-**Technical Notes**: Pure documentation change; no code or CI workflow behavior changes required.
-
-**Files Changed**:
-- `README.md`
-
----
-
-### T-015: Document CodeMirror spike scope vs analyzer integration
-
-**Status**: COMPLETED  
-**Assigned**: Dev2  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-002, T-004, T-005  
-
-**Description**: Update the spike/docs (especially `02_CodeMirror_Spike.md` and related analyzer docs) to acknowledge that `st-panel.ts` already integrates parsing and dependency analysis, even though the original spike listed that as “Nicht in diesem Task”, and clarify how this relates to analyzer tasks.
-
-**Acceptance Criteria**:
-- [x] `02_CodeMirror_Spike.md` notes that parser/analyzer integration in `st-panel.ts` is an intentional scope extension and references the relevant analyzer/transpiler tasks
-- [x] Any conflicting “out of scope” statements are reconciled with the current implementation
-- [x] The relationship between editor, parser, and analyzer responsibilities is clearly described
-
-**Technical Notes**: This is a documentation/architecture-alignment task; do not change runtime behavior.
-
-**Files Changed**:
-- `docs/archive/02_CodeMirror_Spike.md`
-- `docs/archive/04_Dependency_Analyzer.md`
-
----
-
-### T-016: Parser docs and entity binding enhancements
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-003, T-004  
-
-**Description**: Follow up on the T-003 review by (a) enriching entity binding information so analyzers can easily access both IO binding and the bound entity ID string, and (b) filling in the Chevrotain vs Nearley evaluation table in `03_Parser_Spike.md` with the decision to use Chevrotain and its rationale.
-
-**Acceptance Criteria**:
-- [ ] AST/analyzer surface a clear representation that ties IO binding (`%I*`, `%Q*`, etc.) together with the initializer entity ID string (e.g. `'binary_sensor.xxx'`) without needing to re-parse expressions downstream
-- [ ] Parser/analyzer tests cover the enriched entity binding shape
-- [ ] The evaluation table in `03_Parser_Spike.md` is completed with Chevrotain’s evaluation and the explicit decision to keep it
-
-**Technical Notes**: Keep changes backward-compatible for existing analyzer/transpiler usage where possible; document any AST shape adjustments in the parser docs.
-
-**Files Changed**:
-- `docs/archive/03_Parser_Spike.md`
-- `frontend/src/parser/*`
-- `frontend/src/analyzer/*`
-
----
-
-### T-017: Repository-wide language audit (German → English)
-
-**Status**: COMPLETED  
-**Assigned**: DevOps  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-001  
-
-**Description**: Scan the entire repository (code, tests, docs, comments, and user-facing strings) for German words/phrases and systematically convert them to clear, idiomatic English, except where German is intentionally required (e.g. user-facing German copy or examples).
-
-**Acceptance Criteria**:
-- [ ] No unintended German words remain in code identifiers, comments, commit-facing docs, or UI strings
-- [ ] Intentional German text (e.g. example error translations) is explicitly documented as such
-- [ ] A repeatable check (e.g. documented `rg` patterns or a script) is described so future German terms can be spotted
-
-**Technical Notes**: Be conservative with renaming public APIs; if any exported names change, update all call sites and note the change in docs or changelog.
-
-**Files Changed**:
-- `**/*` (as needed)
-
----
-
-### T-018: Enable timer detection in dependency analyzer once parser supports named args
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-003, T-004, T-016  
-
-**Description**: Once the ST parser supports named arguments for timer function blocks, enable and adapt the currently skipped `hasTimers`-related tests in the dependency analyzer so timer usage is reliably detected and surfaced in analyzer metadata.
-
-**Acceptance Criteria**:
-- [x] Parser gains support for the named-argument constructs needed by the timer detection tests
-- [x] The skipped `hasTimers`/timer-detection test in the dependency analyzer test suite is enabled and passes
-- [x] Analyzer metadata correctly reports `hasTimers` for programs using timer FBs, and this is covered by tests
-
-**Technical Notes**: Keep the change localized to parser support and analyzer tests/metadata; do not change the acceptance criteria of T-004 itself.
-
-**Files Changed**:
-- `frontend/src/parser/*`
-- `frontend/src/analyzer/*`
-
----
-
-### T-019: Reconcile analyzer public API shape with archive specifications
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-004, T-006  
-
-**Description**: Compare the current dependency analyzer public types (e.g. enriched trigger metadata, edge fields, extended diagnostics) with the minimal shapes in `04_Dependency_Analyzer.md` and `12_Archive_Feature_Gap_Analysis.md`, then either update the docs to reflect the richer, stabilized API or adjust the implementation where necessary for consistency.
-
-**Acceptance Criteria**:
-- [x] All public analyzer types used by downstream modules are documented in the archive/spec docs
-- [x] Any intentional divergences from the original archive type shapes are explicitly called out as design evolutions
-- [x] No consumers rely on undocumented or ambiguous analyzer fields
-
-**Technical Notes**: Prefer updating docs to match the richer, backward-compatible API rather than dumbing down types, unless a clear simplification benefit is identified.
-
-**Files Changed**:
-- `docs/archive/04_Dependency_Analyzer.md`
-- `docs/archive/12_Archive_Feature_Gap_Analysis.md`
-- `frontend/src/analyzer/*`
-
----
-
-### T-020: Document storage analyzer & helper ID conventions
-
-**Status**: COMPLETED  
-**Assigned**: Dev1  
-**Priority**: Low  
-**Created**: 2026-01-14  
-**Dependencies**: T-005, T-008, T-019  
-
-**Description**: Update the storage analyzer and helper-related docs to clarify (a) that FB instances (TON, R_TRIG, etc.) are marked PERSISTENT but do not generate helpers because they are serialized by the Helper Manager later, and (b) the exact helper ID format used in `helper-mapping.ts` so specs and implementation are aligned.
-
-**Acceptance Criteria**:
-- [x] Docs explicitly describe why FB instances are PERSISTENT without direct helper configs and how the Helper Manager handles their serialization
-- [x] The helper ID naming convention (including the current `input_${helperType.replace("input_", "")}.st_...` pattern) is documented and consistent across code and docs
-- [x] Any discrepancies between archived examples and current ID format are resolved or clearly called out as intentional
-
-**Technical Notes**: Prefer adjusting docs to match the existing, stable implementation over changing IDs, unless a strong reason emerges during review.
-
-**Files Changed**:
-- `docs/archive/05_Storage_Analyzer.md`
-- `docs/archive/07_Helper_Manager_Deploy.md`
-- `frontend/src/analyzer/helper-mapping.ts`
-
----
-
-## Backlog
-
-Ideas and future tasks that are not yet scheduled:
-
-### UI/UX Enhancements
-
-- **Entity Browser with WebSocket Integration**: Implement a sidebar panel that lists all available HA entities (via WebSocket subscription), allows filtering/searching, and provides drag-and-drop functionality to bind entities to ST variables (AT %I*, AT %Q*). This was explicitly mentioned in Phase 2 of the project plan but deferred to backlog.
-
-- **Project Explorer / Multi-File Structure**: Extend the current single-file editor to support multiple ST program files organized in a project structure. Add a file tree sidebar, file tabs, and the ability to manage multiple programs within a single HA integration instance. Partially covered by existing panel/editor structure, but UI-specific extensions remain.
-
-- **Advanced Online Mode Features**: Extend T-012's online mode with force-values (ability to override entity states for testing) and breakpoints (pause execution at specific lines). These were explicitly marked as out of scope for T-012 but remain valuable for debugging.
-
-### Language & Parser Extensions
-
-- **FUNCTION_BLOCK Support**: Implement full IEC 61131-3 FUNCTION_BLOCK syntax support in the parser, including FB instantiation, input/output parameters, and internal state management. This is mentioned in Phase 3 of the project plan but not yet fully implemented.
-
-- **Extended Built-in Functions**: Add support for additional IEC 61131-3 built-in functions beyond the current set (e.g., trigonometric functions, string manipulation, date/time operations).
-
-### Testing & Quality
-
-- **Golden Master Test Suite Expansion**: Create comprehensive golden master tests for all built-in functions, edge cases, and complex transpilation scenarios to ensure regression-free development.
-
-- **End-to-End Integration Tests**: Add full-stack E2E tests that verify the complete workflow from ST code → parsing → analysis → transpilation → deployment → execution in a real HA environment.
-
-### Documentation & Developer Experience
-
-- **User Documentation & Examples**: Create comprehensive user-facing documentation with step-by-step tutorials, common patterns, troubleshooting guides, and a library of example ST programs for typical HA automation scenarios.
-
-- **Developer API Documentation**: Generate and maintain API documentation for all public modules (parser, analyzer, transpiler, deploy) to facilitate contributions and integrations.
-
-### Performance & Optimization
-
-- **Parser Performance Optimization**: Profile and optimize the Chevrotain parser for large ST programs (1000+ lines) to ensure responsive editing experience.
-
-- **Bundle Size Optimization**: Analyze and reduce frontend bundle size through code splitting, lazy loading, and tree-shaking optimizations.
-
-### Advanced Features
-
-- **Visual Program Flow Editor**: Create a visual representation of ST program flow (control structures, dependencies) as an alternative or complement to the text editor.
-
-- **Import/Export Functionality**: Add ability to export ST programs to files and import from files, enabling version control and sharing of ST programs outside of HA.
+## Backlog (Future Phases)
+
+### Phase 3+ Ideas
+
+- **Visual Program Flow Editor**: Graphical representation of ST program flow
+- **Breakpoints and Step Debugging**: Pause execution at specific lines
+- **Global Variable Library (GVL)**: Shared variables across programs
+- **FUNCTION Support**: Stateless functions (not just FUNCTION_BLOCK)
+- **Extended Built-in Functions**: Trigonometric, string manipulation, date/time
+- **Code Formatting/Prettifier**: Auto-format ST code
+- **Refactoring Tools**: Rename variable, extract function block
+- **Integration with HA Dashboards**: Custom cards showing ST program status
+- **Performance Profiling**: Identify slow automations
+- **Simulation Mode**: Run ST logic without affecting real entities
 
 ---
 
@@ -535,10 +394,11 @@ Ideas and future tasks that are not yet scheduled:
 
 - Always update `tasks.md` when task status changes
 - Keep descriptions clear and actionable
-- Link related tasks
+- Link related tasks via dependencies
 - Document blockers immediately
+- Phase 1 tasks (T-001 through T-020) are archived in `docs/archive/tasks_phase1.md`
 
 ---
 
-**Last Updated**: 2025-11-26
+**Last Updated**: 2026-01-14  
 **Maintained By**: Taskmaster & All Agents
