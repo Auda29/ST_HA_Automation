@@ -210,7 +210,7 @@
 
 ### T-009: Timer function blocks (TON/TOF/TP) to HA timers
 
-**Status**: TODO  
+**Status**: TESTING  
 **Assigned**: Dev1  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -225,6 +225,11 @@
 - [ ] All timer transpiler tests pass
 
 **Technical Notes**: Coordinate helper naming with storage/helper manager and avoid blocking delays.
+
+Next steps for Dev1 (from latest review):
+- Wire the timer transpiler (including `TimerTranspiler` and `TimerOutputResolver`) into `transpiler.ts` / `TranspilerResult` so timer FB instances produce the expected helpers and automations in the main pipeline.
+- Hook timer output resolution into the Jinja/expression generation so `timerInstance.Q` and `timerInstance.ET` are usable transparently in ST expressions.
+- Add an end-to-end test in `transpiler.test.ts` that transpiles the off-delay light example from `08_Timer_FBs.md` and asserts the generated YAML matches the documented pattern.
 
 **Files Changed**:
 - `frontend/src/transpiler/*`
@@ -280,7 +285,7 @@
 
 ### T-012: Live values and online mode in editor
 
-**Status**: TODO  
+**Status**: APPROVED  
 **Assigned**: Dev2  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -289,10 +294,10 @@
 **Description**: Implement the online mode described in `11_Live_Values_Online_Mode.md`, including entity state subscriptions, live value widgets in the editor, an online toolbar, and pause/resume and settings controls.
 
 **Acceptance Criteria**:
-- [ ] `OnlineStateManager` subscribes to HA entity updates and tracks bound variable values
-- [ ] CodeMirror decorations display formatted live values next to variable declarations
-- [ ] Toolbar shows connection status, lets the user connect, pause, stop, and tweak settings
-- [ ] All online mode tests pass and the UI remains responsive
+- [x] `OnlineStateManager` subscribes to HA entity updates and tracks bound variable values
+- [x] CodeMirror decorations display formatted live values next to variable declarations
+- [x] Toolbar shows connection status, lets the user connect, pause, stop, and tweak settings
+- [x] All online mode tests pass and the UI remains responsive
 
 **Technical Notes**: Start with read-only live display; force-values and breakpoints are out of scope here.
 

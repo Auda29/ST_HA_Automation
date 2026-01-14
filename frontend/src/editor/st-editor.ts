@@ -16,16 +16,23 @@ import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
 
 import { structuredText } from './st-language';
 import { stTheme } from './st-theme';
+import { liveValuesExtension, updateLiveValues } from '../online/live-decorations';
+import { OnlineStateManager } from '../online/state-manager';
+import type { VariableBinding, OnlineModeState } from '../online/types';
 
 @customElement('st-editor')
 export class STEditor extends LitElement {
   @property({ type: String }) declare code: string;
   @property({ type: Boolean, attribute: 'read-only' }) declare readOnly: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  @property({ attribute: false }) declare hass?: any;
 
   @query('#editor-container') private _container!: HTMLDivElement;
 
   private _editor: EditorView | null = null;
   private _readOnlyCompartment = new Compartment();
+  private _onlineManager: OnlineStateManager | null = null;
+  private _onlineUnsubscribe: (() => void) | null = null;
 
   static styles = css`
     :host {
@@ -75,7 +82,50 @@ export class STEditor extends LitElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._onlineUnsubscribe?.();
+    this._onlineManager?.stop();
     this._editor?.destroy();
+  }
+
+  /**
+   * Start online mode with variable bindings
+   */
+  async startOnlineMode(bindings: VariableBinding[]): Promise<void> {
+    if (!this.hass?.connection) {
+      throw new Error("Home Assistant connection not available");
+    }
+
+    if (!this._onlineManager) {
+      this._onlineManager = new OnlineStateManager(this.hass.connection);
+      this._onlineUnsubscribe = this._onlineManager.subscribe((state) => {
+        if (this._editor && state.liveValues) {
+          updateLiveValues(this._editor, state.liveValues);
+        }
+      });
+    }
+
+    await this._onlineManager.start(bindings);
+  }
+
+  /**
+   * Stop online mode
+   */
+  stopOnlineMode(): void {
+    this._onlineManager?.stop();
+  }
+
+  /**
+   * Pause/resume online mode
+   */
+  setOnlinePaused(paused: boolean): void {
+    this._onlineManager?.setPaused(paused);
+  }
+
+  /**
+   * Get current online state
+   */
+  getOnlineState(): OnlineModeState | null {
+    return this._onlineManager?.getState() || null;
   }
 
   private _initEditor(): void {
@@ -106,6 +156,7 @@ export class STEditor extends LitElement {
       ]),
       structuredText(),
       stTheme(),
+      liveValuesExtension(),
       this._readOnlyCompartment.of(EditorState.readOnly.of(this.readOnly)),
       EditorState.tabSize.of(4),
     ];

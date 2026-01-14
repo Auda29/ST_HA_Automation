@@ -24,8 +24,9 @@ import type {
   HACondition,
   HATemplateCondition,
   TranspilerContext,
-} from './types';
-import { JinjaGenerator } from './jinja-generator';
+} from "./types";
+import { JinjaGenerator } from "./jinja-generator";
+import type { TimerOutputResolver } from "./timer-transpiler";
 
 const MAX_LOOP_ITERATIONS = 1000;
 
@@ -33,9 +34,9 @@ export class ActionGenerator {
   private context: TranspilerContext;
   private jinja: JinjaGenerator;
 
-  constructor(context: TranspilerContext) {
+  constructor(context: TranspilerContext, timerResolver?: TimerOutputResolver) {
     this.context = context;
-    this.jinja = new JinjaGenerator(context);
+    this.jinja = new JinjaGenerator(context, timerResolver);
   }
 
   /**

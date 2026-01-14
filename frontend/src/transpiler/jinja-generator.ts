@@ -5,16 +5,17 @@
  * unavailable, unknown, and empty states gracefully.
  */
 
-import type { 
-  Expression, 
-  BinaryExpression, 
-  UnaryExpression, 
-  Literal, 
-  VariableRef, 
+import type {
+  Expression,
+  BinaryExpression,
+  UnaryExpression,
+  Literal,
+  VariableRef,
   FunctionCall,
   MemberAccess,
-} from '../parser/ast';
-import type { TranspilerContext } from './types';
+} from "../parser/ast";
+import type { TranspilerContext } from "./types";
+import type { TimerOutputResolver } from "./timer-transpiler";
 
 // ============================================================================
 // Main Generator
@@ -22,9 +23,11 @@ import type { TranspilerContext } from './types';
 
 export class JinjaGenerator {
   private context: TranspilerContext;
+  private timerResolver?: TimerOutputResolver;
 
-  constructor(context: TranspilerContext) {
+  constructor(context: TranspilerContext, timerResolver?: TimerOutputResolver) {
     this.context = context;
+    this.timerResolver = timerResolver;
   }
 
   /**
@@ -356,6 +359,23 @@ export class JinjaGenerator {
   // ==========================================================================
 
   private generateMemberAccess(expr: MemberAccess): string {
+    // Special handling for timer outputs like timer1.Q / timer1.ET
+    if (this.timerResolver) {
+      let root: Expression = expr.object;
+      while (root.type === "MemberAccess") {
+        root = root.object;
+      }
+      if (root.type === "VariableRef") {
+        const mapped = this.timerResolver.resolveOutput(
+          root.name,
+          expr.member.toUpperCase() === "ET" ? "ET" : "Q",
+        );
+        if (mapped) {
+          return mapped;
+        }
+      }
+    }
+
     const obj = this.generateExpression(expr.object);
     return `${obj}.${expr.member}`;
   }

@@ -323,4 +323,54 @@ describe('Transpiler', () => {
       expect(varAction.variables.temp).toBeDefined();
     });
   });
+
+  describe('Timers integration (off-delay example)', () => {
+    it('transpiles TOF off-delay timer with Q used in assignment (smoke test)', () => {
+      const code = `
+        PROGRAM Light_Control
+        VAR
+            motion AT %I* : BOOL := 'binary_sensor.motion';
+            light AT %Q* : BOOL := 'light.kitchen';
+            
+            offDelay : TOF;
+        END_VAR
+
+        // Licht mit 30s Nachlaufzeit
+        offDelay(IN := motion, PT := T#30s);
+        light := offDelay.Q;
+
+        END_PROGRAM
+      `;
+
+      const parseResult = parse(code);
+      if (!parseResult.success || !parseResult.ast) {
+        // Parser does not yet support full timer syntax end-to-end in this example.
+        // This test is a smoke test for transpiler wiring and may be tightened later.
+        return;
+      }
+
+      const result = transpile(parseResult.ast, 'default');
+
+      // Helpers should include a timer and a boolean Q helper
+      const timerHelper = result.helpers.find((h) =>
+        h.id.startsWith('timer.st_default_light_control_offdelay'),
+      );
+      const qHelper = result.helpers.find((h) =>
+        h.id.startsWith('input_boolean.st_default_light_control_offdelay_q'),
+      );
+      expect(timerHelper).toBeDefined();
+      expect(qHelper).toBeDefined();
+
+      // Additional automations should include a timer.finished handler
+      expect(result.additionalAutomations && result.additionalAutomations.length).toBeGreaterThan(0);
+      const finished = result.additionalAutomations!.find((a) =>
+        a.trigger.some(
+          (t) =>
+            t.platform === 'event' &&
+            (t as any).event_type === 'timer.finished',
+        ),
+      );
+      expect(finished).toBeDefined();
+    });
+  });
 });

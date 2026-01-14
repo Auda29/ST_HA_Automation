@@ -1,11 +1,14 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "../editor";
+import "../online/online-toolbar";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
-import type { TriggerConfig, AnalysisMetadata } from "../analyzer/types";
+import type { TriggerConfig, AnalysisMetadata, EntityDependency } from "../analyzer/types";
 import { transpile } from "../transpiler";
 import { deploy, HAApiClient } from "../deploy";
+import type { VariableBinding, OnlineModeState } from "../online/types";
+import type { STEditor } from "../editor/st-editor";
 
 interface CombinedDiagnostic {
   severity: "Error" | "Warning" | "Info" | "Hint";
@@ -26,6 +29,7 @@ export class STPanel extends LitElement {
   @state() declare private _diagnostics: CombinedDiagnostic[];
   @state() declare private _metadata: AnalysisMetadata | null;
   @state() declare private _entityCount: number;
+  @state() declare private _onlineState: OnlineModeState | null;
 
   static styles = css`
     :host {
@@ -149,6 +153,7 @@ END_PROGRAM`;
     this._diagnostics = [];
     this._metadata = null;
     this._entityCount = 0;
+    this._onlineState = null;
   }
 
   connectedCallback() {
@@ -169,9 +174,21 @@ END_PROGRAM`;
             ▶ Deploy
           </button>
         </div>
+        ${this._onlineState
+          ? html`
+              <st-online-toolbar
+                .state=${this._onlineState}
+                @connect=${this._handleOnlineConnect}
+                @disconnect=${this._handleOnlineDisconnect}
+                @toggle-pause=${this._handleOnlineTogglePause}
+                @setting-change=${this._handleOnlineSettingChange}
+              ></st-online-toolbar>
+            `
+          : ""}
         <div class="editor-container">
           <st-editor
             .code=${this._code}
+            .hass=${this.hass}
             @code-change=${this._handleCodeChange}
           ></st-editor>
         </div>
@@ -306,5 +323,77 @@ END_PROGRAM`;
     } catch (error) {
       console.error("Deploy error", error);
     }
+  }
+
+  /**
+   * Extract variable bindings from AST for online mode
+   */
+  private _extractBindings(dependencies: EntityDependency[]): VariableBinding[] {
+    const bindings: VariableBinding[] = [];
+
+    for (const dep of dependencies) {
+      if (!dep.entityId || !dep.location) continue;
+
+      bindings.push({
+        variableName: dep.variableName,
+        entityId: dep.entityId,
+        dataType: dep.dataType,
+        line: dep.location.line,
+        column: dep.location.column,
+        endColumn: dep.location.column + dep.variableName.length,
+        isInput: dep.direction === "INPUT",
+        isOutput: dep.direction === "OUTPUT",
+        isPersistent: false, // Will be determined from storage analysis if needed
+      });
+    }
+
+    return bindings;
+  }
+
+  private async _handleOnlineConnect(): Promise<void> {
+    if (!this._syntaxOk || !this.hass?.connection) {
+      return;
+    }
+
+    const parseResult = parse(this._code);
+    if (!parseResult.success || !parseResult.ast) {
+      return;
+    }
+
+    const analysis = analyzeDependencies(parseResult.ast);
+    const bindings = this._extractBindings(analysis.dependencies);
+
+    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    if (editor) {
+      try {
+        await editor.startOnlineMode(bindings);
+        this._onlineState = editor.getOnlineState();
+      } catch (error) {
+        console.error("Failed to start online mode", error);
+      }
+    }
+  }
+
+  private _handleOnlineDisconnect(): void {
+    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    if (editor) {
+      editor.stopOnlineMode();
+      this._onlineState = null;
+    }
+  }
+
+  private _handleOnlineTogglePause(): void {
+    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    if (editor && this._onlineState) {
+      const isPaused = this._onlineState.status === "paused";
+      editor.setOnlinePaused(!isPaused);
+      this._onlineState = editor.getOnlineState();
+    }
+  }
+
+  private _handleOnlineSettingChange(e: CustomEvent): void {
+    // Settings changes would update the manager, but for now we just log
+    // eslint-disable-next-line no-console
+    console.log("Online setting changed", e.detail);
   }
 }

@@ -2,9 +2,12 @@
  * Main Transpiler - ST AST to HA Automation/Script
  */
 
-import type { ProgramNode } from '../parser/ast';
-import type { AnalysisResult } from '../analyzer/types';
-import type { StorageAnalysisResult } from '../analyzer/types';
+import type { ProgramNode } from "../parser/ast";
+import type { AnalysisResult } from "../analyzer/types";
+import type {
+  StorageAnalysisResult,
+  HelperConfig,
+} from "../analyzer/types";
 import type {
   TranspilerResult,
   HAAutomation,
@@ -15,11 +18,14 @@ import type {
   SourceMap,
   TranspilerDiagnostic,
   HATrigger,
-} from './types';
-import { analyzeDependencies } from '../analyzer/dependency-analyzer';
-import { analyzeStorage } from '../analyzer/storage-analyzer';
-import { ActionGenerator } from './action-generator';
-import { parsePragmas } from '../analyzer/trigger-generator';
+} from "./types";
+import { analyzeDependencies } from "../analyzer/dependency-analyzer";
+import { analyzeStorage } from "../analyzer/storage-analyzer";
+import { ActionGenerator } from "./action-generator";
+import { parsePragmas } from "../analyzer/trigger-generator";
+import { TimerTranspiler, TimerOutputResolver } from "./timer-transpiler";
+import { walkAST } from "../analyzer/ast-visitor";
+import type { TimerInstance, TimerInputs } from "./timer-types";
 
 export class Transpiler {
   private ast: ProgramNode;
@@ -29,6 +35,10 @@ export class Transpiler {
   private context!: TranspilerContext;
   private sourceMap: SourceMap = { entries: [] };
   private diagnostics: TranspilerDiagnostic[] = [];
+  private timerTranspiler?: TimerTranspiler;
+  private timerResolver?: TimerOutputResolver;
+  private timerHelpers: HelperConfig[] = [];
+  private additionalAutomations: HAAutomation[] = [];
 
   constructor(ast: ProgramNode, projectName: string = 'default') {
     this.ast = ast;
@@ -62,19 +72,25 @@ export class Transpiler {
     // Phase 2: Build transpiler context
     this.buildContext();
 
-    // Phase 3: Generate automation (triggers)
+    // Phase 3: Initialize timer transpiler and process timer FBs
+    this.timerTranspiler = new TimerTranspiler(this.context);
+    this.timerResolver = new TimerOutputResolver();
+    this.processTimerFBs();
+
+    // Phase 4: Generate automation (triggers)
     const automation = this.generateAutomation();
 
-    // Phase 4: Generate script (logic)
+    // Phase 5: Generate script (logic)
     const script = this.generateScript();
 
-    // Phase 5: Collect helpers
-    const helpers = this.storageAnalysis.helpers;
+    // Phase 6: Collect helpers (storage + timers)
+    const helpers = [...this.storageAnalysis.helpers, ...this.timerHelpers];
 
     return {
       automation,
       script,
       helpers,
+      additionalAutomations: this.additionalAutomations,
       sourceMap: this.sourceMap,
       diagnostics: this.diagnostics,
     };
@@ -128,6 +144,56 @@ export class Transpiler {
       loopDepth: 0,
       safetyCounters: 0,
     };
+  }
+
+  // ==========================================================================
+  // Timer FB Processing
+  // ==========================================================================
+
+  private processTimerFBs(): void {
+    if (!this.timerTranspiler || !this.timerResolver) {
+      return;
+    }
+
+    const timerVars = new Map<string, TimerInstance["type"]>();
+    for (const varDecl of this.ast.variables) {
+      const typeName = varDecl.dataType.name.toUpperCase();
+      if (typeName === "TON" || typeName === "TOF" || typeName === "TP") {
+        timerVars.set(varDecl.name, typeName as TimerInstance["type"]);
+      }
+    }
+
+    if (timerVars.size === 0) {
+      return;
+    }
+
+    walkAST(this.ast, {
+      onFunctionCall: (call) => {
+        const timerType = timerVars.get(call.name);
+        if (!timerType) {
+          return;
+        }
+
+        const instance: TimerInstance = {
+          name: call.name,
+          type: timerType,
+          programName: this.ast.name,
+          projectName: this.projectName,
+        };
+
+        const parsed = this.timerTranspiler!.parseTimerCall(call.name, call);
+        const inputs: TimerInputs = {
+          IN: parsed.inputs.IN ?? "true",
+          PT: parsed.inputs.PT ?? "0",
+        };
+
+        const result = this.timerTranspiler!.transpileTimer(instance, inputs);
+
+        this.timerHelpers.push(...result.helpers);
+        this.additionalAutomations.push(result.finishedAutomation);
+        this.timerResolver!.registerTimer(instance.name, result.outputMappings);
+      },
+    });
   }
 
   // ==========================================================================
@@ -265,9 +331,10 @@ export class Transpiler {
 
   private generateScript(): HAScript {
     const pragmas = parsePragmas(this.ast.pragmas);
-    const mode = (pragmas.find(p => p.name === 'mode')?.value as string) || 'restart';
+    const mode =
+      (pragmas.find((p) => p.name === "mode")?.value as string) || "restart";
 
-    const actionGenerator = new ActionGenerator(this.context);
+    const actionGenerator = new ActionGenerator(this.context, this.timerResolver);
 
     const script: HAScript = {
       alias: `[ST] ${this.ast.name} Logic`,
