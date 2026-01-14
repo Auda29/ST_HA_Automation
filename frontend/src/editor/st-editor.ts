@@ -2,32 +2,56 @@
  * ST Editor Web Component (CodeMirror 6 Wrapper)
  */
 
-import { LitElement, html, css, PropertyValues } from 'lit';
-import { customElement, property, query } from 'lit/decorators.js';
-import { EditorState, Extension, Compartment } from '@codemirror/state';
+import { LitElement, html, css, PropertyValues } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
+import { EditorState, Extension, Compartment } from "@codemirror/state";
 import {
-  EditorView, keymap, lineNumbers, highlightActiveLineGutter,
-  highlightSpecialChars, drawSelection, highlightActiveLine
-} from '@codemirror/view';
-import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
-import { indentOnInput, bracketMatching, foldGutter, foldKeymap } from '@codemirror/language';
-import { closeBrackets, autocompletion, closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete';
-import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
+  EditorView,
+  keymap,
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  drawSelection,
+  highlightActiveLine,
+} from "@codemirror/view";
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentWithTab,
+} from "@codemirror/commands";
+import {
+  indentOnInput,
+  bracketMatching,
+  foldGutter,
+  foldKeymap,
+} from "@codemirror/language";
+import {
+  closeBrackets,
+  autocompletion,
+  closeBracketsKeymap,
+  completionKeymap,
+} from "@codemirror/autocomplete";
+import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 
-import { structuredText } from './st-language';
-import { stTheme } from './st-theme';
-import { liveValuesExtension, updateLiveValues } from '../online/live-decorations';
-import { OnlineStateManager } from '../online/state-manager';
-import type { VariableBinding, OnlineModeState } from '../online/types';
+import { structuredText } from "./st-language";
+import { stTheme } from "./st-theme";
+import {
+  liveValuesExtension,
+  updateLiveValues,
+} from "../online/live-decorations";
+import { OnlineStateManager } from "../online/state-manager";
+import type { VariableBinding, OnlineModeState } from "../online/types";
 
-@customElement('st-editor')
+@customElement("st-editor")
 export class STEditor extends LitElement {
   @property({ type: String }) declare code: string;
-  @property({ type: Boolean, attribute: 'read-only' }) declare readOnly: boolean;
+  @property({ type: Boolean, attribute: "read-only" })
+  declare readOnly: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @property({ attribute: false }) declare hass?: any;
 
-  @query('#editor-container') private _container!: HTMLDivElement;
+  @query("#editor-container") private _container!: HTMLDivElement;
 
   private _editor: EditorView | null = null;
   private _readOnlyCompartment = new Compartment();
@@ -56,25 +80,30 @@ export class STEditor extends LitElement {
 
   constructor() {
     super();
-    this.code = '';
+    this.code = "";
     this.readOnly = false;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this._initEditor();
+    // Use requestAnimationFrame to ensure the shadow DOM is fully rendered
+    requestAnimationFrame(() => {
+      this._initEditor();
+    });
   }
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has('readOnly') && this._editor) {
+    if (changedProperties.has("readOnly") && this._editor) {
       this._editor.dispatch({
-        effects: this._readOnlyCompartment.reconfigure(EditorState.readOnly.of(this.readOnly))
+        effects: this._readOnlyCompartment.reconfigure(
+          EditorState.readOnly.of(this.readOnly),
+        ),
       });
     }
-    if (changedProperties.has('code') && this._editor) {
+    if (changedProperties.has("code") && this._editor) {
       const currentCode = this._editor.state.doc.toString();
       if (currentCode !== this.code) {
         this._editor.dispatch({
-          changes: { from: 0, to: currentCode.length, insert: this.code }
+          changes: { from: 0, to: currentCode.length, insert: this.code },
         });
       }
     }
@@ -152,7 +181,7 @@ export class STEditor extends LitElement {
         ...historyKeymap,
         ...foldKeymap,
         ...completionKeymap,
-        indentWithTab
+        indentWithTab,
       ]),
       structuredText(),
       stTheme(),
@@ -167,12 +196,15 @@ export class STEditor extends LitElement {
       dispatch: (tr) => {
         this._editor!.update([tr]);
         if (tr.docChanged) {
-          this.dispatchEvent(new CustomEvent('code-change', {
-            detail: { code: tr.newDoc.toString() },
-            bubbles: true, composed: true
-          }));
+          this.dispatchEvent(
+            new CustomEvent("code-change", {
+              detail: { code: tr.newDoc.toString() },
+              bubbles: true,
+              composed: true,
+            }),
+          );
         }
-      }
+      },
     });
   }
 
@@ -195,6 +227,6 @@ export class STEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'st-editor': STEditor;
+    "st-editor": STEditor;
   }
 }

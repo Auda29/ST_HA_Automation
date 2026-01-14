@@ -17302,11 +17302,15 @@ let yn = class extends cn {
     this.code = "", this.readOnly = !1;
   }
   firstUpdated(e) {
-    this._initEditor();
+    requestAnimationFrame(() => {
+      this._initEditor();
+    });
   }
   updated(e) {
     if (e.has("readOnly") && this._editor && this._editor.dispatch({
-      effects: this._readOnlyCompartment.reconfigure(G.readOnly.of(this.readOnly))
+      effects: this._readOnlyCompartment.reconfigure(
+        G.readOnly.of(this.readOnly)
+      )
     }), e.has("code") && this._editor) {
       const t = this._editor.state.doc.toString();
       t !== this.code && this._editor.dispatch({
@@ -17385,11 +17389,13 @@ let yn = class extends cn {
       state: G.create({ doc: this.code, extensions: e }),
       parent: this._container,
       dispatch: (t) => {
-        this._editor.update([t]), t.docChanged && this.dispatchEvent(new CustomEvent("code-change", {
-          detail: { code: t.newDoc.toString() },
-          bubbles: !0,
-          composed: !0
-        }));
+        this._editor.update([t]), t.docChanged && this.dispatchEvent(
+          new CustomEvent("code-change", {
+            detail: { code: t.newDoc.toString() },
+            bubbles: !0,
+            composed: !0
+          })
+        );
       }
     });
   }
