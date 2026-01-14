@@ -4,6 +4,8 @@ import "../editor";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
 import type { TriggerConfig, AnalysisMetadata } from "../analyzer/types";
+import { transpile } from "../transpiler";
+import { deploy, HAApiClient } from "../deploy";
 
 interface CombinedDiagnostic {
   severity: "Error" | "Warning" | "Info" | "Hint";
@@ -269,16 +271,40 @@ END_PROGRAM`;
     this._diagnostics = diagnostics;
   }
 
-  private _handleDeploy() {
+  private async _handleDeploy() {
     if (!this._syntaxOk) {
       console.error("Cannot deploy: syntax errors present");
       return;
     }
 
-    console.log("Deploy:", this._code);
-    console.log("Triggers:", this._triggers);
-    console.log("Metadata:", this._metadata);
+    if (!this.hass?.connection) {
+      console.error("Cannot deploy: Home Assistant connection is not available");
+      return;
+    }
 
-    // TODO: Implement actual deployment to Home Assistant
+    const parseResult = parse(this._code);
+    if (!parseResult.success || !parseResult.ast) {
+      console.error("Cannot deploy: parsing failed");
+      return;
+    }
+
+    const transpilerResult = transpile(parseResult.ast, "home");
+    if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
+      console.error("Cannot deploy: transpiler reported errors", transpilerResult.diagnostics);
+      return;
+    }
+
+    const api = new HAApiClient(this.hass.connection);
+    try {
+      const deployResult = await deploy(api, transpilerResult, { createBackup: true });
+      if (!deployResult.success) {
+        console.error("Deploy failed", deployResult.errors);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log("Deploy successful", deployResult.transactionId);
+      }
+    } catch (error) {
+      console.error("Deploy error", error);
+    }
   }
 }

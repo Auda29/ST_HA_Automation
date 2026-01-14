@@ -54,14 +54,12 @@ frontend/src/analyzer/
  * Type Definitions for Analyzer Module
  */
 
-import type { SourceLocation, ProgramNode, VariableDeclaration, Expression } from '../parser/ast';
-
 // ============================================================================
 // Trigger Types
 // ============================================================================
 
 export interface TriggerConfig {
-  platform: 'state' | 'event' | 'time' | 'numeric_state';
+  platform: "state" | "event" | "time" | "numeric_state";
   entity_id?: string;
   from?: string | string[];
   to?: string | string[];
@@ -78,28 +76,48 @@ export interface TriggerConfig {
   // Numeric state specific
   above?: number;
   below?: number;
+  // Edge detection (design evolution: added for R_TRIG/F_TRIG support)
+  edge?: "rising" | "falling";
 }
 
+/**
+ * Edge trigger detection result
+ * Identifies rising/falling edge patterns in the code
+ */
 export interface EdgeTrigger extends TriggerConfig {
-  platform: 'state';
+  platform: "state";
   from: string;
   to: string;
-  edge: 'rising' | 'falling';
+  edge: "rising" | "falling";
 }
 
-// ============================================================================
-// Analysis Results
-// ============================================================================
-
+/**
+ * Represents a dependency on a Home Assistant entity
+ * Extracted from variable bindings in the code
+ */
 export interface EntityDependency {
-  entityId: string;
+  /** Variable name in ST code */
   variableName: string;
-  direction: 'INPUT' | 'OUTPUT' | 'MEMORY';
+
+  /** Entity ID bound to this variable */
+  entityId?: string;
+
+  /** Direction: INPUT (%I*), OUTPUT (%Q*), or MEMORY (%M*) */
+  direction: "INPUT" | "OUTPUT" | "MEMORY";
+
+  /** Data type of the variable */
   dataType: string;
+
+  /** Whether this variable should trigger automation */
   isTrigger: boolean;
-  location?: SourceLocation;
+
+  /** Location in source code */
+  location?: { line: number; column: number };
 }
 
+/**
+ * Complete analysis result
+ */
 export interface AnalysisResult {
   triggers: TriggerConfig[];
   dependencies: EntityDependency[];
@@ -107,15 +125,20 @@ export interface AnalysisResult {
   metadata: AnalysisMetadata;
 }
 
+/**
+ * Metadata about the analyzed program
+ */
 export interface AnalysisMetadata {
-  programName: string;
+  programName?: string;
   inputCount: number;
   outputCount: number;
   triggerCount: number;
   hasPersistentVars: boolean;
   hasTimers: boolean;
-  mode?: string;
+  mode?: "single" | "restart" | "queued" | "parallel";
+  /** Throttle value as ST-style time literal (e.g., 'T#1s') */
   throttle?: string;
+  /** Debounce value as ST-style time literal (e.g., 'T#500ms') */
   debounce?: string;
 }
 
@@ -123,49 +146,62 @@ export interface AnalysisMetadata {
 // Diagnostics
 // ============================================================================
 
-export type DiagnosticSeverity = 'Error' | 'Warning' | 'Info' | 'Hint';
+/**
+ * Diagnostic severity levels (PascalCase per IEC 61131-3 conventions)
+ */
+export type DiagnosticSeverity = "Error" | "Warning" | "Info" | "Hint";
 
 export interface Diagnostic {
   severity: DiagnosticSeverity;
   code: string;
   message: string;
-  location?: SourceLocation;
+  location?: { line: number; column: number };
   relatedInfo?: string;
 }
 
-// Diagnostic Codes
+/**
+ * Standard diagnostic codes
+ * Format: W0xx (Warning), I0xx (Info), E0xx (Error), H0xx (Hint)
+ */
 export const DiagnosticCodes = {
   // Warnings (W0xx)
-  NO_TRIGGERS: 'W001',
-  MANY_TRIGGERS: 'W002',
-  UNUSED_INPUT: 'W003',
-  WRITE_TO_INPUT: 'W004',
-  READ_FROM_OUTPUT: 'W005',
-  
+  NO_TRIGGERS: "W001",
+  MANY_TRIGGERS: "W002",
+  UNUSED_INPUT: "W003",
+  WRITE_TO_INPUT: "W004",
+  READ_FROM_OUTPUT: "W005",
+
   // Info (I0xx)
-  AUTO_TRIGGER: 'I001',
-  EXPLICIT_NO_TRIGGER: 'I002',
-  EDGE_TRIGGER_DETECTED: 'I003',
-  
+  AUTO_TRIGGER: "I001",
+  EXPLICIT_NO_TRIGGER: "I002",
+  EDGE_TRIGGER_DETECTED: "I003",
+
   // Errors (E0xx)
-  INVALID_ENTITY_ID: 'E001',
-  DUPLICATE_BINDING: 'E002',
-  CIRCULAR_DEPENDENCY: 'E003',
+  INVALID_ENTITY_ID: "E001",
+  DUPLICATE_BINDING: "E002",
+  CIRCULAR_DEPENDENCY: "E003",
+
+  // Hints (H0xx)
+  CONSIDER_NO_TRIGGER: "H001",
+  CONSIDER_EDGE_TRIGGER: "H002",
 } as const;
 
 // ============================================================================
 // Pragma Types
 // ============================================================================
 
+/**
+ * Parsed pragma from code comments
+ */
 export interface ParsedPragma {
   name: string;
   value?: string | number | boolean;
 }
 
 export interface TriggerPragmaOptions {
-  explicitTrigger: boolean;    // {trigger}
-  explicitNoTrigger: boolean;  // {no_trigger}
-  stateChange: boolean;        // Default for inputs
+  trigger?: boolean;
+  no_trigger?: boolean;
+  edge?: "rising" | "falling";
 }
 ```
 

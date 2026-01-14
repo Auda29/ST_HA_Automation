@@ -187,8 +187,8 @@
 
 ### T-008: Helper manager and transactional deploy system
 
-**Status**: WIP  
-**Assigned**: Dev2  
+**Status**: COMPLETED  
+**Assigned**: DevOps  
 **Priority**: High  
 **Created**: 2026-01-14  
 **Dependencies**: T-005, T-007  
@@ -196,10 +196,10 @@
 **Description**: Implement the helper manager and deploy manager from `07_Helper_Manager_Deploy.md`, including HA WebSocket wrappers, helper sync (create/update/delete), backup/restore, and transactional deploy with rollback and verification.
 
 **Acceptance Criteria**:
-- [ ] Helper sync computes toCreate/toUpdate/toDelete for ST helpers based on transpiler output
-- [ ] Deploy operation applies automation, script, and helper changes atomically, with rollback on error
-- [ ] Backups can be created, listed, restored and pruned as described
-- [ ] All deploy-related tests and type checks pass
+- [x] Helper sync computes toCreate/toUpdate/toDelete for ST helpers based on transpiler output
+- [x] Deploy operation applies automation, script, and helper changes atomically, with rollback on error
+- [x] Backups can be created, listed, restored and pruned as described
+- [x] All deploy-related tests and type checks pass
 
 **Technical Notes**: Absolutely no direct YAML file writes; all changes go through HA WebSocket APIs.
 
@@ -441,7 +441,7 @@
 
 ### T-019: Reconcile analyzer public API shape with archive specifications
 
-**Status**: WIP  
+**Status**: COMPLETED  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  
@@ -450,9 +450,9 @@
 **Description**: Compare the current dependency analyzer public types (e.g. enriched trigger metadata, edge fields, extended diagnostics) with the minimal shapes in `04_Dependency_Analyzer.md` and `12_Archive_Feature_Gap_Analysis.md`, then either update the docs to reflect the richer, stabilized API or adjust the implementation where necessary for consistency.
 
 **Acceptance Criteria**:
-- [ ] All public analyzer types used by downstream modules are documented in the archive/spec docs
-- [ ] Any intentional divergences from the original archive type shapes are explicitly called out as design evolutions
-- [ ] No consumers rely on undocumented or ambiguous analyzer fields
+- [x] All public analyzer types used by downstream modules are documented in the archive/spec docs
+- [x] Any intentional divergences from the original archive type shapes are explicitly called out as design evolutions
+- [x] No consumers rely on undocumented or ambiguous analyzer fields
 
 **Technical Notes**: Prefer updating docs to match the richer, backward-compatible API rather than dumbing down types, unless a clear simplification benefit is identified.
 

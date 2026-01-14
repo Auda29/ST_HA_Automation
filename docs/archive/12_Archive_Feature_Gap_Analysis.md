@@ -120,8 +120,8 @@ The analyzer module (`frontend/src/analyzer/*`) is largely implemented and, for 
 
 ## How to Use This Document
 
-- When aligning implementation with the original spikes, treat the items above as a **to‑do list of refinement tasks** rather than blockers: the core editor, parser, and analyzer are already in place.
-- New work should either:
-  - Bring the implementation **closer to the archived spec** (e.g. implement R_TRIG/F_TRIG detection, add CI workflow), or
-  - **Update the archived docs** to match intentional design changes if deviations are kept.
+- The items above now document **where the current implementation intentionally evolved beyond the original spikes** and where gaps have been explicitly closed in code or documentation.
+- For future work, treat this file as a **reference for design evolution**, not as a list of open bugs:
+  - If you change analyzer behavior or public types, update both `04_Dependency_Analyzer.md` and this gap analysis to keep them in sync.
+  - When adding new features, prefer extending the existing public API (as documented in `frontend/src/analyzer/index.ts` and `types.ts`) and then reflecting those changes here if they diverge from the original spike sketches.
 
