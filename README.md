@@ -281,38 +281,7 @@ ST for Home Assistant uses a **compile-time transpilation approach**:
 
 **Current Version**: 0.1.0 (Alpha)
 
-### Phase 1: Foundation ✅ **COMPLETE**
-
-- ✅ Repository structure and build pipeline
-- ✅ HACS-compatible custom component
-- ✅ Frontend panel integration
-- ✅ CodeMirror 6 editor with ST syntax highlighting
-- ✅ TwinCAT-inspired theme with autocomplete
-- ✅ Complete Chevrotain parser (23/23 tests passing)
-- ✅ Full lexer with token definitions
-- ✅ AST type definitions
-- ✅ CST to AST visitor transformation
-
-### Phase 2: Analyzer (Next)
-
-- ⏳ Dependency analysis (trigger extraction)
-- ⏳ Storage analysis (helper determination)
-- ⏳ Type checking
-- ⏳ Semantic validation
-
-### Phase 3: Transpiler (Planned)
-
-- ⏳ ST → Jinja2 expression transpilation
-- ⏳ Control flow → HA automation actions
-- ⏳ Entity I/O binding resolution
-- ⏳ Helper entity generation
-
-### Phase 4: Deployment (Planned)
-
-- ⏳ WebSocket API integration
-- ⏳ Transactional deployment
-- ⏳ Rollback support
-- ⏳ Validation and testing
+This project is in active development. The parser and editor are functional. Analyzer, transpiler, and deployment components are in various stages of development. See the [Project Overview](./docs/00_Project_Overview.md) for detailed architecture information.
 
 ## Test Coverage
 
@@ -417,4 +386,4 @@ MIT License - See [LICENSE](LICENSE) file for details
 
 ---
 
-**Note**: This project is in active development. The transpiler and analyzer components are not yet implemented. Currently functional: editor with syntax highlighting and complete parser.
+**Note**: This project is in active development. See the [Project Status](#project-status) section above for current status.

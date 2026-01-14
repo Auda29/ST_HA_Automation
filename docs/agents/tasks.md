@@ -187,7 +187,7 @@
 
 ### T-008: Helper manager and transactional deploy system
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: Dev2  
 **Priority**: High  
 **Created**: 2026-01-14  
@@ -441,7 +441,7 @@
 
 ### T-019: Reconcile analyzer public API shape with archive specifications
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: Dev1  
 **Priority**: Low  
 **Created**: 2026-01-14  
