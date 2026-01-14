@@ -84,11 +84,14 @@ export class STEditor extends LitElement {
     this.readOnly = false;
   }
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
-    // Use requestAnimationFrame to ensure the shadow DOM is fully rendered
-    requestAnimationFrame(() => {
-      this._initEditor();
-    });
+  protected async firstUpdated(
+    _changedProperties: PropertyValues,
+  ): Promise<void> {
+    // Wait for the update to complete, then initialize editor
+    await this.updateComplete;
+    // Additional frame to ensure DOM is painted
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    this._initEditor();
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -158,7 +161,11 @@ export class STEditor extends LitElement {
   }
 
   private _initEditor(): void {
-    if (!this._container) return;
+    console.log("STEditor._initEditor called, container:", this._container);
+    if (!this._container) {
+      console.error("STEditor: container not found!");
+      return;
+    }
 
     const extensions: Extension[] = [
       lineNumbers(),

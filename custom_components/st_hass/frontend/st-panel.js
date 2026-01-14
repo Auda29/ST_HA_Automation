@@ -17301,10 +17301,8 @@ let yn = class extends cn {
     A(this, "_onlineUnsubscribe", null);
     this.code = "", this.readOnly = !1;
   }
-  firstUpdated(e) {
-    requestAnimationFrame(() => {
-      this._initEditor();
-    });
+  async firstUpdated(e) {
+    await this.updateComplete, await new Promise((t) => requestAnimationFrame(t)), this._initEditor();
   }
   updated(e) {
     if (e.has("readOnly") && this._editor && this._editor.dispatch({
@@ -17355,7 +17353,10 @@ let yn = class extends cn {
     return ((e = this._onlineManager) == null ? void 0 : e.getState()) || null;
   }
   _initEditor() {
-    if (!this._container) return;
+    if (console.log("STEditor._initEditor called, container:", this._container), !this._container) {
+      console.error("STEditor: container not found!");
+      return;
+    }
     const e = [
       fv(),
       mv(),
