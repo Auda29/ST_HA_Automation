@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "../editor";
 import "../online/online-toolbar";
+import "../entity-browser";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
 import type {
@@ -34,6 +35,7 @@ export class STPanel extends LitElement {
   @state() declare private _metadata: AnalysisMetadata | null;
   @state() declare private _entityCount: number;
   @state() declare private _onlineState: OnlineModeState | null;
+  @state() declare private _showEntityBrowser: boolean;
 
   static styles = css`
     :host {
@@ -45,6 +47,33 @@ export class STPanel extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
+    }
+    .main-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 320px;
+      min-width: 280px;
+      max-width: 400px;
+      border-right: 1px solid var(--divider-color);
+      display: flex;
+      flex-direction: column;
+      background: var(--primary-background-color);
+      transition: transform 0.3s ease;
+    }
+    .sidebar.hidden {
+      transform: translateX(-100%);
+      width: 0;
+      min-width: 0;
+      border-right: none;
+    }
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
     .toolbar {
       display: flex;
@@ -58,6 +87,31 @@ export class STPanel extends LitElement {
     .toolbar h1 {
       margin: 0;
       font-size: 20px;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .toolbar-button {
+      padding: 6px 12px;
+      border: 1px solid var(--divider-color);
+      border-radius: 4px;
+      background: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .toolbar-button:hover {
+      background: var(--divider-color);
+    }
+    .toolbar-button.active {
+      background: var(--primary-color);
+      color: var(--text-primary-color);
+      border-color: var(--primary-color);
     }
     .editor-container {
       flex: 1;
@@ -127,6 +181,7 @@ export class STPanel extends LitElement {
   constructor() {
     super();
     this.narrow = false;
+    this._showEntityBrowser = false;
     this._code = `{mode: restart}
 {throttle: T#1s}
 PROGRAM Kitchen_Light
@@ -178,9 +233,19 @@ END_PROGRAM`;
       <div class="container">
         <div class="toolbar">
           <h1>ST for Home Assistant</h1>
-          <button @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
-            ▶ Deploy
-          </button>
+          <div class="toolbar-actions">
+            <button
+              class="toolbar-button ${this._showEntityBrowser ? "active" : ""}"
+              @click=${this._toggleEntityBrowser}
+              title="Toggle Entity Browser"
+            >
+              <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
+              Entities
+            </button>
+            <button @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
+              ▶ Deploy
+            </button>
+          </div>
         </div>
         ${this._onlineState
           ? html`
@@ -193,12 +258,19 @@ END_PROGRAM`;
               ></st-online-toolbar>
             `
           : ""}
-        <div class="editor-container">
-          <st-editor
-            .code=${this._code}
-            .hass=${this.hass}
-            @code-change=${this._handleCodeChange}
-          ></st-editor>
+        <div class="main-content">
+          <div class="sidebar ${this._showEntityBrowser ? "" : "hidden"}">
+            <st-entity-browser .hass=${this.hass}></st-entity-browser>
+          </div>
+          <div class="content-area">
+            <div class="editor-container">
+              <st-editor
+                .code=${this._code}
+                .hass=${this.hass}
+                @code-change=${this._handleCodeChange}
+              ></st-editor>
+            </div>
+          </div>
         </div>
         ${this._diagnostics.length > 0
           ? html`
@@ -422,5 +494,9 @@ END_PROGRAM`;
     // Settings changes would update the manager, but for now we just log
     // eslint-disable-next-line no-console
     console.log("Online setting changed", e.detail);
+  }
+
+  private _toggleEntityBrowser(): void {
+    this._showEntityBrowser = !this._showEntityBrowser;
   }
 }

@@ -241,6 +241,72 @@ export class STEditor extends LitElement {
     container.addEventListener("keydown", (e) => e.stopPropagation());
     container.addEventListener("keyup", (e) => e.stopPropagation());
     container.addEventListener("keypress", (e) => e.stopPropagation());
+
+    // Add drag-and-drop support for entity browser
+    container.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "copy";
+      }
+    });
+
+    container.addEventListener("drop", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this._handleDrop(e);
+    });
+  }
+
+  /**
+   * Handle drop event from entity browser
+   */
+  private _handleDrop(e: DragEvent): void {
+    if (!this._editor || !e.dataTransfer) return;
+
+    // Try to get the binding syntax from the drag data
+    let bindingSyntax = e.dataTransfer.getData("text/plain");
+    
+    // If no text data, try JSON data
+    if (!bindingSyntax) {
+      try {
+        const jsonData = e.dataTransfer.getData("application/json");
+        if (jsonData) {
+          const dragData = JSON.parse(jsonData);
+          bindingSyntax = dragData.bindingSyntax;
+        }
+      } catch (err) {
+        console.error("Failed to parse drag data", err);
+        return;
+      }
+    }
+
+    if (!bindingSyntax) return;
+
+    // Get cursor position from mouse coordinates
+    const pos = this._editor.posAtCoords({
+      x: e.clientX,
+      y: e.clientY,
+    });
+
+    if (pos === null) {
+      // Fallback to current selection or end of document
+      const selection = this._editor.state.selection.main;
+      const insertPos = selection.empty ? selection.head : selection.from;
+      this._editor.dispatch({
+        changes: { from: insertPos, insert: bindingSyntax },
+        selection: { anchor: insertPos + bindingSyntax.length },
+      });
+    } else {
+      // Insert at the drop position
+      this._editor.dispatch({
+        changes: { from: pos, insert: bindingSyntax },
+        selection: { anchor: pos + bindingSyntax.length },
+      });
+    }
+
+    // Focus the editor after insertion
+    this._editor.focus();
   }
 
   getCode(): string {

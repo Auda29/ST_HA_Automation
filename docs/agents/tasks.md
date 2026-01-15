@@ -38,7 +38,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-021: Entity Browser with WebSocket Integration
 
-**Status**: TODO  
+**Status**: TESTING  
 **Assigned**: Dev2  
 **Priority**: High  
 **Created**: 2026-01-14  
@@ -47,13 +47,13 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 **Description**: Implement a sidebar panel that lists all available HA entities via WebSocket subscription, allows filtering/searching by domain and name, and provides drag-and-drop functionality to bind entities to ST variables.
 
 **Acceptance Criteria**:
-- [ ] `EntityBrowser` component subscribes to HA entity state updates via WebSocket
-- [ ] Entities are grouped by domain (light, sensor, binary_sensor, switch, etc.)
-- [ ] Search/filter functionality allows finding entities by name or ID
-- [ ] Drag-and-drop from entity list to editor inserts proper AT binding syntax
-- [ ] Entity icons and current state are displayed
-- [ ] Data type inference suggests appropriate ST type (BOOL for binary_sensor, REAL for numeric sensor)
-- [ ] Performance remains smooth with 500+ entities
+- [x] `EntityBrowser` component subscribes to HA entity state updates via WebSocket
+- [x] Entities are grouped by domain (light, sensor, binary_sensor, switch, etc.)
+- [x] Search/filter functionality allows finding entities by name or ID
+- [x] Drag-and-drop from entity list to editor inserts proper AT binding syntax
+- [x] Entity icons and current state are displayed
+- [x] Data type inference suggests appropriate ST type (BOOL for binary_sensor, REAL for numeric sensor)
+- [ ] Performance remains smooth with 500+ entities (needs testing)
 
 **Technical Notes**: 
 - Use `home-assistant-js-websocket` for subscriptions
