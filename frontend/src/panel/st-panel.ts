@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import "../editor";
 import "../online/online-toolbar";
 import "../entity-browser";
+import "../project";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
 import type {
@@ -14,6 +15,8 @@ import { transpile } from "../transpiler";
 import { deploy, HAApiClient } from "../deploy";
 import type { VariableBinding, OnlineModeState } from "../online/types";
 import type { STEditor } from "../editor/st-editor";
+import type { ProjectStructure, ProjectFile } from "../project/types";
+import { ProjectStorage } from "../project";
 
 interface CombinedDiagnostic {
   severity: "Error" | "Warning" | "Info" | "Hint";
@@ -28,7 +31,8 @@ export class STPanel extends LitElement {
   @property({ attribute: false }) declare public hass?: any;
   @property({ type: Boolean }) declare public narrow: boolean;
 
-  @state() declare private _code: string;
+  @state() declare private _code: string; // Legacy single-file mode
+  @state() declare private _project: ProjectStructure | null; // Multi-file mode
   @state() declare private _syntaxOk: boolean;
   @state() declare private _triggers: TriggerConfig[];
   @state() declare private _diagnostics: CombinedDiagnostic[];
@@ -36,6 +40,8 @@ export class STPanel extends LitElement {
   @state() declare private _entityCount: number;
   @state() declare private _onlineState: OnlineModeState | null;
   @state() declare private _showEntityBrowser: boolean;
+  @state() declare private _showProjectExplorer: boolean;
+  @state() declare private _storage: ProjectStorage | null;
 
   static styles = css`
     :host {
@@ -176,12 +182,76 @@ export class STPanel extends LitElement {
     .diagnostic-hint {
       color: var(--disabled-text-color, #9e9e9e);
     }
+    .tabs-container {
+      display: flex;
+      gap: 2px;
+      padding: 0 8px;
+      background: var(--secondary-background-color);
+      border-bottom: 1px solid var(--divider-color);
+      overflow-x: auto;
+    }
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      cursor: pointer;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      background: var(--divider-color);
+    }
+    .tab.active {
+      background: var(--card-background-color);
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-text-color);
+    }
+    .tab-close {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+    .tab-close:hover {
+      opacity: 1;
+      background: var(--divider-color);
+    }
+    .unsaved-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--warning-color, #ff9800);
+    }
+    .project-sidebar {
+      width: 280px;
+      min-width: 240px;
+      max-width: 360px;
+      border-right: 1px solid var(--divider-color);
+      display: flex;
+      flex-direction: column;
+      background: var(--primary-background-color);
+    }
+    .project-sidebar.hidden {
+      display: none;
+    }
   `;
 
   constructor() {
     super();
     this.narrow = false;
     this._showEntityBrowser = false;
+    this._showProjectExplorer = false;
+    this._project = null;
+    this._storage = null;
     this._code = `{mode: restart}
 {throttle: T#1s}
 PROGRAM Kitchen_Light
@@ -217,8 +287,59 @@ END_PROGRAM`;
 
   connectedCallback() {
     super.connectedCallback();
+    this._initializeProject();
     // Run initial analysis
     this._analyzeCode();
+  }
+
+  updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("hass")) {
+      this._initializeStorage();
+      if (!this._project) {
+        this._initializeProject();
+      }
+    }
+  }
+
+  private _initializeStorage(): void {
+    if (this.hass?.connection) {
+      const configEntryId = this.hass.config?.entry_id || "default";
+      this._storage = new ProjectStorage(this.hass.connection, configEntryId);
+    } else {
+      this._storage = new ProjectStorage(null, "default");
+    }
+  }
+
+  private async _initializeProject(): Promise<void> {
+    if (!this._storage) {
+      this._initializeStorage();
+    }
+
+    if (this._storage) {
+      try {
+        const project = await this._storage.loadProject();
+        if (project) {
+          this._project = project;
+          // Open the active file if any
+          if (project.activeFileId) {
+            const activeFile = project.files.find(
+              (f) => f.id === project.activeFileId,
+            );
+            if (activeFile) {
+              this._code = activeFile.content;
+            }
+          }
+        } else {
+          // Migrate from single-file mode
+          this._project = this._storage.migrateFromSingleFile(this._code);
+          await this._storage.saveProject(this._project);
+        }
+      } catch (error) {
+        console.error("Failed to load project", error);
+        // Fall back to single-file mode
+      }
+    }
   }
 
   render() {
@@ -234,6 +355,14 @@ END_PROGRAM`;
         <div class="toolbar">
           <h1>ST for Home Assistant</h1>
           <div class="toolbar-actions">
+            <button
+              class="toolbar-button ${this._showProjectExplorer ? "active" : ""}"
+              @click=${this._toggleProjectExplorer}
+              title="Toggle Project Explorer"
+            >
+              <ha-icon icon="mdi:folder"></ha-icon>
+              Project
+            </button>
             <button
               class="toolbar-button ${this._showEntityBrowser ? "active" : ""}"
               @click=${this._toggleEntityBrowser}
@@ -259,13 +388,59 @@ END_PROGRAM`;
             `
           : ""}
         <div class="main-content">
+          ${this._showProjectExplorer
+            ? html`
+                <div class="project-sidebar">
+                  <st-project-explorer
+                    .hass=${this.hass}
+                    .project=${this._project}
+                    @file-open=${this._handleFileOpen}
+                    @file-selected=${this._handleFileSelected}
+                    @file-rename=${this._handleFileRename}
+                    @file-deleted=${this._handleFileDeleted}
+                  ></st-project-explorer>
+                </div>
+              `
+            : ""}
           <div class="sidebar ${this._showEntityBrowser ? "" : "hidden"}">
             <st-entity-browser .hass=${this.hass}></st-entity-browser>
           </div>
           <div class="content-area">
+            ${this._project
+              ? html`
+                  <div class="tabs-container">
+                    ${this._getOpenFiles().map(
+                      (file) => html`
+                        <button
+                          class="tab ${file.id === this._project!.activeFileId
+                            ? "active"
+                            : ""}"
+                          @click=${() => this._switchToFile(file.id)}
+                          title=${file.path}
+                        >
+                          <span>${file.name}</span>
+                          ${file.hasUnsavedChanges
+                            ? html`<div class="unsaved-dot"></div>`
+                            : ""}
+                          <div
+                            class="tab-close"
+                            @click=${(e: Event) => {
+                              e.stopPropagation();
+                              this._closeFile(file.id);
+                            }}
+                            title="Close"
+                          >
+                            <ha-icon icon="mdi:close" style="width: 12px; height: 12px;"></ha-icon>
+                          </div>
+                        </button>
+                      `,
+                    )}
+                  </div>
+                `
+              : ""}
             <div class="editor-container">
               <st-editor
-                .code=${this._code}
+                .code=${this._getCurrentCode()}
                 .hass=${this.hass}
                 @code-change=${this._handleCodeChange}
               ></st-editor>
@@ -316,8 +491,151 @@ END_PROGRAM`;
   }
 
   private _handleCodeChange(e: CustomEvent<{ code: string }>) {
-    this._code = e.detail.code;
+    const newCode = e.detail.code;
+    
+    if (this._project && this._project.activeFileId) {
+      // Update active file in project
+      const activeFile = this._project.files.find(
+        (f) => f.id === this._project!.activeFileId,
+      );
+      if (activeFile) {
+        activeFile.content = newCode;
+        // Mark as unsaved if content differs from what was last saved
+        // We'll track the "saved" state separately - for now, mark as unsaved if changed
+        activeFile.hasUnsavedChanges = true; // Will be cleared on save
+        activeFile.lastModified = Date.now();
+        this._project.lastModified = Date.now();
+        // Don't auto-save on every keystroke - just update in-memory state
+      }
+    } else {
+      // Legacy single-file mode
+      this._code = newCode;
+    }
+    
     this._analyzeCode();
+  }
+
+  private _getCurrentCode(): string {
+    if (this._project && this._project.activeFileId) {
+      const activeFile = this._project.files.find(
+        (f) => f.id === this._project!.activeFileId,
+      );
+      return activeFile?.content || "";
+    }
+    return this._code;
+  }
+
+  private _getOpenFiles(): ProjectFile[] {
+    if (!this._project) return [];
+    return this._project.files.filter((f) => f.isOpen);
+  }
+
+  private _switchToFile(fileId: string): void {
+    if (!this._project) return;
+
+    const file = this._project.files.find((f) => f.id === fileId);
+    if (!file) return;
+
+    // Save current file content from editor before switching
+    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    if (editor && this._project.activeFileId) {
+      const currentFile = this._project.files.find(
+        (f) => f.id === this._project!.activeFileId,
+      );
+      if (currentFile) {
+        const editorCode = editor.getCode();
+        // Only update if content actually changed
+        if (editorCode !== currentFile.content) {
+          currentFile.content = editorCode;
+          currentFile.hasUnsavedChanges = true;
+          currentFile.lastModified = Date.now();
+        }
+      }
+    }
+
+    // Switch to new file
+    this._project.activeFileId = fileId;
+    this._project.files.forEach((f) => {
+      f.isOpen = f.id === fileId || f.isOpen;
+    });
+    this._project.lastModified = Date.now();
+
+    // Update editor with new file content
+    if (editor) {
+      editor.setCode(file.content);
+    }
+
+    this._saveProject();
+    this.requestUpdate();
+  }
+
+  private _closeFile(fileId: string): void {
+    if (!this._project) return;
+
+    const file = this._project.files.find((f) => f.id === fileId);
+    if (!file) return;
+
+    // Check for unsaved changes
+    if (file.hasUnsavedChanges) {
+      if (!confirm(`File "${file.name}" has unsaved changes. Close anyway?`)) {
+        return;
+      }
+    }
+
+    // Close file
+    file.isOpen = false;
+
+    // If this was the active file, switch to another open file
+    if (this._project.activeFileId === fileId) {
+      const openFiles = this._project.files.filter((f) => f.isOpen && f.id !== fileId);
+      this._project.activeFileId = openFiles.length > 0 ? openFiles[0].id : null;
+    }
+
+    this._project.lastModified = Date.now();
+    this._saveProject();
+    this.requestUpdate();
+  }
+
+  private _handleFileOpen(e: CustomEvent): void {
+    const { fileId } = e.detail;
+    this._switchToFile(fileId);
+  }
+
+  private _handleFileSelected(_e: CustomEvent): void {
+    // Just update selection, don't switch yet
+    // Could be used for preview or other features
+  }
+
+  private _handleFileRename(e: CustomEvent): void {
+    const { fileId, newName } = e.detail;
+    if (!this._project) return;
+
+    const file = this._project.files.find((f) => f.id === fileId);
+    if (file) {
+      file.name = newName;
+      file.path = newName; // Simple: path = name for now
+      file.lastModified = Date.now();
+      this._project.lastModified = Date.now();
+      this._saveProject();
+    }
+  }
+
+  private _handleFileDeleted(e: CustomEvent): void {
+    const { fileId } = e.detail;
+    this._closeFile(fileId);
+  }
+
+  private async _saveProject(): Promise<void> {
+    if (!this._storage || !this._project) return;
+    try {
+      await this._storage.saveProject(this._project);
+    } catch (error) {
+      console.error("Failed to save project", error);
+    }
+  }
+
+  private _toggleProjectExplorer(): void {
+    this._showProjectExplorer = !this._showProjectExplorer;
   }
 
   /**

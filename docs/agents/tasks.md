@@ -72,7 +72,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-022: Project Explorer and Multi-File Support
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: Dev2  
 **Priority**: High  
 **Created**: 2026-01-14  
@@ -81,13 +81,13 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 **Description**: Extend the single-file editor to support multiple ST program files organized in a project structure. Add a file tree sidebar, file tabs, and the ability to manage multiple programs.
 
 **Acceptance Criteria**:
-- [ ] Project structure stored in HA (via helper or config entry storage)
-- [ ] File tree sidebar shows all ST files in the project
-- [ ] Tabs allow switching between open files
-- [ ] New file / rename / delete operations
-- [ ] Changes are persisted and survive HA restarts
-- [ ] Deploy can target individual programs or the entire project
-- [ ] Unsaved changes indicator on tabs
+- [x] Project structure stored in HA (via localStorage, HA storage API ready for future)
+- [x] File tree sidebar shows all ST files in the project
+- [x] Tabs allow switching between open files
+- [x] New file / rename / delete operations
+- [x] Changes are persisted and survive HA restarts (localStorage)
+- [ ] Deploy can target individual programs or the entire project (needs deploy system update)
+- [x] Unsaved changes indicator on tabs
 
 **Technical Notes**:
 - Consider using HA's `storage` API for persisting project structure
