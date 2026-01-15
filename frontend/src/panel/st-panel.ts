@@ -4,7 +4,11 @@ import "../editor";
 import "../online/online-toolbar";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
-import type { TriggerConfig, AnalysisMetadata, EntityDependency } from "../analyzer/types";
+import type {
+  TriggerConfig,
+  AnalysisMetadata,
+  EntityDependency,
+} from "../analyzer/types";
 import { transpile } from "../transpiler";
 import { deploy, HAApiClient } from "../deploy";
 import type { VariableBinding, OnlineModeState } from "../online/types";
@@ -145,7 +149,7 @@ IF motion THEN
     activationCount := activationCount + 1;
 ELSE
     light := FALSE;
-END_IF;
+END_IF
 
 END_PROGRAM`;
     this._syntaxOk = true;
@@ -163,8 +167,12 @@ END_PROGRAM`;
   }
 
   render() {
-    const errorCount = this._diagnostics.filter((d) => d.severity === "Error").length;
-    const warningCount = this._diagnostics.filter((d) => d.severity === "Warning").length;
+    const errorCount = this._diagnostics.filter(
+      (d) => d.severity === "Error",
+    ).length;
+    const warningCount = this._diagnostics.filter(
+      (d) => d.severity === "Warning",
+    ).length;
 
     return html`
       <div class="container">
@@ -197,7 +205,9 @@ END_PROGRAM`;
               <div class="diagnostics-panel">
                 ${this._diagnostics.map(
                   (d) => html`
-                    <div class="diagnostic diagnostic-${d.severity.toLowerCase()}">
+                    <div
+                      class="diagnostic diagnostic-${d.severity.toLowerCase()}"
+                    >
                       ${d.line ? `[${d.line}:${d.column || 0}] ` : ""}${d.code
                         ? `${d.code}: `
                         : ""}${d.message}
@@ -215,7 +225,9 @@ END_PROGRAM`;
             ? html`<span class="status-error">${errorCount} Error(s)</span>`
             : ""}
           ${warningCount > 0
-            ? html`<span class="status-warning">${warningCount} Warning(s)</span>`
+            ? html`<span class="status-warning"
+                >${warningCount} Warning(s)</span
+              >`
             : ""}
           <span>Triggers: ${this._triggers.length}</span>
           <span>Entities: ${this._entityCount}</span>
@@ -295,7 +307,9 @@ END_PROGRAM`;
     }
 
     if (!this.hass?.connection) {
-      console.error("Cannot deploy: Home Assistant connection is not available");
+      console.error(
+        "Cannot deploy: Home Assistant connection is not available",
+      );
       return;
     }
 
@@ -307,13 +321,18 @@ END_PROGRAM`;
 
     const transpilerResult = transpile(parseResult.ast, "home");
     if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
-      console.error("Cannot deploy: transpiler reported errors", transpilerResult.diagnostics);
+      console.error(
+        "Cannot deploy: transpiler reported errors",
+        transpilerResult.diagnostics,
+      );
       return;
     }
 
     const api = new HAApiClient(this.hass.connection);
     try {
-      const deployResult = await deploy(api, transpilerResult, { createBackup: true });
+      const deployResult = await deploy(api, transpilerResult, {
+        createBackup: true,
+      });
       if (!deployResult.success) {
         console.error("Deploy failed", deployResult.errors);
       } else {
@@ -328,7 +347,9 @@ END_PROGRAM`;
   /**
    * Extract variable bindings from AST for online mode
    */
-  private _extractBindings(dependencies: EntityDependency[]): VariableBinding[] {
+  private _extractBindings(
+    dependencies: EntityDependency[],
+  ): VariableBinding[] {
     const bindings: VariableBinding[] = [];
 
     for (const dep of dependencies) {
@@ -363,7 +384,9 @@ END_PROGRAM`;
     const analysis = analyzeDependencies(parseResult.ast);
     const bindings = this._extractBindings(analysis.dependencies);
 
-    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
     if (editor) {
       try {
         await editor.startOnlineMode(bindings);
@@ -375,7 +398,9 @@ END_PROGRAM`;
   }
 
   private _handleOnlineDisconnect(): void {
-    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
     if (editor) {
       editor.stopOnlineMode();
       this._onlineState = null;
@@ -383,7 +408,9 @@ END_PROGRAM`;
   }
 
   private _handleOnlineTogglePause(): void {
-    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
     if (editor && this._onlineState) {
       const isPaused = this._onlineState.status === "paused";
       editor.setOnlinePaused(!isPaused);

@@ -8,56 +8,56 @@ This document provides a comprehensive testing checklist for the st-editor compo
 - [x] Type code and verify it appears correctly
 - [x] Undo (Ctrl+Z)
 - [x] Redo (Ctrl+Y)
-- [x] Copy/Paste operations  - Works partially the copy/paste works but the highlighting of the marked code doesnt work
+- [x] Copy/Paste operations
 - [ ] Multi-cursor editing (Ctrl+Click)
 
 ### Line Features
-- [ ] Line numbers display correctly
-- [ ] Active line highlighting (both gutter and editor background)
+- [x] Line numbers display correctly
+- [x] Active line highlighting (both gutter and editor background)
 - [ ] Code folding (Ctrl+Shift+[ to fold, Ctrl+Shift+] to unfold)
 
 ---
 
 ## Syntax Highlighting
 
-- [ ] **Keywords** appear blue/bold: `IF`, `THEN`, `ELSE`, `FOR`, `WHILE`, `PROGRAM`, etc.
-- [ ] **Data types** appear cyan: `BOOL`, `INT`, `REAL`, `STRING`, `TIME`
-- [ ] **Functions** appear yellow: `ABS`, `SQRT`, `MAX`, `MIN`, `LEN`
-- [ ] **Function blocks** appear purple: `TON`, `TOF`, `R_TRIG`, `F_TRIG`, `CTU`
-- [ ] **Comments** appear green/italic: `// line comment` and `(* block comment *)`
-- [ ] **Strings** appear orange: `'hello world'`
-- [ ] **Numbers** appear light green: `42`, `3.14`, `16#FF`, `T#5s`
-- [ ] **I/O addresses** recognized: `%IX0.0`, `%QW10`, `%MD100`
+- [x] **Keywords** appear blue/bold: `IF`, `THEN`, `ELSE`, `FOR`, `WHILE`, `PROGRAM`, etc.
+- [x] **Data types** appear cyan: `BOOL`, `INT`, `REAL`, `STRING`, `TIME`
+- [x] **Functions** appear yellow: `ABS`, `SQRT`, `MAX`, `MIN`, `LEN`
+- [x] **Function blocks** appear purple: `TON`, `TOF`, `R_TRIG`, `F_TRIG`, `CTU`
+- [x] **Comments** appear green/italic: `// line comment` and `(* block comment *)`
+- [x] **Strings** appear orange: `'hello world'`
+- [x] **Numbers** appear light green: `42`, `3.14`, `16#FF`, `T#5s`
+- [x] **I/O addresses** recognized: `%IX0.0`, `%QW10`, `%MD100`
 
 ---
 
 ## Autocompletion (Ctrl+Space)
 
-- [ ] Keywords autocomplete
-- [ ] Data types autocomplete
-- [ ] Built-in functions autocomplete
-- [ ] Function blocks autocomplete
-- [ ] **Pragmas** autocomplete: `{trigger}`, `{persistent}`, `{throttle}`, etc.
+- [x] Keywords autocomplete
+- [x] Data types autocomplete
+- [x] Built-in functions autocomplete
+- [x] Function blocks autocomplete
+- [x] **Pragmas** autocomplete: `{trigger}`, `{persistent}`, `{throttle}`, etc.
 - [ ] **Templates** work:
-  - [ ] Type `PROGRAM` and select template - should insert full skeleton
+  - [x] Type `PROGRAM` and select template - should insert full skeleton
   - [ ] Type `IF` and select template - should insert IF/THEN/END_IF structure
-
+     - Semicolons are added at the end of END_IF which doesnt work
 ---
 
 ## Bracket Features
 
-- [ ] **Auto-closing** brackets: type `(` and `)` auto-appears
-- [ ] **Bracket matching**: cursor on `(` highlights matching `)`
-- [ ] Works for `()`, `[]`, `{}`, `''`
+- [x] **Auto-closing** brackets: type `(` and `)` auto-appears
+- [x] **Bracket matching**: cursor on `(` highlights matching `)`
+- [x] Works for `()`, `[]`, `{}`, `''`
 
 ---
 
 ## Search (Ctrl+F)
 
-- [ ] Search dialog opens
-- [ ] Find next (Ctrl+G or F3)
-- [ ] Find previous (Shift+Ctrl+G)
-- [ ] Occurrences highlight in editor
+- [x] Search dialog opens
+- [x] Find next (Ctrl+G or F3)
+- [x] Find previous (Shift+Ctrl+G)
+- [x] Occurrences highlight in editor
 
 ---
 

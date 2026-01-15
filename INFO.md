@@ -1,8 +1,11 @@
 # ST for Home Assistant
 
-**Current Version: 0.1.6.3**
+**Current Version: 0.1.6.4**
 
 ## Recent Changes
+
+### 0.1.6.4
+- Fixed bug in `IF` statement autocomplete template that added an incorrect semicolon.
 
 ### 0.1.6.3
 - Made selection highlighting semi-transparent so text remains visible

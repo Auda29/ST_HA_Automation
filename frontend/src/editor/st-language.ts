@@ -294,7 +294,7 @@ export const stCompletion = completeFromList([
   {
     label: "IF",
     type: "keyword",
-    apply: "IF ${cond} THEN\n\t\nEND_IF;",
+    apply: "IF ${cond} THEN\n\t\nEND_IF",
     detail: "template",
   },
 ]);
