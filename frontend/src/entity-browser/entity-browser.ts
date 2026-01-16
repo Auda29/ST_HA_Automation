@@ -1,12 +1,13 @@
 /**
  * Entity Browser Component
- * 
+ *
  * Main component that manages WebSocket subscription to HA entities and provides
  * filtering/searching capabilities. Integrates with the entity list for display.
  */
 
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { subscribeEntities } from "home-assistant-js-websocket";
 import type { EntityInfo, EntityFilter, DataTypeInference } from "./types";
 import "./entity-list";
 import type { EntityState } from "../online/types";
@@ -147,17 +148,18 @@ export class STEntityBrowser extends LitElement {
       this._isConnected = false;
 
       // Subscribe to all entity state changes
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this._unsubscribe = await this.hass.connection.subscribeEntities(
+      this._unsubscribe = subscribeEntities(
+        this.hass.connection,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (entities: Record<string, EntityState>) => {
+        (entities: any) => {
           this._handleEntityUpdate(entities);
         },
       );
 
       this._isConnected = true;
     } catch (error) {
-      this._error = error instanceof Error ? error.message : "Connection failed";
+      this._error =
+        error instanceof Error ? error.message : "Connection failed";
       this._isConnected = false;
       console.error("Failed to subscribe to entities", error);
     }
@@ -337,9 +339,7 @@ export class STEntityBrowser extends LitElement {
           >
             <option value="">All Domains</option>
             ${this._domains.map(
-              (domain) => html`
-                <option value=${domain}>${domain}</option>
-              `,
+              (domain) => html` <option value=${domain}>${domain}</option> `,
             )}
           </select>
           <label class="filter-checkbox">
@@ -361,9 +361,7 @@ export class STEntityBrowser extends LitElement {
         </div>
       </div>
       <div class="status-bar">
-        <span
-          class=${this._isConnected ? "status-connected" : ""}
-        >
+        <span class=${this._isConnected ? "status-connected" : ""}>
           ${this._isConnected
             ? `✓ ${entityArray.length} entities`
             : "Connecting..."}
