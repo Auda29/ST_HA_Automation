@@ -1,6 +1,6 @@
 /**
  * Project Storage Manager
- * 
+ *
  * Handles persistence of project structure and file content using HA's storage API.
  * Falls back to localStorage for client-side caching.
  */
@@ -13,12 +13,14 @@ export type HAConnection = any; // Home Assistant WebSocket connection
 
 export class ProjectStorage {
   constructor(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private readonly _connection: HAConnection | null,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private readonly _configEntryId: string,
+    // Reserved for future HA storage API integration
+    _connection: HAConnection | null,
+    // Reserved for future HA storage API integration
+    _configEntryId: string,
   ) {
     // Connection and configEntryId stored for future HA storage API integration
+    void _connection;
+    void _configEntryId;
   }
 
   /**

@@ -69,7 +69,7 @@ describe("Project Explorer Integration", () => {
 
       // But we can set it again in memory
       loaded!.files[0].hasUnsavedChanges = true;
-      expect(loaded.files[0].hasUnsavedChanges).toBe(true);
+      expect(loaded!.files[0].hasUnsavedChanges).toBe(true);
     });
   });
 
@@ -112,7 +112,9 @@ describe("Project Explorer Integration", () => {
       project.files = project.files.filter((f) => f.id !== fileToDelete.id);
 
       expect(project.files).toHaveLength(0);
-      expect(project.files.find((f) => f.id === fileToDelete.id)).toBeUndefined();
+      expect(
+        project.files.find((f) => f.id === fileToDelete.id),
+      ).toBeUndefined();
     });
 
     it("handles file paths with folders", () => {

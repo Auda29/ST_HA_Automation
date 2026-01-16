@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { ProjectStorage } from "./project-storage";
-import type { ProjectStructure, ProjectFile } from "./types";
+import type { ProjectFile } from "./types";
 import { STORAGE_KEY_PROJECT } from "./types";
 
 describe("ProjectStorage", () => {

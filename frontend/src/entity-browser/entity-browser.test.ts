@@ -48,7 +48,9 @@ describe("STEntityBrowser", () => {
 
   describe("WebSocket Subscription", () => {
     it("subscribes to entity updates when hass connection is available", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -67,7 +69,9 @@ describe("STEntityBrowser", () => {
 
       mockHass.connection.subscribeEntities = mockSubscribeEntities;
 
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -79,7 +83,9 @@ describe("STEntityBrowser", () => {
     });
 
     it("unsubscribes when component is disconnected", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -93,7 +99,9 @@ describe("STEntityBrowser", () => {
     });
 
     it("reconnects when hass connection changes", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -119,7 +127,9 @@ describe("STEntityBrowser", () => {
 
   describe("Entity Updates", () => {
     it("processes entity state updates and groups by domain", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -128,16 +138,22 @@ describe("STEntityBrowser", () => {
 
       const entities: Record<string, EntityState> = {
         "light.kitchen": {
+          entityId: "light.kitchen",
           state: "on",
           attributes: { friendly_name: "Kitchen Light" },
           lastChanged: "2026-01-14T10:00:00Z",
         },
         "sensor.temperature": {
+          entityId: "sensor.temperature",
           state: "22.5",
-          attributes: { friendly_name: "Temperature", unit_of_measurement: "°C" },
+          attributes: {
+            friendly_name: "Temperature",
+            unit_of_measurement: "°C",
+          },
           lastChanged: "2026-01-14T10:00:00Z",
         },
         "binary_sensor.motion": {
+          entityId: "binary_sensor.motion",
           state: "off",
           attributes: { friendly_name: "Motion Sensor" },
           lastChanged: "2026-01-14T10:00:00Z",
@@ -145,7 +161,8 @@ describe("STEntityBrowser", () => {
       };
 
       // Get the callback passed to subscribeEntities
-      const subscribeCallback = mockSubscribeEntities.mock.calls[0][0];
+      const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
+        .calls[0][0];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -164,7 +181,9 @@ describe("STEntityBrowser", () => {
     });
 
     it("extracts entity icons from attributes", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -173,6 +192,7 @@ describe("STEntityBrowser", () => {
 
       const entities: Record<string, EntityState> = {
         "light.kitchen": {
+          entityId: "light.kitchen",
           state: "on",
           attributes: {
             friendly_name: "Kitchen Light",
@@ -182,7 +202,8 @@ describe("STEntityBrowser", () => {
         },
       };
 
-      const subscribeCallback = mockSubscribeEntities.mock.calls[0][0];
+      const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
+        .calls[0][0];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -313,7 +334,9 @@ describe("STEntityBrowser", () => {
 
   describe("Filtering", () => {
     beforeEach(async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -323,23 +346,27 @@ describe("STEntityBrowser", () => {
       // Set up initial entities
       const entities: Record<string, EntityState> = {
         "light.kitchen": {
+          entityId: "light.kitchen",
           state: "on",
           attributes: { friendly_name: "Kitchen Light" },
           lastChanged: "2026-01-14T10:00:00Z",
         },
         "sensor.temperature": {
+          entityId: "sensor.temperature",
           state: "22.5",
           attributes: { friendly_name: "Temperature" },
           lastChanged: "2026-01-14T10:00:00Z",
         },
         "binary_sensor.motion": {
+          entityId: "binary_sensor.motion",
           state: "off",
           attributes: { friendly_name: "Motion Sensor" },
           lastChanged: "2026-01-14T10:00:00Z",
         },
       };
 
-      const subscribeCallback = mockSubscribeEntities.mock.calls[0][0];
+      const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
+        .calls[0][0];
       subscribeCallback(entities);
       await component.updateComplete;
     });
@@ -406,7 +433,9 @@ describe("STEntityBrowser", () => {
 
   describe("Performance with 500+ entities", () => {
     it("handles 500+ entities efficiently", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -419,7 +448,9 @@ describe("STEntityBrowser", () => {
 
       for (let i = 0; i < 500; i++) {
         const domain = domains[i % domains.length];
-        entities[`${domain}.entity_${i}`] = {
+        const entityId = `${domain}.entity_${i}`;
+        entities[entityId] = {
+          entityId,
           state: i % 2 === 0 ? "on" : "off",
           attributes: {
             friendly_name: `Entity ${i}`,
@@ -429,7 +460,8 @@ describe("STEntityBrowser", () => {
       }
 
       const startTime = performance.now();
-      const subscribeCallback = mockSubscribeEntities.mock.calls[0][0];
+      const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
+        .calls[0][0];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -458,7 +490,9 @@ describe("STEntityBrowser", () => {
     });
 
     it("maintains smooth UI updates with large entity sets", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -468,14 +502,17 @@ describe("STEntityBrowser", () => {
       // Generate 1000 entities
       const entities: Record<string, EntityState> = {};
       for (let i = 0; i < 1000; i++) {
-        entities[`sensor.entity_${i}`] = {
+        const entityId = `sensor.entity_${i}`;
+        entities[entityId] = {
+          entityId,
           state: `${i}`,
           attributes: { friendly_name: `Entity ${i}` },
           lastChanged: "2026-01-14T10:00:00Z",
         };
       }
 
-      const subscribeCallback = mockSubscribeEntities.mock.calls[0][0];
+      const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
+        .calls[0][0];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -496,7 +533,9 @@ describe("STEntityBrowser", () => {
 
   describe("Status Display", () => {
     it("shows connection status when connected", async () => {
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
@@ -514,7 +553,9 @@ describe("STEntityBrowser", () => {
         .mockRejectedValue(new Error("Connection failed"));
       mockHass.connection.subscribeEntities = mockSubscribeEntities;
 
-      component = document.createElement("st-entity-browser") as STEntityBrowser;
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
       component.hass = mockHass;
       document.body.appendChild(component);
 
