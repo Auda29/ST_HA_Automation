@@ -1,8 +1,13 @@
 # ST for Home Assistant
 
-**Current Version: 1.7.0**
+**Current Version: 1.7.1**
 
 ## Recent Changes
+
+### 1.7.1
+- Fixed Entity Browser WebSocket connection issue (subscribeEntities API)
+- Fixed sidebar visibility with improved CSS handling
+- Rebuilt frontend bundle with TypeScript build error fixes
 
 ### 1.7.0
 - **Entity Browser**: New sidebar panel listing all Home Assistant entities with WebSocket integration
