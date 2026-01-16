@@ -1,8 +1,25 @@
 # ST for Home Assistant
 
-**Current Version: 0.1.6.4**
+**Current Version: 1.7.0**
 
 ## Recent Changes
+
+### 1.7.0
+- **Entity Browser**: New sidebar panel listing all Home Assistant entities with WebSocket integration
+  - Real-time entity state updates via WebSocket subscription
+  - Entities grouped by domain (light, sensor, binary_sensor, switch, etc.)
+  - Search and filter functionality to find entities by name or ID
+  - Drag-and-drop from entity list to editor inserts proper AT binding syntax
+  - Entity icons and current state displayed
+  - Automatic data type inference (BOOL for binary_sensor, REAL for numeric sensor)
+  - Optimized performance for 500+ entities
+- **Project Explorer and Multi-File Support**: Extended editor to support multiple ST program files
+  - File tree sidebar showing all ST files in the project
+  - Tabbed interface for switching between open files
+  - New file, rename, and delete operations
+  - Project structure persisted in localStorage (survives HA restarts)
+  - Unsaved changes indicator on tabs
+  - Backward compatible with single-file mode
 
 ### 0.1.6.4
 - Fixed bug in `IF` statement autocomplete template that added an incorrect semicolon.
@@ -33,3 +50,5 @@
 - Autocompletion with templates
 - TwinCAT-inspired dark theme
 - Live value display in online mode
+- Entity Browser with drag-and-drop entity binding
+- Multi-file project support with file tree and tabs
