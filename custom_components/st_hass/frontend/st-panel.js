@@ -29145,7 +29145,10 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       }}
                             title="Close"
                           >
-                            <ha-icon icon="mdi:close" style="width: 12px; height: 12px;"></ha-icon>
+                            <ha-icon
+                              icon="mdi:close"
+                              style="width: 12px; height: 12px;"
+                            ></ha-icon>
                           </div>
                         </button>
                       `
@@ -29217,7 +29220,9 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     if (!this._project) return;
     const e = this._project.files.find((s) => s.id === i);
     if (!e) return;
-    const t = (n = this.shadowRoot) == null ? void 0 : n.querySelector("st-editor");
+    const t = (n = this.shadowRoot) == null ? void 0 : n.querySelector(
+      "st-editor"
+    );
     if (t && this._project.activeFileId) {
       const s = this._project.files.find(
         (r) => r.id === this._project.activeFileId
@@ -29236,7 +29241,9 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     const e = this._project.files.find((t) => t.id === i);
     if (e && !(e.hasUnsavedChanges && !confirm(`File "${e.name}" has unsaved changes. Close anyway?`))) {
       if (e.isOpen = !1, this._project.activeFileId === i) {
-        const t = this._project.files.filter((n) => n.isOpen && n.id !== i);
+        const t = this._project.files.filter(
+          (n) => n.isOpen && n.id !== i
+        );
         this._project.activeFileId = t.length > 0 ? t[0].id : null;
       }
       this._project.lastModified = Date.now(), this._saveProject(), this.requestUpdate();
@@ -29419,13 +29426,10 @@ aL(Fe, "styles", Ji`
       display: flex;
       flex-direction: column;
       background: var(--primary-background-color);
-      transition: transform 0.3s ease;
+      overflow: hidden;
     }
     .sidebar.hidden {
-      transform: translateX(-100%);
-      width: 0;
-      min-width: 0;
-      border-right: none;
+      display: none;
     }
     .content-area {
       flex: 1;

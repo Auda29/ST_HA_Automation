@@ -67,13 +67,10 @@ export class STPanel extends LitElement {
       display: flex;
       flex-direction: column;
       background: var(--primary-background-color);
-      transition: transform 0.3s ease;
+      overflow: hidden;
     }
     .sidebar.hidden {
-      transform: translateX(-100%);
-      width: 0;
-      min-width: 0;
-      border-right: none;
+      display: none;
     }
     .content-area {
       flex: 1;
@@ -356,7 +353,9 @@ END_PROGRAM`;
           <h1>ST for Home Assistant</h1>
           <div class="toolbar-actions">
             <button
-              class="toolbar-button ${this._showProjectExplorer ? "active" : ""}"
+              class="toolbar-button ${this._showProjectExplorer
+                ? "active"
+                : ""}"
               @click=${this._toggleProjectExplorer}
               title="Toggle Project Explorer"
             >
@@ -430,7 +429,10 @@ END_PROGRAM`;
                             }}
                             title="Close"
                           >
-                            <ha-icon icon="mdi:close" style="width: 12px; height: 12px;"></ha-icon>
+                            <ha-icon
+                              icon="mdi:close"
+                              style="width: 12px; height: 12px;"
+                            ></ha-icon>
                           </div>
                         </button>
                       `,
@@ -492,7 +494,7 @@ END_PROGRAM`;
 
   private _handleCodeChange(e: CustomEvent<{ code: string }>) {
     const newCode = e.detail.code;
-    
+
     if (this._project && this._project.activeFileId) {
       // Update active file in project
       const activeFile = this._project.files.find(
@@ -511,7 +513,7 @@ END_PROGRAM`;
       // Legacy single-file mode
       this._code = newCode;
     }
-    
+
     this._analyzeCode();
   }
 
@@ -537,7 +539,9 @@ END_PROGRAM`;
     if (!file) return;
 
     // Save current file content from editor before switching
-    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
     if (editor && this._project.activeFileId) {
       const currentFile = this._project.files.find(
         (f) => f.id === this._project!.activeFileId,
@@ -587,8 +591,11 @@ END_PROGRAM`;
 
     // If this was the active file, switch to another open file
     if (this._project.activeFileId === fileId) {
-      const openFiles = this._project.files.filter((f) => f.isOpen && f.id !== fileId);
-      this._project.activeFileId = openFiles.length > 0 ? openFiles[0].id : null;
+      const openFiles = this._project.files.filter(
+        (f) => f.isOpen && f.id !== fileId,
+      );
+      this._project.activeFileId =
+        openFiles.length > 0 ? openFiles[0].id : null;
     }
 
     this._project.lastModified = Date.now();
