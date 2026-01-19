@@ -1,6 +1,6 @@
 /**
  * Project Explorer Component
- * 
+ *
  * Main component for managing project structure, files, and operations.
  */
 
@@ -111,22 +111,14 @@ END_VAR
 
 END_PROGRAM`,
       lastModified: Date.now(),
-      isOpen: false,
+      isOpen: true,
       hasUnsavedChanges: false,
     };
 
-    const updatedProject: ProjectStructure = {
-      ...this.project,
-      files: [...this.project.files, newFile],
-      lastModified: Date.now(),
-    };
-
-    this._updateProject(updatedProject);
-
-    // Open the new file
+    // Dispatch file-created event so parent can update its project state first
     this.dispatchEvent(
-      new CustomEvent("file-open", {
-        detail: { fileId: newFile.id },
+      new CustomEvent("file-created", {
+        detail: { file: newFile },
         bubbles: true,
         composed: true,
       }),
@@ -195,7 +187,6 @@ END_PROGRAM`,
 
     this._updateProject(updatedProject);
   }
-
 
   private _updateProject(project: ProjectStructure): void {
     this.project = project;

@@ -2,15 +2,18 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { OnlineStateManager, ValueFormatter } from "../state-manager";
 import type { VariableBinding } from "../types";
 
+// Mock the home-assistant-js-websocket module
+vi.mock("home-assistant-js-websocket", () => ({
+  subscribeEntities: vi.fn().mockReturnValue(() => {}),
+}));
+
 describe("OnlineStateManager", () => {
   let manager: OnlineStateManager;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockConnection: any;
 
   beforeEach(() => {
-    mockConnection = {
-      subscribeEntities: vi.fn().mockResolvedValue(() => {}),
-    };
+    mockConnection = {};
     manager = new OnlineStateManager(mockConnection);
   });
 

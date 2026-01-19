@@ -397,6 +397,7 @@ END_PROGRAM`;
                     @file-selected=${this._handleFileSelected}
                     @file-rename=${this._handleFileRename}
                     @file-deleted=${this._handleFileDeleted}
+                    @file-created=${this._handleFileCreated}
                   ></st-project-explorer>
                 </div>
               `
@@ -630,6 +631,31 @@ END_PROGRAM`;
   private _handleFileDeleted(e: CustomEvent): void {
     const { fileId } = e.detail;
     this._closeFile(fileId);
+  }
+
+  private _handleFileCreated(e: CustomEvent): void {
+    const { file } = e.detail;
+    if (!this._project || !file) return;
+
+    // Add the new file to the project
+    this._project = {
+      ...this._project,
+      files: [...this._project.files, file],
+      activeFileId: file.id,
+      lastModified: Date.now(),
+    };
+
+    // Update editor with new file content
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
+    if (editor) {
+      editor.setCode(file.content);
+    }
+
+    this._saveProject();
+    this._analyzeCode();
+    this.requestUpdate();
   }
 
   private async _saveProject(): Promise<void> {

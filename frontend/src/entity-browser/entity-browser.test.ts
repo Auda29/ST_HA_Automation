@@ -5,6 +5,18 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import type { EntityInfo, EntityFilter } from "./types";
 import type { EntityState } from "../online/types";
+
+// Mock the home-assistant-js-websocket module - use vi.hoisted for variables
+const { mockSubscribeEntities, mockUnsubscribe } = vi.hoisted(() => {
+  const mockUnsubscribe = vi.fn();
+  const mockSubscribeEntities = vi.fn().mockReturnValue(mockUnsubscribe);
+  return { mockSubscribeEntities, mockUnsubscribe };
+});
+
+vi.mock("home-assistant-js-websocket", () => ({
+  subscribeEntities: mockSubscribeEntities,
+}));
+
 import { STEntityBrowser, inferDataType } from "./entity-browser";
 import "./entity-browser";
 
@@ -23,20 +35,15 @@ vi.mock("./entity-list", () => ({
 
 describe("STEntityBrowser", () => {
   let component: STEntityBrowser;
-  let mockUnsubscribe: () => void;
-  let mockSubscribeEntities: (
-    callback: (entities: Record<string, EntityState>) => void,
-  ) => Promise<() => void>;
   let mockHass: any;
 
   beforeEach(() => {
-    mockUnsubscribe = vi.fn();
-    mockSubscribeEntities = vi.fn().mockResolvedValue(mockUnsubscribe);
+    mockUnsubscribe.mockClear();
+    mockSubscribeEntities.mockClear();
+    mockSubscribeEntities.mockReturnValue(mockUnsubscribe);
 
     mockHass = {
-      connection: {
-        subscribeEntities: mockSubscribeEntities,
-      },
+      connection: {},
     };
   });
 
@@ -63,11 +70,9 @@ describe("STEntityBrowser", () => {
 
     it("handles connection errors gracefully", async () => {
       const errorMessage = "Connection failed";
-      mockSubscribeEntities = vi
-        .fn()
-        .mockRejectedValue(new Error(errorMessage));
-
-      mockHass.connection.subscribeEntities = mockSubscribeEntities;
+      mockSubscribeEntities.mockImplementation(() => {
+        throw new Error(errorMessage);
+      });
 
       component = document.createElement(
         "st-entity-browser",
@@ -109,9 +114,7 @@ describe("STEntityBrowser", () => {
       await component.updateComplete;
 
       const newMockHass = {
-        connection: {
-          subscribeEntities: vi.fn().mockResolvedValue(mockUnsubscribe),
-        },
+        connection: {},
       };
 
       component.hass = newMockHass;
@@ -121,7 +124,7 @@ describe("STEntityBrowser", () => {
       await component.updateComplete;
 
       expect(mockUnsubscribe).toHaveBeenCalledTimes(1); // Disconnect from old
-      expect(newMockHass.connection.subscribeEntities).toHaveBeenCalledTimes(1); // Connect to new
+      expect(mockSubscribeEntities).toHaveBeenCalledTimes(2); // Connect to new (called twice total)
     });
   });
 
@@ -548,10 +551,9 @@ describe("STEntityBrowser", () => {
     });
 
     it("shows error message when connection fails", async () => {
-      mockSubscribeEntities = vi
-        .fn()
-        .mockRejectedValue(new Error("Connection failed"));
-      mockHass.connection.subscribeEntities = mockSubscribeEntities;
+      mockSubscribeEntities.mockImplementation(() => {
+        throw new Error("Connection failed");
+      });
 
       component = document.createElement(
         "st-entity-browser",

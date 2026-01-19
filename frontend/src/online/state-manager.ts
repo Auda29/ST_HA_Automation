@@ -4,6 +4,8 @@
  * Manages WebSocket subscriptions and entity state updates.
  */
 
+import { subscribeEntities } from "home-assistant-js-websocket";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type {
   EntityState,
   VariableBinding,
@@ -23,7 +25,8 @@ export class OnlineStateManager {
   private readonly bindings: Map<string, VariableBinding> = new Map();
   private readonly entityStates: Map<string, EntityState> = new Map();
   private readonly liveValues: Map<string, LiveValue> = new Map();
-  private readonly subscribers: Set<(state: OnlineModeState) => void> = new Set();
+  private readonly subscribers: Set<(state: OnlineModeState) => void> =
+    new Set();
   private unsubscribe: (() => void) | null = null;
 
   private status: OnlineStatus = "disconnected";
@@ -50,12 +53,11 @@ export class OnlineStateManager {
     }
 
     try {
-      // Subscribe to entity state changes
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.unsubscribe = await this.connection.subscribeEntities(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (entities: Record<string, EntityState>) => {
-          this.handleEntityUpdate(entities);
+      // Subscribe to entity state changes using the imported function
+      this.unsubscribe = subscribeEntities(
+        this.connection,
+        (entities: HassEntities) => {
+          this.handleHassEntityUpdate(entities);
         },
       );
 
@@ -122,7 +124,27 @@ export class OnlineStateManager {
   // Internal Methods
   // ==========================================================================
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /**
+   * Handle entity updates from home-assistant-js-websocket
+   * Converts HassEntities to our internal EntityState format
+   */
+  private handleHassEntityUpdate(entities: HassEntities): void {
+    if (this.status === "paused") return;
+
+    // Convert HassEntities to our EntityState format
+    const converted: Record<string, EntityState> = {};
+    for (const [entityId, hassEntity] of Object.entries(entities)) {
+      converted[entityId] = {
+        entityId: hassEntity.entity_id,
+        state: hassEntity.state,
+        lastChanged: hassEntity.last_changed,
+        attributes: hassEntity.attributes,
+      };
+    }
+
+    this.handleEntityUpdate(converted);
+  }
+
   private handleEntityUpdate(entities: Record<string, EntityState>): void {
     if (this.status === "paused") return;
 
@@ -279,7 +301,10 @@ export class ValueFormatter {
   /**
    * Format with change highlight
    */
-  static formatWithChange(live: LiveValue): { text: string; className: string } {
+  static formatWithChange(live: LiveValue): {
+    text: string;
+    className: string;
+  } {
     const base = this.format(live.currentValue);
 
     if (live.hasChanged) {
