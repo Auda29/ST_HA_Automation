@@ -147,6 +147,12 @@ export class STEntityBrowser extends LitElement {
       this._error = null;
       this._isConnected = false;
 
+      // Ensure haVersion is set on connection (required by home-assistant-js-websocket)
+      // Home Assistant frontend normally sets this, but in custom panels it may be missing
+      if (!this.hass.connection.haVersion && this.hass.config?.version) {
+        this.hass.connection.haVersion = this.hass.config.version;
+      }
+
       // Subscribe to all entity state changes
       this._unsubscribe = subscribeEntities(
         this.hass.connection,

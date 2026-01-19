@@ -18403,21 +18403,21 @@ let si = class extends xt {
    * Connect to HA WebSocket and subscribe to entity updates
    */
   async _connect() {
-    var e;
+    var e, t;
     if (!((e = this.hass) != null && e.connection)) {
       this._error = "Home Assistant connection not available";
       return;
     }
     try {
-      this._error = null, this._isConnected = !1, this._unsubscribe = ry(
+      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((t = this.hass.config) != null && t.version) && (this.hass.connection.haVersion = this.hass.config.version), this._unsubscribe = ry(
         this.hass.connection,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (t) => {
-          this._handleEntityUpdate(t);
+        (n) => {
+          this._handleEntityUpdate(n);
         }
       ), this._isConnected = !0;
-    } catch (t) {
-      this._error = t instanceof Error ? t.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", t);
+    } catch (n) {
+      this._error = n instanceof Error ? n.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", n);
     }
   }
   /**
