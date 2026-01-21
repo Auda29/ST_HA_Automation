@@ -84,9 +84,11 @@ export class JinjaGenerator {
         return String(lit.value);
 
       case 'string':
-        // Escape single quotes in strings
-        const escaped = String(lit.value).replace(/'/g, "\\'");
-        return `'${escaped}'`;
+        {
+          // Escape single quotes in strings
+          const escaped = String(lit.value).replace(/'/g, "\\'");
+          return `'${escaped}'`;
+        }
 
       case 'time':
         // Convert ST time literal to seconds for HA

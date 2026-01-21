@@ -16,16 +16,17 @@ import type { EntityState } from "../online/types";
 export class STEntityBrowser extends LitElement {
   @property({ attribute: false }) declare hass?: any; // Home Assistant object with connection
 
-  @state() private _entities: Map<string, EntityInfo> = new Map();
-  @state() private _filter: EntityFilter = {
+  // Internal state (we manually trigger updates when these change)
+  private _entities: Map<string, EntityInfo> = new Map();
+  private _filter: EntityFilter = {
     searchQuery: "",
     selectedDomain: null,
     showInputsOnly: false,
     showOutputsOnly: false,
   };
-  @state() private _domains: string[] = [];
-  @state() private _isConnected: boolean = false;
-  @state() private _error: string | null = null;
+  private _domains: string[] = [];
+  private _isConnected = false;
+  private _error: string | null = null;
 
   private _unsubscribe: (() => void) | null = null;
 
@@ -126,10 +127,15 @@ export class STEntityBrowser extends LitElement {
   updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
     if (changedProperties.has("hass")) {
-      // Reconnect if hass connection changes
-      this._disconnect();
-      if (this.hass?.connection) {
-        this._connect();
+      const previous = changedProperties.get("hass");
+      // Only reconnect when we had a previous hass instance and the connection
+      // reference actually changed. This avoids double-subscription on the
+      // initial render where hass is set the first time.
+      if (previous && (previous as any).connection !== this.hass?.connection) {
+        this._disconnect();
+        if (this.hass?.connection) {
+          this._connect();
+        }
       }
     }
   }
@@ -159,12 +165,10 @@ export class STEntityBrowser extends LitElement {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (entities: any) => {
           this._handleEntityUpdate(entities);
-          // Set connected after first update to ensure entities are available
-          if (!this._isConnected) {
-            this._isConnected = true;
-          }
         },
       );
+      // At this point the subscription is established; mark connection as active.
+      this._isConnected = true;
     } catch (error) {
       this._error =
         error instanceof Error ? error.message : "Connection failed";

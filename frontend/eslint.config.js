@@ -27,7 +27,11 @@ export default [
       "@typescript-eslint": tsPlugin,
     },
     rules: {
+      // Start from the recommended TypeScript rules
       ...tsPlugin.configs.recommended.rules,
+      // Let TypeScript handle undefined globals in type positions, etc.
+      // This avoids a long list of manual DOM/timer globals in TS files.
+      "no-undef": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": [
         "error",

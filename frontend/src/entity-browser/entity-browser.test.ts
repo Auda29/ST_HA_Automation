@@ -165,7 +165,7 @@ describe("STEntityBrowser", () => {
 
       // Get the callback passed to subscribeEntities
       const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
-        .calls[0][0];
+        .calls[0][1];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -206,7 +206,7 @@ describe("STEntityBrowser", () => {
       };
 
       const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
-        .calls[0][0];
+        .calls[0][1];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -464,7 +464,7 @@ describe("STEntityBrowser", () => {
 
       const startTime = performance.now();
       const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
-        .calls[0][0];
+        .calls[0][1];
       subscribeCallback(entities);
 
       await component.updateComplete;
@@ -515,7 +515,7 @@ describe("STEntityBrowser", () => {
       }
 
       const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
-        .calls[0][0];
+        .calls[0][1];
       subscribeCallback(entities);
 
       await component.updateComplete;
