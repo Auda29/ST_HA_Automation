@@ -6,7 +6,7 @@
  */
 
 import { LitElement, html, css } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { subscribeEntities } from "home-assistant-js-websocket";
 import type { EntityInfo, EntityFilter, DataTypeInference } from "./types";
 import "./entity-list";
