@@ -21,8 +21,8 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 
 ## Project Status
 
-**Current Version**: 0.1.0 (Alpha)  
-**Status**: Feature-Complete, Ready for Beta Testing
+**Current Version**: 1.8.1  
+**Status**: Stable, Ready for Production Use
 
 ### Test Coverage
 
@@ -37,13 +37,13 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 | Online Mode | 10 | ✅ Passing |
 | Error Mapping | 10 | ✅ Passing |
 | Source Maps | 11 | ✅ Passing |
-| **Total** | **145** | **✅ 100% Passing** |
+| **Total** | **194** | **✅ 100% Passing** |
 
 ### Build Status
 
 - **TypeScript**: ✅ Passing (strict mode)
 - **ESLint**: ✅ Passing (0 errors)
-- **Bundle Size**: 245 KB (gzipped)
+- **Bundle Size**: 214 KB (gzipped, initial load) with code splitting
 
 ## Installation
 

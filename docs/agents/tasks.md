@@ -381,7 +381,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-030: HACS Publication Preparation
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: DevOps  
 **Priority**: High  
 **Created**: 2026-01-14  

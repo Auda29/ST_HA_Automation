@@ -1,4 +1,9 @@
 {
   "name": "ST for Home Assistant",
-  "render_readme": true
+  "render_readme": true,
+  "filename": "st_hass",
+  "hacs": "1.6.0",
+  "domains": ["st_hass"],
+  "iot_class": "Local Push",
+  "homeassistant": "2024.1.0"
 }
