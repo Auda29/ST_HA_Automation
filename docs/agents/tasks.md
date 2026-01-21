@@ -60,13 +60,14 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 - Follow the design mockup in PRD section 2.1
 - Consider virtualized list for large entity counts
 
-**Files to Create/Modify**:
-- `frontend/src/entity-browser/entity-browser.ts` (new)
-- `frontend/src/entity-browser/entity-list.ts` (new)
-- `frontend/src/entity-browser/entity-item.ts` (new)
-- `frontend/src/entity-browser/types.ts` (new)
-- `frontend/src/entity-browser/index.ts` (new)
-- `frontend/src/panel/st-panel.ts` (integrate sidebar)
+**Files Created/Modified**:
+- `frontend/src/entity-browser/entity-browser.ts`
+- `frontend/src/entity-browser/entity-browser.test.ts`
+- `frontend/src/entity-browser/entity-list.ts`
+- `frontend/src/entity-browser/entity-item.ts`
+- `frontend/src/entity-browser/types.ts`
+- `frontend/src/entity-browser/index.ts`
+- `frontend/src/panel/st-panel.ts` (integrated sidebar)
 
 ---
 
@@ -94,12 +95,15 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 - File content could be stored as text helpers or custom storage
 - Keep backward compatibility with single-file mode
 
-**Files to Create/Modify**:
-- `frontend/src/project/project-explorer.ts` (new)
-- `frontend/src/project/file-tree.ts` (new)
-- `frontend/src/project/project-storage.ts` (new)
-- `frontend/src/project/types.ts` (new)
-- `frontend/src/panel/st-panel.ts` (integrate tabs)
+**Files Created/Modified**:
+- `frontend/src/project/project-explorer.ts`
+- `frontend/src/project/project-explorer.test.ts`
+- `frontend/src/project/project-storage.ts`
+- `frontend/src/project/project-storage.test.ts`
+- `frontend/src/project/file-tree.ts`
+- `frontend/src/project/types.ts`
+- `frontend/src/project/index.ts`
+- `frontend/src/panel/st-panel.ts` (integrated tabs)
 - `frontend/src/editor/st-editor.ts` (multi-instance support)
 
 ---
@@ -400,5 +404,5 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ---
 
-**Last Updated**: 2026-01-14  
+**Last Updated**: 2026-01-21  
 **Maintained By**: Taskmaster & All Agents

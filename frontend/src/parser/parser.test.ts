@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from "vitest";
 import { parse } from "./index";
-import type { AssignmentStatement } from "./ast";
+import type { AssignmentStatement, IfStatement } from "./ast";
 
 describe("ST Parser", () => {
   describe("Program structure", () => {
@@ -214,7 +214,7 @@ describe("ST Parser", () => {
 
       const result = parse(code);
       expect(result.success).toBe(true);
-      const ifStmt = result.ast?.body[0] as any;
+      const ifStmt = result.ast?.body[0] as IfStatement;
       expect(ifStmt.type).toBe("IfStatement");
       expect(ifStmt.elsifBranches).toHaveLength(1);
       expect(ifStmt.elseBranch).toBeDefined();

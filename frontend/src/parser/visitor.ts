@@ -3,6 +3,7 @@
  * Transforms Chevrotain's Concrete Syntax Tree to our custom AST
  */
 
+import { CstNode, IToken } from "chevrotain";
 import { parserInstance } from "./parser";
 import type {
   ProgramNode,
@@ -31,6 +32,9 @@ import type {
 
 const BaseVisitor = parserInstance.getBaseCstVisitorConstructor();
 
+// Define a type for the context to avoid 'any'
+type CstContext = Record<string, CstNode[] | IToken[]>;
+
 export class STVisitor extends BaseVisitor {
   constructor() {
     super();
@@ -38,16 +42,21 @@ export class STVisitor extends BaseVisitor {
   }
 
   // Program
-  program(ctx: any): ProgramNode {
+  program(ctx: {
+    pragma?: CstNode[];
+    programName: IToken[];
+    variableBlock?: CstNode[];
+    statement?: CstNode[];
+  }): ProgramNode {
     const pragmas: PragmaNode[] = ctx.pragma
-      ? ctx.pragma.map((p: any) => this.visit(p))
+      ? ctx.pragma.map((p) => this.visit(p))
       : [];
     const programName = ctx.programName[0].image;
     const variables: VariableDeclaration[] = ctx.variableBlock
-      ? ctx.variableBlock.flatMap((vb: any) => this.visit(vb))
+      ? ctx.variableBlock.flatMap((vb) => this.visit(vb))
       : [];
     const body: Statement[] = ctx.statement
-      ? ctx.statement.map((s: any) => this.visit(s))
+      ? ctx.statement.map((s) => this.visit(s))
       : [];
 
     return {
@@ -61,7 +70,13 @@ export class STVisitor extends BaseVisitor {
   }
 
   // Variable declarations
-  variableBlock(ctx: any): VariableDeclaration[] {
+  variableBlock(ctx: {
+    VarInput?: IToken[];
+    VarOutput?: IToken[];
+    VarInOut?: IToken[];
+    VarGlobal?: IToken[];
+    variableDeclaration?: CstNode[];
+  }): VariableDeclaration[] {
     let section: VarSection = "VAR";
 
     if (ctx.VarInput) section = "VAR_INPUT";
@@ -70,7 +85,7 @@ export class STVisitor extends BaseVisitor {
     else if (ctx.VarGlobal) section = "VAR_GLOBAL";
 
     return ctx.variableDeclaration
-      ? ctx.variableDeclaration.map((vd: any) => {
+      ? ctx.variableDeclaration.map((vd) => {
           const decl = this.visit(vd) as VariableDeclaration;
           decl.section = section;
           return decl;
@@ -78,25 +93,35 @@ export class STVisitor extends BaseVisitor {
       : [];
   }
 
-  variableDeclaration(ctx: any): VariableDeclaration {
+  variableDeclaration(ctx: {
+    pragma?: CstNode[];
+    varName: IToken[];
+    typeSpec?: CstNode[];
+    expression?: CstNode[];
+    IoAddress?: IToken[];
+  }): VariableDeclaration {
     const pragmas: PragmaNode[] = ctx.pragma
-      ? ctx.pragma.map((p: any) => this.visit(p))
+      ? ctx.pragma.map((p) => this.visit(p))
       : [];
     const name = ctx.varName[0].image;
     const dataType = ctx.typeSpec
-      ? this.visit(ctx.typeSpec)
+      ? this.visit(ctx.typeSpec[0])
       : this.createDataType("UNKNOWN");
     const initialValue = ctx.expression
       ? this.visit(ctx.expression[0])
       : undefined;
-    
+
     // Create binding if IO address is present
-    let binding = undefined;
+    let binding;
     if (ctx.IoAddress) {
       binding = this.parseIoAddress(ctx.IoAddress[0].image);
-      
+
       // Extract entity ID from initialValue if it's a string literal
-      if (initialValue && initialValue.type === "Literal" && initialValue.kind === "string") {
+      if (
+        initialValue &&
+        initialValue.type === "Literal" &&
+        initialValue.kind === "string"
+      ) {
         binding.entityId = initialValue.value as string;
       }
     }
@@ -114,7 +139,7 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  pragma(ctx: any): PragmaNode {
+  pragma(ctx: { Pragma: IToken[] }): PragmaNode {
     const text = ctx.Pragma[0].image;
     // Extract pragma content from {pragma_content}
     const content = text.slice(1, -1).trim();
@@ -139,7 +164,14 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  typeSpec(ctx: any): DataType {
+  typeSpec(ctx: {
+    TypeBool?: IToken[];
+    TypeInt?: IToken[];
+    TypeReal?: IToken[];
+    TypeString?: IToken[];
+    TypeTime?: IToken[];
+    Identifier?: IToken[];
+  }): DataType {
     let typeName: string;
 
     if (ctx.TypeBool) typeName = "BOOL";
@@ -154,7 +186,17 @@ export class STVisitor extends BaseVisitor {
   }
 
   // Statements
-  statement(ctx: any): Statement {
+  statement(ctx: {
+    assignmentStatement?: CstNode[];
+    ifStatement?: CstNode[];
+    caseStatement?: CstNode[];
+    forStatement?: CstNode[];
+    whileStatement?: CstNode[];
+    repeatStatement?: CstNode[];
+    returnStatement?: CstNode[];
+    exitStatement?: CstNode[];
+    functionCallStatement?: CstNode[];
+  }): Statement {
     if (ctx.assignmentStatement) return this.visit(ctx.assignmentStatement[0]);
     if (ctx.ifStatement) return this.visit(ctx.ifStatement[0]);
     if (ctx.caseStatement) return this.visit(ctx.caseStatement[0]);
@@ -168,41 +210,46 @@ export class STVisitor extends BaseVisitor {
     throw new Error("Unknown statement type");
   }
 
-  assignmentStatement(ctx: any): AssignmentStatement {
-    const variable = this.visit(ctx.variableReference[0]);
-    const target = variable.type === "VariableRef" ? variable.name : variable;
-
+  assignmentStatement(ctx: {
+    variableReference: CstNode[];
+    expression: CstNode[];
+  }): AssignmentStatement {
+    const variable = this.visit(ctx.variableReference[0]) as VariableRef;
     return {
       type: "Assignment",
-      target,
+      target: variable.name,
       value: this.visit(ctx.expression[0]),
       location: this.getLocation(ctx),
     };
   }
 
-  ifStatement(ctx: any): IfStatement {
+  ifStatement(ctx: {
+    condition: CstNode[];
+    thenStatements?: CstNode[];
+    elsifCondition?: CstNode[];
+    elsifStatements?: CstNode[];
+    elseStatements?: CstNode[];
+  }): IfStatement {
     const condition = this.visit(ctx.condition[0]);
     const thenBranch = ctx.thenStatements
-      ? ctx.thenStatements.map((s: any) => this.visit(s))
+      ? ctx.thenStatements.map((s) => this.visit(s))
       : [];
 
     const elsifBranches = ctx.elsifCondition
-      ? ctx.elsifCondition.map((cond: any) => {
-          // elsifStatements is an array of arrays (one array per ELSIF clause)
-          // We need to figure out which statements belong to which ELSIF
-          // For simplicity, collect all elsif statements
-          const stmts = ctx.elsifStatements
-            ? ctx.elsifStatements.map((s: any) => this.visit(s))
-            : [];
+      ? ctx.elsifCondition.map((cond, i) => {
+          const stmts =
+            ctx.elsifStatements && ctx.elsifStatements[i]
+              ? this.visit(ctx.elsifStatements[i])
+              : [];
           return {
             condition: this.visit(cond),
-            body: stmts,
+            body: Array.isArray(stmts) ? stmts : [stmts],
           };
         })
       : [];
 
     const elseBranch = ctx.elseStatements
-      ? ctx.elseStatements.map((s: any) => this.visit(s))
+      ? ctx.elseStatements.map((s) => this.visit(s))
       : undefined;
 
     return {
@@ -215,13 +262,17 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  caseStatement(ctx: any): CaseStatement {
+  caseStatement(ctx: {
+    selector: CstNode[];
+    caseClause?: CstNode[];
+    statement?: CstNode[];
+  }): CaseStatement {
     const selector = this.visit(ctx.selector[0]);
     const cases = ctx.caseClause
-      ? ctx.caseClause.map((c: any) => this.visit(c))
+      ? ctx.caseClause.map((c) => this.visit(c))
       : [];
     const elseCase = ctx.statement
-      ? ctx.statement.map((s: any) => this.visit(s))
+      ? ctx.statement.map((s) => this.visit(s))
       : undefined;
 
     return {
@@ -233,69 +284,83 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  caseClause(ctx: any): { values: Expression[]; body: Statement[] } {
+  caseClause(ctx: { caseLabelList: CstNode[]; statement?: CstNode[] }): {
+    values: Expression[];
+    body: Statement[];
+  } {
     const values = this.visit(ctx.caseLabelList[0]);
-    const body = ctx.statement
-      ? ctx.statement.map((s: any) => this.visit(s))
-      : [];
+    const body = ctx.statement ? ctx.statement.map((s) => this.visit(s)) : [];
 
     return { values, body };
   }
 
-  caseLabelList(ctx: any): Expression[] {
-    return ctx.caseLabel.map((cl: any) => this.visit(cl));
+  caseLabelList(ctx: { caseLabel: CstNode[] }): Expression[] {
+    return ctx.caseLabel.map((cl) => this.visit(cl));
   }
 
-  caseLabel(ctx: any): Expression {
-    // Just return the expression (ranges are handled but simplified for now)
+  caseLabel(ctx: { expression: CstNode[] }): Expression {
     return this.visit(ctx.expression[0]);
   }
 
-  forStatement(ctx: any): ForStatement {
+  forStatement(ctx: {
+    controlVar: IToken[];
+    start: CstNode[];
+    end: CstNode[];
+    step?: CstNode[];
+    statement?: CstNode[];
+  }): ForStatement {
     return {
       type: "ForStatement",
       variable: ctx.controlVar[0].image,
       from: this.visit(ctx.start[0]),
       to: this.visit(ctx.end[0]),
       by: ctx.step ? this.visit(ctx.step[0]) : undefined,
-      body: ctx.statement ? ctx.statement.map((s: any) => this.visit(s)) : [],
+      body: ctx.statement ? ctx.statement.map((s) => this.visit(s)) : [],
       location: this.getLocation(ctx),
     };
   }
 
-  whileStatement(ctx: any): WhileStatement {
+  whileStatement(ctx: {
+    expression: CstNode[];
+    statement?: CstNode[];
+  }): WhileStatement {
     return {
       type: "WhileStatement",
       condition: this.visit(ctx.expression[0]),
-      body: ctx.statement ? ctx.statement.map((s: any) => this.visit(s)) : [],
+      body: ctx.statement ? ctx.statement.map((s) => this.visit(s)) : [],
       location: this.getLocation(ctx),
     };
   }
 
-  repeatStatement(ctx: any): RepeatStatement {
+  repeatStatement(ctx: {
+    expression: CstNode[];
+    statement?: CstNode[];
+  }): RepeatStatement {
     return {
       type: "RepeatStatement",
       condition: this.visit(ctx.expression[0]),
-      body: ctx.statement ? ctx.statement.map((s: any) => this.visit(s)) : [],
+      body: ctx.statement ? ctx.statement.map((s) => this.visit(s)) : [],
       location: this.getLocation(ctx),
     };
   }
 
-  returnStatement(ctx: any): ReturnStatement {
+  returnStatement(ctx: CstContext): ReturnStatement {
     return {
       type: "ReturnStatement",
       location: this.getLocation(ctx),
     };
   }
 
-  exitStatement(ctx: any): ExitStatement {
+  exitStatement(ctx: CstContext): ExitStatement {
     return {
       type: "ExitStatement",
       location: this.getLocation(ctx),
     };
   }
 
-  functionCallStatement(ctx: any): FunctionCallStatement {
+  functionCallStatement(ctx: {
+    functionCall: CstNode[];
+  }): FunctionCallStatement {
     return {
       type: "FunctionCallStatement",
       call: this.visit(ctx.functionCall[0]),
@@ -304,11 +369,15 @@ export class STVisitor extends BaseVisitor {
   }
 
   // Expressions
-  expression(ctx: any): Expression {
+  expression(ctx: { orExpression: CstNode[] }): Expression {
     return this.visit(ctx.orExpression[0]);
   }
 
-  orExpression(ctx: any): Expression {
+  orExpression(ctx: {
+    lhs: CstNode[];
+    Or?: IToken[];
+    rhs?: CstNode[];
+  }): Expression {
     if (!ctx.Or || ctx.Or.length === 0) {
       return this.visit(ctx.lhs[0]);
     }
@@ -319,14 +388,18 @@ export class STVisitor extends BaseVisitor {
         type: "BinaryExpression",
         operator: "OR",
         left: result,
-        right: this.visit(ctx.rhs[i]),
+        right: this.visit(ctx.rhs![i]),
         location: this.getLocation(ctx),
       };
     }
     return result;
   }
 
-  andExpression(ctx: any): Expression {
+  andExpression(ctx: {
+    lhs: CstNode[];
+    And?: IToken[];
+    rhs?: CstNode[];
+  }): Expression {
     if (!ctx.And || ctx.And.length === 0) {
       return this.visit(ctx.lhs[0]);
     }
@@ -337,14 +410,23 @@ export class STVisitor extends BaseVisitor {
         type: "BinaryExpression",
         operator: "AND",
         left: result,
-        right: this.visit(ctx.rhs[i]),
+        right: this.visit(ctx.rhs![i]),
         location: this.getLocation(ctx),
       };
     }
     return result;
   }
 
-  comparisonExpression(ctx: any): Expression {
+  comparisonExpression(ctx: {
+    lhs: CstNode[];
+    rhs?: CstNode[];
+    Equal?: IToken[];
+    NotEqual?: IToken[];
+    Less?: IToken[];
+    LessEqual?: IToken[];
+    Greater?: IToken[];
+    GreaterEqual?: IToken[];
+  }): Expression {
     const lhs = this.visit(ctx.lhs[0]);
 
     if (!ctx.rhs || ctx.rhs.length === 0) {
@@ -368,7 +450,12 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  additiveExpression(ctx: any): Expression {
+  additiveExpression(ctx: {
+    lhs: CstNode[];
+    rhs?: CstNode[];
+    Plus?: IToken[];
+    Minus?: IToken[];
+  }): Expression {
     let result: Expression = this.visit(ctx.lhs[0]);
 
     if (!ctx.Plus && !ctx.Minus) {
@@ -376,22 +463,28 @@ export class STVisitor extends BaseVisitor {
     }
 
     const allOps = [...(ctx.Plus || []), ...(ctx.Minus || [])]
-      .sort((a: any, b: any) => a.startOffset - b.startOffset)
-      .map((op: any) => op.image);
+      .sort((a, b) => a.startOffset - b.startOffset)
+      .map((op) => op.image);
 
     for (let i = 0; i < allOps.length; i++) {
       result = {
         type: "BinaryExpression",
         operator: allOps[i],
         left: result,
-        right: this.visit(ctx.rhs[i]),
+        right: this.visit(ctx.rhs![i]),
         location: this.getLocation(ctx),
       };
     }
     return result;
   }
 
-  multiplicativeExpression(ctx: any): Expression {
+  multiplicativeExpression(ctx: {
+    lhs: CstNode[];
+    rhs?: CstNode[];
+    Star?: IToken[];
+    Slash?: IToken[];
+    Mod?: IToken[];
+  }): Expression {
     let result: Expression = this.visit(ctx.lhs[0]);
 
     if (!ctx.Star && !ctx.Slash && !ctx.Mod) {
@@ -403,44 +496,57 @@ export class STVisitor extends BaseVisitor {
       ...(ctx.Slash || []),
       ...(ctx.Mod || []),
     ]
-      .sort((a: any, b: any) => a.startOffset - b.startOffset)
-      .map((op: any) => op.image);
+      .sort((a, b) => a.startOffset - b.startOffset)
+      .map((op) => op.image);
 
     for (let i = 0; i < allOps.length; i++) {
       result = {
         type: "BinaryExpression",
         operator: allOps[i],
         left: result,
-        right: this.visit(ctx.rhs[i]),
+        right: this.visit(ctx.rhs![i]),
         location: this.getLocation(ctx),
       };
     }
     return result;
   }
 
-  unaryExpression(ctx: any): Expression {
+  unaryExpression(ctx: {
+    Not?: IToken[];
+    Minus?: IToken[];
+    unaryExpression?: CstNode[];
+    primaryExpression?: CstNode[];
+  }): Expression {
     if (ctx.Not || ctx.Minus) {
       const operator = ctx.Not ? "NOT" : "-";
       return {
         type: "UnaryExpression",
         operator,
-        operand: this.visit(ctx.unaryExpression[0]),
+        operand: this.visit(ctx.unaryExpression![0]),
         location: this.getLocation(ctx),
       };
     }
 
-    return this.visit(ctx.primaryExpression[0]);
+    return this.visit(ctx.primaryExpression![0]);
   }
 
-  primaryExpression(ctx: any): Expression {
+  primaryExpression(ctx: {
+    literal?: CstNode[];
+    identifierOrCall?: CstNode[];
+    expression?: CstNode[];
+  }): Expression {
     if (ctx.literal) return this.visit(ctx.literal[0]);
     if (ctx.identifierOrCall) return this.visit(ctx.identifierOrCall[0]);
     if (ctx.expression) return this.visit(ctx.expression[0]);
     throw new Error("Unknown primary expression");
   }
 
-  identifierOrCall(ctx: any): Expression {
-    const parts = ctx.Identifier.map((id: any) => id.image);
+  identifierOrCall(ctx: {
+    Identifier: IToken[];
+    LParen?: IToken[];
+    argumentList?: CstNode[];
+  }): Expression {
+    const parts = ctx.Identifier.map((id) => id.image);
     const name = parts.join(".");
 
     // If there's a function call (LParen), treat as function call
@@ -464,13 +570,20 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  literal(ctx: any): Literal {
-    let value: any;
+  literal(ctx: {
+    True?: IToken[];
+    False?: IToken[];
+    IntegerLiteral?: IToken[];
+    RealLiteral?: IToken[];
+    StringLiteral?: IToken[];
+    TimeLiteral?: IToken[];
+  }): Literal {
+    let value: string | number | boolean | null;
     let kind: "integer" | "real" | "string" | "boolean" | "time";
     let raw: string;
 
     if (ctx.True || ctx.False) {
-      value = ctx.True ? true : false;
+      value = !!ctx.True;
       kind = "boolean";
       raw = ctx.True ? "TRUE" : "FALSE";
     } else if (ctx.IntegerLiteral) {
@@ -505,8 +618,8 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  variableReference(ctx: any): VariableRef {
-    const parts = ctx.Identifier.map((id: any) => id.image);
+  variableReference(ctx: { Identifier: IToken[] }): VariableRef {
+    const parts = ctx.Identifier.map((id) => id.image);
 
     // For now, just return the first part as name
     // In the future, we could handle member access properly
@@ -517,7 +630,10 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  functionCall(ctx: any): FunctionCall {
+  functionCall(ctx: {
+    Identifier: IToken[];
+    argumentList?: CstNode[];
+  }): FunctionCall {
     const name = ctx.Identifier[0].image;
     const args: FunctionArgument[] = ctx.argumentList
       ? this.visit(ctx.argumentList[0])
@@ -531,15 +647,19 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  argumentList(ctx: any): FunctionArgument[] {
-    return ctx.argument.map((a: any) => this.visit(a));
+  argumentList(ctx: { argument: CstNode[] }): FunctionArgument[] {
+    return ctx.argument.map((a) => this.visit(a));
   }
 
-  argument(ctx: any): FunctionArgument {
+  argument(ctx: {
+    argName?: IToken[];
+    argValue?: CstNode[];
+    expression?: CstNode[];
+  }): FunctionArgument {
     const name = ctx.argName ? ctx.argName[0].image : undefined;
     const valueExpr: Expression = ctx.argValue
       ? this.visit(ctx.argValue[0])
-      : this.visit(ctx.expression[0]);
+      : this.visit(ctx.expression![0]);
 
     return {
       type: "FunctionArgument",
@@ -572,7 +692,7 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  private getLocation(ctx: any): SourceLocation | undefined {
+  private getLocation(ctx: CstContext): SourceLocation | undefined {
     // Extract location from first and last tokens
     const tokens = this.getAllTokens(ctx);
     if (tokens.length === 0) return undefined;
@@ -588,13 +708,13 @@ export class STVisitor extends BaseVisitor {
     };
   }
 
-  private getAllTokens(ctx: any): any[] {
-    const tokens: any[] = [];
+  private getAllTokens(ctx: CstContext): IToken[] {
+    const tokens: IToken[] = [];
     for (const key in ctx) {
       if (Array.isArray(ctx[key])) {
         for (const item of ctx[key]) {
           if (item && typeof item === "object" && "image" in item) {
-            tokens.push(item);
+            tokens.push(item as IToken);
           }
         }
       }
