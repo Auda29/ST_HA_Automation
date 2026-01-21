@@ -28479,13 +28479,13 @@ class fL {
   // Automation API
   // ==========================================================================
   async getAutomations() {
-    return this.connection.callWS({
+    return this.connection.sendMessagePromise({
       type: "config/automation/list"
     });
   }
   async getAutomation(e) {
     try {
-      return await this.connection.callWS({
+      return await this.connection.sendMessagePromise({
         type: "config/automation/config",
         automation_id: e
       });
@@ -28494,32 +28494,36 @@ class fL {
     }
   }
   async saveAutomation(e, t) {
-    await this.connection.callWS({
+    await this.connection.sendMessagePromise({
       type: "config/automation/config",
       automation_id: e,
       config: t
     });
   }
   async deleteAutomation(e) {
-    await this.connection.callWS({
+    await this.connection.sendMessagePromise({
       type: "config/automation/delete",
       automation_id: e
     });
   }
   async reloadAutomations() {
-    await this.connection.callService("automation", "reload");
+    await this.connection.sendMessagePromise({
+      type: "call_service",
+      domain: "automation",
+      service: "reload"
+    });
   }
   // ==========================================================================
   // Script API
   // ==========================================================================
   async getScripts() {
-    return this.connection.callWS({
+    return this.connection.sendMessagePromise({
       type: "config/script/list"
     });
   }
   async getScript(e) {
     try {
-      return await this.connection.callWS({
+      return await this.connection.sendMessagePromise({
         type: "config/script/config",
         script_id: e
       });
@@ -28528,26 +28532,32 @@ class fL {
     }
   }
   async saveScript(e, t) {
-    await this.connection.callWS({
+    await this.connection.sendMessagePromise({
       type: "config/script/config",
       script_id: e,
       config: t
     });
   }
   async deleteScript(e) {
-    await this.connection.callWS({
+    await this.connection.sendMessagePromise({
       type: "config/script/delete",
       script_id: e
     });
   }
   async reloadScripts() {
-    await this.connection.callService("script", "reload");
+    await this.connection.sendMessagePromise({
+      type: "call_service",
+      domain: "script",
+      service: "reload"
+    });
   }
   // ==========================================================================
   // Helper API
   // ==========================================================================
   async getStates() {
-    return this.connection.getStates();
+    return this.connection.sendMessagePromise({
+      type: "get_states"
+    });
   }
   async getSTHelpers(e = "st_") {
     return (await this.getStates()).filter((n) => {
@@ -28557,7 +28567,7 @@ class fL {
   }
   async deleteHelper(e) {
     const [t, n] = e.split(".");
-    await this.connection.callWS({
+    await this.connection.sendMessagePromise({
       type: `${t}/delete`,
       // e.g. input_number_id, input_boolean_id, ...
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28568,34 +28578,43 @@ class fL {
     const [n] = e.split(".");
     switch (n) {
       case "input_boolean":
-        await this.connection.callService(
-          "input_boolean",
-          t ? "turn_on" : "turn_off",
-          { entity_id: e }
-        );
+        await this.connection.sendMessagePromise({
+          type: "call_service",
+          domain: "input_boolean",
+          service: t ? "turn_on" : "turn_off",
+          service_data: { entity_id: e }
+        });
         break;
       case "input_number":
-        await this.connection.callService("input_number", "set_value", {
-          entity_id: e,
-          value: t
+        await this.connection.sendMessagePromise({
+          type: "call_service",
+          domain: "input_number",
+          service: "set_value",
+          service_data: { entity_id: e, value: t }
         });
         break;
       case "input_text":
-        await this.connection.callService("input_text", "set_value", {
-          entity_id: e,
-          value: t
+        await this.connection.sendMessagePromise({
+          type: "call_service",
+          domain: "input_text",
+          service: "set_value",
+          service_data: { entity_id: e, value: t }
         });
         break;
       case "input_datetime":
-        await this.connection.callService("input_datetime", "set_datetime", {
-          entity_id: e,
-          datetime: t
+        await this.connection.sendMessagePromise({
+          type: "call_service",
+          domain: "input_datetime",
+          service: "set_datetime",
+          service_data: { entity_id: e, datetime: t }
         });
         break;
       case "counter":
-        await this.connection.callService("counter", "set_value", {
-          entity_id: e,
-          value: t
+        await this.connection.sendMessagePromise({
+          type: "call_service",
+          domain: "counter",
+          service: "set_value",
+          service_data: { entity_id: e, value: t }
         });
         break;
     }
