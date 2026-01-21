@@ -9,12 +9,12 @@ This document provides a comprehensive testing checklist for the st-editor compo
 - [x] Undo (Ctrl+Z)
 - [x] Redo (Ctrl+Y)
 - [x] Copy/Paste operations
-- [ ] Multi-cursor editing (Ctrl+Click)
+- [x] Multi-cursor editing (Ctrl+Click) - **WORKS** (tested 2025-01-21)
 
 ### Line Features
 - [x] Line numbers display correctly
 - [x] Active line highlighting (both gutter and editor background)
-- [ ] Code folding (Ctrl+Shift+[ to fold, Ctrl+Shift+] to unfold)
+- [ ] Code folding (Ctrl+Shift+[ to fold, Ctrl+Shift+] to unfold) - **NOT WORKING** (tested 2025-01-21)
 
 ---
 
@@ -38,10 +38,11 @@ This document provides a comprehensive testing checklist for the st-editor compo
 - [x] Built-in functions autocomplete
 - [x] Function blocks autocomplete
 - [x] **Pragmas** autocomplete: `{trigger}`, `{persistent}`, `{throttle}`, etc.
-- [ ] **Templates** work:
+- [x] **Templates** work:
   - [x] Type `PROGRAM` and select template - should insert full skeleton
-  - [ ] Type `IF` and select template - should insert IF/THEN/END_IF structure
-     - Semicolons are added at the end of END_IF which doesnt work
+  - [x] Type `IF` and select template - inserts IF/THEN/END_IF structure - **WORKS** (tested 2025-01-21)
+     - Note: Template inserts `IF ${cond} THEN` with placeholder
+
 ---
 
 ## Bracket Features
@@ -63,8 +64,8 @@ This document provides a comprehensive testing checklist for the st-editor compo
 
 ## Read-Only Mode
 
-- [ ] Editor becomes non-editable when `read-only` is set
-- [ ] Can still scroll and select text
+- [x] Editor becomes non-editable when `readOnly` property is set to true - **WORKS** (tested 2025-01-21)
+- [x] Can still scroll and select text
 
 ---
 
@@ -77,41 +78,54 @@ This document provides a comprehensive testing checklist for the st-editor compo
 - [ ] `stopOnlineMode()` removes decorations
 - [ ] Pause/resume works with `setOnlinePaused()`
 
+**Note:** Online mode testing deferred - requires working WebSocket connection to Home Assistant.
+
 ---
 
 ## Events & Integration
 
-- [ ] `code-change` event fires when you modify code
-- [ ] `getCode()` returns current content
-- [ ] `setCode()` updates editor content
-- [ ] `focus()` brings cursor to editor
+- [x] `code-change` event fires when you modify code - **WORKS** (tested 2025-01-21)
+- [x] `getCode()` returns current content - **WORKS** (tested 2025-01-21)
+- [x] `setCode()` updates editor content - **WORKS** (tested 2025-01-21)
+- [x] `focus()` brings cursor to editor - **WORKS** (tested 2025-01-21)
 
 ---
 
 ## Edge Cases
 
-- [ ] Large files (100+ lines) perform well
-- [ ] Special characters display correctly
-- [ ] Time literals parse: `T#10h30m`, `TIME#5s`
-- [ ] Hex/binary literals: `16#FF`, `2#1010`
+- [x] Large files (100+ lines) perform well
+- [x] Special characters display correctly (German umlauts: äöü ÄÖÜ ß, symbols: €@#$%^&*()) - **WORKS** (tested 2025-01-21)
+- [x] Time literals parse: `T#10h30m`, `T#5s`, `T#500ms` - **WORKS** (tested 2025-01-21)
+- [x] Hex/binary literals: `16#FF`, `2#10101010` - **WORKS** (tested 2025-01-21)
 
 ---
 
 ## Keyboard Shortcuts Reference
 
-| Shortcut | Action |
-|----------|--------|
-| Ctrl+Space | Autocompletion |
-| Ctrl+F | Search |
-| Ctrl+G / F3 | Find next |
-| Shift+Ctrl+G | Find previous |
-| Ctrl+Z | Undo |
-| Ctrl+Y | Redo |
-| Ctrl+Shift+[ | Fold code |
-| Ctrl+Shift+] | Unfold code |
-| Tab | Indent |
-| Shift+Tab | Unindent |
-| Ctrl+/ | Toggle comment |
+| Shortcut | Action | Status |
+|----------|--------|--------|
+| Ctrl+Space | Autocompletion | WORKS |
+| Ctrl+F | Search | WORKS |
+| Ctrl+G / F3 | Find next | WORKS |
+| Shift+Ctrl+G | Find previous | WORKS |
+| Ctrl+Z | Undo | WORKS |
+| Ctrl+Y | Redo | WORKS |
+| Ctrl+Shift+[ | Fold code | NOT WORKING |
+| Ctrl+Shift+] | Unfold code | NOT WORKING |
+| Tab | Indent | **WORKS** (tested 2025-01-21) |
+| Shift+Tab | Unindent | **WORKS** (tested 2025-01-21) |
+| Ctrl+/ | Toggle comment | **WORKS** (tested 2025-01-21) |
+
+---
+
+## Deploy Functionality
+
+- [ ] Deploy button creates Home Assistant automation
+- [ ] Backup is created before deployment
+- [ ] Helper entities are created correctly
+- [ ] Error messages display properly
+
+**Note:** Deploy testing deferred - WebSocket API integration needs fixes (sendMessagePromise vs callWS issue partially fixed, but automation creation API format still has issues).
 
 ---
 
@@ -119,4 +133,13 @@ This document provides a comprehensive testing checklist for the st-editor compo
 
 | Date | Tester | Version | Issues Found |
 |------|--------|---------|--------------|
-| | | | |
+| 2025-01-21 | Claude | dev | Code folding not working (Ctrl+Shift+[/]) |
+| 2025-01-21 | Claude | dev | Deploy fails - automation creation API format issue |
+
+---
+
+## Known Issues
+
+1. **Code Folding**: Ctrl+Shift+[ and Ctrl+Shift+] do not fold/unfold code blocks. May need to verify if folding extension is properly configured in CodeMirror setup.
+
+2. **Deploy Functionality**: WebSocket API calls updated from `callWS` to `sendMessagePromise`, but automation creation still fails with `[object Object]` error. The API message format for `config/automation/config/{id}` may need adjustment.

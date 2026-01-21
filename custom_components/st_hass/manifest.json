@@ -1,7 +1,7 @@
 {
   "domain": "st_hass",
   "name": "ST for Home Assistant",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "documentation": "https://github.com/Auda29/ST_HA_Automation",
   "issue_tracker": "https://github.com/Auda29/ST_HA_Automation/issues",
   "dependencies": [],

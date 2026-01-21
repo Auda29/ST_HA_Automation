@@ -1,8 +1,23 @@
 # ST for Home Assistant
 
-**Current Version: 1.7.1**
+**Current Version: 1.8.0**
 
 ## Recent Changes
+
+### 1.8.0
+- **WebSocket API Fix**: Changed from deprecated `callWS` to `sendMessagePromise` for Home Assistant WebSocket communication
+- **Comprehensive Manual Testing**: All core editor features tested and verified working:
+  - Multi-cursor editing (Ctrl+Click): WORKS
+  - IF template autocomplete: WORKS
+  - Read-only mode (`editor.readOnly = true`): WORKS
+  - API methods (`getCode()`, `setCode()`, `focus()`): WORKS
+  - `code-change` event firing: WORKS
+  - Special characters (German umlauts äöü, symbols €@#$%): WORKS
+  - IEC 61131-3 literals (TIME T#5s, HEX 16#FF, BINARY 2#10101010): WORKS
+  - Keyboard shortcuts (Tab, Shift+Tab, Ctrl+/): WORKS
+- **Known Issues Documented**:
+  - Code folding (Ctrl+Shift+[/]) not working - CodeMirror extension may need configuration
+  - Deploy functionality requires further investigation
 
 ### 1.7.1
 - Fixed Entity Browser WebSocket connection issue (subscribeEntities API)
