@@ -117,8 +117,9 @@ describe("STEntityBrowser", () => {
         connection: {},
       };
 
+      // Change hass property - Lit will automatically call updated()
       component.hass = newMockHass;
-      component.updated(new Map([["hass", mockHass]]));
+      await component.updateComplete;
 
       await new Promise((resolve) => setTimeout(resolve, 100));
       await component.updateComplete;
@@ -369,7 +370,7 @@ describe("STEntityBrowser", () => {
       };
 
       const subscribeCallback = vi.mocked(mockSubscribeEntities).mock
-        .calls[0][0];
+        .calls[0][1];
       subscribeCallback(entities);
       await component.updateComplete;
     });

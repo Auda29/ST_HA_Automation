@@ -678,8 +678,9 @@ END_PROGRAM`;
   private _analyzeCode(): void {
     const diagnostics: CombinedDiagnostic[] = [];
 
-    // Step 1: Parse the code
-    const parseResult = parse(this._code);
+    // Step 1: Parse the code (use current code from project or legacy mode)
+    const code = this._getCurrentCode();
+    const parseResult = parse(code);
 
     // Convert parser errors to combined diagnostics
     if (parseResult.errors.length > 0) {
