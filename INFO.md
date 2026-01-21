@@ -1,8 +1,13 @@
 # ST for Home Assistant
 
-**Current Version: 1.8.0**
+**Current Version: 1.8.1**
 
 ## Recent Changes
+
+### 1.8.1
+- **Entity Browser Rendering Fix**: Fixed issue where Entity Browser showed "0 entities" despite having data loaded
+  - Root cause: Lit doesn't detect Map reference changes automatically
+  - Solution: Added `requestUpdate()` call after Map update to force re-render
 
 ### 1.8.0
 - **WebSocket API Fix**: Changed from deprecated `callWS` to `sendMessagePromise` for Home Assistant WebSocket communication
