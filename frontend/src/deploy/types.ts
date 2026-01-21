@@ -2,15 +2,15 @@
  * Deploy System Type Definitions
  */
 
-import type { HAAutomation, HAScript } from '../transpiler/types';
-import type { HelperConfig } from '../analyzer/types';
+import type { HAAutomation, HAScript } from "../transpiler/types";
+import type { HelperConfig } from "../analyzer/types";
 
 // ============================================================================
 // Deploy Operation Types
 // ============================================================================
 
-export type DeployOperationType = 'create' | 'update' | 'delete';
-export type DeployEntityType = 'automation' | 'script' | 'helper';
+export type DeployOperationType = "create" | "update" | "delete";
+export type DeployEntityType = "automation" | "script" | "helper";
 
 export interface DeployOperation {
   id: string;
@@ -19,7 +19,7 @@ export interface DeployOperation {
   entityId: string;
   previousState?: unknown;
   newState?: unknown;
-  status: 'pending' | 'applied' | 'reverted' | 'failed';
+  status: "pending" | "applied" | "reverted" | "failed";
   error?: string;
 }
 
@@ -29,7 +29,7 @@ export interface DeployTransaction {
   projectName: string;
   programName: string;
   operations: DeployOperation[];
-  status: 'pending' | 'in_progress' | 'committed' | 'rolled_back' | 'failed';
+  status: "pending" | "in_progress" | "committed" | "rolled_back" | "failed";
 }
 
 export interface DeployResult {
@@ -87,9 +87,8 @@ export interface BackupData {
 // ============================================================================
 
 export interface HAConnection {
-  callWS<T>(message: HAWSMessage): Promise<T>;
-  callService(domain: string, service: string, data?: Record<string, unknown>): Promise<void>;
-  getStates(): Promise<HAState[]>;
+  sendMessagePromise<T>(message: HAWSMessage): Promise<T>;
+  sendMessage(message: HAWSMessage): void;
 }
 
 export interface HAWSMessage {
@@ -123,4 +122,3 @@ export interface HAScriptConfig {
   sequence: unknown[];
   fields?: Record<string, unknown>;
 }
-

@@ -12,15 +12,16 @@ import type { TranspilerResult } from "../transpiler/types";
 
 class FakeConnection implements HAConnection {
   public wsMessages: HAWSMessage[] = [];
-  public services: { domain: string; service: string; data?: Record<string, unknown> }[] = [];
   public states: HAState[] = [];
   public automations = new Map<string, HAAutomationConfig>();
   public scripts = new Map<string, HAScriptConfig>();
   public failScriptSave = false;
 
-  async callWS<T>(message: HAWSMessage): Promise<T> {
+  async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);
     switch (message.type) {
+      case "get_states":
+        return this.states as unknown as T;
       case "config/automation/config": {
         if ("config" in message) {
           const cfg = message.config as HAAutomationConfig;
@@ -57,12 +58,8 @@ class FakeConnection implements HAConnection {
     }
   }
 
-  async callService(domain: string, service: string, data?: Record<string, unknown>): Promise<void> {
-    this.services.push({ domain, service, data });
-  }
-
-  async getStates(): Promise<HAState[]> {
-    return this.states;
+  sendMessage(message: HAWSMessage): void {
+    this.wsMessages.push(message);
   }
 }
 
@@ -89,9 +86,9 @@ function makeTranspilerResult(): TranspilerResult {
     helpers: [],
     sourceMap: {
       version: 1,
-      project: 'test',
-      program: 'prog',
-      automationId: 'st_test_prog',
+      project: "test",
+      program: "prog",
+      automationId: "st_test_prog",
       generatedAt: new Date().toISOString(),
       mappings: {},
     },
@@ -128,4 +125,3 @@ describe("DeployManager", () => {
     expect(conn.automations.has("st_default_prog")).toBe(false);
   });
 });
-

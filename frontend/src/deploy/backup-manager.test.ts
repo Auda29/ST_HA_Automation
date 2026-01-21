@@ -1,18 +1,25 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import type { HAConnection, HAWSMessage, HAState, HAAutomationConfig, HAScriptConfig } from "./types";
+import type {
+  HAConnection,
+  HAWSMessage,
+  HAState,
+  HAAutomationConfig,
+  HAScriptConfig,
+} from "./types";
 import { HAApiClient } from "./ha-api";
 import { BackupManager } from "./backup-manager";
 
 class FakeConnection implements HAConnection {
   public wsMessages: HAWSMessage[] = [];
-  public services: { domain: string; service: string; data?: Record<string, unknown> }[] = [];
   public states: HAState[] = [];
   public automations = new Map<string, HAAutomationConfig>();
   public scripts = new Map<string, HAScriptConfig>();
 
-  async callWS<T>(message: HAWSMessage): Promise<T> {
+  async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);
     switch (message.type) {
+      case "get_states":
+        return this.states as unknown as T;
       case "config/automation/config": {
         if ("config" in message) {
           const cfg = message.config as HAAutomationConfig;
@@ -38,12 +45,8 @@ class FakeConnection implements HAConnection {
     }
   }
 
-  async callService(domain: string, service: string, data?: Record<string, unknown>): Promise<void> {
-    this.services.push({ domain, service, data });
-  }
-
-  async getStates(): Promise<HAState[]> {
-    return this.states;
+  sendMessage(message: HAWSMessage): void {
+    this.wsMessages.push(message);
   }
 }
 
@@ -88,4 +91,3 @@ describe("BackupManager", () => {
     expect(backups[0].programName).toBe("Prog");
   });
 });
-

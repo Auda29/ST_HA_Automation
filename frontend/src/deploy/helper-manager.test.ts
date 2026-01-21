@@ -6,21 +6,19 @@ import type { HelperConfig } from "../analyzer/types";
 
 class FakeConnection implements HAConnection {
   public wsMessages: HAWSMessage[] = [];
-  public services: { domain: string; service: string; data?: Record<string, unknown> }[] = [];
   public states: HAState[] = [];
 
-  async callWS<T>(message: HAWSMessage): Promise<T> {
+  async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);
+    if (message.type === "get_states") {
+      return this.states as unknown as T;
+    }
     // For helper tests we only care about delete helpers; no response needed.
     return undefined as unknown as T;
   }
 
-  async callService(domain: string, service: string, data?: Record<string, unknown>): Promise<void> {
-    this.services.push({ domain, service, data });
-  }
-
-  async getStates(): Promise<HAState[]> {
-    return this.states;
+  sendMessage(message: HAWSMessage): void {
+    this.wsMessages.push(message);
   }
 }
 
@@ -70,4 +68,3 @@ describe("HelperManager", () => {
     expect(sync.toDelete).toEqual(["input_number.st_old_helper"]);
   });
 });
-
