@@ -18413,9 +18413,9 @@ let si = class extends xt {
         this.hass.connection,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (n) => {
-          this._handleEntityUpdate(n);
+          this._handleEntityUpdate(n), this._isConnected || (this._isConnected = !0);
         }
-      ), this._isConnected = !0;
+      );
     } catch (n) {
       this._error = n instanceof Error ? n.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", n);
     }
@@ -18447,7 +18447,7 @@ let si = class extends xt {
       };
       t.set(r, l);
     }
-    this._entities = t, this._domains = Array.from(n).sort();
+    this._entities = t, this._domains = Array.from(n).sort(), this.requestUpdate();
   }
   /**
    * Extract friendly name from entity state

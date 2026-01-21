@@ -159,10 +159,12 @@ export class STEntityBrowser extends LitElement {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (entities: any) => {
           this._handleEntityUpdate(entities);
+          // Set connected after first update to ensure entities are available
+          if (!this._isConnected) {
+            this._isConnected = true;
+          }
         },
       );
-
-      this._isConnected = true;
     } catch (error) {
       this._error =
         error instanceof Error ? error.message : "Connection failed";
@@ -209,6 +211,8 @@ export class STEntityBrowser extends LitElement {
 
     this._entities = entityMap;
     this._domains = Array.from(domainSet).sort();
+    // Force re-render since Map reference changes aren't detected by Lit
+    this.requestUpdate();
   }
 
   /**
