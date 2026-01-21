@@ -2,8 +2,9 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import "../editor";
 import "../online/online-toolbar";
-import "../entity-browser";
-import "../project";
+// Entity browser and project explorer are lazy loaded when shown
+// import "../entity-browser";
+// import "../project";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
 import type {
@@ -11,12 +12,13 @@ import type {
   AnalysisMetadata,
   EntityDependency,
 } from "../analyzer/types";
-import { transpile } from "../transpiler";
-import { deploy, HAApiClient } from "../deploy";
+// Transpiler and deploy are lazy loaded when deploy is triggered
+// import { transpile } from "../transpiler";
+// import { deploy, HAApiClient } from "../deploy";
 import type { VariableBinding, OnlineModeState } from "../online/types";
 import type { STEditor } from "../editor/st-editor";
 import type { ProjectStructure, ProjectFile } from "../project/types";
-import { ProjectStorage } from "../project";
+import type { ProjectStorage } from "../project";
 
 interface CombinedDiagnostic {
   severity: "Error" | "Warning" | "Info" | "Hint";
@@ -42,6 +44,8 @@ export class STPanel extends LitElement {
   @state() declare private _showEntityBrowser: boolean;
   @state() declare private _showProjectExplorer: boolean;
   @state() declare private _storage: ProjectStorage | null;
+  private _entityBrowserLoaded = false;
+  private _projectExplorerLoaded = false;
 
   static styles = css`
     :host {
@@ -292,14 +296,20 @@ END_PROGRAM`;
   updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
     if (changedProperties.has("hass")) {
-      this._initializeStorage();
-      if (!this._project) {
-        this._initializeProject();
-      }
+      this._initializeStorage().then(() => {
+        if (!this._project) {
+          this._initializeProject();
+        }
+      });
     }
   }
 
-  private _initializeStorage(): void {
+  private async _initializeStorage(): Promise<void> {
+    if (this._storage) return; // Already initialized
+    
+    // Lazy load ProjectStorage module
+    const { ProjectStorage } = await import("../project");
+    
     if (this.hass?.connection) {
       const configEntryId = this.hass.config?.entry_id || "default";
       this._storage = new ProjectStorage(this.hass.connection, configEntryId);
@@ -310,7 +320,7 @@ END_PROGRAM`;
 
   private async _initializeProject(): Promise<void> {
     if (!this._storage) {
-      this._initializeStorage();
+      await this._initializeStorage();
     }
 
     if (this._storage) {
@@ -667,7 +677,12 @@ END_PROGRAM`;
     }
   }
 
-  private _toggleProjectExplorer(): void {
+  private async _toggleProjectExplorer(): Promise<void> {
+    if (!this._projectExplorerLoaded && !this._showProjectExplorer) {
+      // Lazy load project explorer module when first shown
+      await import("../project");
+      this._projectExplorerLoaded = true;
+    }
     this._showProjectExplorer = !this._showProjectExplorer;
   }
 
@@ -742,6 +757,12 @@ END_PROGRAM`;
       console.error("Cannot deploy: parsing failed");
       return;
     }
+
+    // Lazy load transpiler and deploy modules
+    const [{ transpile }, { deploy, HAApiClient }] = await Promise.all([
+      import("../transpiler"),
+      import("../deploy"),
+    ]);
 
     const transpilerResult = transpile(parseResult.ast, "home");
     if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
@@ -848,7 +869,12 @@ END_PROGRAM`;
     console.log("Online setting changed", e.detail);
   }
 
-  private _toggleEntityBrowser(): void {
+  private async _toggleEntityBrowser(): Promise<void> {
+    if (!this._entityBrowserLoaded && !this._showEntityBrowser) {
+      // Lazy load entity browser module when first shown
+      await import("../entity-browser");
+      this._entityBrowserLoaded = true;
+    }
     this._showEntityBrowser = !this._showEntityBrowser;
   }
 }

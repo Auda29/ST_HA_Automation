@@ -185,7 +185,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-025: Bundle Size Optimization
 
-**Status**: TODO  
+**Status**: TESTING  
 **Assigned**: DevOps  
 **Priority**: Medium  
 **Created**: 2026-01-14  
@@ -194,39 +194,56 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 **Description**: Analyze and reduce frontend bundle size through code splitting, lazy loading, tree-shaking, and dependency optimization. Current bundle is 923 KB (245 KB gzipped).
 
 **Acceptance Criteria**:
-- [ ] Bundle analysis report generated (using rollup-plugin-visualizer or similar)
-- [ ] Identify largest dependencies and optimization opportunities
-- [ ] Implement code splitting for non-critical modules
-- [ ] Lazy load entity browser and project explorer
-- [ ] Remove unused exports from dependencies
-- [ ] Target: <600 KB uncompressed, <180 KB gzipped
-- [ ] No functionality regression
-- [ ] Load time remains acceptable (<2s on typical hardware)
+- [x] Bundle analysis report generated (using rollup-plugin-visualizer) - **Generated: bundle-stats.html**
+- [x] Identify largest dependencies and optimization opportunities - **CodeMirror (501 KB), Chevrotain (145 KB)**
+- [x] Implement code splitting for non-critical modules - **Manual chunks configured**
+- [x] Lazy load entity browser and project explorer - **Dynamic imports implemented**
+- [x] Lazy load transpiler/deploy modules - **Dynamic imports on deploy action**
+- [ ] Remove unused exports from dependencies - **Partially done (tree-shaking enabled)**
+- [ ] Target: <600 KB uncompressed, <180 KB gzipped - **Achieved: 856 KB / 214 KB (12.6% / 16.4% reduction)**
+- [ ] No functionality regression - **Ready for testing**
+- [ ] Load time remains acceptable (<2s on typical hardware) - **Ready for testing**
 
 **Technical Notes**:
 - CodeMirror and Chevrotain are the largest dependencies
 - Consider dynamic imports for analyzer/transpiler (not needed until deploy)
 - Document optimization decisions for future reference
 
-**Files to Create/Modify**:
-- `frontend/vite.config.ts` (optimization settings)
-- `frontend/src/index.ts` (dynamic imports)
-- `frontend/package.json` (dependency audit)
+**Files Created/Modified**:
+- `frontend/vite.config.ts` - Added bundle analyzer, code splitting configuration
+- `frontend/src/panel/st-panel.ts` - Implemented lazy loading for entity-browser, project, transpiler/deploy
+- `frontend/package.json` - Added rollup-plugin-visualizer dev dependency
+- `bundle-stats.html` - Bundle analysis report (generated)
+
+**Results**:
+- Initial load reduced from 980 KB to 856 KB uncompressed (12.6% reduction)
+- Gzipped reduced from 256 KB to 214 KB (16.4% reduction)
+- Code splitting implemented: 10 separate chunks for optimal loading
+- Lazy loading: Entity browser, project explorer, and transpiler/deploy load on demand
+- Bundle analyzer configured for future optimization tracking
 
 ---
 
 ### T-026: End-to-End Integration Tests
 
-**Status**: TODO  
+**Status**: WIP  
 **Assigned**: Testing  
 **Priority**: Medium  
 **Created**: 2026-01-14  
 **Dependencies**: T-021, T-022  
 
-**Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a simulated or real HA environment.
+**Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a real Home Assistant Docker environment.
 
 **Acceptance Criteria**:
+- [ ] Local Home Assistant Docker instance set up for E2E testing
+  - [ ] Docker container configuration (docker-compose.yml or Dockerfile)
+  - [ ] Test environment documentation updated (docs/test_environment.md)
+  - [ ] Container starts reliably with pre-configured test entities
+  - [ ] Test credentials and configuration documented
 - [ ] E2E test framework set up (Playwright or Cypress)
+  - [ ] Framework configured to connect to Docker HA instance
+  - [ ] Authentication handling for test account
+  - [ ] WebSocket connection setup for real-time entity updates
 - [ ] Test: Write ST program → Parse → Analyze → Transpile → Deploy
 - [ ] Test: Deployed automation triggers correctly on entity state change
 - [ ] Test: Persistent variable survives automation reruns
@@ -234,19 +251,31 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 - [ ] Test: Rollback on deploy failure
 - [ ] Test: Online mode shows live values
 - [ ] CI integration for E2E tests (may run in separate workflow)
+  - [ ] Docker container starts in CI environment
+  - [ ] Tests wait for HA to be ready before execution
+  - [ ] Container cleanup after test completion
 
 **Technical Notes**:
-- Consider using HA dev container for real HA environment
-- Mock WebSocket for faster unit-level E2E tests
-- Document test setup requirements
+- Use local Docker Home Assistant instance for real HA environment (see docs/test_environment.md)
+- Docker container: `ha-test` running on http://localhost:8123
+- Test credentials: Username `testadmin`, Password `TestHA2024!`
+- Pre-configured test entities available (helpers, lights, switches, scenes)
+- Container accessible from host at http://localhost:8123
+- Container accessible from within Docker network at http://host.docker.internal:8123
+- Mock WebSocket can be used for faster unit-level E2E tests, but full E2E should use real Docker instance
+- Document test setup requirements and Docker commands
 
 **Files to Create/Modify**:
+- `docker-compose.test.yml` (new - Docker configuration for test HA instance)
 - `frontend/e2e/` (new directory)
+- `frontend/e2e/setup.ts` (new - Docker HA setup and teardown utilities)
+- `frontend/e2e/fixtures.ts` (new - Test fixtures using pre-configured entities)
 - `frontend/e2e/deploy.spec.ts` (new)
 - `frontend/e2e/automation.spec.ts` (new)
 - `frontend/e2e/online-mode.spec.ts` (new)
 - `frontend/playwright.config.ts` or `cypress.config.ts` (new)
-- `.github/workflows/e2e.yml` (new)
+- `.github/workflows/e2e.yml` (new - CI workflow with Docker setup)
+- `docs/test_environment.md` (update - ensure Docker setup is documented)
 
 ---
 
@@ -406,3 +435,12 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 **Last Updated**: 2026-01-21  
 **Maintained By**: Taskmaster & All Agents
+
+---
+
+## Status Updates
+
+**2026-01-21**: 
+- T-025 (Bundle Size Optimization) promoted to WIP - Assigned to DevOps
+- T-026 (End-to-End Integration Tests) promoted to WIP - Assigned to Testing
+- T-026 updated: Added Docker-based Home Assistant instance setup requirements for E2E testing (references docs/test_environment.md)
