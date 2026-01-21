@@ -578,7 +578,7 @@ export class STVisitor extends BaseVisitor {
     StringLiteral?: IToken[];
     TimeLiteral?: IToken[];
   }): Literal {
-    let value: string | number | boolean | null;
+    let value: string | number | boolean;
     let kind: "integer" | "real" | "string" | "boolean" | "time";
     let raw: string;
 
@@ -604,9 +604,10 @@ export class STVisitor extends BaseVisitor {
       value = raw;
       kind = "time";
     } else {
-      value = null;
+      // Fallback for unexpected literals – treat as integer 0
+      raw = "0";
+      value = 0;
       kind = "integer";
-      raw = "null";
     }
 
     return {
