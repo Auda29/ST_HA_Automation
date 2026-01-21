@@ -12,3 +12,7 @@ dist/
 coverage/
 .env
 *.log
+
+# Home Assistant Test Instance (local development only)
+ha-test-config/
+docker-compose.yml

@@ -4,7 +4,14 @@
       "mcp__acp__Write",
       "mcp__acp__Bash",
       "mcp__acp__Edit",
-      "mcp__mcp-server-github__get_commit"
+      "mcp__mcp-server-github__get_commit",
+      "mcp__docker__browser_navigate",
+      "mcp__docker__browser_snapshot",
+      "mcp__docker__browser_click",
+      "mcp__docker__browser_fill_form",
+      "mcp__docker__browser_type",
+      "mcp__docker__browser_wait_for",
+      "mcp__docker__fetch"
     ]
   }
 }
