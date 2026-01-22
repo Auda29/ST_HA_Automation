@@ -245,25 +245,25 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 **Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a real Home Assistant Docker environment.
 
 **Acceptance Criteria**:
-- [ ] Local Home Assistant Docker instance set up for E2E testing
-  - [ ] Docker container configuration (docker-compose.yml or Dockerfile)
-  - [ ] Test environment documentation updated (docs/test_environment.md)
-  - [ ] Container starts reliably with pre-configured test entities
-  - [ ] Test credentials and configuration documented
-- [ ] E2E test framework set up (Playwright or Cypress)
-  - [ ] Framework configured to connect to Docker HA instance
-  - [ ] Authentication handling for test account
-  - [ ] WebSocket connection setup for real-time entity updates
-- [ ] Test: Write ST program → Parse → Analyze → Transpile → Deploy
-- [ ] Test: Deployed automation triggers correctly on entity state change
-- [ ] Test: Persistent variable survives automation reruns
-- [ ] Test: Timer FB fires after specified duration
-- [ ] Test: Rollback on deploy failure
-- [ ] Test: Online mode shows live values
-- [ ] CI integration for E2E tests (may run in separate workflow)
-  - [ ] Docker container starts in CI environment
-  - [ ] Tests wait for HA to be ready before execution
-  - [ ] Container cleanup after test completion
+- [x] Local Home Assistant Docker instance set up for E2E testing
+  - [x] Docker container configuration (docker-compose.test.yml) - **Created**
+  - [x] Test environment documentation updated (docs/test_environment.md) - **Updated with Docker setup**
+  - [x] Container starts reliably with pre-configured test entities - **Health check configured**
+  - [x] Test credentials and configuration documented - **Documented in test_environment.md and fixtures.ts**
+- [x] E2E test framework set up (Playwright or Cypress)
+  - [x] Framework configured to connect to Docker HA instance - **Playwright configured**
+  - [x] Authentication handling for test account - **Implemented in fixtures.ts**
+  - [x] WebSocket connection setup for real-time entity updates - **Ready for use in tests**
+- [x] Test: Write ST program → Parse → Analyze → Transpile → Deploy - **deploy.spec.ts created**
+- [x] Test: Deployed automation triggers correctly on entity state change - **automation.spec.ts created**
+- [x] Test: Persistent variable survives automation reruns - **automation.spec.ts created**
+- [x] Test: Timer FB fires after specified duration - **automation.spec.ts created**
+- [x] Test: Rollback on deploy failure - **deploy.spec.ts created**
+- [x] Test: Online mode shows live values - **online-mode.spec.ts created**
+- [x] CI integration for E2E tests (may run in separate workflow)
+  - [x] Docker container starts in CI environment - **.github/workflows/e2e.yml created**
+  - [x] Tests wait for HA to be ready before execution - **Setup script with health checks**
+  - [x] Container cleanup after test completion - **Teardown script configured**
 
 **Technical Notes**:
 - Use local Docker Home Assistant instance for real HA environment (see docs/test_environment.md)
@@ -275,17 +275,20 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 - Mock WebSocket can be used for faster unit-level E2E tests, but full E2E should use real Docker instance
 - Document test setup requirements and Docker commands
 
-**Files to Create/Modify**:
-- `docker-compose.test.yml` (new - Docker configuration for test HA instance)
-- `frontend/e2e/` (new directory)
-- `frontend/e2e/setup.ts` (new - Docker HA setup and teardown utilities)
-- `frontend/e2e/fixtures.ts` (new - Test fixtures using pre-configured entities)
-- `frontend/e2e/deploy.spec.ts` (new)
-- `frontend/e2e/automation.spec.ts` (new)
-- `frontend/e2e/online-mode.spec.ts` (new)
-- `frontend/playwright.config.ts` or `cypress.config.ts` (new)
-- `.github/workflows/e2e.yml` (new - CI workflow with Docker setup)
-- `docs/test_environment.md` (update - ensure Docker setup is documented)
+**Files Created/Modified**:
+- ✅ `docker-compose.test.yml` - Docker configuration for test HA instance
+- ✅ `frontend/e2e/` - E2E test directory
+- ✅ `frontend/e2e/setup.ts` - Docker HA setup and teardown utilities
+- ✅ `frontend/e2e/teardown.ts` - Global teardown for cleanup
+- ✅ `frontend/e2e/fixtures.ts` - Test fixtures using pre-configured entities
+- ✅ `frontend/e2e/deploy.spec.ts` - Deploy workflow tests
+- ✅ `frontend/e2e/automation.spec.ts` - Automation execution tests
+- ✅ `frontend/e2e/online-mode.spec.ts` - Online mode tests
+- ✅ `frontend/e2e/README.md` - E2E test documentation
+- ✅ `frontend/playwright.config.ts` - Playwright configuration
+- ✅ `.github/workflows/e2e.yml` - CI workflow with Docker setup
+- ✅ `docs/test_environment.md` - Updated with Docker setup instructions
+- ✅ `frontend/package.json` - Added E2E test scripts
 
 ---
 
@@ -395,11 +398,12 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 - [x] All documentation is complete and reviewed - **T-023 completed, all tutorials and references added**
 - [x] HACS manifest is correct and complete - **hacs.json updated with required fields**
 - [x] info.md for HACS store page created - **Created with comprehensive description**
-- [ ] Logo/icon assets created (if needed) - **To be determined if needed for HACS submission**
+- [ ] Logo/icon assets created (if needed) - **Optional, not required for HACS submission**
 - [x] Release workflow creates proper GitHub releases - **.github/workflows/release.yml created**
 - [x] Changelog is maintained - **CHANGELOG.md created with full version history**
-- [ ] Submitted to HACS default repository (PR to hacs/default) - **Pending final review and submission**
-- [ ] Version bumped to 1.0.0 for release - **Current: 1.8.1, to be bumped for official release**
+- [x] GitHub Actions for HACS validation - **HACS Action and Hassfest added to CI workflow**
+- [ ] Submitted to HACS default repository (PR to hacs/default) - **Ready for submission, see docs/HACS_SUBMISSION_CHECKLIST.md**
+- [ ] Version bumped to 1.0.0 for release - **Current: 1.8.1, decision pending for official release**
 
 **Technical Notes**:
 - Review HACS submission requirements: https://hacs.xyz/docs/publish/include
