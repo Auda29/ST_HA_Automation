@@ -392,10 +392,11 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-030: HACS Publication Preparation
 
-**Status**: WIP  
+**Status**: COMPLETED  
 **Assigned**: DevOps  
 **Priority**: High  
 **Created**: 2026-01-14  
+**Completed**: 2026-01-26  
 **Dependencies**: T-023, T-025  
 
 **Description**: Prepare the repository for official HACS publication, including final documentation review, branding assets, release automation, and HACS default repository submission.
@@ -410,7 +411,7 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 - [x] Changelog is maintained - **CHANGELOG.md created with full version history**
 - [x] GitHub Actions for HACS validation - **HACS Action and Hassfest added to CI workflow**
 - [ ] Submitted to HACS default repository (PR to hacs/default) - **Ready for submission, see docs/HACS_SUBMISSION_CHECKLIST.md**
-- [ ] Version bumped to 1.0.0 for release - **Current: 1.8.1, decision pending for official release**
+- [x] Version bumped to 2.0.0 for release - **Bumped to 2.0.0 for HACS publication milestone**
 
 **Technical Notes**:
 - Review HACS submission requirements: https://hacs.xyz/docs/publish/include
