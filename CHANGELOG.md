@@ -5,6 +5,23 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-01-26
+
+### Added
+- **End-to-End Integration Tests**: Full-stack E2E tests with Docker Home Assistant instance
+  - 7 E2E tests covering deploy workflow, automation execution, and online mode
+  - Docker-based test environment with pre-configured entities
+  - CI integration for automated E2E testing
+- **HACS Publication Preparation**: Repository ready for HACS default repository submission
+  - Complete HACS manifest and store description
+  - Release workflow automation
+  - HACS Action and Hassfest validation in CI
+
+### Changed
+- Version bumped to 2.0.0 for official HACS release milestone
+- All 194 unit tests passing
+- CI pipeline fully green (Frontend Tests and Python Validation)
+
 ## [1.7.0] - 2026-01-21
 
 ### Added
@@ -80,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.0.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.0
 [1.7.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v1.7.0
 [0.1.6.4]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v0.1.6.4
 [0.1.6.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v0.1.6.3
