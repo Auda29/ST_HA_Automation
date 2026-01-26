@@ -236,10 +236,11 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-026: End-to-End Integration Tests
 
-**Status**: WIP  
+**Status**: REVIEW  
 **Assigned**: Testing  
 **Priority**: Medium  
 **Created**: 2026-01-14  
+**Completed**: 2026-01-26  
 **Dependencies**: T-021, T-022  
 
 **Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a real Home Assistant Docker environment.
@@ -252,18 +253,24 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
   - [x] Test credentials and configuration documented - **Documented in test_environment.md and fixtures.ts**
 - [x] E2E test framework set up (Playwright or Cypress)
   - [x] Framework configured to connect to Docker HA instance - **Playwright configured**
-  - [x] Authentication handling for test account - **Implemented in fixtures.ts**
+  - [x] Authentication handling for test account - **Implemented in fixtures.ts with browser login**
   - [x] WebSocket connection setup for real-time entity updates - **Ready for use in tests**
-- [x] Test: Write ST program → Parse → Analyze → Transpile → Deploy - **deploy.spec.ts created**
-- [x] Test: Deployed automation triggers correctly on entity state change - **automation.spec.ts created**
-- [x] Test: Persistent variable survives automation reruns - **automation.spec.ts created**
-- [x] Test: Timer FB fires after specified duration - **automation.spec.ts created**
-- [x] Test: Rollback on deploy failure - **deploy.spec.ts created**
-- [x] Test: Online mode shows live values - **online-mode.spec.ts created**
+- [x] Test: Write ST program → Parse → Analyze → Transpile → Deploy - **deploy.spec.ts - PASSING**
+- [x] Test: Deployed automation triggers correctly on entity state change - **automation.spec.ts - PASSING**
+- [x] Test: Persistent variable survives automation reruns - **automation.spec.ts - PASSING**
+- [x] Test: Timer FB fires after specified duration - **automation.spec.ts - PASSING**
+- [x] Test: Rollback on deploy failure - **deploy.spec.ts - PASSING**
+- [x] Test: Online mode shows live values - **online-mode.spec.ts - PASSING**
 - [x] CI integration for E2E tests (may run in separate workflow)
   - [x] Docker container starts in CI environment - **.github/workflows/e2e.yml created**
   - [x] Tests wait for HA to be ready before execution - **Setup script with health checks**
   - [x] Container cleanup after test completion - **Teardown script configured**
+
+**Test Results (2026-01-26)**:
+- ✅ All 7 E2E tests passing (45.3s total)
+- ✅ Authentication working via HA auth flow API
+- ✅ Browser-based login and navigation to ST panel
+- ✅ Docker HA container integration verified
 
 **Technical Notes**:
 - Use local Docker Home Assistant instance for real HA environment (see docs/test_environment.md)
@@ -278,17 +285,17 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 **Files Created/Modified**:
 - ✅ `docker-compose.test.yml` - Docker configuration for test HA instance
 - ✅ `frontend/e2e/` - E2E test directory
-- ✅ `frontend/e2e/setup.ts` - Docker HA setup and teardown utilities
+- ✅ `frontend/e2e/setup.ts` - Docker HA setup and teardown utilities (fixed health check)
 - ✅ `frontend/e2e/teardown.ts` - Global teardown for cleanup
-- ✅ `frontend/e2e/fixtures.ts` - Test fixtures using pre-configured entities
-- ✅ `frontend/e2e/deploy.spec.ts` - Deploy workflow tests
-- ✅ `frontend/e2e/automation.spec.ts` - Automation execution tests
-- ✅ `frontend/e2e/online-mode.spec.ts` - Online mode tests
+- ✅ `frontend/e2e/fixtures.ts` - Test fixtures with HA auth flow and browser login
+- ✅ `frontend/e2e/deploy.spec.ts` - Deploy workflow tests (2 tests)
+- ✅ `frontend/e2e/automation.spec.ts` - Automation execution tests (3 tests)
+- ✅ `frontend/e2e/online-mode.spec.ts` - Online mode tests (2 tests)
 - ✅ `frontend/e2e/README.md` - E2E test documentation
 - ✅ `frontend/playwright.config.ts` - Playwright configuration
 - ✅ `.github/workflows/e2e.yml` - CI workflow with Docker setup
 - ✅ `docs/test_environment.md` - Updated with Docker setup instructions
-- ✅ `frontend/package.json` - Added E2E test scripts
+- ✅ `frontend/package.json` - Added E2E test scripts and @playwright/test dependency
 
 ---
 
