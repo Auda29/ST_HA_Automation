@@ -218,6 +218,9 @@ OK Dev1. Ready for task assignment.
 - Don't merge branches
 - Don't skip documentation
 
+**Subagent Available**:
+- **Dev1-Impl**: A specialized implementation subagent that Dev1 can delegate focused coding tasks to. See `.cursor/AGENTS.md` for details on how to use Dev1-Impl for specific implementation work.
+
 ---
 
 ### Dev2 (Integration Developer)
@@ -280,6 +283,9 @@ OK Dev2. Ready for task assignment.
 - Don't skip input validation
 - Don't hardcode credentials
 - Don't ignore error cases
+
+**Subagent Available**:
+- **Dev2-Impl**: A specialized implementation subagent that Dev2 can delegate focused API, UI, and integration tasks to. See `.cursor/AGENTS.md` for details on how to use Dev2-Impl for specific implementation work.
 
 ---
 
@@ -496,7 +502,7 @@ Brief overview of the changes and overall impression.
 
 
 **Responsibilities**:
-1. Merge approved branches into `master`
+1. Merge approved branches into `dev`
 2. Resolve merge conflicts
 3. Maintain build scripts
 4. Configure CI/CD pipelines
