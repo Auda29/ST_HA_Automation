@@ -1,0 +1,207 @@
+/**
+ * ST-HA Design System — Colors & Typography
+ * 
+ * Two color contexts:
+ *   1. --editor-*   : Hardcoded TwinCAT-inspired dark theme (always dark)
+ *   2. --ui-*       : HA CSS variable aliases (adaptive light/dark)
+ *
+ * Usage: import this file alongside your component. For the UI shell,
+ * CSS vars will inherit from the HA host's theme. For the editor,
+ * use --editor-* vars directly (they do not adapt).
+ */
+
+:root {
+  /* ── EDITOR COLORS (TwinCAT / VS Code dark, always dark) ── */
+  --editor-bg:             #1e1e1e;
+  --editor-bg-light:       #252526;
+  --editor-fg:             #d4d4d4;
+  --editor-fg-dim:         #808080;
+
+  /* Syntax token colors */
+  --editor-keyword:        #569cd6;   /* IF, THEN, PROGRAM, VAR … */
+  --editor-type:           #4ec9b0;   /* BOOL, INT, REAL … */
+  --editor-function:       #dcdcaa;   /* SEL, MUX, ABS … */
+  --editor-variable:       #9cdcfe;   /* variable names */
+  --editor-string:         #ce9178;   /* 'sensor.temp' string literals */
+  --editor-number:         #b5cea8;   /* numeric literals */
+  --editor-comment:        #6a9955;   /* (* comments *) */
+  --editor-pragma:         #c586c0;   /* {persistent}, {trigger} … */
+  --editor-operator:       #d4d4d4;   /* :=, +, -, =, <> … */
+  --editor-invalid:        #ff0000;   /* syntax errors */
+
+  /* Editor UI chrome */
+  --editor-selection:      #264f78;
+  --editor-selection-bg:   rgba(38, 79, 120, 0.5);
+  --editor-line-highlight: #2a2d2e;
+  --editor-gutter-bg:      #1e1e1e;
+  --editor-gutter-fg:      #858585;
+  --editor-border:         #404040;
+  --editor-cursor:         #aeafad;
+  --editor-tooltip-bg:     #252526;
+
+  /* ── UI SHELL COLORS (HA CSS variable aliases) ── */
+  /* These are aliases; the real values come from the HA host theme. */
+  /* Fallback values shown are HA's default light theme. */
+  --ui-primary:            var(--primary-color,              #03a9f4);
+  --ui-bg:                 var(--primary-background-color,   #fafafa);
+  --ui-bg-secondary:       var(--secondary-background-color, #e5e5e5);
+  --ui-bg-card:            var(--card-background-color,      #ffffff);
+  --ui-bg-header:          var(--app-header-background-color,#03a9f4);
+  --ui-text-primary:       var(--primary-text-color,         #212121);
+  --ui-text-secondary:     var(--secondary-text-color,       #727272);
+  --ui-text-header:        var(--app-header-text-color,      #ffffff);
+  --ui-text-on-primary:    var(--text-primary-color,         #ffffff);
+  --ui-divider:            var(--divider-color,              rgba(0,0,0,0.12));
+
+  /* Semantic UI colors */
+  --ui-success:            var(--success-color,              #4caf50);
+  --ui-error:              var(--error-color,                #f44336);
+  --ui-warning:            var(--warning-color,              #ff9800);
+  --ui-info:               var(--info-color,                 #2196f3);
+  --ui-disabled:           var(--disabled-text-color,        #9e9e9e);
+
+  /* Online mode status dot colors (match editor syntax palette) */
+  --status-online:         #4ec9b0;   /* = --editor-type */
+  --status-paused:         #dcdcaa;   /* = --editor-function */
+  --status-connecting:     #569cd6;   /* = --editor-keyword */
+  --status-disconnected:   #808080;   /* = --editor-fg-dim */
+  --status-error:          #f44747;
+
+  /* ── TYPOGRAPHY ── */
+
+  /* Editor / code / diagnostics */
+  --font-mono:   "Fira Code", "Consolas", "Courier New", monospace;
+  --font-ui:     var(--paper-font-common-base_-_font-family,
+                     -apple-system, BlinkMacSystemFont, "Segoe UI",
+                     Roboto, Helvetica, Arial, sans-serif);
+
+  /* Editor font size */
+  --font-size-editor:      14px;
+  --font-size-diagnostics: 12px;
+
+  /* UI type scale */
+  --font-size-xs:   11px;
+  --font-size-sm:   12px;
+  --font-size-base: 13px;
+  --font-size-md:   14px;
+  --font-size-lg:   16px;
+  --font-size-xl:   18px;
+  --font-size-2xl:  20px;
+
+  /* Font weights */
+  --font-weight-normal:  400;
+  --font-weight-medium:  500;
+  --font-weight-bold:    700;
+
+  /* ── SPACING ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+
+  /* ── BORDERS & RADIUS ── */
+  --radius-sm:  2px;   /* tab close button */
+  --radius-md:  4px;   /* buttons, inputs, cards, editor — universal */
+
+  /* ── SHADOWS ── */
+  --shadow-popover: 0 4px 12px rgba(0, 0, 0, 0.2);  /* settings dropdown */
+
+  /* ── SIDEBAR DIMENSIONS ── */
+  --sidebar-width-min:     240px;
+  --sidebar-width-default: 320px;
+  --sidebar-width-max:     400px;
+
+  /* ── TRANSITIONS ── */
+  --transition-fast: all 0.2s ease;
+}
+
+/* ── SEMANTIC ELEMENT STYLES ── */
+
+/* Headings (UI shell) */
+.st-h1 {
+  font-family: var(--font-ui);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--ui-text-header);
+  margin: 0;
+}
+
+.st-h2 {
+  font-family: var(--font-ui);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  color: var(--ui-text-primary);
+  margin: 0 0 12px 0;
+}
+
+/* Body text */
+.st-body {
+  font-family: var(--font-ui);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: var(--ui-text-primary);
+}
+
+.st-body-sm {
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  color: var(--ui-text-secondary);
+}
+
+/* Monospace (diagnostics, status bar, code references) */
+.st-mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-diagnostics);
+  color: var(--ui-text-primary);
+}
+
+/* Status text */
+.st-status-ok      { color: var(--ui-success); }
+.st-status-error   { color: var(--ui-error); }
+.st-status-warning { color: var(--ui-warning); }
+.st-status-info    { color: var(--ui-info); }
+
+/* Buttons */
+.st-btn-primary {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--ui-primary);
+  color: var(--ui-text-on-primary);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-md);
+}
+
+.st-btn-secondary {
+  padding: 6px var(--space-3);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--radius-md);
+  background: var(--ui-bg-secondary);
+  color: var(--ui-text-primary);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.st-btn-secondary:hover {
+  background: var(--ui-divider);
+}
+
+.st-btn-secondary.active {
+  background: var(--ui-primary);
+  color: var(--ui-text-on-primary);
+  border-color: var(--ui-primary);
+}
+
+.st-btn-primary:disabled,
+.st-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

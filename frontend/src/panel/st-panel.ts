@@ -94,6 +94,8 @@ export class STPanel extends LitElement {
     .toolbar h1 {
       margin: 0;
       font-size: 20px;
+      font-weight: 400;
+      letter-spacing: -0.2px;
     }
     .toolbar-actions {
       display: flex;
@@ -102,23 +104,27 @@ export class STPanel extends LitElement {
     }
     .toolbar-button {
       padding: 6px 12px;
-      border: 1px solid var(--divider-color);
+      border: 1px solid color-mix(in srgb, var(--app-header-text-color, #fff) 40%, transparent);
       border-radius: 4px;
-      background: var(--secondary-background-color);
-      color: var(--primary-text-color);
+      background: color-mix(in srgb, var(--app-header-text-color, #fff) 15%, transparent);
+      color: var(--app-header-text-color, #fff);
       cursor: pointer;
       font-size: 14px;
       display: flex;
       align-items: center;
       gap: 4px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
     }
     .toolbar-button:hover {
-      background: var(--divider-color);
+      background: color-mix(in srgb, var(--app-header-text-color, #fff) 25%, transparent);
     }
     .toolbar-button.active {
-      background: var(--primary-color);
-      color: var(--text-primary-color);
-      border-color: var(--primary-color);
+      background: color-mix(in srgb, var(--app-header-text-color, #fff) 35%, transparent);
+      border-color: color-mix(in srgb, var(--app-header-text-color, #fff) 60%, transparent);
+    }
+    .toolbar-button:focus-visible {
+      outline: 2px solid var(--app-header-text-color, #fff);
+      outline-offset: 2px;
     }
     .editor-container {
       flex: 1;
@@ -132,11 +138,12 @@ export class STPanel extends LitElement {
     .status-bar {
       display: flex;
       gap: 16px;
-      padding: 8px 16px;
+      padding: 6px 16px;
       background: var(--secondary-background-color);
       border-top: 1px solid var(--divider-color);
       font-size: 12px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .status-ok {
       color: var(--success-color, #4caf50);
@@ -147,26 +154,36 @@ export class STPanel extends LitElement {
     .status-warning {
       color: var(--warning-color, #ff9800);
     }
-    button {
+    .deploy-button {
       padding: 8px 16px;
       border: none;
       border-radius: 4px;
-      background: var(--primary-color);
-      color: var(--text-primary-color);
+      background: var(--app-header-text-color, #fff);
+      color: var(--app-header-background-color, #03a9f4);
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
     }
-    button:disabled {
+    .deploy-button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+    .deploy-button:focus-visible {
+      outline: 2px solid var(--app-header-text-color, #fff);
+      outline-offset: 2px;
+    }
+    .deploy-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
     .diagnostics-panel {
-      max-height: 150px;
+      max-height: 130px;
       overflow-y: auto;
-      padding: 8px 16px;
+      padding: 6px 16px;
       background: var(--secondary-background-color);
       border-top: 1px solid var(--divider-color);
       font-size: 12px;
-      font-family: monospace;
+      font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
     }
     .diagnostic {
       padding: 2px 0;
@@ -380,7 +397,7 @@ END_PROGRAM`;
               <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
               Entities
             </button>
-            <button @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
+            <button class="deploy-button" @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
               ▶ Deploy
             </button>
           </div>
