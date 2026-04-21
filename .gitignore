@@ -16,3 +16,9 @@ coverage/
 # Home Assistant Test Instance (local development only)
 ha-test-config/
 docker-compose.yml
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
+.pi/
+.pi-lens/
