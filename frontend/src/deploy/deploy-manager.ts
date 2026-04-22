@@ -200,7 +200,14 @@ export class DeployManager {
       status: 'pending',
     });
 
-    const helperSync = await this.helperManager.calculateSync(result.helpers);
+    const existingHelpers = await this.helperManager.getExistingHelpers();
+    const existingHelperById = new Map(
+      existingHelpers.map((helper) => [helper.entityId, helper] as const),
+    );
+    const helperSync = await this.helperManager.calculateSync(
+      result.helpers,
+      existingHelpers,
+    );
 
     for (const helper of helperSync.toCreate) {
       operations.push({
@@ -214,22 +221,30 @@ export class DeployManager {
     }
 
     for (const helper of helperSync.toUpdate) {
+      const previousHelper = existingHelperById.get(helper.id);
       operations.push({
         id: this.generateId(),
         type: 'update',
         entityType: 'helper',
         entityId: helper.id,
+        previousState: previousHelper
+          ? this.helperManager.toHelperConfig(previousHelper)
+          : undefined,
         newState: helper,
         status: 'pending',
       });
     }
 
     for (const helperId of helperSync.toDelete) {
+      const previousHelper = existingHelperById.get(helperId);
       operations.push({
         id: this.generateId(),
         type: 'delete',
         entityType: 'helper',
         entityId: helperId,
+        previousState: previousHelper
+          ? this.helperManager.toHelperConfig(previousHelper)
+          : undefined,
         status: 'pending',
       });
     }

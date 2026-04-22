@@ -176,4 +176,77 @@ describe("DeployManager", () => {
       "Script save rejected by Home Assistant",
     );
   });
+
+  it("captures previous helper config for helper update and delete rollback", async () => {
+    const conn = new FakeConnection();
+    conn.states = [
+      {
+        entity_id: "input_number.st_existing_helper",
+        state: "7",
+        attributes: {
+          friendly_name: "Existing Helper",
+          min: 0,
+          max: 10,
+          step: 1,
+          mode: "box",
+        },
+        last_changed: "",
+        last_updated: "",
+      },
+      {
+        entity_id: "input_boolean.st_removed_helper",
+        state: "on",
+        attributes: {
+          friendly_name: "Removed Helper",
+        },
+        last_changed: "",
+        last_updated: "",
+      },
+    ];
+
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+    const result = makeTranspilerResult();
+    result.helpers = [
+      {
+        id: "input_number.st_existing_helper",
+        type: "input_number",
+        name: "Existing Helper",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box",
+      },
+    ];
+
+    const deployResult = await manager.deploy(result, { dryRun: true });
+
+    const helperUpdate = deployResult.operations.find(
+      (op) => op.entityType === "helper" && op.type === "update",
+    );
+    const helperDelete = deployResult.operations.find(
+      (op) =>
+        op.entityType === "helper" &&
+        op.type === "delete" &&
+        op.entityId === "input_boolean.st_removed_helper",
+    );
+
+    expect(helperUpdate?.previousState).toEqual({
+      id: "input_number.st_existing_helper",
+      type: "input_number",
+      name: "Existing Helper",
+      initial: 7,
+      min: 0,
+      max: 10,
+      step: 1,
+      mode: "box",
+    });
+    expect(helperDelete?.previousState).toEqual({
+      id: "input_boolean.st_removed_helper",
+      type: "input_boolean",
+      name: "Removed Helper",
+      initial: true,
+    });
+  });
 });

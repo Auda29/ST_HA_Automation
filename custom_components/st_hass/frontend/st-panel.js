@@ -2751,8 +2751,8 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     this._isDeploying = !0, this._deployFeedback = null;
     try {
       const [{ transpile: i }, { deploy: a, HAApiClient: o }] = await Promise.all([
-        import("./transpiler-deploy-BdY8w4XM.js").then((E) => E.i),
-        import("./transpiler-deploy-BdY8w4XM.js").then((E) => E.a)
+        import("./transpiler-deploy-DCSGl2dB.js").then((E) => E.i),
+        import("./transpiler-deploy-DCSGl2dB.js").then((E) => E.a)
       ]), d = i(t.ast, "home");
       if (d.diagnostics.some((E) => E.severity === "Error")) {
         this._setDeployFeedback(

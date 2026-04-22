@@ -1,7 +1,7 @@
 var N = Object.defineProperty;
-var A = (u, e, t) => e in u ? N(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
-var c = (u, e, t) => A(u, typeof e != "symbol" ? e + "" : e, t);
-import { a as E, b as M, w as C, p as f } from "./analyzer-DbAWr__X.js";
+var A = (p, e, t) => e in p ? N(p, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : p[e] = t;
+var c = (p, e, t) => A(p, typeof e != "symbol" ? e + "" : e, t);
+import { a as E, b as M, w as O, p as f } from "./analyzer-DbAWr__X.js";
 class _ {
   constructor(e, t) {
     c(this, "context");
@@ -59,8 +59,8 @@ class _ {
   convertTimeToSeconds(e) {
     const t = e.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
     if (!t) return "0";
-    const a = parseInt(t[1] || "0", 10), i = parseInt(t[2] || "0", 10), n = parseInt(t[3] || "0", 10), s = parseInt(t[4] || "0", 10), r = a * 3600 + i * 60 + n + s / 1e3;
-    return String(r);
+    const a = parseInt(t[1] || "0", 10), i = parseInt(t[2] || "0", 10), n = parseInt(t[3] || "0", 10), r = parseInt(t[4] || "0", 10), s = a * 3600 + i * 60 + n + r / 1e3;
+    return String(s);
   }
   // ==========================================================================
   // Variable Reference Generation
@@ -262,8 +262,8 @@ class _ {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function O(u, e) {
-  const t = `states('${u}')`, a = "['unavailable', 'unknown', 'none', '']";
+function C(p, e) {
+  const t = `states('${p}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
       return `{{ ${t} in ['on', 'true', 'True', '1'] }}`;
@@ -277,16 +277,16 @@ function O(u, e) {
       return `{{ ${t} }}`;
   }
 }
-function k(u, e) {
-  return `{% set last = states('${u}') %}
+function k(p, e) {
+  return `{% set last = states('${p}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
   {{ (now() - (last | as_datetime)).total_seconds() > ${e} }}
 {% endif %}`;
 }
-const b = 1e3;
-class I {
+const I = 1e3;
+class T {
   constructor(e, t, a) {
     c(this, "context");
     c(this, "jinja");
@@ -430,15 +430,15 @@ class I {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "CASE statement");
     const t = this.jinja.generateExpression(e.selector), a = [];
     for (const n of e.cases) {
-      const s = n.values.map((o) => {
-        const p = this.jinja.generateExpression(o);
+      const r = n.values.map((o) => {
+        const u = this.jinja.generateExpression(o);
         return {
           condition: "template",
-          value_template: `{{ ${t} == ${p} }}`
+          value_template: `{{ ${t} == ${u} }}`
         };
-      }), r = s.length === 1 ? s[0] : { condition: "or", conditions: s };
+      }), s = r.length === 1 ? r[0] : { condition: "or", conditions: r };
       a.push({
-        conditions: [r],
+        conditions: [s],
         sequence: this.generateActions(n.body)
       });
     }
@@ -447,11 +447,11 @@ class I {
   }
   generateFor(e) {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "FOR statement");
-    const t = this.jinja.generateExpression(e.from), a = this.jinja.generateExpression(e.to), i = e.by ? this.jinja.generateExpression(e.by) : "1", n = `{{ (((${a}) - (${t})) / (${i})) | int + 1 }}`, s = {
+    const t = this.jinja.generateExpression(e.from), a = this.jinja.generateExpression(e.to), i = e.by ? this.jinja.generateExpression(e.by) : "1", n = `{{ (((${a}) - (${t})) / (${i})) | int + 1 }}`, r = {
       variables: {
         [e.variable]: `{{ ${t} }}`
       }
-    }, r = {
+    }, s = {
       variables: {
         [e.variable]: `{{ ${e.variable} + ${i} }}`
       }
@@ -460,9 +460,9 @@ class I {
       repeat: {
         count: n,
         sequence: [
-          s,
+          r,
           ...this.generateActions(e.body),
-          r
+          s
         ]
       }
     };
@@ -473,13 +473,13 @@ class I {
       variables: { [t]: 0 }
     }, i = {
       variables: { [t]: `{{ ${t} + 1 }}` }
-    }, n = this.generateCondition(e.condition), s = {
+    }, n = this.generateCondition(e.condition), r = {
       condition: "template",
-      value_template: `{{ ${t} < ${b} }}`
+      value_template: `{{ ${t} < ${I} }}`
     };
     return {
       repeat: {
-        while: [n, s],
+        while: [n, r],
         sequence: [
           a,
           i,
@@ -494,14 +494,14 @@ class I {
       variables: { [t]: 0 }
     }, i = {
       variables: { [t]: `{{ ${t} + 1 }}` }
-    }, n = this.generateCondition(e.condition), s = {
+    }, n = this.generateCondition(e.condition), r = {
       condition: "template",
-      value_template: `{{ ${t} < ${b} }}`
+      value_template: `{{ ${t} < ${I} }}`
     };
     return {
       repeat: {
         until: [
-          { condition: "or", conditions: [n, { condition: "not", conditions: [s] }] }
+          { condition: "or", conditions: [n, { condition: "not", conditions: [r] }] }
         ],
         sequence: [
           a,
@@ -572,18 +572,18 @@ class j {
   parseTimerCall(e, t) {
     var n;
     const a = t.name.toUpperCase(), i = {};
-    for (const s of t.arguments) {
-      const r = (n = s.name) == null ? void 0 : n.toUpperCase();
-      if (r)
-        switch (r) {
+    for (const r of t.arguments) {
+      const s = (n = r.name) == null ? void 0 : n.toUpperCase();
+      if (s)
+        switch (s) {
           case "IN":
-            i.IN = this.jinja.generateExpression(s.value);
+            i.IN = this.jinja.generateExpression(r.value);
             break;
           case "PT":
-            i.PT = this.parseTimeToSeconds(s.value);
+            i.PT = this.parseTimeToSeconds(r.value);
             break;
           case "R":
-            i.R = this.jinja.generateExpression(s.value);
+            i.R = this.jinja.generateExpression(r.value);
             break;
         }
     }
@@ -635,12 +635,12 @@ class j {
           }
         ]
       }
-    ], s = this.generateFinishedAutomation(
+    ], r = this.generateFinishedAutomation(
       e,
       a,
       t.IN,
       [this.booleanTurnOn(a.outputHelperId)]
-    ), r = {
+    ), s = {
       Q: `(states('${a.outputHelperId}') == 'on')`,
       ET: a.elapsedHelperId ? `(states('${a.elapsedHelperId}') | float(default=0))` : void 0
     };
@@ -648,8 +648,8 @@ class j {
       entities: a,
       helpers: i,
       mainActions: n,
-      finishedAutomation: s,
-      outputMappings: r
+      finishedAutomation: r,
+      outputMappings: s
     };
   }
   // ==========================================================================
@@ -678,20 +678,20 @@ class j {
           }
         ]
       }
-    ], s = this.generateFinishedAutomation(
+    ], r = this.generateFinishedAutomation(
       e,
       a,
       `not (${t.IN})`,
       [this.booleanTurnOff(a.outputHelperId)]
-    ), r = {
+    ), s = {
       Q: `(states('${a.outputHelperId}') == 'on')`
     };
     return {
       entities: a,
       helpers: i,
       mainActions: n,
-      finishedAutomation: s,
-      outputMappings: r
+      finishedAutomation: r,
+      outputMappings: s
     };
   }
   // ==========================================================================
@@ -707,7 +707,7 @@ class j {
       name: `ST ${e.programName} ${e.name} Triggered`,
       initial: !1
     });
-    const s = [
+    const r = [
       {
         choose: [
           // Case 1: Rising edge (IN TRUE and not triggered) -> start pulse
@@ -733,7 +733,7 @@ class j {
           }
         ]
       }
-    ], r = this.generateFinishedAutomation(
+    ], s = this.generateFinishedAutomation(
       e,
       a,
       "true",
@@ -745,8 +745,8 @@ class j {
     return {
       entities: a,
       helpers: i,
-      mainActions: s,
-      finishedAutomation: r,
+      mainActions: r,
+      finishedAutomation: s,
       outputMappings: o
     };
   }
@@ -859,14 +859,14 @@ class j {
     if (e.type === "Literal" && e.kind === "time") {
       const a = e.raw.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
       if (a) {
-        const i = parseInt(a[1] || "0", 10), n = parseInt(a[2] || "0", 10), s = parseInt(a[3] || "0", 10), r = parseInt(a[4] || "0", 10), o = i * 3600 + n * 60 + s + r / 1e3;
+        const i = parseInt(a[1] || "0", 10), n = parseInt(a[2] || "0", 10), r = parseInt(a[3] || "0", 10), s = parseInt(a[4] || "0", 10), o = i * 3600 + n * 60 + r + s / 1e3;
         return String(o);
       }
     }
     return this.jinja.generateExpression(e);
   }
 }
-class x {
+class H {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -1029,7 +1029,7 @@ class R {
     return t.toString(16);
   }
 }
-class $ {
+class w {
   constructor(e, t = "default", a) {
     c(this, "ast");
     c(this, "projectName");
@@ -1057,24 +1057,24 @@ class $ {
   transpile() {
     this.depAnalysis = E(this.ast), this.storageAnalysis = M(this.ast, this.projectName), this.diagnostics.push(
       ...this.depAnalysis.diagnostics.map((n) => {
-        var s;
+        var r;
         return {
           severity: n.severity,
           code: n.code,
           message: n.message,
-          stLine: (s = n.location) == null ? void 0 : s.line
+          stLine: (r = n.location) == null ? void 0 : r.line
         };
       }),
       ...this.storageAnalysis.diagnostics.map((n) => {
-        var s;
+        var r;
         return {
           severity: n.severity,
           code: n.code,
           message: n.message,
-          stLine: (s = n.location) == null ? void 0 : s.line
+          stLine: (r = n.location) == null ? void 0 : r.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new j(this.context), this.timerResolver = new x(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new j(this.context), this.timerResolver = new H(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1098,21 +1098,21 @@ class $ {
   buildContext() {
     var a, i, n;
     const e = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
-    for (const s of this.ast.variables) {
-      const r = this.storageAnalysis.variables.find((l) => l.name === s.name), o = this.depAnalysis.dependencies.find((l) => l.variableName === s.name), p = {
-        name: s.name,
-        dataType: s.dataType.name,
-        isInput: ((a = s.binding) == null ? void 0 : a.direction) === "INPUT" || s.section === "VAR_INPUT",
-        isOutput: ((i = s.binding) == null ? void 0 : i.direction) === "OUTPUT" || s.section === "VAR_OUTPUT",
-        isPersistent: (r == null ? void 0 : r.storage.type) === "PERSISTENT",
-        helperId: r == null ? void 0 : r.storage.helperId,
-        entityId: (o == null ? void 0 : o.entityId) || ((n = s.binding) == null ? void 0 : n.entityId)
+    for (const r of this.ast.variables) {
+      const s = this.storageAnalysis.variables.find((l) => l.name === r.name), o = this.depAnalysis.dependencies.find((l) => l.variableName === r.name), u = {
+        name: r.name,
+        dataType: r.dataType.name,
+        isInput: ((a = r.binding) == null ? void 0 : a.direction) === "INPUT" || r.section === "VAR_INPUT",
+        isOutput: ((i = r.binding) == null ? void 0 : i.direction) === "OUTPUT" || r.section === "VAR_OUTPUT",
+        isPersistent: (s == null ? void 0 : s.storage.type) === "PERSISTENT",
+        helperId: s == null ? void 0 : s.storage.helperId,
+        entityId: (o == null ? void 0 : o.entityId) || ((n = r.binding) == null ? void 0 : n.entityId)
       };
-      e.set(s.name, p), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(s.name, {
+      e.set(r.name, u), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(r.name, {
         entityId: o.entityId,
-        variableName: s.name,
+        variableName: r.name,
         direction: o.direction,
-        dataType: s.dataType.name
+        dataType: r.dataType.name
       });
     }
     this.context = {
@@ -1136,7 +1136,7 @@ class $ {
       const a = t.dataType.name.toUpperCase();
       (a === "TON" || a === "TOF" || a === "TP") && e.set(t.name, a);
     }
-    e.size !== 0 && C(this.ast, {
+    e.size !== 0 && O(this.ast, {
       onFunctionCall: (t) => {
         const a = e.get(t.name);
         if (!a)
@@ -1146,11 +1146,11 @@ class $ {
           type: a,
           programName: this.ast.name,
           projectName: this.projectName
-        }, n = this.timerTranspiler.parseTimerCall(t.name, t), s = {
+        }, n = this.timerTranspiler.parseTimerCall(t.name, t), r = {
           IN: n.inputs.IN ?? "true",
           PT: n.inputs.PT ?? "0"
-        }, r = this.timerTranspiler.transpileTimer(i, s);
-        this.timerHelpers.push(...r.helpers), this.additionalAutomations.push(r.finishedAutomation), this.timerMainActions.push(...r.mainActions), this.timerResolver.registerTimer(i.name, r.outputMappings);
+        }, s = this.timerTranspiler.transpileTimer(i, r);
+        this.timerHelpers.push(...s.helpers), this.additionalAutomations.push(s.finishedAutomation), this.timerMainActions.push(...s.mainActions), this.timerResolver.registerTimer(i.name, s.outputMappings);
       }
     });
   }
@@ -1158,32 +1158,32 @@ class $ {
   // Automation Generation
   // ==========================================================================
   generateAutomation() {
-    var n, s;
-    const e = f(this.ast.pragmas), t = (n = e.find((r) => r.name === "throttle")) == null ? void 0 : n.value, a = (s = e.find((r) => r.name === "debounce")) == null ? void 0 : s.value, i = {
+    var n, r;
+    const e = f(this.ast.pragmas), t = (n = e.find((s) => s.name === "throttle")) == null ? void 0 : n.value, a = (r = e.find((s) => s.name === "debounce")) == null ? void 0 : r.value, i = {
       id: `st_${this.projectName}_${this.ast.name}`.toLowerCase().replace(/[^a-z0-9_]/g, "_"),
       alias: `[ST] ${this.ast.name}`,
       description: `Generated from ST program: ${this.ast.name}`,
       mode: "single",
       // Automation is just dispatcher
-      trigger: this.depAnalysis.triggers.map((r) => this.mapTriggerConfig(r)),
+      trigger: this.depAnalysis.triggers.map((s) => this.mapTriggerConfig(s)),
       action: []
     };
     if (t) {
-      const r = this.buildEntityId("input_datetime", `st_${this.projectName}_${this.ast.name}_last_run`), o = this.parseTimeToSeconds(t);
+      const s = this.buildEntityId("input_datetime", `st_${this.projectName}_${this.ast.name}_last_run`), o = this.parseTimeToSeconds(t);
       i.condition = [{
         condition: "template",
-        value_template: this.generateThrottleCondition(r, o)
+        value_template: this.generateThrottleCondition(s, o)
       }], i.action.push({
         service: "input_datetime.set_datetime",
-        target: { entity_id: r },
+        target: { entity_id: s },
         data: { datetime: "{{ now().isoformat() }}" }
       });
     }
     if (a) {
       i.mode = "restart";
-      const r = this.parseTimeToSeconds(a);
+      const s = this.parseTimeToSeconds(a);
       i.action.push({
-        delay: { seconds: r }
+        delay: { seconds: s }
       });
     }
     return i.action.push({
@@ -1223,8 +1223,8 @@ class $ {
   parseTimeToSeconds(e) {
     const t = e.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
     if (!t) return 0;
-    const a = parseInt(t[1] || "0", 10), i = parseInt(t[2] || "0", 10), n = parseInt(t[3] || "0", 10), s = parseInt(t[4] || "0", 10);
-    return a * 3600 + i * 60 + n + s / 1e3;
+    const a = parseInt(t[1] || "0", 10), i = parseInt(t[2] || "0", 10), n = parseInt(t[3] || "0", 10), r = parseInt(t[4] || "0", 10);
+    return a * 3600 + i * 60 + n + r / 1e3;
   }
   // ==========================================================================
   // Trigger Mapping
@@ -1278,16 +1278,16 @@ class $ {
   // Script Generation
   // ==========================================================================
   generateScript() {
-    var r;
-    const t = ((r = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : r.value) || "restart", a = new I(this.context, this.timerResolver, this.sourceMapBuilder), i = {
+    var s;
+    const t = ((s = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : s.value) || "restart", a = new T(this.context, this.timerResolver, this.sourceMapBuilder), i = {
       alias: `[ST] ${this.ast.name} Logic`,
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
       sequence: []
     }, n = this.generateVariableInitializers();
     Object.keys(n).length > 0 && (i.variables = n), this.sourceMapBuilder && this.sourceMapBuilder.pushPath("sequence");
-    const s = a.generateActions(this.ast.body);
-    if (this.sourceMapBuilder && this.sourceMapBuilder.popPath(), i.sequence = [...this.timerMainActions, ...s], this.sourceMapBuilder) {
+    const r = a.generateActions(this.ast.body);
+    if (this.sourceMapBuilder && this.sourceMapBuilder.popPath(), i.sequence = [...this.timerMainActions, ...r], this.sourceMapBuilder) {
       const o = this.sourceMapBuilder.buildEmbedded();
       i.variables ? i.variables = {
         ...i.variables,
@@ -1313,15 +1313,15 @@ class $ {
     return e;
   }
 }
-function P(u, e, t) {
-  return new $(u, e, t).transpile();
+function P(p, e, t) {
+  return new w(p, e, t).transpile();
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  ActionGenerator: I,
+  ActionGenerator: T,
   JinjaGenerator: _,
-  Transpiler: $,
-  generateEntityStateRead: O,
+  Transpiler: w,
+  generateEntityStateRead: C,
   generateThrottleCondition: k,
   transpile: P
 }, Symbol.toStringTag, { value: "Module" })), g = class g {
@@ -1526,29 +1526,29 @@ c(g, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "timer"
 ]));
 let y = g;
-class T {
+class b {
   constructor(e, t = "st_") {
     c(this, "api");
     c(this, "projectPrefix");
     this.api = e, this.projectPrefix = t;
   }
-  async calculateSync(e) {
-    const t = await this.getExistingHelpers(), a = new Set(t.map((s) => s.entityId)), i = new Set(e.map((s) => s.id)), n = {
+  async calculateSync(e, t) {
+    const a = t ?? await this.getExistingHelpers(), i = new Set(a.map((s) => s.entityId)), n = new Set(e.map((s) => s.id)), r = {
       toCreate: [],
       toUpdate: [],
       toDelete: [],
       unchanged: []
     };
     for (const s of e)
-      if (!a.has(s.id))
-        n.toCreate.push(s);
+      if (!i.has(s.id))
+        r.toCreate.push(s);
       else {
-        const r = t.find((o) => o.entityId === s.id);
-        r && this.needsUpdate(s, r) ? n.toUpdate.push(s) : n.unchanged.push(s.id);
+        const o = a.find((u) => u.entityId === s.id);
+        o && this.needsUpdate(s, o) ? r.toUpdate.push(s) : r.unchanged.push(s.id);
       }
-    for (const s of t)
-      i.has(s.entityId) || n.toDelete.push(s.entityId);
-    return n;
+    for (const s of a)
+      n.has(s.entityId) || r.toDelete.push(s.entityId);
+    return r;
   }
   async getExistingHelpers() {
     return (await this.api.getSTHelpers(this.projectPrefix)).map((t) => ({
@@ -1557,6 +1557,78 @@ class T {
       state: t.state,
       attributes: t.attributes
     }));
+  }
+  toHelperConfig(e) {
+    const t = typeof e.attributes.friendly_name == "string" && e.attributes.friendly_name || this.extractName(e.entityId);
+    switch (e.type) {
+      case "input_boolean":
+        return {
+          id: e.entityId,
+          type: "input_boolean",
+          name: t,
+          initial: e.state === "on"
+        };
+      case "input_number":
+        return {
+          id: e.entityId,
+          type: "input_number",
+          name: t,
+          initial: this.parseNumericValue(e.state),
+          min: this.parseOptionalNumber(e.attributes.min),
+          max: this.parseOptionalNumber(e.attributes.max),
+          step: this.parseOptionalNumber(e.attributes.step),
+          mode: e.attributes.mode === "slider" || e.attributes.mode === "box" ? e.attributes.mode : void 0
+        };
+      case "input_text":
+        return {
+          id: e.entityId,
+          type: "input_text",
+          name: t,
+          initial: e.state,
+          pattern: typeof e.attributes.pattern == "string" ? e.attributes.pattern : void 0
+        };
+      case "input_datetime":
+        return {
+          id: e.entityId,
+          type: "input_datetime",
+          name: t,
+          initial: e.state
+        };
+      case "input_select":
+        return {
+          id: e.entityId,
+          type: "input_select",
+          name: t,
+          initial: e.state,
+          options: Array.isArray(e.attributes.options) ? e.attributes.options.filter(
+            (a) => typeof a == "string"
+          ) : void 0
+        };
+      case "counter":
+        return {
+          id: e.entityId,
+          type: "counter",
+          name: t,
+          initial: this.parseNumericValue(e.state),
+          min: this.parseOptionalNumber(e.attributes.minimum),
+          max: this.parseOptionalNumber(e.attributes.maximum),
+          step: this.parseOptionalNumber(e.attributes.step)
+        };
+      case "timer":
+        return {
+          id: e.entityId,
+          type: "timer",
+          name: t,
+          initial: typeof e.attributes.duration == "string" && e.attributes.duration || e.state
+        };
+      default:
+        return {
+          id: e.entityId,
+          type: e.type,
+          name: t,
+          initial: e.state
+        };
+    }
   }
   needsUpdate(e, t) {
     if (e.type !== t.type)
@@ -1623,10 +1695,21 @@ class T {
     const t = e.split(".");
     return t.length !== 2 ? e : t[1].split("_").map((a) => a.charAt(0).toUpperCase() + a.slice(1)).join(" ");
   }
+  parseOptionalNumber(e) {
+    if (typeof e == "number") return e;
+    if (typeof e == "string" && e.trim() !== "") {
+      const t = Number(e);
+      return Number.isNaN(t) ? void 0 : t;
+    }
+  }
+  parseNumericValue(e) {
+    const t = Number(e);
+    return Number.isNaN(t) ? 0 : t;
+  }
   async getHelperStates(e) {
     const t = await this.api.getStates(), a = {};
     for (const i of e) {
-      const n = t.find((s) => s.entity_id === i);
+      const n = t.find((r) => r.entity_id === i);
       n && (a[i] = this.parseHelperValue(n));
     }
     return a;
@@ -1654,19 +1737,19 @@ class T {
   }
 }
 const h = "st_hass_backups", v = 10;
-class w {
+class $ {
   constructor(e) {
     c(this, "api");
     c(this, "helperManager");
-    this.api = e, this.helperManager = new T(e);
+    this.api = e, this.helperManager = new b(e);
   }
   async createBackup(e, t) {
-    const a = await this.api.getAutomation(e), i = `st_${e}_logic`, n = await this.api.getScript(i), r = (await this.helperManager.getExistingHelpers()).map((d) => ({
+    const a = await this.api.getAutomation(e), i = `st_${e}_logic`, n = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map((d) => ({
       id: d.entityId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: d.type,
       name: d.attributes.friendly_name || d.entityId
-    })), o = r.map((d) => d.id), p = await this.helperManager.getHelperStates(o), l = {
+    })), o = s.map((d) => d.id), u = await this.helperManager.getHelperStates(o), l = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1676,8 +1759,8 @@ class w {
         automation: a,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         script: n,
-        helpers: r,
-        helperStates: p
+        helpers: s,
+        helperStates: u
       }
     };
     return await this.saveBackup(l), l;
@@ -1766,7 +1849,7 @@ class L {
     localStorage.removeItem(m);
   }
 }
-class H {
+class U {
   /**
    * Detect migration issues between old and new schema
    */
@@ -1778,25 +1861,25 @@ class H {
         hasDestructiveChanges: !1,
         requiresUserInput: !1
       };
-    const i = new Map(e.variables.map((s) => [s.name, s])), n = new Map(t.variables.map((s) => [s.name, s]));
-    for (const [s, r] of i)
-      n.has(s) || a.push(this.createRemovedIssue(r));
-    for (const [s, r] of n) {
-      const o = i.get(s);
+    const i = new Map(e.variables.map((r) => [r.name, r])), n = new Map(t.variables.map((r) => [r.name, r]));
+    for (const [r, s] of i)
+      n.has(r) || a.push(this.createRemovedIssue(s));
+    for (const [r, s] of n) {
+      const o = i.get(r);
       if (!o)
-        a.push(this.createAddedIssue(r));
+        a.push(this.createAddedIssue(s));
       else {
-        const p = this.detectChanges(o, r);
-        a.push(...p);
+        const u = this.detectChanges(o, s);
+        a.push(...u);
       }
     }
     return {
       issues: a,
       hasDestructiveChanges: a.some(
-        (s) => s.options.some((r) => r.isDestructive)
+        (r) => r.options.some((s) => s.isDestructive)
       ),
       requiresUserInput: a.some(
-        (s) => s.type === "removed" || s.type === "type_changed"
+        (r) => r.type === "removed" || r.type === "type_changed"
       )
     };
   }
@@ -1910,7 +1993,7 @@ class S {
     c(this, "backupManager");
     c(this, "schemaStorage");
     c(this, "migrationDetector");
-    this.api = e, this.helperManager = new T(e), this.backupManager = new w(e), this.schemaStorage = new L(), this.migrationDetector = new H();
+    this.api = e, this.helperManager = new b(e), this.backupManager = new $(e), this.schemaStorage = new L(), this.migrationDetector = new U();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -1925,18 +2008,18 @@ class S {
           errors: []
         };
       a.status = "in_progress";
-      for (const s of i)
+      for (const r of i)
         try {
-          await this.applyOperation(s), s.status = "applied";
-        } catch (r) {
-          return s.status = "failed", s.error = this.formatError(r), await this.rollback(a), {
+          await this.applyOperation(r), r.status = "applied";
+        } catch (s) {
+          return r.status = "failed", r.error = this.formatError(s), await this.rollback(a), {
             success: !1,
             transactionId: a.id,
             operations: i,
             errors: [
               {
-                operation: s,
-                message: s.error ?? "Unknown deploy error",
+                operation: r,
+                message: r.error ?? "Unknown deploy error",
                 code: "DEPLOY_FAILED"
               }
             ]
@@ -2001,15 +2084,15 @@ class S {
   }
   async calculateOperations(e) {
     const t = [], a = [e.automation, ...e.additionalAutomations ?? []];
-    for (const r of a) {
-      const o = await this.api.getAutomation(r.id);
+    for (const u of a) {
+      const l = await this.api.getAutomation(u.id);
       t.push({
         id: this.generateId(),
-        type: o ? "update" : "create",
+        type: l ? "update" : "create",
         entityType: "automation",
-        entityId: r.id,
-        previousState: o ?? void 0,
-        newState: r,
+        entityId: u.id,
+        previousState: l ?? void 0,
+        newState: u,
         status: "pending"
       });
     }
@@ -2023,33 +2106,44 @@ class S {
       newState: e.script,
       status: "pending"
     });
-    const s = await this.helperManager.calculateSync(e.helpers);
-    for (const r of s.toCreate)
+    const r = await this.helperManager.getExistingHelpers(), s = new Map(
+      r.map((u) => [u.entityId, u])
+    ), o = await this.helperManager.calculateSync(
+      e.helpers,
+      r
+    );
+    for (const u of o.toCreate)
       t.push({
         id: this.generateId(),
         type: "create",
         entityType: "helper",
-        entityId: r.id,
-        newState: r,
+        entityId: u.id,
+        newState: u,
         status: "pending"
       });
-    for (const r of s.toUpdate)
+    for (const u of o.toUpdate) {
+      const l = s.get(u.id);
       t.push({
         id: this.generateId(),
         type: "update",
         entityType: "helper",
-        entityId: r.id,
-        newState: r,
+        entityId: u.id,
+        previousState: l ? this.helperManager.toHelperConfig(l) : void 0,
+        newState: u,
         status: "pending"
       });
-    for (const r of s.toDelete)
+    }
+    for (const u of o.toDelete) {
+      const l = s.get(u);
       t.push({
         id: this.generateId(),
         type: "delete",
         entityType: "helper",
-        entityId: r,
+        entityId: u,
+        previousState: l ? this.helperManager.toHelperConfig(l) : void 0,
         status: "pending"
       });
+    }
     return t;
   }
   /**
@@ -2150,29 +2244,29 @@ class S {
   }
   async verifyDeployment(e) {
     const t = [e.automation, ...e.additionalAutomations ?? []];
-    for (const s of t)
-      if (!await this.api.getAutomation(s.id)) return !1;
+    for (const r of t)
+      if (!await this.api.getAutomation(r.id)) return !1;
     const a = this.getScriptId(e);
     if (!await this.api.getScript(a)) return !1;
     const n = await this.api.getStates();
-    for (const s of e.helpers)
-      if (!n.some((o) => o.entity_id === s.id)) return !1;
+    for (const r of e.helpers)
+      if (!n.some((o) => o.entity_id === r.id)) return !1;
     return !0;
   }
 }
-async function U(u, e, t) {
-  return new S(u).deploy(e, t);
+async function x(p, e, t) {
+  return new S(p).deploy(e, t);
 }
 const z = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  BackupManager: w,
+  BackupManager: $,
   DeployManager: S,
   HAApiClient: y,
-  HelperManager: T,
-  deploy: U
+  HelperManager: b,
+  deploy: x
 }, Symbol.toStringTag, { value: "Module" }));
 export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-BdY8w4XM.js.map
+//# sourceMappingURL=transpiler-deploy-DCSGl2dB.js.map

@@ -15,9 +15,12 @@ export class HelperManager {
     this.projectPrefix = projectPrefix;
   }
 
-  async calculateSync(required: HelperConfig[]): Promise<HelperSyncResult> {
-    const existing = await this.getExistingHelpers();
-    const existingIds = new Set(existing.map((h) => h.entityId));
+  async calculateSync(
+    required: HelperConfig[],
+    existing?: ExistingHelper[],
+  ): Promise<HelperSyncResult> {
+    const currentHelpers = existing ?? (await this.getExistingHelpers());
+    const existingIds = new Set(currentHelpers.map((h) => h.entityId));
     const requiredIds = new Set(required.map((h) => h.id));
 
     const result: HelperSyncResult = {
@@ -31,7 +34,7 @@ export class HelperManager {
       if (!existingIds.has(helper.id)) {
         result.toCreate.push(helper);
       } else {
-        const existingHelper = existing.find((h) => h.entityId === helper.id);
+        const existingHelper = currentHelpers.find((h) => h.entityId === helper.id);
         if (existingHelper && this.needsUpdate(helper, existingHelper)) {
           result.toUpdate.push(helper);
         } else {
@@ -40,7 +43,7 @@ export class HelperManager {
       }
     }
 
-    for (const helper of existing) {
+    for (const helper of currentHelpers) {
       if (!requiredIds.has(helper.entityId)) {
         result.toDelete.push(helper.entityId);
       }
@@ -58,6 +61,102 @@ export class HelperManager {
       state: s.state,
       attributes: s.attributes,
     }));
+  }
+
+  toHelperConfig(existing: ExistingHelper): HelperConfig {
+    const name =
+      (typeof existing.attributes.friendly_name === 'string' &&
+        existing.attributes.friendly_name) ||
+      this.extractName(existing.entityId);
+
+    switch (existing.type) {
+      case 'input_boolean':
+        return {
+          id: existing.entityId,
+          type: 'input_boolean',
+          name,
+          initial: existing.state === 'on',
+        };
+
+      case 'input_number':
+        return {
+          id: existing.entityId,
+          type: 'input_number',
+          name,
+          initial: this.parseNumericValue(existing.state),
+          min: this.parseOptionalNumber(existing.attributes.min),
+          max: this.parseOptionalNumber(existing.attributes.max),
+          step: this.parseOptionalNumber(existing.attributes.step),
+          mode:
+            existing.attributes.mode === 'slider' ||
+            existing.attributes.mode === 'box'
+              ? existing.attributes.mode
+              : undefined,
+        };
+
+      case 'input_text':
+        return {
+          id: existing.entityId,
+          type: 'input_text',
+          name,
+          initial: existing.state,
+          pattern:
+            typeof existing.attributes.pattern === 'string'
+              ? existing.attributes.pattern
+              : undefined,
+        };
+
+      case 'input_datetime':
+        return {
+          id: existing.entityId,
+          type: 'input_datetime',
+          name,
+          initial: existing.state,
+        };
+
+      case 'input_select':
+        return {
+          id: existing.entityId,
+          type: 'input_select',
+          name,
+          initial: existing.state,
+          options: Array.isArray(existing.attributes.options)
+            ? existing.attributes.options.filter(
+                (option): option is string => typeof option === 'string',
+              )
+            : undefined,
+        };
+
+      case 'counter':
+        return {
+          id: existing.entityId,
+          type: 'counter',
+          name,
+          initial: this.parseNumericValue(existing.state),
+          min: this.parseOptionalNumber(existing.attributes.minimum),
+          max: this.parseOptionalNumber(existing.attributes.maximum),
+          step: this.parseOptionalNumber(existing.attributes.step),
+        };
+
+      case 'timer':
+        return {
+          id: existing.entityId,
+          type: 'timer',
+          name,
+          initial:
+            (typeof existing.attributes.duration === 'string' &&
+              existing.attributes.duration) ||
+            existing.state,
+        };
+
+      default:
+        return {
+          id: existing.entityId,
+          type: existing.type as HelperConfig['type'],
+          name,
+          initial: existing.state,
+        };
+    }
   }
 
   private needsUpdate(required: HelperConfig, existing: ExistingHelper): boolean {
@@ -154,6 +253,20 @@ export class HelperManager {
       .split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  private parseOptionalNumber(value: unknown): number | undefined {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string' && value.trim() !== '') {
+      const parsed = Number(value);
+      return Number.isNaN(parsed) ? undefined : parsed;
+    }
+    return undefined;
+  }
+
+  private parseNumericValue(value: string): number {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
   }
 
   async getHelperStates(helperIds: string[]): Promise<Record<string, unknown>> {
