@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import "./st-panel";
 
 describe("STPanel", () => {
@@ -148,8 +148,12 @@ describe("STPanel", () => {
 
     await panel.updateComplete;
     panel._syntaxOk = false;
+    await panel.updateComplete;
 
-    await panel._handleDeploy();
+    const deployButton = panel.shadowRoot?.querySelector(".deploy-button") as HTMLButtonElement;
+    expect(deployButton.disabled).toBe(false);
+    deployButton.click();
+
     await panel.updateComplete;
 
     const feedback = panel.shadowRoot?.querySelector(".deploy-feedback");
@@ -173,6 +177,79 @@ describe("STPanel", () => {
     expect(feedback?.textContent).toContain(
       "Home Assistant connection is not available",
     );
+  });
+
+  it("re-analyzes restored projects and reopens the active tab on load", async () => {
+    const panel = document.createElement("st-panel") as any;
+    panel._storage = {
+      loadProject: vi.fn().mockResolvedValue({
+        id: "project_1",
+        name: "My ST Project",
+        files: [
+          {
+            id: "file_1",
+            name: "Main.st",
+            path: "Main.st",
+            content: "PROGRAM Main\nEND_PROGRAM",
+            lastModified: Date.now(),
+            isOpen: false,
+            hasUnsavedChanges: false,
+          },
+          {
+            id: "file_2",
+            name: "Broken.st",
+            path: "Broken.st",
+            content: "PROGRAM Broken",
+            lastModified: Date.now(),
+            isOpen: false,
+            hasUnsavedChanges: false,
+          },
+        ],
+        activeFileId: "file_2",
+        createdAt: Date.now(),
+        lastModified: Date.now(),
+      }),
+      saveProject: vi.fn(),
+    };
+    document.body.appendChild(panel);
+
+    await panel._initializeProject();
+    await panel.updateComplete;
+
+    expect(panel._project.files.find((f: any) => f.id === "file_2").isOpen).toBe(true);
+    expect(panel.shadowRoot?.querySelectorAll(".tab").length).toBe(1);
+    expect(panel.shadowRoot?.querySelector(".tab")?.textContent).toContain("Broken.st");
+    expect(panel._syntaxOk).toBe(false);
+    expect(panel._diagnostics.length).toBeGreaterThan(0);
+  });
+
+  it("clears unsaved markers after a successful project save", async () => {
+    const panel = document.createElement("st-panel") as any;
+    panel._project = {
+      id: "project_1",
+      name: "My ST Project",
+      files: [
+        {
+          id: "file_1",
+          name: "Main.st",
+          path: "Main.st",
+          content: "PROGRAM Main\nEND_PROGRAM",
+          lastModified: Date.now(),
+          isOpen: true,
+          hasUnsavedChanges: true,
+        },
+      ],
+      activeFileId: "file_1",
+      createdAt: Date.now(),
+      lastModified: Date.now(),
+    };
+    panel._storage = {
+      saveProject: vi.fn().mockResolvedValue(undefined),
+    };
+
+    await panel._saveProject();
+
+    expect(panel._project.files[0].hasUnsavedChanges).toBe(false);
   });
 });
 

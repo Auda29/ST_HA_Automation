@@ -669,6 +669,12 @@ END_PROGRAM`;
       try {
         const project = await this._storage.loadProject();
         if (project) {
+          if (project.activeFileId) {
+            project.files = project.files.map((file) => ({
+              ...file,
+              isOpen: file.id === project.activeFileId || file.isOpen,
+            }));
+          }
           this._project = project;
           // Open the active file if any
           if (project.activeFileId) {
@@ -679,10 +685,12 @@ END_PROGRAM`;
               this._code = activeFile.content;
             }
           }
+          this._analyzeCode();
         } else {
           // Migrate from single-file mode
           this._project = this._storage.migrateFromSingleFile(this._code);
           await this._storage.saveProject(this._project);
+          this._analyzeCode();
         }
       } catch (error) {
         console.error("Failed to load project", error);
@@ -699,9 +707,9 @@ END_PROGRAM`;
       (d) => d.severity === "Warning",
     ).length;
 
-    const deployDisabled = !this._syntaxOk || this._isDeploying;
+    const deployDisabled = this._isDeploying;
     const deployTitle = !this._syntaxOk
-      ? "Fix syntax errors before deploying"
+      ? "Show deploy errors"
       : this._isDeploying
         ? "Deploy in progress"
         : "Deploy to Home Assistant";
@@ -987,6 +995,13 @@ END_PROGRAM`;
     this._deployFeedback = { tone, message };
   }
 
+  private _markProjectSaved(): void {
+    if (!this._project) return;
+    this._project.files.forEach((file) => {
+      file.hasUnsavedChanges = false;
+    });
+  }
+
   private _handleCodeChange(e: CustomEvent<{ code: string }>) {
     const newCode = e.detail.code;
 
@@ -1079,7 +1094,7 @@ END_PROGRAM`;
       editor.setCode(file.content);
     }
 
-    this._saveProject();
+    void this._saveProject();
     this.requestUpdate();
   }
 
@@ -1109,7 +1124,7 @@ END_PROGRAM`;
     }
 
     this._project.lastModified = Date.now();
-    this._saveProject();
+    void this._saveProject();
     this._analyzeCode();
     this.requestUpdate();
   }
@@ -1135,7 +1150,7 @@ END_PROGRAM`;
       file.path = newName; // Simple: path = name for now
       file.lastModified = Date.now();
       this._project.lastModified = Date.now();
-      this._saveProject();
+      void this._saveProject();
     }
   }
 
@@ -1165,7 +1180,7 @@ END_PROGRAM`;
       if (activeFile) editor.setCode(activeFile.content);
     }
 
-    this._saveProject();
+    void this._saveProject();
     this._analyzeCode();
     this.requestUpdate();
   }
@@ -1190,7 +1205,7 @@ END_PROGRAM`;
       editor.setCode(file.content);
     }
 
-    this._saveProject();
+    void this._saveProject();
     this._analyzeCode();
     this.requestUpdate();
   }
@@ -1199,6 +1214,8 @@ END_PROGRAM`;
     if (!this._storage || !this._project) return;
     try {
       await this._storage.saveProject(this._project);
+      this._markProjectSaved();
+      this.requestUpdate();
     } catch (error) {
       console.error("Failed to save project", error);
     }

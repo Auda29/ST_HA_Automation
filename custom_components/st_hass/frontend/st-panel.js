@@ -1,11 +1,11 @@
 var ae = Object.defineProperty;
 var ne = (a, t, e) => t in a ? ae(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
 var l = (a, t, e) => ne(a, typeof t != "symbol" ? t + "" : t, e);
-import { S as re, c as oe, L as le, E as T, H as ce, s as de, a as Q, b as he, D as M, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as _e, m as Se, n as xe, o as Le, p as Ce, q as Oe, r as Ue, t as Ne, u as we, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
+import { S as re, c as oe, L as le, E as T, H as ce, s as de, a as Q, b as he, D as I, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as _e, m as Se, n as xe, o as Le, p as Ce, q as Oe, r as Ue, t as Ne, u as we, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
 import { W as m } from "./vendor-BhPS5zVw.js";
 import { i as Y, n as S, a as W, b as u, t as G, r as v } from "./lit-C178dhqO.js";
-import { s as Me } from "./ha-websocket-DcUbagYv.js";
-import { c as o, L as R, C as Ie } from "./chevrotain-cBR36crC.js";
+import { s as Ie } from "./ha-websocket-DcUbagYv.js";
+import { c as o, L as R, C as Me } from "./chevrotain-cBR36crC.js";
 import { a as q } from "./analyzer-DbAWr__X.js";
 const Be = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-semibold: 600;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 6px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 20px;--radius-pill: 999px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-focus-ring: 0 0 0 3px rgba(24, 183, 230, .32);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .16s ease;--transition-medium: all .24s ease;--transition-slow: all .32s ease;--focus-ring: 2px solid rgba(91, 212, 255, .7);--focus-ring-offset: 2px}@media (prefers-reduced-motion: reduce){:root{--transition-fast: none;--transition-medium: none;--transition-slow: none}}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', Z = [
   "PROGRAM",
@@ -308,10 +308,10 @@ const p = {
   { tag: m.operator, color: p.fg },
   { tag: m.invalid, color: "#ff0000", textDecoration: "underline wavy" }
 ]);
-function Ve() {
+function ze() {
   return [$e, de(je)];
 }
-class ze {
+class Ve {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(t) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -336,7 +336,7 @@ class ze {
     for (const e of t)
       this.bindings.set(e.variableName, e);
     try {
-      this.unsubscribe = Me(
+      this.unsubscribe = Ie(
         this.connection,
         (e) => {
           this.handleHassEntityUpdate(e);
@@ -544,7 +544,7 @@ Last update: ${new Date(this.value.lastUpdate).toLocaleTimeString()}`, t.appendC
 }
 const We = he.define({
   create() {
-    return M.none;
+    return I.none;
   },
   update(a, t) {
     for (const e of t.effects)
@@ -562,7 +562,7 @@ function Ge(a, t) {
     const r = s[n], d = i + r.length;
     for (const [, c] of t)
       if (c.binding.line === n + 1) {
-        const f = M.widget({
+        const f = I.widget({
           widget: new Ye(c, !0),
           side: 1
         });
@@ -574,7 +574,7 @@ function Ge(a, t) {
       }
     i = d + 1;
   }
-  return e.sort((n, r) => n.from - r.from), M.set(
+  return e.sort((n, r) => n.from - r.from), I.set(
     e.map((n) => n.decoration.range(n.from, n.to))
   );
 }
@@ -675,7 +675,7 @@ let _ = class extends W {
     var e;
     if (!((e = this.hass) != null && e.connection))
       throw new Error("Home Assistant connection not available");
-    this._onlineManager || (this._onlineManager = new ze(this.hass.connection), this._onlineUnsubscribe = this._onlineManager.subscribe((s) => {
+    this._onlineManager || (this._onlineManager = new Ve(this.hass.connection), this._onlineUnsubscribe = this._onlineManager.subscribe((s) => {
       this._editor && s.liveValues && Ke(this._editor, s.liveValues);
     })), await this._onlineManager.start(t);
   }
@@ -733,7 +733,7 @@ let _ = class extends W {
         Ae
       ]),
       Pe(),
-      Ve(),
+      ze(),
       qe(),
       this._readOnlyCompartment.of(L.readOnly.of(this.readOnly)),
       L.tabSize.of(4)
@@ -1333,7 +1333,7 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), mt = o({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), bt = h("Program", "PROGRAM"), li = h("Function", "FUNCTION"), vt = h("Var", "VAR"), ci = h("Constant", "CONSTANT"), yt = h("If", "IF"), I = h("Then", "THEN"), Et = h("Elsif", "ELSIF"), B = h("Else", "ELSE"), _t = h("Case", "CASE"), St = h("Of", "OF"), xt = h("For", "FOR"), Lt = h("To", "TO"), Ct = h("By", "BY"), D = h("Do", "DO"), Ot = h("While", "WHILE"), Ut = h("Repeat", "REPEAT"), Nt = h("Until", "UNTIL"), wt = h("Return", "RETURN"), Tt = h("Exit", "EXIT"), di = h("Continue", "CONTINUE"), F = h("At", "AT"), Rt = h("And", "AND"), kt = h("Or", "OR"), hi = h("Xor", "XOR"), At = h("Not", "NOT"), Mt = h("Mod", "MOD"), It = h("True", "TRUE"), Bt = h("False", "FALSE"), Dt = h("TypeBool", "BOOL"), Ft = o({
+}), bt = h("Program", "PROGRAM"), li = h("Function", "FUNCTION"), vt = h("Var", "VAR"), ci = h("Constant", "CONSTANT"), yt = h("If", "IF"), M = h("Then", "THEN"), Et = h("Elsif", "ELSIF"), B = h("Else", "ELSE"), _t = h("Case", "CASE"), St = h("Of", "OF"), xt = h("For", "FOR"), Lt = h("To", "TO"), Ct = h("By", "BY"), D = h("Do", "DO"), Ot = h("While", "WHILE"), Ut = h("Repeat", "REPEAT"), Nt = h("Until", "UNTIL"), wt = h("Return", "RETURN"), Tt = h("Exit", "EXIT"), di = h("Continue", "CONTINUE"), F = h("At", "AT"), Rt = h("And", "AND"), kt = h("Or", "OR"), hi = h("Xor", "XOR"), At = h("Not", "NOT"), It = h("Mod", "MOD"), Mt = h("True", "TRUE"), Bt = h("False", "FALSE"), Dt = h("TypeBool", "BOOL"), Ft = o({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
 }), Pt = o({
@@ -1348,7 +1348,7 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), pi = o({
   name: "TypeByte",
   pattern: /\b(LWORD|DWORD|WORD|BYTE)\b/i
-}), Vt = o({
+}), zt = o({
   name: "TimeLiteral",
   pattern: /T(IME)?#[\d_]+(\.[\d_]+)?([a-z]+)?/i
 }), ui = o({
@@ -1360,7 +1360,7 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), fi = o({
   name: "OctalLiteral",
   pattern: /8#[0-7_]+/
-}), zt = o({
+}), Vt = o({
   name: "RealLiteral",
   pattern: /\d+\.\d+([eE][+-]?\d+)?/
 }), Yt = o({
@@ -1375,7 +1375,7 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), C = o({ name: "Assign", pattern: /:=/ }), mi = o({ name: "Output", pattern: /=>/ }), Gt = o({ name: "LessEqual", pattern: /<=/ }), Ht = o({
   name: "GreaterEqual",
   pattern: />=/
-}), qt = o({ name: "NotEqual", pattern: /<>/ }), Kt = o({ name: "Less", pattern: /</ }), Xt = o({ name: "Greater", pattern: />/ }), Qt = o({ name: "Equal", pattern: /=/ }), Zt = o({ name: "Plus", pattern: /\+/ }), $ = o({ name: "Minus", pattern: /-/ }), Jt = o({ name: "Star", pattern: /\*/ }), te = o({ name: "Slash", pattern: /\// }), N = o({ name: "LParen", pattern: /\(/ }), w = o({ name: "RParen", pattern: /\)/ }), bi = o({ name: "LBracket", pattern: /\[/ }), vi = o({ name: "RBracket", pattern: /\]/ }), j = o({ name: "Colon", pattern: /:/ }), E = o({ name: "Semicolon", pattern: /;/ }), V = o({ name: "Comma", pattern: /,/ }), z = o({ name: "Dot", pattern: /\./ }), ee = o({ name: "Range", pattern: /\.\./ }), y = o({
+}), qt = o({ name: "NotEqual", pattern: /<>/ }), Kt = o({ name: "Less", pattern: /</ }), Xt = o({ name: "Greater", pattern: />/ }), Qt = o({ name: "Equal", pattern: /=/ }), Zt = o({ name: "Plus", pattern: /\+/ }), $ = o({ name: "Minus", pattern: /-/ }), Jt = o({ name: "Star", pattern: /\*/ }), te = o({ name: "Slash", pattern: /\// }), N = o({ name: "LParen", pattern: /\(/ }), w = o({ name: "RParen", pattern: /\)/ }), bi = o({ name: "LBracket", pattern: /\[/ }), vi = o({ name: "RBracket", pattern: /\]/ }), j = o({ name: "Colon", pattern: /:/ }), E = o({ name: "Semicolon", pattern: /;/ }), z = o({ name: "Comma", pattern: /,/ }), V = o({ name: "Dot", pattern: /\./ }), ee = o({ name: "Range", pattern: /\.\./ }), y = o({
   name: "Identifier",
   pattern: /[a-zA-Z_][a-zA-Z0-9_]*/
 }), ie = [
@@ -1406,7 +1406,7 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   vt,
   ci,
   yt,
-  I,
+  M,
   Et,
   B,
   _t,
@@ -1427,8 +1427,8 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   kt,
   hi,
   At,
-  Mt,
   It,
+  Mt,
   Bt,
   // Types
   Dt,
@@ -1438,11 +1438,11 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   jt,
   pi,
   // Literals (order: specific before general)
-  Vt,
+  zt,
   ui,
   gi,
   fi,
-  zt,
+  Vt,
   Yt,
   Wt,
   // I/O
@@ -1468,8 +1468,8 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   vi,
   j,
   E,
-  V,
   z,
+  V,
   // Identifier last
   y
 ], yi = new R(ie, {
@@ -1484,7 +1484,7 @@ function Ei(a) {
     errors: t.errors
   };
 }
-class _i extends Ie {
+class _i extends Me {
   constructor() {
     super(ie, {
       recoveryEnabled: !0,
@@ -1547,8 +1547,8 @@ class _i extends Ie {
       this.SUBRULE(this.variableReference), this.CONSUME(C), this.SUBRULE(this.expression), this.CONSUME(E);
     }));
     l(this, "ifStatement", this.RULE("ifStatement", () => {
-      this.CONSUME(yt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(I), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
-        this.CONSUME(Et), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(I), this.MANY2(
+      this.CONSUME(yt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(M), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
+        this.CONSUME(Et), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(M), this.MANY2(
           () => this.SUBRULE1(this.statement, { LABEL: "elsifStatements" })
         );
       }), this.OPTION(() => {
@@ -1567,7 +1567,7 @@ class _i extends Ie {
     }));
     l(this, "caseLabelList", this.RULE("caseLabelList", () => {
       this.SUBRULE(this.caseLabel), this.MANY(() => {
-        this.CONSUME(V), this.SUBRULE1(this.caseLabel);
+        this.CONSUME(z), this.SUBRULE1(this.caseLabel);
       });
     }));
     l(this, "caseLabel", this.RULE("caseLabel", () => {
@@ -1636,7 +1636,7 @@ class _i extends Ie {
           this.OR([
             { ALT: () => this.CONSUME(Jt) },
             { ALT: () => this.CONSUME(te) },
-            { ALT: () => this.CONSUME(Mt) }
+            { ALT: () => this.CONSUME(It) }
           ]), this.SUBRULE1(this.unaryExpression, { LABEL: "rhs" });
         });
       }
@@ -1667,7 +1667,7 @@ class _i extends Ie {
     }));
     l(this, "identifierOrCall", this.RULE("identifierOrCall", () => {
       this.CONSUME(y), this.MANY(() => {
-        this.CONSUME(z), this.CONSUME1(y);
+        this.CONSUME(V), this.CONSUME1(y);
       }), this.OPTION(() => {
         this.CONSUME(N), this.OPTION1(() => {
           this.SUBRULE(this.argumentList);
@@ -1676,17 +1676,17 @@ class _i extends Ie {
     }));
     l(this, "literal", this.RULE("literal", () => {
       this.OR([
-        { ALT: () => this.CONSUME(It) },
+        { ALT: () => this.CONSUME(Mt) },
         { ALT: () => this.CONSUME(Bt) },
         { ALT: () => this.CONSUME(Yt) },
-        { ALT: () => this.CONSUME(zt) },
+        { ALT: () => this.CONSUME(Vt) },
         { ALT: () => this.CONSUME(Wt) },
-        { ALT: () => this.CONSUME(Vt) }
+        { ALT: () => this.CONSUME(zt) }
       ]);
     }));
     l(this, "variableReference", this.RULE("variableReference", () => {
       this.CONSUME(y), this.MANY(() => {
-        this.CONSUME(z), this.CONSUME1(y);
+        this.CONSUME(V), this.CONSUME1(y);
       });
     }));
     l(this, "functionCall", this.RULE("functionCall", () => {
@@ -1696,7 +1696,7 @@ class _i extends Ie {
     }));
     l(this, "argumentList", this.RULE("argumentList", () => {
       this.SUBRULE(this.argument), this.MANY(() => {
-        this.CONSUME(V), this.SUBRULE1(this.argument);
+        this.CONSUME(z), this.SUBRULE1(this.argument);
       });
     }));
     /**
@@ -2161,14 +2161,18 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       try {
         const t = await this._storage.loadProject();
         if (t) {
-          if (this._project = t, t.activeFileId) {
+          if (t.activeFileId && (t.files = t.files.map((e) => ({
+            ...e,
+            isOpen: e.id === t.activeFileId || e.isOpen
+          }))), this._project = t, t.activeFileId) {
             const e = t.files.find(
               (s) => s.id === t.activeFileId
             );
             e && (this._code = e.content);
           }
+          this._analyzeCode();
         } else
-          this._project = this._storage.migrateFromSingleFile(this._code), await this._storage.saveProject(this._project);
+          this._project = this._storage.migrateFromSingleFile(this._code), await this._storage.saveProject(this._project), this._analyzeCode();
       } catch (t) {
         console.error("Failed to load project", t);
       }
@@ -2179,7 +2183,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       (c) => c.severity === "Error"
     ).length, e = this._diagnostics.filter(
       (c) => c.severity === "Warning"
-    ).length, s = !this._syntaxOk || this._isDeploying, i = this._syntaxOk ? this._isDeploying ? "Deploy in progress" : "Deploy to Home Assistant" : "Fix syntax errors before deploying";
+    ).length, s = this._isDeploying, i = this._syntaxOk ? this._isDeploying ? "Deploy in progress" : "Deploy to Home Assistant" : "Show deploy errors";
     return u`
       <div class="container">
         <div class="toolbar" role="banner">
@@ -2420,6 +2424,11 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   _setDeployFeedback(t, e) {
     this._deployFeedback = { tone: t, message: e };
   }
+  _markProjectSaved() {
+    this._project && this._project.files.forEach((t) => {
+      t.hasUnsavedChanges = !1;
+    });
+  }
   _handleCodeChange(t) {
     const e = t.detail.code;
     if (this._project && this._project.activeFileId) {
@@ -2546,7 +2555,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   async _saveProject() {
     if (!(!this._storage || !this._project))
       try {
-        await this._storage.saveProject(this._project);
+        await this._storage.saveProject(this._project), this._markProjectSaved(), this.requestUpdate();
       } catch (t) {
         console.error("Failed to save project", t);
       }
@@ -3301,7 +3310,7 @@ export {
   J as ST_TYPES,
   $e as stEditorTheme,
   je as stHighlightStyle,
-  Ve as stTheme,
+  ze as stTheme,
   Pe as structuredText
 };
 //# sourceMappingURL=st-panel.js.map
