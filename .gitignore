@@ -12,6 +12,8 @@ dist/
 coverage/
 .env
 *.log
+frontend/playwright-report/
+frontend/test-results/
 
 # Home Assistant Test Instance (local development only)
 ha-test-config/
