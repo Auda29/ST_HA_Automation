@@ -173,19 +173,22 @@ export class DeployManager {
 
   private async calculateOperations(result: TranspilerResult): Promise<DeployOperation[]> {
     const operations: DeployOperation[] = [];
+    const automations = [result.automation, ...(result.additionalAutomations ?? [])];
 
-    const existingAutomation = await this.api.getAutomation(result.automation.id);
-    operations.push({
-      id: this.generateId(),
-      type: existingAutomation ? 'update' : 'create',
-      entityType: 'automation',
-      entityId: result.automation.id,
-      previousState: existingAutomation ?? undefined,
-      newState: result.automation,
-      status: 'pending',
-    });
+    for (const automation of automations) {
+      const existingAutomation = await this.api.getAutomation(automation.id);
+      operations.push({
+        id: this.generateId(),
+        type: existingAutomation ? 'update' : 'create',
+        entityType: 'automation',
+        entityId: automation.id,
+        previousState: existingAutomation ?? undefined,
+        newState: automation,
+        status: 'pending',
+      });
+    }
 
-    const scriptId = `st_${result.automation.id}_logic`;
+    const scriptId = this.getScriptId(result);
     const existingScript = await this.api.getScript(scriptId);
     operations.push({
       id: this.generateId(),
@@ -281,6 +284,10 @@ export class DeployManager {
     return `op_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
   }
 
+  private getScriptId(result: TranspilerResult): string {
+    return `${result.automation.id}_logic`;
+  }
+
   private async applyOperation(op: DeployOperation): Promise<void> {
     switch (op.entityType) {
       case 'automation':
@@ -358,10 +365,13 @@ export class DeployManager {
   }
 
   private async verifyDeployment(result: TranspilerResult): Promise<boolean> {
-    const automation = await this.api.getAutomation(result.automation.id);
-    if (!automation) return false;
+    const automations = [result.automation, ...(result.additionalAutomations ?? [])];
+    for (const automationConfig of automations) {
+      const automation = await this.api.getAutomation(automationConfig.id);
+      if (!automation) return false;
+    }
 
-    const scriptId = `st_${result.automation.id}_logic`;
+    const scriptId = this.getScriptId(result);
     const script = await this.api.getScript(scriptId);
     if (!script) return false;
 

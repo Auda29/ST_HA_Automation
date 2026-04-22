@@ -1,11 +1,11 @@
-var I = Object.defineProperty;
-var S = (u, e, t) => e in u ? I(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
-var o = (u, e, t) => S(u, typeof e != "symbol" ? e + "" : e, t);
-import { a as A, b as N, w as E, p as y } from "./analyzer-DbAWr__X.js";
-class g {
+var w = Object.defineProperty;
+var S = (l, e, t) => e in l ? w(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t;
+var c = (l, e, t) => S(l, typeof e != "symbol" ? e + "" : e, t);
+import { a as A, b as N, w as E, p as g } from "./analyzer-DbAWr__X.js";
+class f {
   constructor(e, t) {
-    o(this, "context");
-    o(this, "timerResolver");
+    c(this, "context");
+    c(this, "timerResolver");
     this.context = e, this.timerResolver = t;
   }
   /**
@@ -262,8 +262,8 @@ class g {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function C(u, e) {
-  const t = `states('${u}')`, a = "['unavailable', 'unknown', 'none', '']";
+function C(l, e) {
+  const t = `states('${l}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
       return `{{ ${t} in ['on', 'true', 'True', '1'] }}`;
@@ -277,8 +277,8 @@ function C(u, e) {
       return `{{ ${t} }}`;
   }
 }
-function M(u, e) {
-  return `{% set last = states('${u}') %}
+function M(l, e) {
+  return `{% set last = states('${l}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
@@ -288,10 +288,10 @@ function M(u, e) {
 const _ = 1e3;
 class T {
   constructor(e, t, a) {
-    o(this, "context");
-    o(this, "jinja");
-    o(this, "sourceMap");
-    this.context = e, this.jinja = new g(e, t), this.sourceMap = a;
+    c(this, "context");
+    c(this, "jinja");
+    c(this, "sourceMap");
+    this.context = e, this.jinja = new f(e, t), this.sourceMap = a;
   }
   /**
    * Generate HA actions from ST statements
@@ -430,11 +430,11 @@ class T {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "CASE statement");
     const t = this.jinja.generateExpression(e.selector), a = [];
     for (const n of e.cases) {
-      const s = n.values.map((c) => {
-        const l = this.jinja.generateExpression(c);
+      const s = n.values.map((o) => {
+        const u = this.jinja.generateExpression(o);
         return {
           condition: "template",
-          value_template: `{{ ${t} == ${l} }}`
+          value_template: `{{ ${t} == ${u} }}`
         };
       }), r = s.length === 1 ? s[0] : { condition: "or", conditions: s };
       a.push({
@@ -551,8 +551,8 @@ class T {
 }
 class O {
   constructor(e) {
-    o(this, "jinja");
-    this.jinja = new g(e);
+    c(this, "jinja");
+    this.jinja = new f(e);
   }
   /**
    * Check if a function call is a timer FB (by FB type name)
@@ -739,7 +739,7 @@ class O {
       "true",
       // always execute when timer finishes
       [this.booleanTurnOff(a.outputHelperId)]
-    ), c = {
+    ), o = {
       Q: `(states('${a.outputHelperId}') == 'on')`
     };
     return {
@@ -747,7 +747,7 @@ class O {
       helpers: i,
       mainActions: s,
       finishedAutomation: r,
-      outputMappings: c
+      outputMappings: o
     };
   }
   // ==========================================================================
@@ -859,8 +859,8 @@ class O {
     if (e.type === "Literal" && e.kind === "time") {
       const a = e.raw.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
       if (a) {
-        const i = parseInt(a[1] || "0", 10), n = parseInt(a[2] || "0", 10), s = parseInt(a[3] || "0", 10), r = parseInt(a[4] || "0", 10), c = i * 3600 + n * 60 + s + r / 1e3;
-        return String(c);
+        const i = parseInt(a[1] || "0", 10), n = parseInt(a[2] || "0", 10), s = parseInt(a[3] || "0", 10), r = parseInt(a[4] || "0", 10), o = i * 3600 + n * 60 + s + r / 1e3;
+        return String(o);
       }
     }
     return this.jinja.generateExpression(e);
@@ -868,7 +868,7 @@ class O {
 }
 class k {
   constructor() {
-    o(this, "timerMappings", /* @__PURE__ */ new Map());
+    c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
   registerTimer(e, t) {
     this.timerMappings.set(e, t);
@@ -896,12 +896,12 @@ class k {
 }
 class j {
   constructor(e) {
-    o(this, "mappings", /* @__PURE__ */ new Map());
-    o(this, "currentPath", []);
-    o(this, "project");
-    o(this, "program");
-    o(this, "sourceFile");
-    o(this, "sourceHash");
+    c(this, "mappings", /* @__PURE__ */ new Map());
+    c(this, "currentPath", []);
+    c(this, "project");
+    c(this, "program");
+    c(this, "sourceFile");
+    c(this, "sourceHash");
     this.project = e.project, this.program = e.program, this.sourceFile = e.sourceFile, this.sourceHash = this.hashContent(e.sourceContent);
   }
   // ==========================================================================
@@ -1031,18 +1031,18 @@ class j {
 }
 class $ {
   constructor(e, t = "default", a) {
-    o(this, "ast");
-    o(this, "projectName");
-    o(this, "depAnalysis");
-    o(this, "storageAnalysis");
-    o(this, "context");
-    o(this, "sourceMapBuilder");
-    o(this, "diagnostics", []);
-    o(this, "timerTranspiler");
-    o(this, "timerResolver");
-    o(this, "timerHelpers", []);
-    o(this, "additionalAutomations", []);
-    o(this, "timerMainActions", []);
+    c(this, "ast");
+    c(this, "projectName");
+    c(this, "depAnalysis");
+    c(this, "storageAnalysis");
+    c(this, "context");
+    c(this, "sourceMapBuilder");
+    c(this, "diagnostics", []);
+    c(this, "timerTranspiler");
+    c(this, "timerResolver");
+    c(this, "timerHelpers", []);
+    c(this, "additionalAutomations", []);
+    c(this, "timerMainActions", []);
     this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new j({
       project: t,
       program: e.name,
@@ -1075,7 +1075,7 @@ class $ {
         };
       })
     ), this.buildContext(), this.timerTranspiler = new O(this.context), this.timerResolver = new k(), this.processTimerFBs();
-    const e = this.generateAutomation(), t = this.generateScript(), a = [...this.storageAnalysis.helpers, ...this.timerHelpers], i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
+    const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
       program: this.ast.name,
@@ -1099,19 +1099,19 @@ class $ {
     var a, i, n;
     const e = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
     for (const s of this.ast.variables) {
-      const r = this.storageAnalysis.variables.find((p) => p.name === s.name), c = this.depAnalysis.dependencies.find((p) => p.variableName === s.name), l = {
+      const r = this.storageAnalysis.variables.find((p) => p.name === s.name), o = this.depAnalysis.dependencies.find((p) => p.variableName === s.name), u = {
         name: s.name,
         dataType: s.dataType.name,
         isInput: ((a = s.binding) == null ? void 0 : a.direction) === "INPUT" || s.section === "VAR_INPUT",
         isOutput: ((i = s.binding) == null ? void 0 : i.direction) === "OUTPUT" || s.section === "VAR_OUTPUT",
         isPersistent: (r == null ? void 0 : r.storage.type) === "PERSISTENT",
         helperId: r == null ? void 0 : r.storage.helperId,
-        entityId: (c == null ? void 0 : c.entityId) || ((n = s.binding) == null ? void 0 : n.entityId)
+        entityId: (o == null ? void 0 : o.entityId) || ((n = s.binding) == null ? void 0 : n.entityId)
       };
-      e.set(s.name, l), c && c.entityId && (c.direction === "INPUT" || c.direction === "OUTPUT") && t.set(s.name, {
-        entityId: c.entityId,
+      e.set(s.name, u), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(s.name, {
+        entityId: o.entityId,
         variableName: s.name,
-        direction: c.direction,
+        direction: o.direction,
         dataType: s.dataType.name
       });
     }
@@ -1159,7 +1159,7 @@ class $ {
   // ==========================================================================
   generateAutomation() {
     var n, s;
-    const e = y(this.ast.pragmas), t = (n = e.find((r) => r.name === "throttle")) == null ? void 0 : n.value, a = (s = e.find((r) => r.name === "debounce")) == null ? void 0 : s.value, i = {
+    const e = g(this.ast.pragmas), t = (n = e.find((r) => r.name === "throttle")) == null ? void 0 : n.value, a = (s = e.find((r) => r.name === "debounce")) == null ? void 0 : s.value, i = {
       id: `st_${this.projectName}_${this.ast.name}`.toLowerCase().replace(/[^a-z0-9_]/g, "_"),
       alias: `[ST] ${this.ast.name}`,
       description: `Generated from ST program: ${this.ast.name}`,
@@ -1169,10 +1169,10 @@ class $ {
       action: []
     };
     if (t) {
-      const r = `input_datetime.st_${this.projectName}_${this.ast.name}_last_run`.toLowerCase().replace(/[^a-z0-9_]/g, "_"), c = this.parseTimeToSeconds(t);
+      const r = this.buildEntityId("input_datetime", `st_${this.projectName}_${this.ast.name}_last_run`), o = this.parseTimeToSeconds(t);
       i.condition = [{
         condition: "template",
-        value_template: this.generateThrottleCondition(r, c)
+        value_template: this.generateThrottleCondition(r, o)
       }], i.action.push({
         service: "input_datetime.set_datetime",
         target: { entity_id: r },
@@ -1189,9 +1189,28 @@ class $ {
     return i.action.push({
       service: "script.turn_on",
       target: {
-        entity_id: `script.st_${this.projectName}_${this.ast.name}_logic`.toLowerCase().replace(/[^a-z0-9_]/g, "_")
+        entity_id: this.buildEntityId("script", `st_${this.projectName}_${this.ast.name}_logic`)
       }
     }), i;
+  }
+  collectHelpers() {
+    const e = [...this.storageAnalysis.helpers, ...this.timerHelpers], t = this.createThrottleHelper();
+    t && e.push(t);
+    const a = /* @__PURE__ */ new Map();
+    for (const i of e)
+      a.set(i.id, i);
+    return [...a.values()];
+  }
+  createThrottleHelper() {
+    var a;
+    return ((a = g(this.ast.pragmas).find((i) => i.name === "throttle")) == null ? void 0 : a.value) ? {
+      id: this.buildEntityId("input_datetime", `st_${this.projectName}_${this.ast.name}_last_run`),
+      type: "input_datetime",
+      name: `ST ${this.ast.name} Last Run`
+    } : null;
+  }
+  buildEntityId(e, t) {
+    return `${e}.${t}`.toLowerCase().replace(/[^a-z0-9_.]/g, "_");
   }
   generateThrottleCondition(e, t) {
     return `{% set last = states('${e}') %}
@@ -1260,7 +1279,7 @@ class $ {
   // ==========================================================================
   generateScript() {
     var r;
-    const t = ((r = y(this.ast.pragmas).find((c) => c.name === "mode")) == null ? void 0 : r.value) || "restart", a = new T(this.context, this.timerResolver, this.sourceMapBuilder), i = {
+    const t = ((r = g(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : r.value) || "restart", a = new T(this.context, this.timerResolver, this.sourceMapBuilder), i = {
       alias: `[ST] ${this.ast.name} Logic`,
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
@@ -1269,16 +1288,16 @@ class $ {
     Object.keys(n).length > 0 && (i.variables = n), this.sourceMapBuilder && this.sourceMapBuilder.pushPath("sequence");
     const s = a.generateActions(this.ast.body);
     if (this.sourceMapBuilder && this.sourceMapBuilder.popPath(), i.sequence = [...this.timerMainActions, ...s], this.sourceMapBuilder) {
-      const c = this.sourceMapBuilder.buildEmbedded();
+      const o = this.sourceMapBuilder.buildEmbedded();
       i.variables ? i.variables = {
         ...i.variables,
-        _st_source_map: JSON.stringify(c._st_source_map),
-        _st_source_file: c._st_source_file,
-        _st_source_hash: c._st_source_hash
+        _st_source_map: JSON.stringify(o._st_source_map),
+        _st_source_file: o._st_source_file,
+        _st_source_hash: o._st_source_hash
       } : i.variables = {
-        _st_source_map: JSON.stringify(c._st_source_map),
-        _st_source_file: c._st_source_file,
-        _st_source_hash: c._st_source_hash
+        _st_source_map: JSON.stringify(o._st_source_map),
+        _st_source_file: o._st_source_file,
+        _st_source_hash: o._st_source_hash
       };
     }
     return i;
@@ -1294,21 +1313,21 @@ class $ {
     return e;
   }
 }
-function R(u, e, t) {
-  return new $(u, e, t).transpile();
+function R(l, e, t) {
+  return new $(l, e, t).transpile();
 }
 const D = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   ActionGenerator: T,
-  JinjaGenerator: g,
+  JinjaGenerator: f,
   Transpiler: $,
   generateEntityStateRead: C,
   generateThrottleCondition: M,
   transpile: R
 }, Symbol.toStringTag, { value: "Module" }));
-class x {
+class H {
   constructor(e) {
-    o(this, "connection");
+    c(this, "connection");
     this.connection = e;
   }
   // ==========================================================================
@@ -1456,10 +1475,10 @@ class x {
     }
   }
 }
-class f {
+class y {
   constructor(e, t = "st_") {
-    o(this, "api");
-    o(this, "projectPrefix");
+    c(this, "api");
+    c(this, "projectPrefix");
     this.api = e, this.projectPrefix = t;
   }
   async calculateSync(e) {
@@ -1473,7 +1492,7 @@ class f {
       if (!a.has(s.id))
         n.toCreate.push(s);
       else {
-        const r = t.find((c) => c.entityId === s.id);
+        const r = t.find((o) => o.entityId === s.id);
         r && this.needsUpdate(s, r) ? n.toUpdate.push(s) : n.unchanged.push(s.id);
       }
     for (const s of t)
@@ -1563,9 +1582,9 @@ class f {
 const h = "st_hass_backups", v = 10;
 class b {
   constructor(e) {
-    o(this, "api");
-    o(this, "helperManager");
-    this.api = e, this.helperManager = new f(e);
+    c(this, "api");
+    c(this, "helperManager");
+    this.api = e, this.helperManager = new y(e);
   }
   async createBackup(e, t) {
     const a = await this.api.getAutomation(e), i = `st_${e}_logic`, n = await this.api.getScript(i), r = (await this.helperManager.getExistingHelpers()).map((d) => ({
@@ -1573,7 +1592,7 @@ class b {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: d.type,
       name: d.attributes.friendly_name || d.entityId
-    })), c = r.map((d) => d.id), l = await this.helperManager.getHelperStates(c), p = {
+    })), o = r.map((d) => d.id), u = await this.helperManager.getHelperStates(o), p = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1584,7 +1603,7 @@ class b {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         script: n,
         helpers: r,
-        helperStates: l
+        helperStates: u
       }
     };
     return await this.saveBackup(p), p;
@@ -1648,7 +1667,7 @@ class b {
   }
 }
 const m = "st_hass_schemas";
-class H {
+class x {
   save(e, t) {
     const a = this.loadAll();
     a[e] = t, localStorage.setItem(m, JSON.stringify(a));
@@ -1689,12 +1708,12 @@ class P {
     for (const [s, r] of i)
       n.has(s) || a.push(this.createRemovedIssue(r));
     for (const [s, r] of n) {
-      const c = i.get(s);
-      if (!c)
+      const o = i.get(s);
+      if (!o)
         a.push(this.createAddedIssue(r));
       else {
-        const l = this.detectChanges(c, r);
-        a.push(...l);
+        const u = this.detectChanges(o, r);
+        a.push(...u);
       }
     }
     return {
@@ -1810,14 +1829,14 @@ class P {
     }[e]) == null ? void 0 : i.includes(t)) ?? !1;
   }
 }
-class w {
+class I {
   constructor(e) {
-    o(this, "api");
-    o(this, "helperManager");
-    o(this, "backupManager");
-    o(this, "schemaStorage");
-    o(this, "migrationDetector");
-    this.api = e, this.helperManager = new f(e), this.backupManager = new b(e), this.schemaStorage = new H(), this.migrationDetector = new P();
+    c(this, "api");
+    c(this, "helperManager");
+    c(this, "backupManager");
+    c(this, "schemaStorage");
+    c(this, "migrationDetector");
+    this.api = e, this.helperManager = new y(e), this.backupManager = new b(e), this.schemaStorage = new x(), this.migrationDetector = new P();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -1907,17 +1926,20 @@ class w {
       throw new Error("Automation has no triggers - it will never execute");
   }
   async calculateOperations(e) {
-    const t = [], a = await this.api.getAutomation(e.automation.id);
-    t.push({
-      id: this.generateId(),
-      type: a ? "update" : "create",
-      entityType: "automation",
-      entityId: e.automation.id,
-      previousState: a ?? void 0,
-      newState: e.automation,
-      status: "pending"
-    });
-    const i = `st_${e.automation.id}_logic`, n = await this.api.getScript(i);
+    const t = [], a = [e.automation, ...e.additionalAutomations ?? []];
+    for (const r of a) {
+      const o = await this.api.getAutomation(r.id);
+      t.push({
+        id: this.generateId(),
+        type: o ? "update" : "create",
+        entityType: "automation",
+        entityId: r.id,
+        previousState: o ?? void 0,
+        newState: r,
+        status: "pending"
+      });
+    }
+    const i = this.getScriptId(e), n = await this.api.getScript(i);
     t.push({
       id: this.generateId(),
       type: n ? "update" : "create",
@@ -1993,6 +2015,9 @@ class w {
   generateId() {
     return `op_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
   }
+  getScriptId(e) {
+    return `${e.automation.id}_logic`;
+  }
   async applyOperation(e) {
     switch (e.entityType) {
       case "automation":
@@ -2025,28 +2050,30 @@ class w {
     await this.api.reloadAutomations(), await this.api.reloadScripts();
   }
   async verifyDeployment(e) {
-    if (!await this.api.getAutomation(e.automation.id)) return !1;
-    const a = `st_${e.automation.id}_logic`;
+    const t = [e.automation, ...e.additionalAutomations ?? []];
+    for (const s of t)
+      if (!await this.api.getAutomation(s.id)) return !1;
+    const a = this.getScriptId(e);
     if (!await this.api.getScript(a)) return !1;
     const n = await this.api.getStates();
     for (const s of e.helpers)
-      if (!n.some((c) => c.entity_id === s.id)) return !1;
+      if (!n.some((o) => o.entity_id === s.id)) return !1;
     return !0;
   }
 }
-async function L(u, e, t) {
-  return new w(u).deploy(e, t);
+async function L(l, e, t) {
+  return new I(l).deploy(e, t);
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   BackupManager: b,
-  DeployManager: w,
-  HAApiClient: x,
-  HelperManager: f,
+  DeployManager: I,
+  HAApiClient: H,
+  HelperManager: y,
   deploy: L
 }, Symbol.toStringTag, { value: "Module" }));
 export {
   F as a,
   D as i
 };
-//# sourceMappingURL=transpiler-deploy-BqpcyTqr.js.map
+//# sourceMappingURL=transpiler-deploy-DElPdORQ.js.map

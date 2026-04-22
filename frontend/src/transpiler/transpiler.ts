@@ -96,7 +96,7 @@ export class Transpiler {
     const script = this.generateScript();
 
     // Phase 6: Collect helpers (storage + timers)
-    const helpers = [...this.storageAnalysis.helpers, ...this.timerHelpers];
+    const helpers = this.collectHelpers();
 
     // Phase 7: Build source map
     const sourceMap = this.sourceMapBuilder
@@ -241,7 +241,7 @@ export class Transpiler {
 
     // Add throttle condition if specified
     if (throttle) {
-      const throttleHelper = `input_datetime.st_${this.projectName}_${this.ast.name}_last_run`.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+      const throttleHelper = this.buildEntityId('input_datetime', `st_${this.projectName}_${this.ast.name}_last_run`);
       const throttleSeconds = this.parseTimeToSeconds(throttle);
 
       automation.condition = [{
@@ -270,11 +270,44 @@ export class Transpiler {
     automation.action.push({
       service: 'script.turn_on',
       target: {
-        entity_id: `script.st_${this.projectName}_${this.ast.name}_logic`.toLowerCase().replace(/[^a-z0-9_]/g, '_'),
+        entity_id: this.buildEntityId('script', `st_${this.projectName}_${this.ast.name}_logic`),
       },
     });
 
     return automation;
+  }
+
+  private collectHelpers(): HelperConfig[] {
+    const helpers = [...this.storageAnalysis.helpers, ...this.timerHelpers];
+    const throttleHelper = this.createThrottleHelper();
+    if (throttleHelper) {
+      helpers.push(throttleHelper);
+    }
+
+    const helperMap = new Map<string, HelperConfig>();
+    for (const helper of helpers) {
+      helperMap.set(helper.id, helper);
+    }
+
+    return [...helperMap.values()];
+  }
+
+  private createThrottleHelper(): HelperConfig | null {
+    const pragmas = parsePragmas(this.ast.pragmas);
+    const throttle = pragmas.find((p) => p.name === 'throttle')?.value as string | undefined;
+    if (!throttle) {
+      return null;
+    }
+
+    return {
+      id: this.buildEntityId('input_datetime', `st_${this.projectName}_${this.ast.name}_last_run`),
+      type: 'input_datetime',
+      name: `ST ${this.ast.name} Last Run`,
+    };
+  }
+
+  private buildEntityId(domain: string, objectId: string): string {
+    return `${domain}.${objectId}`.toLowerCase().replace(/[^a-z0-9_.]/g, '_');
   }
 
   private generateThrottleCondition(helperId: string, seconds: number): string {

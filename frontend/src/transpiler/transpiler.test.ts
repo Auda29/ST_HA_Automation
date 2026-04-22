@@ -119,6 +119,12 @@ describe('Transpiler', () => {
 
       expect(result.automation.condition).toBeDefined();
       expect(result.automation.condition![0].condition).toBe('template');
+      expect(result.helpers).toContainEqual(
+        expect.objectContaining({
+          id: 'input_datetime.st_default_test_last_run',
+          type: 'input_datetime',
+        }),
+      );
     });
 
     it('generates debounce delay', () => {
@@ -179,7 +185,7 @@ describe('Transpiler', () => {
       ) as any;
 
       expect(scriptCall).toBeDefined();
-      expect(scriptCall.target.entity_id).toContain('st_myproject_test_logic');
+      expect(scriptCall.target.entity_id).toBe('script.st_myproject_test_logic');
     });
   });
 

@@ -2569,8 +2569,8 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     this._isDeploying = !0;
     try {
       const [{ transpile: s }, { deploy: i, HAApiClient: n }] = await Promise.all([
-        import("./transpiler-deploy-BqpcyTqr.js").then((f) => f.i),
-        import("./transpiler-deploy-BqpcyTqr.js").then((f) => f.a)
+        import("./transpiler-deploy-DElPdORQ.js").then((f) => f.i),
+        import("./transpiler-deploy-DElPdORQ.js").then((f) => f.a)
       ]), r = s(t.ast, "home");
       if (r.diagnostics.some((f) => f.severity === "Error")) {
         console.error(
