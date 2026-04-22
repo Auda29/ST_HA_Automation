@@ -22,7 +22,7 @@ export class BackupManager {
   async createBackup(automationId: string, programName: string): Promise<Backup> {
     const automation = await this.api.getAutomation(automationId);
 
-    const scriptId = `st_${automationId}_logic`;
+    const scriptId = this.getScriptId(automationId);
     const script = await this.api.getScript(scriptId);
 
     const helpers = await this.helperManager.getExistingHelpers();
@@ -71,7 +71,7 @@ export class BackupManager {
     }
 
     if (backup.data.script && backup.data.automation) {
-      const scriptId = `st_${backup.data.automation.id}_logic`;
+      const scriptId = this.getScriptId(backup.data.automation.id);
       await this.api.saveScript(
         scriptId,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -144,6 +144,10 @@ export class BackupManager {
 
   private generateId(): string {
     return `backup_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
+  }
+
+  private getScriptId(automationId: string): string {
+    return `${automationId}_logic`;
   }
 }
 

@@ -1744,7 +1744,7 @@ class $ {
     this.api = e, this.helperManager = new b(e);
   }
   async createBackup(e, t) {
-    const a = await this.api.getAutomation(e), i = `st_${e}_logic`, n = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map((d) => ({
+    const a = await this.api.getAutomation(e), i = this.getScriptId(e), n = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map((d) => ({
       id: d.entityId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: d.type,
@@ -1774,7 +1774,7 @@ class $ {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       t.data.automation
     ), t.data.script && t.data.automation) {
-      const a = `st_${t.data.automation.id}_logic`;
+      const a = this.getScriptId(t.data.automation.id);
       await this.api.saveScript(
         a,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1821,6 +1821,9 @@ class $ {
   }
   generateId() {
     return `backup_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
+  }
+  getScriptId(e) {
+    return `${e}_logic`;
   }
 }
 const m = "st_hass_schemas";
@@ -2269,4 +2272,4 @@ export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-DCSGl2dB.js.map
+//# sourceMappingURL=transpiler-deploy-B-QiLH-E.js.map

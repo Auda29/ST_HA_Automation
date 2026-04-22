@@ -62,7 +62,7 @@ describe("BackupManager", () => {
       trigger: [],
       action: [],
     });
-    conn.scripts.set("st_st_default_prog_logic", {
+    conn.scripts.set("st_default_prog_logic", {
       alias: "Prog Logic",
       mode: "restart",
       sequence: [],
@@ -85,9 +85,23 @@ describe("BackupManager", () => {
 
     const backup = await manager.createBackup("st_default_prog", "Prog");
     expect(backup.projectName).toBe("default");
+    expect(backup.data.script?.alias).toBe("Prog Logic");
 
     const backups = await manager.listBackups();
     expect(backups.length).toBeGreaterThan(0);
     expect(backups[0].programName).toBe("Prog");
+  });
+
+  it("restores scripts using the same script id format as deploy", async () => {
+    const api = new HAApiClient(conn);
+    const manager = new BackupManager(api);
+
+    const backup = await manager.createBackup("st_default_prog", "Prog");
+    conn.scripts.clear();
+
+    await manager.restoreBackup(backup.id);
+
+    expect(conn.scripts.has("st_default_prog_logic")).toBe(true);
+    expect(conn.scripts.get("st_default_prog_logic")?.alias).toBe("Prog Logic");
   });
 });
