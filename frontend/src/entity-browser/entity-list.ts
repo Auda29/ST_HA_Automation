@@ -1,6 +1,6 @@
 /**
  * Entity List Component
- * 
+ *
  * Displays entities grouped by domain with filtering and search capabilities.
  */
 
@@ -33,65 +33,92 @@ export class STEntityList extends LitElement {
       display: block;
       height: 100%;
       overflow-y: auto;
+      padding: var(--space-3, 12px);
+      box-sizing: border-box;
     }
+
     .domain-group {
-      margin-bottom: 8px;
+      margin-bottom: var(--space-3, 12px);
+      border: 1px solid rgba(88, 127, 146, 0.16);
+      border-radius: var(--radius-lg, 16px);
+      background: rgba(14, 20, 26, 0.92);
+      overflow: hidden;
     }
+
     .domain-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
+      gap: var(--space-2, 8px);
+      padding: var(--space-3, 12px) var(--space-4, 16px);
       cursor: pointer;
       user-select: none;
-      font-weight: 500;
-      color: var(--primary-text-color);
-      background-color: var(--secondary-background-color);
-      border-radius: 4px;
-      transition: background-color 0.2s;
+      color: var(--ui-text-primary, #f3f7fb);
+      transition: background var(--transition-fast, 160ms ease);
     }
+
     .domain-header:hover {
-      background-color: var(--divider-color, rgba(0, 0, 0, 0.1));
+      background: rgba(24, 35, 43, 0.96);
     }
+
     .domain-icon {
-      width: 20px;
-      height: 20px;
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: rgba(14, 165, 215, 0.14);
+      color: rgba(132, 212, 238, 0.95);
     }
+
     .domain-icon ha-icon {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
+
     .domain-name {
       flex: 1;
-      font-size: 14px;
+      font-size: var(--font-size-md, 14px);
+      font-weight: var(--font-weight-semibold, 600);
+      text-transform: capitalize;
     }
+
     .domain-count {
-      font-size: 12px;
-      color: var(--secondary-text-color);
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-pill, 999px);
+      background: rgba(24, 37, 46, 0.92);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
     }
+
     .domain-toggle {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s;
+      color: var(--ui-text-muted, #8ea1af);
+      transition: transform var(--transition-fast, 160ms ease);
     }
+
     .domain-toggle.expanded {
       transform: rotate(90deg);
     }
+
     .domain-entities {
-      margin-top: 4px;
-      padding-left: 8px;
+      padding: 0 var(--space-2, 8px) var(--space-2, 8px);
     }
+
     .empty-state {
-      padding: 32px 16px;
+      padding: var(--space-8, 32px) var(--space-5, 20px);
       text-align: center;
-      color: var(--secondary-text-color);
-      font-size: 14px;
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-md, 14px);
     }
   `;
 
@@ -118,7 +145,6 @@ export class STEntityList extends LitElement {
   }
 
   private _isInputEntity(entity: EntityInfo): boolean {
-    // Entities that are typically read-only (inputs)
     const inputDomains = [
       "sensor",
       "binary_sensor",
@@ -132,7 +158,6 @@ export class STEntityList extends LitElement {
   }
 
   private _isOutputEntity(entity: EntityInfo): boolean {
-    // Entities that can be controlled (outputs)
     const outputDomains = [
       "light",
       "switch",
@@ -148,7 +173,6 @@ export class STEntityList extends LitElement {
 
   private _filterEntities(entities: EntityInfo[]): EntityInfo[] {
     return entities.filter((entity) => {
-      // Search filter
       if (this.filter.searchQuery) {
         const query = this.filter.searchQuery.toLowerCase();
         const matchesName =
@@ -158,7 +182,6 @@ export class STEntityList extends LitElement {
         if (!matchesName) return false;
       }
 
-      // Domain filter
       if (
         this.filter.selectedDomain &&
         entity.domain !== this.filter.selectedDomain
@@ -166,7 +189,6 @@ export class STEntityList extends LitElement {
         return false;
       }
 
-      // Input/Output filter
       if (this.filter.showInputsOnly && !this._isInputEntity(entity)) {
         return false;
       }
@@ -202,7 +224,6 @@ export class STEntityList extends LitElement {
       });
     }
 
-    // Sort by domain name
     return domainGroups.sort((a, b) => a.domain.localeCompare(b.domain));
   }
 

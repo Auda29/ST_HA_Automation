@@ -1,13 +1,13 @@
 var se = Object.defineProperty;
 var ae = (a, t, e) => t in a ? se(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
 var l = (a, t, e) => ae(a, typeof t != "symbol" ? t + "" : t, e);
-import { S as re, c as ne, L as oe, E as T, H as le, s as ce, a as K, b as de, D as A, W as he, C as pe, d as L, l as ue, h as ge, e as me, f as fe, g as ve, i as be, j as Ee, k as ye, m as Se, n as Le, o as _e, p as Oe, q as Ce, r as Ue, t as Ne, u as Te, v as Re, w as we, x as xe, y as Ae } from "./codemirror-C8x9REUs.js";
+import { S as ne, c as re, L as oe, E as x, H as le, s as ce, a as K, b as de, D as A, W as he, C as pe, d as L, l as ue, h as ge, e as fe, f as me, g as be, i as ve, j as Ee, k as ye, m as Se, n as Le, o as _e, p as Oe, q as Ce, r as Ue, t as Ne, u as xe, v as Te, w as Re, x as we, y as Ae } from "./codemirror-C8x9REUs.js";
 import { W as g } from "./vendor-BhPS5zVw.js";
-import { i as j, n as S, a as z, b as u, t as W, r as v } from "./lit-C178dhqO.js";
+import { i as j, n as S, a as z, b as u, t as W, r as b } from "./lit-C178dhqO.js";
 import { s as Me } from "./ha-websocket-DcUbagYv.js";
-import { c as o, L as R, C as Be } from "./chevrotain-cBR36crC.js";
+import { c as o, L as T, C as Be } from "./chevrotain-cBR36crC.js";
 import { a as Y } from "./analyzer-DbAWr__X.js";
-const Ie = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #03a9f4);--ui-bg: var(--primary-background-color, #fafafa);--ui-bg-secondary: var(--secondary-background-color, #e5e5e5);--ui-bg-card: var(--card-background-color, #ffffff);--ui-bg-header: var(--app-header-background-color,#03a9f4);--ui-text-primary: var(--primary-text-color, #212121);--ui-text-secondary: var(--secondary-text-color, #727272);--ui-text-header: var(--app-header-text-color, #ffffff);--ui-text-on-primary: var(--text-primary-color, #ffffff);--ui-divider: var(--divider-color, rgba(0,0,0,.12));--ui-success: var(--success-color, #4caf50);--ui-error: var(--error-color, #f44336);--ui-warning: var(--warning-color, #ff9800);--ui-info: var(--info-color, #2196f3);--ui-disabled: var(--disabled-text-color, #9e9e9e);--status-online: #4ec9b0;--status-paused: #dcdcaa;--status-connecting: #569cd6;--status-disconnected: #808080;--status-error: #f44747;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: var(--paper-font-common-base_-_font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 2px;--radius-md: 4px;--shadow-popover: 0 4px 12px rgba(0, 0, 0, .2);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .2s ease}.st-h1{font-family:var(--font-ui);font-size:var(--font-size-2xl);font-weight:var(--font-weight-normal);color:var(--ui-text-header);margin:0}.st-h2{font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:var(--font-weight-medium);color:var(--ui-text-primary);margin:0 0 12px}.st-body{font-family:var(--font-ui);font-size:var(--font-size-base);font-weight:var(--font-weight-normal);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}.st-btn-primary{padding:var(--space-2) var(--space-4);border:none;border-radius:var(--radius-md);background:var(--ui-primary);color:var(--ui-text-on-primary);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md)}.st-btn-secondary{padding:6px var(--space-3);border:1px solid var(--ui-divider);border-radius:var(--radius-md);background:var(--ui-bg-secondary);color:var(--ui-text-primary);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);display:flex;align-items:center;gap:var(--space-1)}.st-btn-secondary:hover{background:var(--ui-divider)}.st-btn-secondary.active{background:var(--ui-primary);color:var(--ui-text-on-primary);border-color:var(--ui-primary)}.st-btn-primary:disabled,.st-btn-secondary:disabled{opacity:.5;cursor:not-allowed}', X = [
+const Ie = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 4px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 24px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .2s ease;--transition-medium: all .28s ease}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', X = [
   "PROGRAM",
   "END_PROGRAM",
   "FUNCTION",
@@ -127,7 +127,7 @@ const Ie = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #
   "max_parallel",
   "throttle",
   "debounce"
-], H = re.define({
+], H = ne.define({
   name: "structuredtext",
   startState() {
     return { inBlockComment: !1 };
@@ -177,7 +177,7 @@ const Ie = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #
     commentTokens: { line: "//", block: { open: "(*", close: "*)" } },
     closeBrackets: { brackets: ["(", "[", "{", "'"] }
   }
-}), De = ne([
+}), De = re([
   ...X.map((a) => ({ label: a, type: "keyword" })),
   ...Q.map((a) => ({ label: a, type: "type" })),
   ...Z.map((a) => ({ label: a, type: "function" })),
@@ -231,7 +231,7 @@ const h = {
   gutterBg: "#1e1e1e",
   gutterFg: "#858585",
   border: "#404040"
-}, Fe = T.theme(
+}, Fe = x.theme(
   {
     "&": {
       color: h.fg,
@@ -408,13 +408,13 @@ class je {
     for (const [s, i] of Object.entries(t))
       this.entityStates.set(s, i);
     for (const [s, i] of this.bindings) {
-      const r = this.entityStates.get(i.entityId);
-      if (!r) continue;
-      const n = this.parseValue(r.state, i.dataType), d = this.liveValues.get(s), p = {
+      const n = this.entityStates.get(i.entityId);
+      if (!n) continue;
+      const r = this.parseValue(n.state, i.dataType), d = this.liveValues.get(s), p = {
         binding: i,
-        currentValue: n,
+        currentValue: r,
         previousValue: d == null ? void 0 : d.currentValue,
-        hasChanged: d ? d.currentValue.raw !== n.raw : !1,
+        hasChanged: d ? d.currentValue.raw !== r.raw : !1,
         lastUpdate: e
       };
       this.liveValues.set(s, p);
@@ -552,16 +552,16 @@ const We = de.define({
         return Ge(t.state.doc.toString(), e.value);
     return t.docChanged && (a = a.map(t.changes)), a;
   },
-  provide: (a) => T.decorations.from(a)
+  provide: (a) => x.decorations.from(a)
 });
 function Ge(a, t) {
   const e = [], s = a.split(`
 `);
   let i = 0;
-  for (let r = 0; r < s.length; r++) {
-    const n = s[r], d = i + n.length;
+  for (let n = 0; n < s.length; n++) {
+    const r = s[n], d = i + r.length;
     for (const [, p] of t)
-      if (p.binding.line === r + 1) {
+      if (p.binding.line === n + 1) {
         const ie = A.widget({
           widget: new ze(p, !0),
           side: 1
@@ -574,11 +574,11 @@ function Ge(a, t) {
       }
     i = d + 1;
   }
-  return e.sort((r, n) => r.from - n.from), A.set(
-    e.map((r) => r.decoration.range(r.from, r.to))
+  return e.sort((n, r) => n.from - r.from), A.set(
+    e.map((n) => n.decoration.range(n.from, n.to))
   );
 }
-const Ye = T.baseTheme({
+const Ye = x.baseTheme({
   ".st-live-value-widget": {
     marginLeft: "16px",
     display: "inline-flex",
@@ -635,9 +635,9 @@ function qe(a, t) {
     effects: tt.of(t)
   });
 }
-var et = Object.defineProperty, Ke = Object.getOwnPropertyDescriptor, Xe = (a, t, e) => t in a ? et(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, w = (a, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? Ke(t, e) : t, r = a.length - 1, n; r >= 0; r--)
-    (n = a[r]) && (i = (s ? n(t, e, i) : n(i)) || i);
+var et = Object.defineProperty, Ke = Object.getOwnPropertyDescriptor, Xe = (a, t, e) => t in a ? et(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, R = (a, t, e, s) => {
+  for (var i = s > 1 ? void 0 : s ? Ke(t, e) : t, n = a.length - 1, r; n >= 0; n--)
+    (r = a[n]) && (i = (s ? r(t, e, i) : r(i)) || i);
   return s && i && et(t, e, i), i;
 }, Qe = (a, t, e) => Xe(a, t + "", e);
 let y = class extends z {
@@ -712,10 +712,10 @@ let y = class extends z {
     const e = [
       ue(),
       ge(),
-      me(),
       fe(),
-      ve(),
+      me(),
       be(),
+      ve(),
       L.allowMultipleSelections.of(!0),
       Ee(),
       ye(),
@@ -726,10 +726,10 @@ let y = class extends z {
       Ce.of([
         ...Ue,
         ...Ne,
+        ...xe,
         ...Te,
         ...Re,
         ...we,
-        ...xe,
         Ae
       ]),
       Pe(),
@@ -738,7 +738,7 @@ let y = class extends z {
       this._readOnlyCompartment.of(L.readOnly.of(this.readOnly)),
       L.tabSize.of(4)
     ];
-    this._editor = new T({
+    this._editor = new x({
       state: L.create({ doc: this.code, extensions: e }),
       parent: t,
       dispatch: (i) => {
@@ -776,10 +776,10 @@ let y = class extends z {
       y: t.clientY
     });
     if (s === null) {
-      const i = this._editor.state.selection.main, r = i.empty ? i.head : i.from;
+      const i = this._editor.state.selection.main, n = i.empty ? i.head : i.from;
       this._editor.dispatch({
-        changes: { from: r, insert: e },
-        selection: { anchor: r + e.length }
+        changes: { from: n, insert: e },
+        selection: { anchor: n + e.length }
       });
     } else
       this._editor.dispatch({
@@ -839,21 +839,21 @@ Qe(y, "styles", j`
       background-color: rgba(38, 79, 120, 0.5) !important;
     }
   `);
-w([
+R([
   S({ type: String })
 ], y.prototype, "code", 2);
-w([
+R([
   S({ type: Boolean, attribute: "read-only" })
 ], y.prototype, "readOnly", 2);
-w([
+R([
   S({ attribute: !1 })
 ], y.prototype, "hass", 2);
-y = w([
+y = R([
   W("st-editor")
 ], y);
 var it = Object.defineProperty, Ze = Object.getOwnPropertyDescriptor, Je = (a, t, e) => t in a ? it(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, G = (a, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? Ze(t, e) : t, r = a.length - 1, n; r >= 0; r--)
-    (n = a[r]) && (i = (s ? n(t, e, i) : n(i)) || i);
+  for (var i = s > 1 ? void 0 : s ? Ze(t, e) : t, n = a.length - 1, r; n >= 0; n--)
+    (r = a[n]) && (i = (s ? r(t, e, i) : r(i)) || i);
   return s && i && it(t, e, i), i;
 }, ti = (a, t, e) => Je(a, t + "", e);
 let C = class extends z {
@@ -864,10 +864,10 @@ let C = class extends z {
     var t;
     return {
       disconnected: "Offline",
-      connecting: "Connecting...",
+      connecting: "Connecting",
       online: "Online",
       paused: "Paused",
-      error: "Error"
+      error: "Fault"
     }[((t = this.state) == null ? void 0 : t.status) || "disconnected"];
   }
   get isPaused() {
@@ -876,7 +876,9 @@ let C = class extends z {
   }
   get canConnect() {
     var a;
-    return ["disconnected", "error"].includes(((a = this.state) == null ? void 0 : a.status) || "disconnected");
+    return ["disconnected", "error"].includes(
+      ((a = this.state) == null ? void 0 : a.status) || "disconnected"
+    );
   }
   render() {
     var a, t, e, s;
@@ -889,57 +891,79 @@ let C = class extends z {
       </div>
 
       <div class="controls">
-        ${this.canConnect ? u` <button @click=${this._handleConnect}>▶ Connect</button> ` : u`
+        ${this.canConnect ? u`
+              <button @click=${this._handleConnect}>
+                <ha-icon icon="mdi:play"></ha-icon>
+                Connect
+              </button>
+            ` : u`
               <button
                 @click=${this._handleTogglePause}
                 class="${this.isPaused ? "active" : ""}"
               >
-                ${this.isPaused ? "▶ Resume" : "⏸ Pause"}
+                <ha-icon
+                  icon=${this.isPaused ? "mdi:play-pause" : "mdi:pause"}
+                ></ha-icon>
+                ${this.isPaused ? "Resume" : "Pause"}
               </button>
-              <button @click=${this._handleDisconnect}>⏹ Stop</button>
+              <button @click=${this._handleDisconnect}>
+                <ha-icon icon="mdi:stop"></ha-icon>
+                Stop
+              </button>
             `}
       </div>
 
       <div class="spacer"></div>
 
       <div class="stats">
-        <div class="stat">📊 ${((e = (t = this.state) == null ? void 0 : t.liveValues) == null ? void 0 : e.size) || 0} Variables</div>
-        <div class="stat">⚡ ${((s = this.state) == null ? void 0 : s.updateRate) || 100}ms</div>
+        <div class="stat">
+          <ha-icon icon="mdi:variable"></ha-icon>
+          ${((e = (t = this.state) == null ? void 0 : t.liveValues) == null ? void 0 : e.size) || 0} Variables
+        </div>
+        <div class="stat">
+          <ha-icon icon="mdi:lightning-bolt"></ha-icon>
+          ${((s = this.state) == null ? void 0 : s.updateRate) || 100}ms
+        </div>
       </div>
 
-      <div style="position: relative;">
-        <button @click=${() => this._showSettings = !this._showSettings}>
-          ⚙️
+      <div class="settings-shell">
+        <button
+          class="settings-toggle"
+          @click=${() => this._showSettings = !this._showSettings}
+          title="Online settings"
+        >
+          <ha-icon icon="mdi:cog"></ha-icon>
         </button>
         ${this._showSettings ? this._renderSettings() : ""}
       </div>
     `;
   }
   _renderSettings() {
-    var a, t, e, s, i, r;
+    var a, t, e, s, i, n;
     return u`
       <div class="settings-panel">
+        <div class="settings-title">Online Settings</div>
         <div class="setting">
+          <label for="highlight">Highlight changes</label>
           <input
             type="checkbox"
             id="highlight"
             .checked=${(a = this.state) == null ? void 0 : a.highlightChanges}
             @change=${this._handleHighlightChange}
           />
-          <label for="highlight">Highlight changes</label>
         </div>
         <div class="setting">
+          <label for="conditions">Show conditions</label>
           <input
             type="checkbox"
             id="conditions"
             .checked=${(t = this.state) == null ? void 0 : t.showConditions}
             @change=${this._handleConditionsChange}
           />
-          <label for="conditions">Show conditions</label>
         </div>
         <div class="setting">
-          <label>Update rate:</label>
-          <select @change=${this._handleRateChange}>
+          <label for="rate">Update rate</label>
+          <select id="rate" @change=${this._handleRateChange}>
             <option value="50" ?selected=${((e = this.state) == null ? void 0 : e.updateRate) === 50}>
               50ms
             </option>
@@ -949,7 +973,7 @@ let C = class extends z {
             <option value="250" ?selected=${((i = this.state) == null ? void 0 : i.updateRate) === 250}>
               250ms
             </option>
-            <option value="500" ?selected=${((r = this.state) == null ? void 0 : r.updateRate) === 500}>
+            <option value="500" ?selected=${((n = this.state) == null ? void 0 : n.updateRate) === 500}>
               500ms
             </option>
           </select>
@@ -1008,59 +1032,72 @@ ti(C, "styles", j`
       display: flex;
       align-items: center;
       gap: var(--space-3, 12px);
-      padding: var(--space-2, 8px) var(--space-4, 16px);
-      background: var(--ui-bg-card, var(--card-background-color));
-      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      padding: var(--space-3, 12px) var(--space-5, 20px);
+      background:
+        linear-gradient(180deg, rgba(14, 28, 35, 0.96), rgba(11, 17, 21, 0.96));
+      border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
       font-family: var(--font-ui, inherit);
+      position: relative;
     }
 
     .status {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-2, 8px);
+      padding: var(--space-2, 8px) var(--space-3, 12px);
+      border: 1px solid var(--ui-divider, rgba(88, 127, 146, 0.2));
+      border-radius: var(--radius-pill, 999px);
+      background: rgba(19, 26, 32, 0.9);
+      color: var(--ui-text-primary, #f3f7fb);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
     }
 
     .status-dot--online {
-      background: var(--status-online, #4ec9b0);
-      box-shadow: 0 0 4px var(--status-online, #4ec9b0);
+      background: var(--status-online, #42d6a4);
+      box-shadow: 0 0 12px rgba(66, 214, 164, 0.45);
     }
 
     .status-dot--paused {
-      background: var(--status-paused, #dcdcaa);
+      background: var(--status-paused, #ffce73);
     }
 
     .status-dot--connecting {
-      background: var(--status-connecting, #569cd6);
-      animation: pulse 1s infinite;
+      background: var(--status-connecting, #3aa0ff);
+      animation: pulse 1.1s infinite;
     }
 
     .status-dot--disconnected {
-      background: var(--status-disconnected, #808080);
+      background: var(--status-disconnected, #6f7c87);
     }
 
     .status-dot--error {
-      background: var(--status-error, #f44747);
+      background: var(--status-error, #ff6b6b);
+      box-shadow: 0 0 12px rgba(255, 107, 107, 0.35);
     }
 
     @keyframes pulse {
       0%,
       100% {
         opacity: 1;
+        transform: scale(1);
       }
       50% {
-        opacity: 0.5;
+        opacity: 0.52;
+        transform: scale(0.92);
       }
     }
 
     .status-text {
-      font-size: var(--font-size-base, 13px);
-      font-weight: 500;
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-semibold, 600);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .controls {
@@ -1069,31 +1106,51 @@ ti(C, "styles", j`
     }
 
     button {
-      padding: 6px var(--space-3, 12px);
-      border: 1px solid var(--ui-divider, var(--divider-color));
-      border-radius: var(--radius-md, 4px);
-      background: var(--ui-bg-secondary, var(--secondary-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
-      cursor: pointer;
-      font-size: var(--font-size-base, 13px);
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: var(--space-1, 4px);
+      gap: var(--space-2, 8px);
+      min-height: 36px;
+      padding: 0 var(--space-4, 16px);
+      border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
+      border-radius: var(--radius-md, 12px);
+      background: rgba(25, 34, 42, 0.92);
+      color: var(--ui-text-primary, #f3f7fb);
+      cursor: pointer;
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-semibold, 600);
+      letter-spacing: 0.02em;
+      transition:
+        transform var(--transition-fast, 160ms ease),
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease);
     }
 
     button:hover {
-      background: var(--ui-divider, var(--divider-color));
+      background: rgba(34, 48, 58, 0.96);
+      border-color: rgba(120, 173, 199, 0.44);
+      transform: translateY(-1px);
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
+      transform: none;
     }
 
     button.active {
-      background: var(--ui-primary, var(--primary-color));
-      color: var(--ui-text-on-primary, var(--text-primary-color));
-      border-color: var(--ui-primary, var(--primary-color));
+      background: rgba(255, 206, 115, 0.18);
+      border-color: rgba(255, 206, 115, 0.45);
+      color: #ffdb97;
+    }
+
+    button.settings-toggle {
+      min-width: 36px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    ha-icon {
+      --mdc-icon-size: 16px;
     }
 
     .spacer {
@@ -1102,49 +1159,80 @@ ti(C, "styles", j`
 
     .stats {
       display: flex;
-      gap: var(--space-4, 16px);
-      font-size: var(--font-size-sm, 12px);
-      color: var(--ui-text-secondary, var(--secondary-text-color));
+      align-items: center;
+      gap: var(--space-2, 8px);
+      flex-wrap: wrap;
     }
 
     .stat {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 var(--space-3, 12px);
+      border-radius: var(--radius-pill, 999px);
+      background: rgba(15, 23, 29, 0.88);
+      border: 1px solid rgba(88, 127, 146, 0.18);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
+    }
+
+    .settings-shell {
+      position: relative;
     }
 
     .settings-panel {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 10px);
       right: 0;
-      background: var(--ui-bg-card, var(--card-background-color));
-      border: 1px solid var(--ui-divider, var(--divider-color));
-      border-radius: var(--radius-md, 4px);
-      padding: var(--space-3, 12px);
-      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
+      min-width: 220px;
+      padding: var(--space-4, 16px);
+      border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
+      border-radius: var(--radius-xl, 18px);
+      background:
+        linear-gradient(180deg, rgba(22, 31, 38, 0.98), rgba(14, 20, 26, 0.98));
+      box-shadow: var(--shadow-popover, 0 18px 42px rgba(0, 0, 0, 0.35));
       z-index: 100;
+    }
+
+    .settings-title {
+      margin: 0 0 var(--space-3, 12px);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-bold, 700);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .setting {
       display: flex;
       align-items: center;
-      gap: var(--space-2, 8px);
-      margin-bottom: var(--space-2, 8px);
+      justify-content: space-between;
+      gap: var(--space-3, 12px);
+      margin-bottom: var(--space-3, 12px);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
     }
 
     .setting:last-child {
       margin-bottom: 0;
     }
 
-    .setting label {
-      font-size: var(--font-size-base, 13px);
+    .setting input,
+    .setting select {
+      accent-color: var(--ui-primary, #0ea5d7);
+      background: rgba(9, 14, 18, 0.92);
+      color: var(--ui-text-primary, #f3f7fb);
+      border: 1px solid rgba(88, 127, 146, 0.3);
+      border-radius: var(--radius-sm, 8px);
+      padding: 6px 8px;
     }
   `);
 G([
   S({ type: Object })
 ], C.prototype, "state", 2);
 G([
-  v()
+  b()
 ], C.prototype, "_showSettings", 2);
 C = G([
   W("st-online-toolbar")
@@ -1152,15 +1240,15 @@ C = G([
 const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei = o({
   name: "WhiteSpace",
   pattern: /\s+/,
-  group: R.SKIPPED
+  group: T.SKIPPED
 }), ii = o({
   name: "LineComment",
   pattern: /\/\/.*/,
-  group: R.SKIPPED
+  group: T.SKIPPED
 }), si = o({
   name: "BlockComment",
   pattern: /\(\*[\s\S]*?\*\)/,
-  group: R.SKIPPED
+  group: T.SKIPPED
 }), st = o({
   name: "Pragma",
   pattern: /\{[^}]+\}/
@@ -1171,13 +1259,13 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
 }), ai = o({
   name: "EndFunction",
   pattern: /END_FUNCTION/i
-}), ri = o({
+}), ni = o({
   name: "EndFunctionBlock",
   pattern: /END_FUNCTION_BLOCK/i
-}), ni = o({
+}), ri = o({
   name: "FunctionBlock",
   pattern: /FUNCTION_BLOCK/i
-}), rt = o({ name: "EndVar", pattern: /END_VAR/i }), nt = o({
+}), nt = o({ name: "EndVar", pattern: /END_VAR/i }), rt = o({
   name: "VarInput",
   pattern: /VAR_INPUT/i
 }), ot = o({
@@ -1195,7 +1283,7 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
 }), gt = o({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), mt = c("Program", "PROGRAM"), oi = c("Function", "FUNCTION"), ft = c("Var", "VAR"), li = c("Constant", "CONSTANT"), vt = c("If", "IF"), M = c("Then", "THEN"), bt = c("Elsif", "ELSIF"), B = c("Else", "ELSE"), Et = c("Case", "CASE"), yt = c("Of", "OF"), St = c("For", "FOR"), Lt = c("To", "TO"), _t = c("By", "BY"), I = c("Do", "DO"), Ot = c("While", "WHILE"), Ct = c("Repeat", "REPEAT"), Ut = c("Until", "UNTIL"), Nt = c("Return", "RETURN"), Tt = c("Exit", "EXIT"), ci = c("Continue", "CONTINUE"), k = c("At", "AT"), Rt = c("And", "AND"), wt = c("Or", "OR"), di = c("Xor", "XOR"), xt = c("Not", "NOT"), At = c("Mod", "MOD"), Mt = c("True", "TRUE"), Bt = c("False", "FALSE"), It = c("TypeBool", "BOOL"), kt = o({
+}), ft = c("Program", "PROGRAM"), oi = c("Function", "FUNCTION"), mt = c("Var", "VAR"), li = c("Constant", "CONSTANT"), bt = c("If", "IF"), M = c("Then", "THEN"), vt = c("Elsif", "ELSIF"), B = c("Else", "ELSE"), Et = c("Case", "CASE"), yt = c("Of", "OF"), St = c("For", "FOR"), Lt = c("To", "TO"), _t = c("By", "BY"), I = c("Do", "DO"), Ot = c("While", "WHILE"), Ct = c("Repeat", "REPEAT"), Ut = c("Until", "UNTIL"), Nt = c("Return", "RETURN"), xt = c("Exit", "EXIT"), ci = c("Continue", "CONTINUE"), k = c("At", "AT"), Tt = c("And", "AND"), Rt = c("Or", "OR"), di = c("Xor", "XOR"), wt = c("Not", "NOT"), At = c("Mod", "MOD"), Mt = c("True", "TRUE"), Bt = c("False", "FALSE"), It = c("TypeBool", "BOOL"), kt = o({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
 }), Dt = o({
@@ -1234,10 +1322,10 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
 }), D = o({
   name: "IoAddress",
   pattern: /%[IQM][XBWDLxbwdl]?(?:[\d.]+|\*)/i
-}), _ = o({ name: "Assign", pattern: /:=/ }), mi = o({ name: "Output", pattern: /=>/ }), Wt = o({ name: "LessEqual", pattern: /<=/ }), Gt = o({
+}), _ = o({ name: "Assign", pattern: /:=/ }), fi = o({ name: "Output", pattern: /=>/ }), Wt = o({ name: "LessEqual", pattern: /<=/ }), Gt = o({
   name: "GreaterEqual",
   pattern: />=/
-}), Yt = o({ name: "NotEqual", pattern: /<>/ }), Ht = o({ name: "Less", pattern: /</ }), qt = o({ name: "Greater", pattern: />/ }), Kt = o({ name: "Equal", pattern: /=/ }), Xt = o({ name: "Plus", pattern: /\+/ }), P = o({ name: "Minus", pattern: /-/ }), Qt = o({ name: "Star", pattern: /\*/ }), Zt = o({ name: "Slash", pattern: /\// }), U = o({ name: "LParen", pattern: /\(/ }), N = o({ name: "RParen", pattern: /\)/ }), fi = o({ name: "LBracket", pattern: /\[/ }), vi = o({ name: "RBracket", pattern: /\]/ }), F = o({ name: "Colon", pattern: /:/ }), E = o({ name: "Semicolon", pattern: /;/ }), V = o({ name: "Comma", pattern: /,/ }), $ = o({ name: "Dot", pattern: /\./ }), Jt = o({ name: "Range", pattern: /\.\./ }), b = o({
+}), Yt = o({ name: "NotEqual", pattern: /<>/ }), Ht = o({ name: "Less", pattern: /</ }), qt = o({ name: "Greater", pattern: />/ }), Kt = o({ name: "Equal", pattern: /=/ }), Xt = o({ name: "Plus", pattern: /\+/ }), P = o({ name: "Minus", pattern: /-/ }), Qt = o({ name: "Star", pattern: /\*/ }), Zt = o({ name: "Slash", pattern: /\// }), U = o({ name: "LParen", pattern: /\(/ }), N = o({ name: "RParen", pattern: /\)/ }), mi = o({ name: "LBracket", pattern: /\[/ }), bi = o({ name: "RBracket", pattern: /\]/ }), F = o({ name: "Colon", pattern: /:/ }), E = o({ name: "Semicolon", pattern: /;/ }), V = o({ name: "Comma", pattern: /,/ }), $ = o({ name: "Dot", pattern: /\./ }), Jt = o({ name: "Range", pattern: /\.\./ }), v = o({
   name: "Identifier",
   pattern: /[a-zA-Z_][a-zA-Z0-9_]*/
 }), te = [
@@ -1248,28 +1336,28 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
   // Pragmas
   st,
   // Multi-word keywords first
-  ri,
   ni,
+  ri,
   ai,
   at,
-  nt,
+  rt,
   ot,
   lt,
   ct,
-  rt,
+  nt,
   dt,
   ht,
   pt,
   ut,
   gt,
   // Keywords
-  mt,
-  oi,
   ft,
+  oi,
+  mt,
   li,
-  vt,
-  M,
   bt,
+  M,
+  vt,
   B,
   Et,
   yt,
@@ -1281,14 +1369,14 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
   Ct,
   Ut,
   Nt,
-  Tt,
+  xt,
   ci,
   k,
   // Logical
+  Tt,
   Rt,
-  wt,
   di,
-  xt,
+  wt,
   At,
   Mt,
   Bt,
@@ -1311,7 +1399,7 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
   D,
   // Multi-char operators
   _,
-  mi,
+  fi,
   Jt,
   Wt,
   Gt,
@@ -1326,21 +1414,21 @@ const c = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
   Zt,
   U,
   N,
-  fi,
-  vi,
+  mi,
+  bi,
   F,
   E,
   V,
   $,
   // Identifier last
-  b
-], bi = new R(te, {
+  v
+], vi = new T(te, {
   ensureOptimizations: !0,
   positionTracking: "full"
   // For error reporting
 });
 function Ei(a) {
-  const t = bi.tokenize(a);
+  const t = vi.tokenize(a);
   return {
     tokens: t.tokens,
     errors: t.errors
@@ -1354,20 +1442,20 @@ class yi extends Be {
     });
     // Program structure
     l(this, "program", this.RULE("program", () => {
-      this.MANY(() => this.SUBRULE(this.pragma)), this.CONSUME(mt), this.CONSUME(b, { LABEL: "programName" }), this.MANY1(() => this.SUBRULE(this.variableBlock)), this.MANY2(() => this.SUBRULE(this.statement)), this.CONSUME(at);
+      this.MANY(() => this.SUBRULE(this.pragma)), this.CONSUME(ft), this.CONSUME(v, { LABEL: "programName" }), this.MANY1(() => this.SUBRULE(this.variableBlock)), this.MANY2(() => this.SUBRULE(this.statement)), this.CONSUME(at);
     }));
     // Variable declarations
     l(this, "variableBlock", this.RULE("variableBlock", () => {
       this.OR([
-        { ALT: () => this.CONSUME(ft) },
-        { ALT: () => this.CONSUME(nt) },
+        { ALT: () => this.CONSUME(mt) },
+        { ALT: () => this.CONSUME(rt) },
         { ALT: () => this.CONSUME(ot) },
         { ALT: () => this.CONSUME(lt) },
         { ALT: () => this.CONSUME(ct) }
-      ]), this.MANY(() => this.SUBRULE(this.variableDeclaration)), this.CONSUME(rt);
+      ]), this.MANY(() => this.SUBRULE(this.variableDeclaration)), this.CONSUME(nt);
     }));
     l(this, "variableDeclaration", this.RULE("variableDeclaration", () => {
-      this.MANY(() => this.SUBRULE(this.pragma)), this.CONSUME(b, { LABEL: "varName" }), this.OPTION(() => {
+      this.MANY(() => this.SUBRULE(this.pragma)), this.CONSUME(v, { LABEL: "varName" }), this.OPTION(() => {
         this.CONSUME(k), this.CONSUME(D);
       }), this.OPTION1(() => {
         this.CONSUME(F), this.SUBRULE(this.typeSpec);
@@ -1387,7 +1475,7 @@ class yi extends Be {
         { ALT: () => this.CONSUME(Dt) },
         { ALT: () => this.CONSUME(Pt) },
         { ALT: () => this.CONSUME(Ft) },
-        { ALT: () => this.CONSUME(b) }
+        { ALT: () => this.CONSUME(v) }
         // Custom type
       ]);
     }));
@@ -1409,8 +1497,8 @@ class yi extends Be {
       this.SUBRULE(this.variableReference), this.CONSUME(_), this.SUBRULE(this.expression), this.CONSUME(E);
     }));
     l(this, "ifStatement", this.RULE("ifStatement", () => {
-      this.CONSUME(vt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(M), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
-        this.CONSUME(bt), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(M), this.MANY2(
+      this.CONSUME(bt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(M), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
+        this.CONSUME(vt), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(M), this.MANY2(
           () => this.SUBRULE1(this.statement, { LABEL: "elsifStatements" })
         );
       }), this.OPTION(() => {
@@ -1438,7 +1526,7 @@ class yi extends Be {
       });
     }));
     l(this, "forStatement", this.RULE("forStatement", () => {
-      this.CONSUME(St), this.CONSUME(b, { LABEL: "controlVar" }), this.CONSUME(_), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(Lt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
+      this.CONSUME(St), this.CONSUME(v, { LABEL: "controlVar" }), this.CONSUME(_), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(Lt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
         this.CONSUME(_t), this.SUBRULE2(this.expression, { LABEL: "step" });
       }), this.CONSUME(I), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(pt);
     }));
@@ -1452,7 +1540,7 @@ class yi extends Be {
       this.CONSUME(Nt), this.CONSUME(E);
     }));
     l(this, "exitStatement", this.RULE("exitStatement", () => {
-      this.CONSUME(Tt), this.CONSUME(E);
+      this.CONSUME(xt), this.CONSUME(E);
     }));
     l(this, "functionCallStatement", this.RULE("functionCallStatement", () => {
       this.SUBRULE(this.functionCall), this.CONSUME(E);
@@ -1463,12 +1551,12 @@ class yi extends Be {
     }));
     l(this, "orExpression", this.RULE("orExpression", () => {
       this.SUBRULE(this.andExpression, { LABEL: "lhs" }), this.MANY(() => {
-        this.CONSUME(wt), this.SUBRULE1(this.andExpression, { LABEL: "rhs" });
+        this.CONSUME(Rt), this.SUBRULE1(this.andExpression, { LABEL: "rhs" });
       });
     }));
     l(this, "andExpression", this.RULE("andExpression", () => {
       this.SUBRULE(this.comparisonExpression, { LABEL: "lhs" }), this.MANY(() => {
-        this.CONSUME(Rt), this.SUBRULE1(this.comparisonExpression, { LABEL: "rhs" });
+        this.CONSUME(Tt), this.SUBRULE1(this.comparisonExpression, { LABEL: "rhs" });
       });
     }));
     l(this, "comparisonExpression", this.RULE("comparisonExpression", () => {
@@ -1508,7 +1596,7 @@ class yi extends Be {
         {
           ALT: () => {
             this.OR1([
-              { ALT: () => this.CONSUME(xt) },
+              { ALT: () => this.CONSUME(wt) },
               { ALT: () => this.CONSUME(P) }
             ]), this.SUBRULE(this.unaryExpression);
           }
@@ -1528,8 +1616,8 @@ class yi extends Be {
       ]);
     }));
     l(this, "identifierOrCall", this.RULE("identifierOrCall", () => {
-      this.CONSUME(b), this.MANY(() => {
-        this.CONSUME($), this.CONSUME1(b);
+      this.CONSUME(v), this.MANY(() => {
+        this.CONSUME($), this.CONSUME1(v);
       }), this.OPTION(() => {
         this.CONSUME(U), this.OPTION1(() => {
           this.SUBRULE(this.argumentList);
@@ -1547,12 +1635,12 @@ class yi extends Be {
       ]);
     }));
     l(this, "variableReference", this.RULE("variableReference", () => {
-      this.CONSUME(b), this.MANY(() => {
-        this.CONSUME($), this.CONSUME1(b);
+      this.CONSUME(v), this.MANY(() => {
+        this.CONSUME($), this.CONSUME1(v);
       });
     }));
     l(this, "functionCall", this.RULE("functionCall", () => {
-      this.CONSUME(b), this.CONSUME(U), this.OPTION(() => {
+      this.CONSUME(v), this.CONSUME(U), this.OPTION(() => {
         this.SUBRULE(this.argumentList);
       }), this.CONSUME(N);
     }));
@@ -1569,7 +1657,7 @@ class yi extends Be {
      */
     l(this, "argument", this.RULE("argument", () => {
       this.OPTION(() => {
-        this.CONSUME(b, { LABEL: "argName" }), this.CONSUME(_);
+        this.CONSUME(v, { LABEL: "argName" }), this.CONSUME(_);
       }), this.SUBRULE(this.expression, { LABEL: "argValue" });
     }));
     this.performSelfAnalysis();
@@ -1582,13 +1670,13 @@ class Li extends Si {
   }
   // Program
   program(t) {
-    const e = t.pragma ? t.pragma.map((n) => this.visit(n)) : [], s = t.programName[0].image, i = t.variableBlock ? t.variableBlock.flatMap((n) => this.visit(n)) : [], r = t.statement ? t.statement.map((n) => this.visit(n)) : [];
+    const e = t.pragma ? t.pragma.map((r) => this.visit(r)) : [], s = t.programName[0].image, i = t.variableBlock ? t.variableBlock.flatMap((r) => this.visit(r)) : [], n = t.statement ? t.statement.map((r) => this.visit(r)) : [];
     return {
       type: "Program",
       name: s,
       pragmas: e,
       variables: i,
-      body: r,
+      body: n,
       location: this.getLocation(t)
     };
   }
@@ -1601,9 +1689,9 @@ class Li extends Si {
     }) : [];
   }
   variableDeclaration(t) {
-    const e = t.pragma ? t.pragma.map((d) => this.visit(d)) : [], s = t.varName[0].image, i = t.typeSpec ? this.visit(t.typeSpec[0]) : this.createDataType("UNKNOWN"), r = t.expression ? this.visit(t.expression[0]) : void 0;
-    let n;
-    return t.IoAddress && (n = this.parseIoAddress(t.IoAddress[0].image), r && r.type === "Literal" && r.kind === "string" && (n.entityId = r.value)), {
+    const e = t.pragma ? t.pragma.map((d) => this.visit(d)) : [], s = t.varName[0].image, i = t.typeSpec ? this.visit(t.typeSpec[0]) : this.createDataType("UNKNOWN"), n = t.expression ? this.visit(t.expression[0]) : void 0;
+    let r;
+    return t.IoAddress && (r = this.parseIoAddress(t.IoAddress[0].image), n && n.type === "Literal" && n.kind === "string" && (r.entityId = n.value)), {
       type: "VariableDeclaration",
       name: s,
       dataType: i,
@@ -1611,18 +1699,18 @@ class Li extends Si {
       // Will be set by variableBlock
       pragmas: e,
       constant: !1,
-      initialValue: r,
-      binding: n,
+      initialValue: n,
+      binding: r,
       location: this.getLocation(t)
     };
   }
   pragma(t) {
     const s = t.Pragma[0].image.slice(1, -1).trim(), i = s.indexOf(":");
-    let r, n;
-    return i > 0 ? (r = s.substring(0, i).trim(), n = s.substring(i + 1).trim()) : r = s, {
+    let n, r;
+    return i > 0 ? (n = s.substring(0, i).trim(), r = s.substring(i + 1).trim()) : n = s, {
       type: "Pragma",
-      name: r,
-      value: n,
+      name: n,
+      value: r,
       location: this.getLocation(t)
     };
   }
@@ -1653,24 +1741,24 @@ class Li extends Si {
     };
   }
   ifStatement(t) {
-    const e = this.visit(t.condition[0]), s = t.thenStatements ? t.thenStatements.map((n) => this.visit(n)) : [], i = t.elsifCondition ? t.elsifCondition.map((n, d) => {
+    const e = this.visit(t.condition[0]), s = t.thenStatements ? t.thenStatements.map((r) => this.visit(r)) : [], i = t.elsifCondition ? t.elsifCondition.map((r, d) => {
       const p = t.elsifStatements && t.elsifStatements[d] ? this.visit(t.elsifStatements[d]) : [];
       return {
-        condition: this.visit(n),
+        condition: this.visit(r),
         body: Array.isArray(p) ? p : [p]
       };
-    }) : [], r = t.elseStatements ? t.elseStatements.map((n) => this.visit(n)) : void 0;
+    }) : [], n = t.elseStatements ? t.elseStatements.map((r) => this.visit(r)) : void 0;
     return {
       type: "IfStatement",
       condition: e,
       thenBranch: s,
       elsifBranches: i,
-      elseBranch: r,
+      elseBranch: n,
       location: this.getLocation(t)
     };
   }
   caseStatement(t) {
-    const e = this.visit(t.selector[0]), s = t.caseClause ? t.caseClause.map((r) => this.visit(r)) : [], i = t.statement ? t.statement.map((r) => this.visit(r)) : void 0;
+    const e = this.visit(t.selector[0]), s = t.caseClause ? t.caseClause.map((n) => this.visit(n)) : [], i = t.statement ? t.statement.map((n) => this.visit(n)) : void 0;
     return {
       type: "CaseStatement",
       selector: e,
@@ -1784,7 +1872,7 @@ class Li extends Si {
     let e = this.visit(t.lhs[0]);
     if (!t.Plus && !t.Minus)
       return e;
-    const s = [...t.Plus || [], ...t.Minus || []].sort((i, r) => i.startOffset - r.startOffset).map((i) => i.image);
+    const s = [...t.Plus || [], ...t.Minus || []].sort((i, n) => i.startOffset - n.startOffset).map((i) => i.image);
     for (let i = 0; i < s.length; i++)
       e = {
         type: "BinaryExpression",
@@ -1803,7 +1891,7 @@ class Li extends Si {
       ...t.Star || [],
       ...t.Slash || [],
       ...t.Mod || []
-    ].sort((i, r) => i.startOffset - r.startOffset).map((i) => i.image);
+    ].sort((i, n) => i.startOffset - n.startOffset).map((i) => i.image);
     for (let i = 0; i < s.length; i++)
       e = {
         type: "BinaryExpression",
@@ -1921,7 +2009,7 @@ class Li extends Si {
   }
 }
 const _i = new Li();
-function x(a) {
+function w(a) {
   const t = [], e = Ei(a);
   if (e.errors.length > 0 && e.errors.forEach((i) => {
     t.push({
@@ -1964,12 +2052,12 @@ function x(a) {
     };
   }
 }
-var ee = Object.defineProperty, Oi = Object.getOwnPropertyDescriptor, Ci = (a, t, e) => t in a ? ee(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, f = (a, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? Oi(t, e) : t, r = a.length - 1, n; r >= 0; r--)
-    (n = a[r]) && (i = (s ? n(t, e, i) : n(i)) || i);
+var ee = Object.defineProperty, Oi = Object.getOwnPropertyDescriptor, Ci = (a, t, e) => t in a ? ee(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, m = (a, t, e, s) => {
+  for (var i = s > 1 ? void 0 : s ? Oi(t, e) : t, n = a.length - 1, r; n >= 0; n--)
+    (r = a[n]) && (i = (s ? r(t, e, i) : r(i)) || i);
   return s && i && ee(t, e, i), i;
 }, Ui = (a, t, e) => Ci(a, t + "", e);
-let m = class extends z {
+let f = class extends z {
   constructor() {
     super();
     l(this, "_entityBrowserLoaded", !1);
@@ -2011,7 +2099,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   async _initializeStorage() {
     var e, s;
     if (this._storage) return;
-    const { ProjectStorage: t } = await import("./project-DSJgCpej.js");
+    const { ProjectStorage: t } = await import("./project-B48wM8Lq.js");
     if ((e = this.hass) != null && e.connection) {
       const i = ((s = this.hass.config) == null ? void 0 : s.entry_id) || "default";
       this._storage = new t(this.hass.connection, i);
@@ -2036,23 +2124,30 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       }
   }
   render() {
-    var s, i, r;
+    var s, i, n;
     const t = this._diagnostics.filter(
-      (n) => n.severity === "Error"
+      (r) => r.severity === "Error"
     ).length, e = this._diagnostics.filter(
-      (n) => n.severity === "Warning"
+      (r) => r.severity === "Warning"
     ).length;
     return u`
       <div class="container">
         <div class="toolbar">
-          <h1>ST for Home Assistant</h1>
+          <div class="toolbar-brand">
+            <div class="toolbar-kicker">Structured Text Runtime</div>
+            <h1 class="st-h1">ST for Home Assistant</h1>
+            <div class="toolbar-subtitle">
+              Engineer automations, bind entities, and deploy from one control
+              surface.
+            </div>
+          </div>
           <div class="toolbar-actions">
             <button
               class="toolbar-button ${this._showProjectExplorer ? "active" : ""}"
               @click=${this._toggleProjectExplorer}
               title="Toggle Project Explorer"
             >
-              <ha-icon icon="mdi:folder"></ha-icon>
+              <ha-icon class="toolbar-icon" icon="mdi:folder-multiple"></ha-icon>
               Project
             </button>
             <button
@@ -2060,10 +2155,17 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
               @click=${this._toggleEntityBrowser}
               title="Toggle Entity Browser"
             >
-              <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
+              <ha-icon
+                class="toolbar-icon"
+                icon="mdi:transmission-tower"
+              ></ha-icon>
               Entities
             </button>
-            <button class="deploy-button" @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
+            <button
+              class="deploy-button"
+              @click=${this._handleDeploy}
+              ?disabled=${!this._syntaxOk}
+            >
               ▶ Deploy
             </button>
           </div>
@@ -2096,18 +2198,18 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
             ${this._project ? u`
                   <div class="tabs-container">
                     ${this._getOpenFiles().map(
-      (n) => u`
+      (r) => u`
                         <button
-                          class="tab ${n.id === this._project.activeFileId ? "active" : ""}"
-                          @click=${() => this._switchToFile(n.id)}
-                          title=${n.path}
+                          class="tab ${r.id === this._project.activeFileId ? "active" : ""}"
+                          @click=${() => this._switchToFile(r.id)}
+                          title=${r.path}
                         >
-                          <span>${n.name}</span>
-                          ${n.hasUnsavedChanges ? u`<div class="unsaved-dot"></div>` : ""}
+                          <span>${r.name}</span>
+                          ${r.hasUnsavedChanges ? u`<div class="unsaved-dot"></div>` : ""}
                           <div
                             class="tab-close"
                             @click=${(d) => {
-        d.stopPropagation(), this._closeFile(n.id);
+        d.stopPropagation(), this._closeFile(r.id);
       }}
                             title="Close"
                           >
@@ -2133,11 +2235,11 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
         ${this._diagnostics.length > 0 ? u`
               <div class="diagnostics-panel">
                 ${this._diagnostics.map(
-      (n) => u`
+      (r) => u`
                     <div
-                      class="diagnostic diagnostic-${n.severity.toLowerCase()}"
+                      class="diagnostic diagnostic-${r.severity.toLowerCase()}"
                     >
-                      ${n.line ? `[${n.line}:${n.column || 0}] ` : ""}${n.code ? `${n.code}: ` : ""}${n.message}
+                      ${r.line ? `[${r.line}:${r.column || 0}] ` : ""}${r.code ? `${r.code}: ` : ""}${r.message}
                     </div>
                   `
     )}
@@ -2145,15 +2247,17 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
             ` : ""}
         <div class="status-bar">
           ${this._syntaxOk ? u`<span class="status-ok">✓ Syntax OK</span>` : u`<span class="status-error">✗ Syntax Error</span>`}
-          ${t > 0 ? u`<span class="status-error">${t} Error(s)</span>` : ""}
-          ${e > 0 ? u`<span class="status-warning"
+          ${t > 0 ? u`<span class="status-pill status-error"
+                >${t} Error(s)</span
+              >` : ""}
+          ${e > 0 ? u`<span class="status-pill status-warning"
                 >${e} Warning(s)</span
               >` : ""}
-          <span>Triggers: ${this._triggers.length}</span>
-          <span>Entities: ${this._entityCount}</span>
-          ${(s = this._metadata) != null && s.mode ? u`<span>Mode: ${this._metadata.mode}</span>` : ""}
+          <span class="status-pill">Triggers: ${this._triggers.length}</span>
+          <span class="status-pill">Entities: ${this._entityCount}</span>
+          ${(s = this._metadata) != null && s.mode ? u`<span class="status-pill">Mode: ${this._metadata.mode}</span>` : ""}
           ${(i = this._metadata) != null && i.hasPersistentVars ? u`<span>💾 Persistent</span>` : ""}
-          ${(r = this._metadata) != null && r.hasTimers ? u`<span>⏱️ Timers</span>` : ""}
+          ${(n = this._metadata) != null && n.hasTimers ? u`<span>⏱️ Timers</span>` : ""}
         </div>
       </div>
     `;
@@ -2194,22 +2298,22 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   _switchToFile(t) {
     var i;
     if (!this._project) return;
-    const e = this._project.files.find((r) => r.id === t);
+    const e = this._project.files.find((n) => n.id === t);
     if (!e) return;
     const s = (i = this.shadowRoot) == null ? void 0 : i.querySelector(
       "st-editor"
     );
     if (s && this._project.activeFileId) {
-      const r = this._project.files.find(
-        (n) => n.id === this._project.activeFileId
+      const n = this._project.files.find(
+        (r) => r.id === this._project.activeFileId
       );
-      if (r) {
-        const n = s.getCode();
-        n !== r.content && (r.content = n, r.hasUnsavedChanges = !0, r.lastModified = Date.now());
+      if (n) {
+        const r = s.getCode();
+        r !== n.content && (n.content = r, n.hasUnsavedChanges = !0, n.lastModified = Date.now());
       }
     }
-    this._project.activeFileId = t, this._project.files.forEach((r) => {
-      r.isOpen = r.id === t || r.isOpen;
+    this._project.activeFileId = t, this._project.files.forEach((n) => {
+      n.isOpen = n.id === t || n.isOpen;
     }), this._project.lastModified = Date.now(), s && s.setCode(e.content), this._saveProject(), this.requestUpdate();
   }
   _closeFile(t) {
@@ -2234,7 +2338,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   _handleFileRename(t) {
     const { fileId: e, newName: s } = t.detail;
     if (!this._project) return;
-    const i = this._project.files.find((r) => r.id === e);
+    const i = this._project.files.find((n) => n.id === e);
     i && (i.name = s, i.path = s, i.lastModified = Date.now(), this._project.lastModified = Date.now(), this._saveProject());
   }
   _handleFileDeleted(t) {
@@ -2265,34 +2369,34 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       }
   }
   async _toggleProjectExplorer() {
-    !this._projectExplorerLoaded && !this._showProjectExplorer && (await import("./project-DSJgCpej.js"), this._projectExplorerLoaded = !0), this._showProjectExplorer = !this._showProjectExplorer;
+    !this._projectExplorerLoaded && !this._showProjectExplorer && (await import("./project-B48wM8Lq.js"), this._projectExplorerLoaded = !0), this._showProjectExplorer = !this._showProjectExplorer;
   }
   /**
    * Parse and analyze the current code
    * Updates all reactive state with results
    */
   _analyzeCode() {
-    var i, r;
-    const t = [], e = this._getCurrentCode(), s = x(e);
+    var i, n;
+    const t = [], e = this._getCurrentCode(), s = w(e);
     if (s.errors.length > 0)
-      for (const n of s.errors)
+      for (const r of s.errors)
         t.push({
           severity: "Error",
-          message: n.message,
-          line: n.line,
-          column: n.column
+          message: r.message,
+          line: r.line,
+          column: r.column
         });
     if (this._syntaxOk = s.success && s.ast !== void 0, s.success && s.ast) {
-      const n = Y(s.ast);
-      for (const d of n.diagnostics)
+      const r = Y(s.ast);
+      for (const d of r.diagnostics)
         t.push({
           severity: d.severity,
           code: d.code,
           message: d.message,
           line: (i = d.location) == null ? void 0 : i.line,
-          column: (r = d.location) == null ? void 0 : r.column
+          column: (n = d.location) == null ? void 0 : n.column
         });
-      this._triggers = n.triggers, this._metadata = n.metadata, this._entityCount = n.dependencies.length;
+      this._triggers = r.triggers, this._metadata = r.metadata, this._entityCount = r.dependencies.length;
     } else
       this._triggers = [], this._metadata = null, this._entityCount = 0;
     this._diagnostics = t;
@@ -2309,7 +2413,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       );
       return;
     }
-    const t = x(this._getCurrentCode());
+    const t = w(this._getCurrentCode());
     if (!t.success || !t.ast) {
       console.error("Cannot deploy: parsing failed");
       return;
@@ -2317,17 +2421,17 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     const [{ transpile: e }, { deploy: s, HAApiClient: i }] = await Promise.all([
       import("./transpiler-deploy-BqpcyTqr.js").then((p) => p.i),
       import("./transpiler-deploy-BqpcyTqr.js").then((p) => p.a)
-    ]), r = e(t.ast, "home");
-    if (r.diagnostics.some((p) => p.severity === "Error")) {
+    ]), n = e(t.ast, "home");
+    if (n.diagnostics.some((p) => p.severity === "Error")) {
       console.error(
         "Cannot deploy: transpiler reported errors",
-        r.diagnostics
+        n.diagnostics
       );
       return;
     }
-    const n = new i(this.hass.connection);
+    const r = new i(this.hass.connection);
     try {
-      const p = await s(n, r, {
+      const p = await s(r, n, {
         createBackup: !0
       });
       p.success ? console.log("Deploy successful", p.transactionId) : console.error("Deploy failed", p.errors);
@@ -2356,13 +2460,13 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     return e;
   }
   async _handleOnlineConnect() {
-    var r, n;
-    if (!this._syntaxOk || !((r = this.hass) != null && r.connection))
+    var n, r;
+    if (!this._syntaxOk || !((n = this.hass) != null && n.connection))
       return;
-    const t = x(this._getCurrentCode());
+    const t = w(this._getCurrentCode());
     if (!t.success || !t.ast)
       return;
-    const e = Y(t.ast), s = this._extractBindings(e.dependencies), i = (n = this.shadowRoot) == null ? void 0 : n.querySelector(
+    const e = Y(t.ast), s = this._extractBindings(e.dependencies), i = (r = this.shadowRoot) == null ? void 0 : r.querySelector(
       "st-editor"
     );
     if (i)
@@ -2397,14 +2501,16 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     };
   }
   async _toggleEntityBrowser() {
-    !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-Cy2iDIVt.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
+    !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-LjCBNnug.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
   }
 };
-Ui(m, "styles", j`
+Ui(f, "styles", j`
     :host {
       display: block;
       height: 100%;
-      background: var(--ui-bg, var(--primary-background-color));
+      background:
+        radial-gradient(circle at top left, rgba(24, 183, 230, 0.12), transparent 28%),
+        linear-gradient(180deg, #081018, #091119 26%, #070d13 100%);
       color: var(--ui-text-primary, var(--primary-text-color));
       font-family: var(--font-ui, var(--paper-font-common-base_-_font-family));
     }
@@ -2425,8 +2531,10 @@ Ui(m, "styles", j`
       border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
-      background: var(--ui-bg-card, var(--card-background-color));
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
+        var(--ui-bg-card, var(--card-background-color));
       overflow: hidden;
+      box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
     }
     .sidebar.hidden {
       display: none;
@@ -2441,43 +2549,66 @@ Ui(m, "styles", j`
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--space-2, 8px) var(--space-4, 16px);
-      background: var(--ui-bg-header, var(--app-header-background-color));
+      padding: 18px 20px 14px;
+      background:
+        linear-gradient(135deg, rgba(24, 183, 230, 0.16), transparent 28%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+        var(--ui-bg-header, var(--app-header-background-color));
       color: var(--ui-text-header, var(--app-header-text-color));
       border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      box-shadow: var(--shadow-header);
+    }
+    .toolbar-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .toolbar-kicker {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(237, 246, 255, 0.58);
     }
     .toolbar h1 {
       margin: 0;
-      font-size: var(--font-size-2xl, 20px);
-      font-weight: var(--font-weight-normal, 400);
-      letter-spacing: -0.2px;
+      font-size: var(--font-size-3xl, 26px);
+      font-weight: var(--font-weight-bold, 700);
+      letter-spacing: -0.04em;
       font-family: var(--font-ui, inherit);
+    }
+    .toolbar-subtitle {
+      font-size: var(--font-size-sm, 12px);
+      color: rgba(237, 246, 255, 0.7);
     }
     .toolbar-actions {
       display: flex;
-      gap: var(--space-2, 8px);
+      gap: 10px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .toolbar-button {
-      padding: 6px var(--space-3, 12px);
-      border: 1px solid color-mix(in srgb, var(--ui-text-header, #fff) 40%, transparent);
-      border-radius: var(--radius-md, 4px);
-      background: color-mix(in srgb, var(--ui-text-header, #fff) 15%, transparent);
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius-md, 10px);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--ui-text-header, #fff);
       cursor: pointer;
       font-size: var(--font-size-md, 14px);
       font-family: var(--font-ui, inherit);
       display: flex;
       align-items: center;
-      gap: var(--space-1, 4px);
-      transition: var(--transition-fast, background-color 0.2s ease);
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition-medium, background-color 0.2s ease);
     }
     .toolbar-button:hover {
-      background: color-mix(in srgb, var(--ui-text-header, #fff) 25%, transparent);
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
     }
     .toolbar-button.active {
-      background: color-mix(in srgb, var(--ui-text-header, #fff) 35%, transparent);
-      border-color: color-mix(in srgb, var(--ui-text-header, #fff) 60%, transparent);
+      background: linear-gradient(135deg, var(--ui-primary-soft), rgba(24, 183, 230, 0.22));
+      border-color: rgba(91, 212, 255, 0.48);
+      color: #f6fdff;
     }
     .toolbar-button:focus-visible {
       outline: 2px solid var(--ui-text-header, #fff);
@@ -2486,28 +2617,40 @@ Ui(m, "styles", j`
     .editor-container {
       flex: 1;
       overflow: hidden;
-      padding: var(--space-4, 16px);
+      padding: 18px;
       background: linear-gradient(
         180deg,
-        color-mix(in srgb, var(--ui-bg-secondary, #e5e5e5) 32%, transparent),
-        transparent 32%
+        rgba(255, 255, 255, 0.03),
+        transparent 24%
       );
     }
     st-editor {
       height: 100%;
-      border-radius: var(--radius-md, 4px);
+      border-radius: var(--radius-lg, 16px);
       box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
     .status-bar {
       display: flex;
-      gap: var(--space-4, 16px);
-      padding: 6px var(--space-4, 16px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      gap: 10px;
+      padding: 10px 16px 12px;
+      background: rgba(8, 14, 20, 0.88);
       border-top: 1px solid var(--ui-divider, var(--divider-color));
       font-size: var(--font-size-sm, 12px);
       flex-wrap: wrap;
       align-items: center;
       font-family: var(--font-ui, inherit);
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--ui-text-secondary);
+      line-height: 1;
     }
     .status-ok {
       color: var(--ui-success, var(--success-color, #4caf50));
@@ -2518,19 +2661,49 @@ Ui(m, "styles", j`
     .status-warning {
       color: var(--ui-warning, var(--warning-color, #ff9800));
     }
+    .status-bar > .status-ok:first-child,
+    .status-bar > .status-error:first-child {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0;
+      line-height: 1;
+    }
+    .status-bar > .status-ok:first-child::after {
+      content: "Syntax OK";
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-medium, 500);
+    }
+    .status-bar > .status-error:first-child::after {
+      content: "Syntax Error";
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-medium, 500);
+    }
     .deploy-button {
-      padding: var(--space-2, 8px) var(--space-4, 16px);
-      border: none;
-      border-radius: var(--radius-md, 4px);
-      background: var(--ui-text-header, #fff);
-      color: var(--ui-bg-header, #03a9f4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md, 10px);
+      background: linear-gradient(135deg, #eafaff, #c9f3ff);
+      color: #08141b;
       cursor: pointer;
-      font-size: var(--font-size-md, 14px);
+      font-size: 0;
       font-weight: var(--font-weight-bold, 700);
       font-family: var(--font-ui, inherit);
+      box-shadow: 0 10px 22px rgba(24, 183, 230, 0.18);
+    }
+    .deploy-button::before {
+      content: "Deploy";
+      font-size: var(--font-size-md, 14px);
     }
     .deploy-button:hover:not(:disabled) {
-      opacity: 0.9;
+      transform: translateY(-1px);
+      filter: brightness(1.02);
     }
     .deploy-button:focus-visible {
       outline: 2px solid var(--ui-text-header, #fff);
@@ -2543,14 +2716,14 @@ Ui(m, "styles", j`
     .diagnostics-panel {
       max-height: 130px;
       overflow-y: auto;
-      padding: 6px var(--space-4, 16px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      padding: 8px 16px;
+      background: rgba(8, 14, 20, 0.9);
       border-top: 1px solid var(--ui-divider, var(--divider-color));
       font-size: var(--font-size-sm, 12px);
       font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
     }
     .diagnostic {
-      padding: 2px 0;
+      padding: 4px 0;
     }
     .diagnostic-error {
       color: var(--error-color, #f44336);
@@ -2566,9 +2739,9 @@ Ui(m, "styles", j`
     }
     .tabs-container {
       display: flex;
-      gap: 2px;
-      padding: 0 var(--space-2, 8px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      gap: 8px;
+      padding: 10px 14px 0;
+      background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       overflow-x: auto;
     }
@@ -2576,24 +2749,27 @@ Ui(m, "styles", j`
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 12px;
-      background: var(--ui-bg-card, var(--card-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ui-text-secondary, var(--primary-text-color));
       cursor: pointer;
-      border: none;
-      border-bottom: 2px solid transparent;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
       font-size: var(--font-size-base, 13px);
       font-family: var(--font-ui, inherit);
       white-space: nowrap;
       transition: all 0.2s;
     }
     .tab:hover {
-      background: color-mix(in srgb, var(--ui-primary, #03a9f4) 8%, var(--ui-bg-card, #fff));
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ui-text-primary);
     }
     .tab.active {
-      background: var(--ui-bg, var(--primary-background-color));
-      border-bottom-color: var(--ui-primary, var(--primary-color));
+      background: linear-gradient(180deg, rgba(24, 183, 230, 0.14), rgba(255, 255, 255, 0.02));
+      border-color: rgba(91, 212, 255, 0.24);
       color: var(--ui-text-primary, var(--primary-text-color));
+      box-shadow: inset 0 2px 0 rgba(91, 212, 255, 0.5);
     }
     .tab-close {
       width: 16px;
@@ -2615,60 +2791,65 @@ Ui(m, "styles", j`
       background-color: var(--ui-warning, var(--warning-color, #ff9800));
     }
     .project-sidebar {
-      width: 280px;
+      width: 292px;
       min-width: 240px;
-      max-width: 360px;
+      max-width: 380px;
       border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
-      background: var(--ui-bg-card, var(--card-background-color));
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%),
+        var(--ui-bg-card, var(--card-background-color));
     }
     .project-sidebar.hidden {
       display: none;
     }
+    .toolbar-icon {
+      width: 18px;
+      height: 18px;
+    }
   `);
-f([
+m([
   S({ attribute: !1 })
-], m.prototype, "hass", 2);
-f([
+], f.prototype, "hass", 2);
+m([
   S({ type: Boolean })
-], m.prototype, "narrow", 2);
-f([
-  v()
-], m.prototype, "_code", 2);
-f([
-  v()
-], m.prototype, "_project", 2);
-f([
-  v()
-], m.prototype, "_syntaxOk", 2);
-f([
-  v()
-], m.prototype, "_triggers", 2);
-f([
-  v()
-], m.prototype, "_diagnostics", 2);
-f([
-  v()
-], m.prototype, "_metadata", 2);
-f([
-  v()
-], m.prototype, "_entityCount", 2);
-f([
-  v()
-], m.prototype, "_onlineState", 2);
-f([
-  v()
-], m.prototype, "_showEntityBrowser", 2);
-f([
-  v()
-], m.prototype, "_showProjectExplorer", 2);
-f([
-  v()
-], m.prototype, "_storage", 2);
-m = f([
+], f.prototype, "narrow", 2);
+m([
+  b()
+], f.prototype, "_code", 2);
+m([
+  b()
+], f.prototype, "_project", 2);
+m([
+  b()
+], f.prototype, "_syntaxOk", 2);
+m([
+  b()
+], f.prototype, "_triggers", 2);
+m([
+  b()
+], f.prototype, "_diagnostics", 2);
+m([
+  b()
+], f.prototype, "_metadata", 2);
+m([
+  b()
+], f.prototype, "_entityCount", 2);
+m([
+  b()
+], f.prototype, "_onlineState", 2);
+m([
+  b()
+], f.prototype, "_showEntityBrowser", 2);
+m([
+  b()
+], f.prototype, "_showProjectExplorer", 2);
+m([
+  b()
+], f.prototype, "_storage", 2);
+f = m([
   W("st-panel")
-], m);
+], f);
 const Ni = document.getElementById("st-ha-design-system");
 if (!Ni) {
   const a = document.createElement("style");

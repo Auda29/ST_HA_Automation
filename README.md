@@ -21,7 +21,7 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 
 ## Project Status
 
-**Current Version**: 2.0.3  
+**Current Version**: 2.1.0  
 **Status**: Stable, Ready for Production Use
 
 ### Test Coverage

@@ -5,6 +5,18 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-04-22
+
+### Changed
+- Reworked the Home Assistant panel shell into the intended industrial UI treatment instead of the previous mostly-legacy layout
+- Redesigned the top toolbar, online mode controls, project explorer, file tree, entity browser, and entity list so the shipped interface now reflects the new visual direction end to end
+- Consolidated the shared frontend design tokens in `colors_and_type.css` and wired them into the panel components that actually render in Home Assistant
+
+### Fixed
+- File rename propagation remains correct after the project explorer redesign
+- Entity data-type inference still returns the expected `INT`/`REAL`/`STRING` classifications after the UI refactor
+- Frontend release artifacts were rebuilt so the HACS package matches the updated UI implementation
+
 ## [2.0.3] - 2026-04-22
 
 ### Fixed
@@ -121,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.1.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.0
 [2.0.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.3
 [2.0.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.0
 [2.0.2]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.2

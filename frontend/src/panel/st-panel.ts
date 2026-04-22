@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import "../colors_and_type.css";
 import "../editor";
 import "../online/online-toolbar";
 // Entity browser and project explorer are lazy loaded when shown
@@ -51,7 +52,9 @@ export class STPanel extends LitElement {
     :host {
       display: block;
       height: 100%;
-      background: var(--ui-bg, var(--primary-background-color));
+      background:
+        radial-gradient(circle at top left, rgba(24, 183, 230, 0.12), transparent 28%),
+        linear-gradient(180deg, #081018, #091119 26%, #070d13 100%);
       color: var(--ui-text-primary, var(--primary-text-color));
       font-family: var(--font-ui, var(--paper-font-common-base_-_font-family));
     }
@@ -72,8 +75,10 @@ export class STPanel extends LitElement {
       border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
-      background: var(--ui-bg-card, var(--card-background-color));
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
+        var(--ui-bg-card, var(--card-background-color));
       overflow: hidden;
+      box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
     }
     .sidebar.hidden {
       display: none;
@@ -88,43 +93,66 @@ export class STPanel extends LitElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--space-2, 8px) var(--space-4, 16px);
-      background: var(--ui-bg-header, var(--app-header-background-color));
+      padding: 18px 20px 14px;
+      background:
+        linear-gradient(135deg, rgba(24, 183, 230, 0.16), transparent 28%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+        var(--ui-bg-header, var(--app-header-background-color));
       color: var(--ui-text-header, var(--app-header-text-color));
       border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      box-shadow: var(--shadow-header);
+    }
+    .toolbar-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .toolbar-kicker {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(237, 246, 255, 0.58);
     }
     .toolbar h1 {
       margin: 0;
-      font-size: var(--font-size-2xl, 20px);
-      font-weight: var(--font-weight-normal, 400);
-      letter-spacing: -0.2px;
+      font-size: var(--font-size-3xl, 26px);
+      font-weight: var(--font-weight-bold, 700);
+      letter-spacing: -0.04em;
       font-family: var(--font-ui, inherit);
+    }
+    .toolbar-subtitle {
+      font-size: var(--font-size-sm, 12px);
+      color: rgba(237, 246, 255, 0.7);
     }
     .toolbar-actions {
       display: flex;
-      gap: var(--space-2, 8px);
+      gap: 10px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .toolbar-button {
-      padding: 6px var(--space-3, 12px);
-      border: 1px solid color-mix(in srgb, var(--ui-text-header, #fff) 40%, transparent);
-      border-radius: var(--radius-md, 4px);
-      background: color-mix(in srgb, var(--ui-text-header, #fff) 15%, transparent);
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius-md, 10px);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--ui-text-header, #fff);
       cursor: pointer;
       font-size: var(--font-size-md, 14px);
       font-family: var(--font-ui, inherit);
       display: flex;
       align-items: center;
-      gap: var(--space-1, 4px);
-      transition: var(--transition-fast, background-color 0.2s ease);
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      transition: var(--transition-medium, background-color 0.2s ease);
     }
     .toolbar-button:hover {
-      background: color-mix(in srgb, var(--ui-text-header, #fff) 25%, transparent);
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
     }
     .toolbar-button.active {
-      background: color-mix(in srgb, var(--ui-text-header, #fff) 35%, transparent);
-      border-color: color-mix(in srgb, var(--ui-text-header, #fff) 60%, transparent);
+      background: linear-gradient(135deg, var(--ui-primary-soft), rgba(24, 183, 230, 0.22));
+      border-color: rgba(91, 212, 255, 0.48);
+      color: #f6fdff;
     }
     .toolbar-button:focus-visible {
       outline: 2px solid var(--ui-text-header, #fff);
@@ -133,28 +161,40 @@ export class STPanel extends LitElement {
     .editor-container {
       flex: 1;
       overflow: hidden;
-      padding: var(--space-4, 16px);
+      padding: 18px;
       background: linear-gradient(
         180deg,
-        color-mix(in srgb, var(--ui-bg-secondary, #e5e5e5) 32%, transparent),
-        transparent 32%
+        rgba(255, 255, 255, 0.03),
+        transparent 24%
       );
     }
     st-editor {
       height: 100%;
-      border-radius: var(--radius-md, 4px);
+      border-radius: var(--radius-lg, 16px);
       box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
     .status-bar {
       display: flex;
-      gap: var(--space-4, 16px);
-      padding: 6px var(--space-4, 16px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      gap: 10px;
+      padding: 10px 16px 12px;
+      background: rgba(8, 14, 20, 0.88);
       border-top: 1px solid var(--ui-divider, var(--divider-color));
       font-size: var(--font-size-sm, 12px);
       flex-wrap: wrap;
       align-items: center;
       font-family: var(--font-ui, inherit);
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--ui-text-secondary);
+      line-height: 1;
     }
     .status-ok {
       color: var(--ui-success, var(--success-color, #4caf50));
@@ -165,19 +205,49 @@ export class STPanel extends LitElement {
     .status-warning {
       color: var(--ui-warning, var(--warning-color, #ff9800));
     }
+    .status-bar > .status-ok:first-child,
+    .status-bar > .status-error:first-child {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0;
+      line-height: 1;
+    }
+    .status-bar > .status-ok:first-child::after {
+      content: "Syntax OK";
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-medium, 500);
+    }
+    .status-bar > .status-error:first-child::after {
+      content: "Syntax Error";
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-medium, 500);
+    }
     .deploy-button {
-      padding: var(--space-2, 8px) var(--space-4, 16px);
-      border: none;
-      border-radius: var(--radius-md, 4px);
-      background: var(--ui-text-header, #fff);
-      color: var(--ui-bg-header, #03a9f4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md, 10px);
+      background: linear-gradient(135deg, #eafaff, #c9f3ff);
+      color: #08141b;
       cursor: pointer;
-      font-size: var(--font-size-md, 14px);
+      font-size: 0;
       font-weight: var(--font-weight-bold, 700);
       font-family: var(--font-ui, inherit);
+      box-shadow: 0 10px 22px rgba(24, 183, 230, 0.18);
+    }
+    .deploy-button::before {
+      content: "Deploy";
+      font-size: var(--font-size-md, 14px);
     }
     .deploy-button:hover:not(:disabled) {
-      opacity: 0.9;
+      transform: translateY(-1px);
+      filter: brightness(1.02);
     }
     .deploy-button:focus-visible {
       outline: 2px solid var(--ui-text-header, #fff);
@@ -190,14 +260,14 @@ export class STPanel extends LitElement {
     .diagnostics-panel {
       max-height: 130px;
       overflow-y: auto;
-      padding: 6px var(--space-4, 16px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      padding: 8px 16px;
+      background: rgba(8, 14, 20, 0.9);
       border-top: 1px solid var(--ui-divider, var(--divider-color));
       font-size: var(--font-size-sm, 12px);
       font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
     }
     .diagnostic {
-      padding: 2px 0;
+      padding: 4px 0;
     }
     .diagnostic-error {
       color: var(--error-color, #f44336);
@@ -213,9 +283,9 @@ export class STPanel extends LitElement {
     }
     .tabs-container {
       display: flex;
-      gap: 2px;
-      padding: 0 var(--space-2, 8px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      gap: 8px;
+      padding: 10px 14px 0;
+      background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       overflow-x: auto;
     }
@@ -223,24 +293,27 @@ export class STPanel extends LitElement {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 12px;
-      background: var(--ui-bg-card, var(--card-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ui-text-secondary, var(--primary-text-color));
       cursor: pointer;
-      border: none;
-      border-bottom: 2px solid transparent;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
       font-size: var(--font-size-base, 13px);
       font-family: var(--font-ui, inherit);
       white-space: nowrap;
       transition: all 0.2s;
     }
     .tab:hover {
-      background: color-mix(in srgb, var(--ui-primary, #03a9f4) 8%, var(--ui-bg-card, #fff));
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ui-text-primary);
     }
     .tab.active {
-      background: var(--ui-bg, var(--primary-background-color));
-      border-bottom-color: var(--ui-primary, var(--primary-color));
+      background: linear-gradient(180deg, rgba(24, 183, 230, 0.14), rgba(255, 255, 255, 0.02));
+      border-color: rgba(91, 212, 255, 0.24);
       color: var(--ui-text-primary, var(--primary-text-color));
+      box-shadow: inset 0 2px 0 rgba(91, 212, 255, 0.5);
     }
     .tab-close {
       width: 16px;
@@ -262,16 +335,21 @@ export class STPanel extends LitElement {
       background-color: var(--ui-warning, var(--warning-color, #ff9800));
     }
     .project-sidebar {
-      width: 280px;
+      width: 292px;
       min-width: 240px;
-      max-width: 360px;
+      max-width: 380px;
       border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
-      background: var(--ui-bg-card, var(--card-background-color));
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%),
+        var(--ui-bg-card, var(--card-background-color));
     }
     .project-sidebar.hidden {
       display: none;
+    }
+    .toolbar-icon {
+      width: 18px;
+      height: 18px;
     }
   `;
 
@@ -389,7 +467,14 @@ END_PROGRAM`;
     return html`
       <div class="container">
         <div class="toolbar">
-          <h1>ST for Home Assistant</h1>
+          <div class="toolbar-brand">
+            <div class="toolbar-kicker">Structured Text Runtime</div>
+            <h1 class="st-h1">ST for Home Assistant</h1>
+            <div class="toolbar-subtitle">
+              Engineer automations, bind entities, and deploy from one control
+              surface.
+            </div>
+          </div>
           <div class="toolbar-actions">
             <button
               class="toolbar-button ${this._showProjectExplorer
@@ -398,7 +483,7 @@ END_PROGRAM`;
               @click=${this._toggleProjectExplorer}
               title="Toggle Project Explorer"
             >
-              <ha-icon icon="mdi:folder"></ha-icon>
+              <ha-icon class="toolbar-icon" icon="mdi:folder-multiple"></ha-icon>
               Project
             </button>
             <button
@@ -406,10 +491,17 @@ END_PROGRAM`;
               @click=${this._toggleEntityBrowser}
               title="Toggle Entity Browser"
             >
-              <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
+              <ha-icon
+                class="toolbar-icon"
+                icon="mdi:transmission-tower"
+              ></ha-icon>
               Entities
             </button>
-            <button class="deploy-button" @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
+            <button
+              class="deploy-button"
+              @click=${this._handleDeploy}
+              ?disabled=${!this._syntaxOk}
+            >
               ▶ Deploy
             </button>
           </div>
@@ -507,17 +599,19 @@ END_PROGRAM`;
             ? html`<span class="status-ok">✓ Syntax OK</span>`
             : html`<span class="status-error">✗ Syntax Error</span>`}
           ${errorCount > 0
-            ? html`<span class="status-error">${errorCount} Error(s)</span>`
+            ? html`<span class="status-pill status-error"
+                >${errorCount} Error(s)</span
+              >`
             : ""}
           ${warningCount > 0
-            ? html`<span class="status-warning"
+            ? html`<span class="status-pill status-warning"
                 >${warningCount} Warning(s)</span
               >`
             : ""}
-          <span>Triggers: ${this._triggers.length}</span>
-          <span>Entities: ${this._entityCount}</span>
+          <span class="status-pill">Triggers: ${this._triggers.length}</span>
+          <span class="status-pill">Entities: ${this._entityCount}</span>
           ${this._metadata?.mode
-            ? html`<span>Mode: ${this._metadata.mode}</span>`
+            ? html`<span class="status-pill">Mode: ${this._metadata.mode}</span>`
             : ""}
           ${this._metadata?.hasPersistentVars
             ? html`<span>💾 Persistent</span>`

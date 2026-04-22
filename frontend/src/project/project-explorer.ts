@@ -27,53 +27,93 @@ export class STProjectExplorer extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background: var(--ui-bg-card, var(--card-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
+      background:
+        linear-gradient(180deg, rgba(17, 24, 30, 0.98), rgba(10, 15, 19, 0.98));
+      color: var(--ui-text-primary, #f3f7fb);
       font-family: var(--font-ui, inherit);
     }
+
     .header {
-      padding: var(--space-3, 12px) var(--space-4, 16px);
-      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      padding: var(--space-5, 20px) var(--space-4, 16px) var(--space-4, 16px);
+      border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+      gap: var(--space-3, 12px);
     }
+
+    .header-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin-bottom: 6px;
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-xs, 11px);
+      font-weight: var(--font-weight-bold, 700);
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
     .header h3 {
       margin: 0;
-      font-size: var(--font-size-base, 13px);
+      font-size: var(--font-size-lg, 18px);
       font-weight: var(--font-weight-bold, 700);
-      color: var(--ui-text-primary, var(--primary-text-color));
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      color: var(--ui-text-primary, #f3f7fb);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
+    .header-meta {
+      margin-top: 6px;
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
+    }
+
     .header-actions {
       display: flex;
-      gap: var(--space-1, 4px);
+      gap: var(--space-2, 8px);
     }
+
     .header-button {
-      padding: var(--space-1, 4px) var(--space-2, 8px);
-      border: 1px solid var(--ui-divider, var(--divider-color));
-      background: var(--ui-bg-secondary, var(--secondary-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
-      cursor: pointer;
-      border-radius: var(--radius-md, 4px);
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: var(--space-1, 4px);
+      gap: var(--space-2, 8px);
+      min-height: 40px;
+      padding: 0 var(--space-4, 16px);
+      border: 1px solid rgba(120, 173, 199, 0.26);
+      border-radius: var(--radius-md, 12px);
+      background: rgba(24, 37, 46, 0.94);
+      color: var(--ui-text-primary, #f3f7fb);
+      cursor: pointer;
       font-size: var(--font-size-sm, 12px);
-      font-family: var(--font-ui, inherit);
+      font-weight: var(--font-weight-semibold, 600);
+      letter-spacing: 0.02em;
+      transition:
+        transform var(--transition-fast, 160ms ease),
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease);
     }
+
     .header-button:hover {
-      background-color: var(--ui-divider, var(--divider-color));
+      background: rgba(13, 165, 215, 0.18);
+      border-color: rgba(120, 173, 199, 0.42);
+      transform: translateY(-1px);
     }
+
+    .header-button ha-icon {
+      --mdc-icon-size: 18px;
+    }
+
     .file-tree-container {
       flex: 1;
       overflow: hidden;
     }
+
     .empty-state {
-      padding: var(--space-8, 32px) var(--space-4, 16px);
-      text-align: center;
-      color: var(--ui-text-secondary, var(--secondary-text-color));
+      padding: var(--space-8, 32px) var(--space-5, 20px);
+      color: var(--ui-text-secondary, #b6c4cf);
       font-size: var(--font-size-md, 14px);
     }
   `;
@@ -92,7 +132,6 @@ export class STProjectExplorer extends LitElement {
 
   private _initializeStorage(): void {
     if (this.hass?.connection) {
-      // Get config entry ID from hass (if available)
       const configEntryId = this.hass.config?.entry_id || "default";
       this._storage = new ProjectStorage(this.hass.connection, configEntryId);
     } else {
@@ -120,7 +159,6 @@ END_PROGRAM`,
       hasUnsavedChanges: false,
     };
 
-    // Dispatch file-created event so parent can update its project state first
     this.dispatchEvent(
       new CustomEvent("file-created", {
         detail: { file: newFile },
@@ -177,7 +215,7 @@ END_PROGRAM`,
         return {
           ...file,
           name: newName,
-          path: newName, // Simple: path = name for now
+          path: newName,
           lastModified: Date.now(),
         };
       }
@@ -224,7 +262,11 @@ END_PROGRAM`,
 
     return html`
       <div class="header">
-        <h3>${this.project.name}</h3>
+        <div class="header-copy">
+          <div class="eyebrow">Project Workspace</div>
+          <h3>${this.project.name}</h3>
+          <div class="header-meta">${this.project.files.length} file(s)</div>
+        </div>
         <div class="header-actions">
           <button
             class="header-button"
@@ -232,7 +274,7 @@ END_PROGRAM`,
             title="New File"
           >
             <ha-icon icon="mdi:file-plus"></ha-icon>
-            New
+            New File
           </button>
         </div>
       </div>

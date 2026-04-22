@@ -14,9 +14,8 @@ import type { EntityState } from "../online/types";
 
 @customElement("st-entity-browser")
 export class STEntityBrowser extends LitElement {
-  @property({ attribute: false }) declare hass?: any; // Home Assistant object with connection
+  @property({ attribute: false }) declare hass?: any;
 
-  // Internal state (we manually trigger updates when these change)
   private _entities: Map<string, EntityInfo> = new Map();
   private _filter: EntityFilter = {
     searchQuery: "",
@@ -35,80 +34,128 @@ export class STEntityBrowser extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background: var(--primary-background-color);
+      background:
+        linear-gradient(180deg, rgba(15, 21, 27, 0.98), rgba(10, 14, 18, 0.98));
+      color: var(--ui-text-primary, #f3f7fb);
+      font-family: var(--font-ui, inherit);
     }
+
     .header {
-      padding: 16px;
-      border-bottom: 1px solid var(--divider-color);
+      padding: var(--space-5, 20px) var(--space-4, 16px) var(--space-4, 16px);
+      border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
     }
+
+    .eyebrow {
+      margin-bottom: 6px;
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-xs, 11px);
+      font-weight: var(--font-weight-bold, 700);
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
     .header h2 {
-      margin: 0 0 12px 0;
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--primary-text-color);
+      margin: 0 0 var(--space-3, 12px);
+      font-size: var(--font-size-xl, 22px);
+      font-weight: var(--font-weight-semibold, 600);
+      color: var(--ui-text-primary, #f3f7fb);
     }
-    .search-box {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      font-size: 14px;
-      background: var(--secondary-background-color);
-      color: var(--primary-text-color);
-      box-sizing: border-box;
+
+    .search-shell {
+      position: relative;
+      margin-bottom: var(--space-3, 12px);
     }
-    .search-box:focus {
-      outline: none;
-      border-color: var(--primary-color);
+
+    .search-shell ha-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ui-text-muted, #8ea1af);
+      --mdc-icon-size: 16px;
     }
-    .filters {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
+
+    .search-box,
     .filter-select {
-      flex: 1;
-      min-width: 120px;
-      padding: 6px 8px;
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      font-size: 12px;
-      background: var(--secondary-background-color);
-      color: var(--primary-text-color);
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 40px;
+      border: 1px solid rgba(88, 127, 146, 0.22);
+      border-radius: var(--radius-md, 12px);
+      background: rgba(25, 34, 42, 0.94);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-size: var(--font-size-md, 14px);
+      font-family: inherit;
     }
+
+    .search-box {
+      padding: 0 12px 0 38px;
+    }
+
+    .search-box:focus,
+    .filter-select:focus {
+      outline: none;
+      border-color: rgba(71, 187, 226, 0.48);
+      box-shadow: 0 0 0 3px rgba(14, 165, 215, 0.12);
+    }
+
+    .filters {
+      display: grid;
+      gap: var(--space-2, 8px);
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .checkbox-row {
+      display: grid;
+      gap: var(--space-2, 8px);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .filter-checkbox {
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--primary-text-color);
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: var(--radius-md, 12px);
+      background: rgba(17, 24, 30, 0.94);
+      border: 1px solid rgba(88, 127, 146, 0.18);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
     }
+
     .filter-checkbox input {
+      accent-color: var(--ui-primary, #0ea5d7);
       margin: 0;
     }
+
     .status-bar {
-      padding: 8px 16px;
-      font-size: 12px;
-      color: var(--secondary-text-color);
-      border-bottom: 1px solid var(--divider-color);
+      padding: var(--space-3, 12px) var(--space-4, 16px);
+      font-size: var(--font-size-sm, 12px);
+      color: var(--ui-text-secondary, #b6c4cf);
+      border-bottom: 1px solid rgba(88, 127, 146, 0.18);
       display: flex;
       justify-content: space-between;
+      gap: var(--space-3, 12px);
     }
+
     .status-connected {
-      color: var(--success-color, #4caf50);
+      color: var(--status-online, #42d6a4);
     }
+
     .status-error {
-      color: var(--error-color, #f44336);
+      color: var(--status-error, #ff6b6b);
     }
+
     .entity-list-container {
       flex: 1;
       overflow: hidden;
     }
+
     .empty-state {
-      padding: 32px 16px;
+      padding: var(--space-8, 32px) var(--space-5, 20px);
       text-align: center;
-      color: var(--secondary-text-color);
+      color: var(--ui-text-secondary, #b6c4cf);
     }
   `;
 
@@ -128,9 +175,6 @@ export class STEntityBrowser extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("hass")) {
       const previous = changedProperties.get("hass");
-      // Only reconnect when we had a previous hass instance and the connection
-      // reference actually changed. This avoids double-subscription on the
-      // initial render where hass is set the first time.
       if (previous && (previous as any).connection !== this.hass?.connection) {
         this._disconnect();
         if (this.hass?.connection) {
@@ -140,9 +184,6 @@ export class STEntityBrowser extends LitElement {
     }
   }
 
-  /**
-   * Connect to HA WebSocket and subscribe to entity updates
-   */
   private async _connect(): Promise<void> {
     if (!this.hass?.connection) {
       this._error = "Home Assistant connection not available";
@@ -153,21 +194,13 @@ export class STEntityBrowser extends LitElement {
       this._error = null;
       this._isConnected = false;
 
-      // Ensure haVersion is set on connection (required by home-assistant-js-websocket)
-      // Home Assistant frontend normally sets this, but in custom panels it may be missing
       if (!this.hass.connection.haVersion && this.hass.config?.version) {
         this.hass.connection.haVersion = this.hass.config.version;
       }
 
-      // Subscribe to all entity state changes
-      this._unsubscribe = subscribeEntities(
-        this.hass.connection,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (entities: any) => {
-          this._handleEntityUpdate(entities);
-        },
-      );
-      // At this point the subscription is established; mark connection as active.
+      this._unsubscribe = subscribeEntities(this.hass.connection, (entities: any) => {
+        this._handleEntityUpdate(entities);
+      });
       this._isConnected = true;
     } catch (error) {
       this._error =
@@ -177,9 +210,6 @@ export class STEntityBrowser extends LitElement {
     }
   }
 
-  /**
-   * Disconnect from WebSocket subscription
-   */
   private _disconnect(): void {
     if (this._unsubscribe) {
       this._unsubscribe();
@@ -188,9 +218,6 @@ export class STEntityBrowser extends LitElement {
     this._isConnected = false;
   }
 
-  /**
-   * Handle entity state updates from WebSocket
-   */
   private _handleEntityUpdate(entities: Record<string, EntityState>): void {
     const entityMap = new Map<string, EntityInfo>();
     const domainSet = new Set<string>();
@@ -215,13 +242,9 @@ export class STEntityBrowser extends LitElement {
 
     this._entities = entityMap;
     this._domains = Array.from(domainSet).sort();
-    // Force re-render since Map reference changes aren't detected by Lit
     this.requestUpdate();
   }
 
-  /**
-   * Extract friendly name from entity state
-   */
   private _getFriendlyName(entity: EntityState): string | undefined {
     if (entity.attributes?.friendly_name) {
       return entity.attributes.friendly_name as string;
@@ -229,9 +252,6 @@ export class STEntityBrowser extends LitElement {
     return undefined;
   }
 
-  /**
-   * Extract icon from entity state
-   */
   private _getEntityIcon(entity: EntityState): string | undefined {
     if (entity.attributes?.icon) {
       return entity.attributes.icon as string;
@@ -239,13 +259,9 @@ export class STEntityBrowser extends LitElement {
     return undefined;
   }
 
-  /**
-   * Infer data type from entity
-   */
   public static inferDataType(entity: EntityInfo): DataTypeInference {
     const domain = entity.domain;
 
-    // Binary entities -> BOOL
     if (
       ["binary_sensor", "input_boolean", "switch", "light"].includes(domain)
     ) {
@@ -256,153 +272,168 @@ export class STEntityBrowser extends LitElement {
       };
     }
 
-    // Numeric input entities -> REAL
     if (domain === "input_number" || domain === "number") {
       return {
         dataType: "REAL",
         confidence: "high",
-        reason: `Domain ${domain} uses numeric values`,
+        reason: `Domain ${domain} typically uses numeric values`,
       };
     }
 
-    // Sensor entities - try to parse state
+    if (domain === "climate") {
+      return {
+        dataType: "REAL",
+        confidence: "medium",
+        reason: "Climate entities often expose temperature setpoints",
+      };
+    }
+
     if (domain === "sensor") {
-      const numValue = parseFloat(entity.state);
-      if (!isNaN(numValue)) {
-        // Check if it's an integer
-        if (Number.isInteger(numValue)) {
-          return {
-            dataType: "INT",
-            confidence: "medium",
-            reason: "Sensor state is a numeric integer",
-          };
-        }
+      const numericState = Number(entity.state);
+      if (!Number.isNaN(numericState)) {
+        const isInteger =
+          Number.isInteger(numericState) && !entity.state.includes(".");
         return {
-          dataType: "REAL",
+          dataType: isInteger ? "INT" : "REAL",
           confidence: "medium",
-          reason: "Sensor state is a numeric value",
+          reason: isInteger
+            ? "Sensor state is a whole number"
+            : "Sensor state is a decimal number",
         };
       }
+
       return {
         dataType: "STRING",
         confidence: "medium",
-        reason: "Sensor state is non-numeric",
+        reason: "Sensor state is non-numeric text",
       };
     }
 
-    // Default to STRING
     return {
       dataType: "STRING",
       confidence: "low",
-      reason: "Unknown domain, defaulting to STRING",
+      reason: "Fallback type for unclassified entity domains",
     };
   }
 
-  private _handleSearchChange(e: Event): void {
-    const input = e.target as HTMLInputElement;
+  private _getFilteredEntities(): EntityInfo[] {
+    return Array.from(this._entities.values());
+  }
+
+  private _handleSearchInput(e: Event): void {
     this._filter = {
       ...this._filter,
-      searchQuery: input.value,
+      searchQuery: (e.target as HTMLInputElement).value,
     };
+    this.requestUpdate();
   }
 
   private _handleDomainChange(e: Event): void {
-    const select = e.target as HTMLSelectElement;
+    const value = (e.target as HTMLSelectElement).value;
     this._filter = {
       ...this._filter,
-      selectedDomain: select.value || null,
+      selectedDomain: value || null,
     };
+    this.requestUpdate();
   }
 
-  private _handleInputsOnlyChange(e: Event): void {
-    const checkbox = e.target as HTMLInputElement;
+  private _handleInputsToggle(e: Event): void {
     this._filter = {
       ...this._filter,
-      showInputsOnly: checkbox.checked,
-      showOutputsOnly: false, // Mutually exclusive
+      showInputsOnly: (e.target as HTMLInputElement).checked,
     };
+    this.requestUpdate();
   }
 
-  private _handleOutputsOnlyChange(e: Event): void {
-    const checkbox = e.target as HTMLInputElement;
+  private _handleOutputsToggle(e: Event): void {
     this._filter = {
       ...this._filter,
-      showInputsOnly: false, // Mutually exclusive
-      showOutputsOnly: checkbox.checked,
+      showOutputsOnly: (e.target as HTMLInputElement).checked,
     };
+    this.requestUpdate();
   }
 
   render() {
-    const entityArray = Array.from(this._entities.values());
+    const entities = this._getFilteredEntities();
 
     return html`
       <div class="header">
+        <div class="eyebrow">Entity Linker</div>
         <h2>Entity Browser</h2>
-        <input
-          type="text"
-          class="search-box"
-          placeholder="🔍 Filter entities..."
-          .value=${this._filter.searchQuery}
-          @input=${this._handleSearchChange}
-        />
+        <div class="search-shell">
+          <ha-icon icon="mdi:magnify"></ha-icon>
+          <input
+            class="search-box"
+            type="text"
+            .value=${this._filter.searchQuery}
+            @input=${this._handleSearchInput}
+            placeholder="Filter entities, devices, or states"
+          />
+        </div>
         <div class="filters">
-          <select
-            class="filter-select"
-            @change=${this._handleDomainChange}
-            .value=${this._filter.selectedDomain || ""}
-          >
+          <select class="filter-select" @change=${this._handleDomainChange}>
             <option value="">All Domains</option>
             ${this._domains.map(
-              (domain) => html` <option value=${domain}>${domain}</option> `,
+              (domain) => html`
+                <option
+                  value=${domain}
+                  ?selected=${this._filter.selectedDomain === domain}
+                >
+                  ${domain}
+                </option>
+              `,
             )}
           </select>
-          <label class="filter-checkbox">
-            <input
-              type="checkbox"
-              .checked=${this._filter.showInputsOnly}
-              @change=${this._handleInputsOnlyChange}
-            />
-            Inputs Only
-          </label>
-          <label class="filter-checkbox">
-            <input
-              type="checkbox"
-              .checked=${this._filter.showOutputsOnly}
-              @change=${this._handleOutputsOnlyChange}
-            />
-            Outputs Only
-          </label>
+          <div class="checkbox-row">
+            <label class="filter-checkbox">
+              <input
+                type="checkbox"
+                .checked=${this._filter.showInputsOnly}
+                @change=${this._handleInputsToggle}
+              />
+              Inputs only
+            </label>
+            <label class="filter-checkbox">
+              <input
+                type="checkbox"
+                .checked=${this._filter.showOutputsOnly}
+                @change=${this._handleOutputsToggle}
+              />
+              Outputs only
+            </label>
+          </div>
         </div>
       </div>
+
       <div class="status-bar">
-        <span class=${this._isConnected ? "status-connected" : ""}>
-          ${this._isConnected
-            ? `✓ ${entityArray.length} entities`
-            : "Connecting..."}
+        <span class=${this._isConnected ? "status-connected" : "status-error"}>
+          ${this._error
+            ? this._error
+            : this._isConnected
+              ? "Connected to Home Assistant"
+              : "Connecting to Home Assistant"}
         </span>
-        ${this._error
-          ? html`<span class="status-error">${this._error}</span>`
-          : ""}
+        <span>${entities.length} entities</span>
       </div>
+
       <div class="entity-list-container">
-        ${this._isConnected
+        ${entities.length === 0
           ? html`
-              <st-entity-list
-                .entities=${entityArray}
-                .filter=${this._filter}
-              ></st-entity-list>
+              <div class="empty-state">
+                ${this._error
+                  ? "Entity stream unavailable"
+                  : "Waiting for entities from Home Assistant"}
+              </div>
             `
           : html`
-              <div class="empty-state">
-                ${this._error || "Connecting to Home Assistant..."}
-              </div>
+              <st-entity-list
+                .entities=${entities}
+                .filter=${this._filter}
+              ></st-entity-list>
             `}
       </div>
     `;
   }
 }
 
-// Export the inferDataType function for use in other components
-export function inferDataType(entity: EntityInfo): DataTypeInference {
-  return STEntityBrowser.inferDataType(entity);
-}
+export const inferDataType = STEntityBrowser.inferDataType;

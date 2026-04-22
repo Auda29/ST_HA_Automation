@@ -1,147 +1,125 @@
-/**
- * ST-HA Design System — Colors & Typography
- * 
- * Two color contexts:
- *   1. --editor-*   : Hardcoded TwinCAT-inspired dark theme (always dark)
- *   2. --ui-*       : HA CSS variable aliases (adaptive light/dark)
- *
- * Usage: import this file alongside your component. For the UI shell,
- * CSS vars will inherit from the HA host's theme. For the editor,
- * use --editor-* vars directly (they do not adapt).
- */
-
 :root {
-  /* ── EDITOR COLORS (TwinCAT / VS Code dark, always dark) ── */
-  --editor-bg:             #1e1e1e;
-  --editor-bg-light:       #252526;
-  --editor-fg:             #d4d4d4;
-  --editor-fg-dim:         #808080;
-
-  /* Syntax token colors */
-  --editor-keyword:        #569cd6;   /* IF, THEN, PROGRAM, VAR … */
-  --editor-type:           #4ec9b0;   /* BOOL, INT, REAL … */
-  --editor-function:       #dcdcaa;   /* SEL, MUX, ABS … */
-  --editor-variable:       #9cdcfe;   /* variable names */
-  --editor-string:         #ce9178;   /* 'sensor.temp' string literals */
-  --editor-number:         #b5cea8;   /* numeric literals */
-  --editor-comment:        #6a9955;   /* (* comments *) */
-  --editor-pragma:         #c586c0;   /* {persistent}, {trigger} … */
-  --editor-operator:       #d4d4d4;   /* :=, +, -, =, <> … */
-  --editor-invalid:        #ff0000;   /* syntax errors */
-
-  /* Editor UI chrome */
-  --editor-selection:      #264f78;
-  --editor-selection-bg:   rgba(38, 79, 120, 0.5);
+  /* Editor theme stays close to the TwinCAT / VS Code dark palette. */
+  --editor-bg: #1e1e1e;
+  --editor-bg-light: #252526;
+  --editor-fg: #d4d4d4;
+  --editor-fg-dim: #808080;
+  --editor-keyword: #569cd6;
+  --editor-type: #4ec9b0;
+  --editor-function: #dcdcaa;
+  --editor-variable: #9cdcfe;
+  --editor-string: #ce9178;
+  --editor-number: #b5cea8;
+  --editor-comment: #6a9955;
+  --editor-pragma: #c586c0;
+  --editor-operator: #d4d4d4;
+  --editor-invalid: #ff0000;
+  --editor-selection: #264f78;
+  --editor-selection-bg: rgba(38, 79, 120, 0.5);
   --editor-line-highlight: #2a2d2e;
-  --editor-gutter-bg:      #1e1e1e;
-  --editor-gutter-fg:      #858585;
-  --editor-border:         #404040;
-  --editor-cursor:         #aeafad;
-  --editor-tooltip-bg:     #252526;
+  --editor-gutter-bg: #1e1e1e;
+  --editor-gutter-fg: #858585;
+  --editor-border: #404040;
+  --editor-cursor: #aeafad;
+  --editor-tooltip-bg: #252526;
 
-  /* ── UI SHELL COLORS (HA CSS variable aliases) ── */
-  /* These are aliases; the real values come from the HA host theme. */
-  /* Fallback values shown are HA's default light theme. */
-  --ui-primary:            var(--primary-color,              #03a9f4);
-  --ui-bg:                 var(--primary-background-color,   #fafafa);
-  --ui-bg-secondary:       var(--secondary-background-color, #e5e5e5);
-  --ui-bg-card:            var(--card-background-color,      #ffffff);
-  --ui-bg-header:          var(--app-header-background-color,#03a9f4);
-  --ui-text-primary:       var(--primary-text-color,         #212121);
-  --ui-text-secondary:     var(--secondary-text-color,       #727272);
-  --ui-text-header:        var(--app-header-text-color,      #ffffff);
-  --ui-text-on-primary:    var(--text-primary-color,         #ffffff);
-  --ui-divider:            var(--divider-color,              rgba(0,0,0,0.12));
+  /*
+   * Shell theme:
+   * the HA host can still override these, but the defaults intentionally form
+   * a cohesive industrial workbench instead of relying on plain HA colors.
+   */
+  --ui-primary: var(--primary-color, #18b7e6);
+  --ui-primary-strong: #0d7fa6;
+  --ui-primary-soft: rgba(24, 183, 230, 0.14);
+  --ui-bg: #091119;
+  --ui-bg-secondary: #0e1822;
+  --ui-bg-card: #101c27;
+  --ui-bg-card-strong: #132331;
+  --ui-bg-header: #0c1a24;
+  --ui-bg-inset: #0a141d;
+  --ui-bg-elevated: #162633;
+  --ui-text-primary: #edf6ff;
+  --ui-text-secondary: #8ea6bd;
+  --ui-text-muted: #668097;
+  --ui-text-header: #f4fbff;
+  --ui-text-on-primary: #07141d;
+  --ui-divider: rgba(140, 169, 193, 0.18);
+  --ui-divider-strong: rgba(140, 169, 193, 0.32);
+  --ui-success: #4fd39e;
+  --ui-error: #ff7272;
+  --ui-warning: #ffbf47;
+  --ui-info: #6bc9ff;
+  --ui-disabled: #6c8194;
 
-  /* Semantic UI colors */
-  --ui-success:            var(--success-color,              #4caf50);
-  --ui-error:              var(--error-color,                #f44336);
-  --ui-warning:            var(--warning-color,              #ff9800);
-  --ui-info:               var(--info-color,                 #2196f3);
-  --ui-disabled:           var(--disabled-text-color,        #9e9e9e);
+  --status-online: #4fd39e;
+  --status-paused: #ffbf47;
+  --status-connecting: #6bc9ff;
+  --status-disconnected: #7e8f9f;
+  --status-error: #ff7272;
 
-  /* Online mode status dot colors (match editor syntax palette) */
-  --status-online:         #4ec9b0;   /* = --editor-type */
-  --status-paused:         #dcdcaa;   /* = --editor-function */
-  --status-connecting:     #569cd6;   /* = --editor-keyword */
-  --status-disconnected:   #808080;   /* = --editor-fg-dim */
-  --status-error:          #f44747;
+  --font-mono: "Fira Code", "Consolas", "Courier New", monospace;
+  --font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
 
-  /* ── TYPOGRAPHY ── */
-
-  /* Editor / code / diagnostics */
-  --font-mono:   "Fira Code", "Consolas", "Courier New", monospace;
-  --font-ui:     var(--paper-font-common-base_-_font-family,
-                     -apple-system, BlinkMacSystemFont, "Segoe UI",
-                     Roboto, Helvetica, Arial, sans-serif);
-
-  /* Editor font size */
-  --font-size-editor:      14px;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 26px;
+  --font-size-editor: 14px;
   --font-size-diagnostics: 12px;
 
-  /* UI type scale */
-  --font-size-xs:   11px;
-  --font-size-sm:   12px;
-  --font-size-base: 13px;
-  --font-size-md:   14px;
-  --font-size-lg:   16px;
-  --font-size-xl:   18px;
-  --font-size-2xl:  20px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
 
-  /* Font weights */
-  --font-weight-normal:  400;
-  --font-weight-medium:  500;
-  --font-weight-bold:    700;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
 
-  /* ── SPACING ── */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 
-  /* ── BORDERS & RADIUS ── */
-  --radius-sm:  2px;   /* tab close button */
-  --radius-md:  4px;   /* buttons, inputs, cards, editor — universal */
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.22);
+  --shadow-popover: 0 16px 32px rgba(0, 0, 0, 0.28);
+  --shadow-header: inset 0 -1px 0 rgba(255, 255, 255, 0.04);
 
-  /* ── SHADOWS ── */
-  --shadow-popover: 0 4px 12px rgba(0, 0, 0, 0.2);  /* settings dropdown */
-
-  /* ── SIDEBAR DIMENSIONS ── */
-  --sidebar-width-min:     240px;
+  --sidebar-width-min: 240px;
   --sidebar-width-default: 320px;
-  --sidebar-width-max:     400px;
+  --sidebar-width-max: 400px;
 
-  /* ── TRANSITIONS ── */
   --transition-fast: all 0.2s ease;
+  --transition-medium: all 0.28s ease;
 }
 
-/* ── SEMANTIC ELEMENT STYLES ── */
-
-/* Headings (UI shell) */
 .st-h1 {
-  font-family: var(--font-ui);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-normal);
-  color: var(--ui-text-header);
   margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ui-text-header);
 }
 
 .st-h2 {
+  margin: 0;
   font-family: var(--font-ui);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-medium);
+  font-weight: 600;
   color: var(--ui-text-primary);
-  margin: 0 0 12px 0;
 }
 
-/* Body text */
 .st-body {
   font-family: var(--font-ui);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-md);
   color: var(--ui-text-primary);
 }
 
@@ -151,57 +129,80 @@
   color: var(--ui-text-secondary);
 }
 
-/* Monospace (diagnostics, status bar, code references) */
 .st-mono {
   font-family: var(--font-mono);
   font-size: var(--font-size-diagnostics);
   color: var(--ui-text-primary);
 }
 
-/* Status text */
-.st-status-ok      { color: var(--ui-success); }
-.st-status-error   { color: var(--ui-error); }
-.st-status-warning { color: var(--ui-warning); }
-.st-status-info    { color: var(--ui-info); }
-
-/* Buttons */
-.st-btn-primary {
-  padding: var(--space-2) var(--space-4);
-  border: none;
+.st-btn-primary,
+.st-btn-secondary,
+.st-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   border-radius: var(--radius-md);
-  background: var(--ui-primary);
-  color: var(--ui-text-on-primary);
   cursor: pointer;
   font-family: var(--font-ui);
   font-size: var(--font-size-md);
+  font-weight: 600;
+  transition: var(--transition-medium);
+}
+
+.st-btn-primary {
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--ui-primary), #4ad7ff);
+  color: var(--ui-text-on-primary);
+  box-shadow: 0 10px 20px rgba(24, 183, 230, 0.18);
 }
 
 .st-btn-secondary {
-  padding: 6px var(--space-3);
-  border: 1px solid var(--ui-divider);
-  border-radius: var(--radius-md);
-  background: var(--ui-bg-secondary);
+  padding: 9px 14px;
+  border: 1px solid var(--ui-divider-strong);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--ui-text-primary);
-  cursor: pointer;
-  font-family: var(--font-ui);
-  font-size: var(--font-size-md);
-  display: flex;
+}
+
+.st-btn-ghost {
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ui-text-secondary);
+}
+
+.st-btn-primary:hover,
+.st-btn-secondary:hover,
+.st-btn-ghost:hover {
+  transform: translateY(-1px);
+}
+
+.st-chip {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--ui-divider);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ui-text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  line-height: 1;
 }
 
-.st-btn-secondary:hover {
-  background: var(--ui-divider);
+.st-status-ok {
+  color: var(--ui-success);
 }
 
-.st-btn-secondary.active {
-  background: var(--ui-primary);
-  color: var(--ui-text-on-primary);
-  border-color: var(--ui-primary);
+.st-status-error {
+  color: var(--ui-error);
 }
 
-.st-btn-primary:disabled,
-.st-btn-secondary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.st-status-warning {
+  color: var(--ui-warning);
+}
+
+.st-status-info {
+  color: var(--ui-info);
 }

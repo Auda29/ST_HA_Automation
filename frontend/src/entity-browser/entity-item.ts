@@ -1,7 +1,8 @@
 /**
  * Entity Item Component
- * 
- * Displays a single entity with drag-and-drop support for binding to ST variables.
+ *
+ * Displays a single entity with drag-and-drop support for binding to ST
+ * variables.
  */
 
 import { LitElement, html, css } from "lit";
@@ -19,87 +20,118 @@ export class STEntityItem extends LitElement {
     :host {
       display: block;
     }
+
     .entity-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
+      gap: var(--space-3, 12px);
+      padding: var(--space-3, 12px);
       cursor: grab;
-      border-radius: 4px;
-      transition: background-color 0.2s;
+      border-radius: var(--radius-md, 12px);
+      transition:
+        transform var(--transition-fast, 160ms ease),
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease);
       user-select: none;
+      border: 1px solid transparent;
+      margin-bottom: 6px;
     }
+
     .entity-item:hover {
-      background-color: var(--divider-color, rgba(0, 0, 0, 0.1));
+      background: rgba(21, 31, 39, 0.96);
+      border-color: rgba(88, 127, 146, 0.18);
+      transform: translateX(1px);
     }
+
     .entity-item:active {
       cursor: grabbing;
     }
+
     .entity-item.dragging {
       opacity: 0.5;
     }
+
+    .direction-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .direction-indicator.input {
+      background: var(--status-connecting, #3aa0ff);
+      box-shadow: 0 0 8px rgba(58, 160, 255, 0.35);
+    }
+
+    .direction-indicator.output {
+      background: var(--status-paused, #ffce73);
+      box-shadow: 0 0 8px rgba(255, 206, 115, 0.35);
+    }
+
     .entity-icon {
-      width: 20px;
-      height: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--primary-text-color);
+      color: rgba(132, 212, 238, 0.95);
+      background: rgba(14, 165, 215, 0.12);
+      flex-shrink: 0;
     }
+
     .entity-icon ha-icon {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
+
     .entity-info {
       flex: 1;
       min-width: 0;
     }
+
     .entity-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--primary-text-color);
+      font-size: var(--font-size-md, 14px);
+      font-weight: var(--font-weight-semibold, 600);
+      color: var(--ui-text-primary, #f3f7fb);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .entity-id {
-      font-size: 11px;
-      color: var(--secondary-text-color);
+      margin-top: 2px;
+      font-size: var(--font-size-xs, 11px);
+      color: var(--ui-text-muted, #8ea1af);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .entity-state {
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background-color: var(--secondary-background-color);
-      color: var(--primary-text-color);
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-semibold, 600);
+      padding: 6px 10px;
+      border-radius: var(--radius-pill, 999px);
+      background: rgba(28, 39, 48, 0.92);
+      color: var(--ui-text-primary, #f3f7fb);
       white-space: nowrap;
-    }
-    .entity-state.on {
-      background-color: var(--success-color, #4caf50);
-      color: white;
-    }
-    .entity-state.off {
-      background-color: var(--disabled-color, #9e9e9e);
-      color: white;
-    }
-    .entity-state.unavailable {
-      background-color: var(--error-color, #f44336);
-      color: white;
-    }
-    .direction-indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
       flex-shrink: 0;
     }
-    .direction-indicator.input {
-      background-color: var(--info-color, #2196f3);
+
+    .entity-state.on {
+      background: rgba(66, 214, 164, 0.16);
+      color: #8ff0c9;
     }
-    .direction-indicator.output {
-      background-color: var(--warning-color, #ff9800);
+
+    .entity-state.off {
+      background: rgba(111, 124, 135, 0.22);
+      color: #c5d0d8;
+    }
+
+    .entity-state.unavailable {
+      background: rgba(255, 107, 107, 0.16);
+      color: #ffb2b2;
     }
   `;
 
@@ -130,13 +162,10 @@ export class STEntityItem extends LitElement {
   }
 
   private _entityIdToVarName(entityId: string): string {
-    // Convert entity ID to valid ST variable name
-    // e.g., "sensor.kitchen_temperature" -> "kitchenTemperature"
     const parts = entityId.split(".");
     if (parts.length < 2) return entityId;
 
     const name = parts[1];
-    // Convert snake_case to camelCase
     return name
       .split("_")
       .map((word, index) => {
@@ -151,7 +180,11 @@ export class STEntityItem extends LitElement {
     if (normalized === "on" || normalized === "open" || normalized === "active") {
       return "on";
     }
-    if (normalized === "off" || normalized === "closed" || normalized === "inactive") {
+    if (
+      normalized === "off" ||
+      normalized === "closed" ||
+      normalized === "inactive"
+    ) {
       return "off";
     }
     if (normalized === "unavailable" || normalized === "unknown") {
@@ -164,7 +197,7 @@ export class STEntityItem extends LitElement {
     if (this.entity.icon) {
       return this.entity.icon;
     }
-    // Default icons by domain
+
     const domainIcons: Record<string, string> = {
       light: "mdi:lightbulb",
       switch: "mdi:toggle-switch",
@@ -195,7 +228,7 @@ export class STEntityItem extends LitElement {
         draggable="true"
         @dragstart=${this._handleDragStart}
         @dragend=${this._handleDragEnd}
-        title="Drag to editor (Shift+drag for output binding)"
+        title="Drag to editor. Hold Shift while dragging for an output binding."
       >
         ${this.isInput || this.isOutput
           ? html`<div

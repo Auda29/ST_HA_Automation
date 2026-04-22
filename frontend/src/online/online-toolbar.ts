@@ -21,59 +21,72 @@ export class OnlineToolbar extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--space-3, 12px);
-      padding: var(--space-2, 8px) var(--space-4, 16px);
-      background: var(--ui-bg-card, var(--card-background-color));
-      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      padding: var(--space-3, 12px) var(--space-5, 20px);
+      background:
+        linear-gradient(180deg, rgba(14, 28, 35, 0.96), rgba(11, 17, 21, 0.96));
+      border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
       font-family: var(--font-ui, inherit);
+      position: relative;
     }
 
     .status {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-2, 8px);
+      padding: var(--space-2, 8px) var(--space-3, 12px);
+      border: 1px solid var(--ui-divider, rgba(88, 127, 146, 0.2));
+      border-radius: var(--radius-pill, 999px);
+      background: rgba(19, 26, 32, 0.9);
+      color: var(--ui-text-primary, #f3f7fb);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
     }
 
     .status-dot--online {
-      background: var(--status-online, #4ec9b0);
-      box-shadow: 0 0 4px var(--status-online, #4ec9b0);
+      background: var(--status-online, #42d6a4);
+      box-shadow: 0 0 12px rgba(66, 214, 164, 0.45);
     }
 
     .status-dot--paused {
-      background: var(--status-paused, #dcdcaa);
+      background: var(--status-paused, #ffce73);
     }
 
     .status-dot--connecting {
-      background: var(--status-connecting, #569cd6);
-      animation: pulse 1s infinite;
+      background: var(--status-connecting, #3aa0ff);
+      animation: pulse 1.1s infinite;
     }
 
     .status-dot--disconnected {
-      background: var(--status-disconnected, #808080);
+      background: var(--status-disconnected, #6f7c87);
     }
 
     .status-dot--error {
-      background: var(--status-error, #f44747);
+      background: var(--status-error, #ff6b6b);
+      box-shadow: 0 0 12px rgba(255, 107, 107, 0.35);
     }
 
     @keyframes pulse {
       0%,
       100% {
         opacity: 1;
+        transform: scale(1);
       }
       50% {
-        opacity: 0.5;
+        opacity: 0.52;
+        transform: scale(0.92);
       }
     }
 
     .status-text {
-      font-size: var(--font-size-base, 13px);
-      font-weight: 500;
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-semibold, 600);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .controls {
@@ -82,31 +95,51 @@ export class OnlineToolbar extends LitElement {
     }
 
     button {
-      padding: 6px var(--space-3, 12px);
-      border: 1px solid var(--ui-divider, var(--divider-color));
-      border-radius: var(--radius-md, 4px);
-      background: var(--ui-bg-secondary, var(--secondary-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
-      cursor: pointer;
-      font-size: var(--font-size-base, 13px);
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: var(--space-1, 4px);
+      gap: var(--space-2, 8px);
+      min-height: 36px;
+      padding: 0 var(--space-4, 16px);
+      border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
+      border-radius: var(--radius-md, 12px);
+      background: rgba(25, 34, 42, 0.92);
+      color: var(--ui-text-primary, #f3f7fb);
+      cursor: pointer;
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-semibold, 600);
+      letter-spacing: 0.02em;
+      transition:
+        transform var(--transition-fast, 160ms ease),
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease);
     }
 
     button:hover {
-      background: var(--ui-divider, var(--divider-color));
+      background: rgba(34, 48, 58, 0.96);
+      border-color: rgba(120, 173, 199, 0.44);
+      transform: translateY(-1px);
     }
 
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
+      transform: none;
     }
 
     button.active {
-      background: var(--ui-primary, var(--primary-color));
-      color: var(--ui-text-on-primary, var(--text-primary-color));
-      border-color: var(--ui-primary, var(--primary-color));
+      background: rgba(255, 206, 115, 0.18);
+      border-color: rgba(255, 206, 115, 0.45);
+      color: #ffdb97;
+    }
+
+    button.settings-toggle {
+      min-width: 36px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    ha-icon {
+      --mdc-icon-size: 16px;
     }
 
     .spacer {
@@ -115,52 +148,83 @@ export class OnlineToolbar extends LitElement {
 
     .stats {
       display: flex;
-      gap: var(--space-4, 16px);
-      font-size: var(--font-size-sm, 12px);
-      color: var(--ui-text-secondary, var(--secondary-text-color));
+      align-items: center;
+      gap: var(--space-2, 8px);
+      flex-wrap: wrap;
     }
 
     .stat {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 var(--space-3, 12px);
+      border-radius: var(--radius-pill, 999px);
+      background: rgba(15, 23, 29, 0.88);
+      border: 1px solid rgba(88, 127, 146, 0.18);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
+    }
+
+    .settings-shell {
+      position: relative;
     }
 
     .settings-panel {
       position: absolute;
-      top: 100%;
+      top: calc(100% + 10px);
       right: 0;
-      background: var(--ui-bg-card, var(--card-background-color));
-      border: 1px solid var(--ui-divider, var(--divider-color));
-      border-radius: var(--radius-md, 4px);
-      padding: var(--space-3, 12px);
-      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
+      min-width: 220px;
+      padding: var(--space-4, 16px);
+      border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
+      border-radius: var(--radius-xl, 18px);
+      background:
+        linear-gradient(180deg, rgba(22, 31, 38, 0.98), rgba(14, 20, 26, 0.98));
+      box-shadow: var(--shadow-popover, 0 18px 42px rgba(0, 0, 0, 0.35));
       z-index: 100;
+    }
+
+    .settings-title {
+      margin: 0 0 var(--space-3, 12px);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-size: var(--font-size-sm, 12px);
+      font-weight: var(--font-weight-bold, 700);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .setting {
       display: flex;
       align-items: center;
-      gap: var(--space-2, 8px);
-      margin-bottom: var(--space-2, 8px);
+      justify-content: space-between;
+      gap: var(--space-3, 12px);
+      margin-bottom: var(--space-3, 12px);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-sm, 12px);
     }
 
     .setting:last-child {
       margin-bottom: 0;
     }
 
-    .setting label {
-      font-size: var(--font-size-base, 13px);
+    .setting input,
+    .setting select {
+      accent-color: var(--ui-primary, #0ea5d7);
+      background: rgba(9, 14, 18, 0.92);
+      color: var(--ui-text-primary, #f3f7fb);
+      border: 1px solid rgba(88, 127, 146, 0.3);
+      border-radius: var(--radius-sm, 8px);
+      padding: 6px 8px;
     }
   `;
 
   private get statusText(): string {
     const texts: Record<OnlineStatus, string> = {
       disconnected: "Offline",
-      connecting: "Connecting...",
+      connecting: "Connecting",
       online: "Online",
       paused: "Paused",
-      error: "Error",
+      error: "Fault",
     };
     return texts[this.state?.status || "disconnected"];
   }
@@ -170,7 +234,9 @@ export class OnlineToolbar extends LitElement {
   }
 
   private get canConnect(): boolean {
-    return ["disconnected", "error"].includes(this.state?.status || "disconnected");
+    return ["disconnected", "error"].includes(
+      this.state?.status || "disconnected",
+    );
   }
 
   render() {
@@ -184,28 +250,49 @@ export class OnlineToolbar extends LitElement {
 
       <div class="controls">
         ${this.canConnect
-          ? html` <button @click=${this._handleConnect}>▶ Connect</button> `
+          ? html`
+              <button @click=${this._handleConnect}>
+                <ha-icon icon="mdi:play"></ha-icon>
+                Connect
+              </button>
+            `
           : html`
               <button
                 @click=${this._handleTogglePause}
                 class="${this.isPaused ? "active" : ""}"
               >
-                ${this.isPaused ? "▶ Resume" : "⏸ Pause"}
+                <ha-icon
+                  icon=${this.isPaused ? "mdi:play-pause" : "mdi:pause"}
+                ></ha-icon>
+                ${this.isPaused ? "Resume" : "Pause"}
               </button>
-              <button @click=${this._handleDisconnect}>⏹ Stop</button>
+              <button @click=${this._handleDisconnect}>
+                <ha-icon icon="mdi:stop"></ha-icon>
+                Stop
+              </button>
             `}
       </div>
 
       <div class="spacer"></div>
 
       <div class="stats">
-        <div class="stat">📊 ${this.state?.liveValues?.size || 0} Variables</div>
-        <div class="stat">⚡ ${this.state?.updateRate || 100}ms</div>
+        <div class="stat">
+          <ha-icon icon="mdi:variable"></ha-icon>
+          ${this.state?.liveValues?.size || 0} Variables
+        </div>
+        <div class="stat">
+          <ha-icon icon="mdi:lightning-bolt"></ha-icon>
+          ${this.state?.updateRate || 100}ms
+        </div>
       </div>
 
-      <div style="position: relative;">
-        <button @click=${() => (this._showSettings = !this._showSettings)}>
-          ⚙️
+      <div class="settings-shell">
+        <button
+          class="settings-toggle"
+          @click=${() => (this._showSettings = !this._showSettings)}
+          title="Online settings"
+        >
+          <ha-icon icon="mdi:cog"></ha-icon>
         </button>
         ${this._showSettings ? this._renderSettings() : ""}
       </div>
@@ -215,27 +302,28 @@ export class OnlineToolbar extends LitElement {
   private _renderSettings() {
     return html`
       <div class="settings-panel">
+        <div class="settings-title">Online Settings</div>
         <div class="setting">
+          <label for="highlight">Highlight changes</label>
           <input
             type="checkbox"
             id="highlight"
             .checked=${this.state?.highlightChanges}
             @change=${this._handleHighlightChange}
           />
-          <label for="highlight">Highlight changes</label>
         </div>
         <div class="setting">
+          <label for="conditions">Show conditions</label>
           <input
             type="checkbox"
             id="conditions"
             .checked=${this.state?.showConditions}
             @change=${this._handleConditionsChange}
           />
-          <label for="conditions">Show conditions</label>
         </div>
         <div class="setting">
-          <label>Update rate:</label>
-          <select @change=${this._handleRateChange}>
+          <label for="rate">Update rate</label>
+          <select id="rate" @change=${this._handleRateChange}>
             <option value="50" ?selected=${this.state?.updateRate === 50}>
               50ms
             </option>

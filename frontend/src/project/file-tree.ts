@@ -1,7 +1,8 @@
 /**
  * File Tree Component
- * 
- * Displays project files in a tree structure with support for folders and file operations.
+ *
+ * Displays project files in a tree structure with support for folders and file
+ * operations.
  */
 
 import { LitElement, html, css } from "lit";
@@ -42,45 +43,53 @@ export class STFileTree extends LitElement {
       overflow-y: auto;
       font-size: var(--font-size-md, 14px);
       font-family: var(--font-ui, inherit);
-      background: var(--ui-bg-card, var(--card-background-color));
-      color: var(--ui-text-primary, var(--primary-text-color));
+      background: transparent;
+      color: var(--ui-text-primary, #f3f7fb);
     }
+
     .file-tree {
-      padding: var(--space-2, 8px);
+      padding: var(--space-3, 12px);
     }
+
     .tree-node {
       user-select: none;
     }
+
     .tree-item {
       display: flex;
       align-items: center;
-      gap: var(--space-1, 4px);
-      padding: var(--space-1, 4px) var(--space-2, 8px);
+      gap: var(--space-2, 8px);
+      min-height: 38px;
+      padding: 0 var(--space-3, 12px);
       cursor: pointer;
-      border-radius: var(--radius-md, 4px);
-      transition: var(--transition-fast, background-color 0.2s);
+      border-radius: var(--radius-md, 12px);
+      transition:
+        transform var(--transition-fast, 160ms ease),
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease);
+      border: 1px solid transparent;
+      color: var(--ui-text-secondary, #b6c4cf);
     }
+
     .tree-item:hover {
-      background-color: var(--ui-divider, rgba(0, 0, 0, 0.1));
+      background: rgba(23, 34, 43, 0.94);
+      border-color: rgba(88, 127, 146, 0.18);
+      transform: translateX(1px);
     }
+
     .tree-item.active {
-      background-color: var(--ui-primary, var(--primary-color));
-      color: var(--ui-text-on-primary, var(--text-primary-color));
+      background:
+        linear-gradient(180deg, rgba(14, 165, 215, 0.2), rgba(10, 131, 173, 0.2));
+      border-color: rgba(71, 187, 226, 0.42);
+      color: var(--ui-text-primary, #f3f7fb);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
     }
+
     .tree-item.selected {
-      background-color: var(--ui-bg-secondary, var(--secondary-background-color));
+      background: rgba(19, 28, 35, 0.92);
     }
-    .tree-toggle {
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .tree-toggle.expanded {
-      transform: rotate(90deg);
-    }
+
+    .tree-toggle,
     .tree-icon {
       width: 16px;
       height: 16px;
@@ -89,57 +98,66 @@ export class STFileTree extends LitElement {
       justify-content: center;
       flex-shrink: 0;
     }
-    .tree-icon ha-icon {
+
+    .tree-toggle {
+      color: var(--ui-text-muted, #8ea1af);
+      transition: transform var(--transition-fast, 160ms ease);
+    }
+
+    .tree-toggle.expanded {
+      transform: rotate(90deg);
+    }
+
+    .tree-icon {
+      color: rgba(132, 212, 238, 0.95);
+    }
+
+    .tree-icon ha-icon,
+    .tree-toggle ha-icon {
       width: 16px;
       height: 16px;
     }
+
     .tree-label {
       flex: 1;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: var(--font-size-md, 14px);
+      font-weight: var(--font-weight-medium, 500);
     }
+
     .tree-label.editing {
-      padding: 2px 4px;
-      border: 1px solid var(--ui-primary, var(--primary-color));
-      border-radius: var(--radius-sm, 2px);
-      background: var(--ui-bg-card, var(--card-background-color));
+      padding: 6px 8px;
+      border: 1px solid rgba(71, 187, 226, 0.48);
+      border-radius: var(--radius-sm, 8px);
+      background: rgba(7, 11, 15, 0.95);
     }
+
     .tree-label input {
       width: 100%;
       border: none;
       outline: none;
       background: transparent;
-      color: var(--ui-text-primary, var(--primary-text-color));
+      color: var(--ui-text-primary, #f3f7fb);
       font-size: var(--font-size-md, 14px);
+      font-family: inherit;
     }
+
     .tree-children {
-      margin-left: 16px;
+      margin-left: var(--space-4, 16px);
+      padding-left: var(--space-2, 8px);
+      border-left: 1px solid rgba(88, 127, 146, 0.14);
     }
+
     .unsaved-indicator {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background-color: var(--ui-warning, var(--warning-color, #ff9800));
+      background: var(--status-paused, #ffce73);
+      box-shadow: 0 0 8px rgba(255, 206, 115, 0.4);
       flex-shrink: 0;
-    }
-    .context-menu {
-      position: fixed;
-      background: var(--ui-bg-card, var(--card-background-color));
-      border: 1px solid var(--ui-divider, var(--divider-color));
-      border-radius: var(--radius-md, 4px);
-      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
-      z-index: 1000;
-      min-width: 150px;
-    }
-    .context-menu-item {
-      padding: var(--space-2, 8px) var(--space-3, 12px);
-      cursor: pointer;
-      font-size: var(--font-size-md, 14px);
-    }
-    .context-menu-item:hover {
-      background-color: var(--ui-divider, var(--divider-color));
     }
   `;
 
@@ -211,18 +229,26 @@ export class STFileTree extends LitElement {
     );
   }
 
-  private _handleContextMenu(file: ProjectFile, e: Event): void {
+  private _startRename(file: ProjectFile, e: Event): void {
     e.preventDefault();
     e.stopPropagation();
-    // Context menu implementation would go here
-    // For now, just emit event
-    this.dispatchEvent(
-      new CustomEvent("file-context-menu", {
-        detail: { fileId: file.id, x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY },
-        bubbles: true,
-        composed: true,
-      }),
-    );
+    this._editingFileId = file.id;
+    this._editingName = file.name;
+  }
+
+  private _finishRename(fileId: string): void {
+    const nextName = this._editingName.trim();
+    if (nextName) {
+      this.dispatchEvent(
+        new CustomEvent("file-rename", {
+          detail: { fileId, newName: nextName },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    }
+    this._editingFileId = null;
+    this._editingName = "";
   }
 
   private _renderNode(node: FileTreeNode, depth: number = 0): unknown {
@@ -230,37 +256,31 @@ export class STFileTree extends LitElement {
     const hasChildren = node.children.size > 0;
 
     if (node.isFolder && node.path === "") {
-      // Root node - render children directly
       const sortedChildren = Array.from(node.children.values()).sort((a, b) => {
         if (a.isFolder !== b.isFolder) {
-          return a.isFolder ? -1 : 1; // Folders first
+          return a.isFolder ? -1 : 1;
         }
         return a.name.localeCompare(b.name);
       });
 
-      return html`
-        ${sortedChildren.map((child) => this._renderNode(child, depth))}
-      `;
+      return html`${sortedChildren.map((child) => this._renderNode(child, depth))}`;
     }
 
     if (node.isFolder) {
       return html`
         <div class="tree-node">
-          <div
-            class="tree-item"
-            @click=${() => this._toggleExpand(node.path)}
-          >
+          <div class="tree-item" @click=${() => this._toggleExpand(node.path)}>
             <div class="tree-toggle ${isExpanded ? "expanded" : ""}">
               ${hasChildren
                 ? html`<ha-icon icon="mdi:chevron-right"></ha-icon>`
                 : html`<span style="width: 16px;"></span>`}
             </div>
             <div class="tree-icon">
-              <ha-icon icon="mdi:folder"></ha-icon>
+              <ha-icon icon="mdi:folder-open-outline"></ha-icon>
             </div>
             <div class="tree-label">${node.name}</div>
           </div>
-          ${isExpanded && hasChildren
+          ${isExpanded
             ? html`
                 <div class="tree-children">
                   ${Array.from(node.children.values())
@@ -278,12 +298,10 @@ export class STFileTree extends LitElement {
       `;
     }
 
-    // File node
-    if (!node.file) return html``;
-
-    const isActive = node.file.id === this.activeFileId;
-    const isSelected = node.file.id === this.selectedFileId;
-    const isEditing = this._editingFileId === node.file.id;
+    const file = node.file!;
+    const isActive = file.id === this.activeFileId;
+    const isSelected = file.id === this.selectedFileId;
+    const isEditing = file.id === this._editingFileId;
 
     return html`
       <div class="tree-node">
@@ -291,36 +309,38 @@ export class STFileTree extends LitElement {
           class="tree-item ${isActive ? "active" : ""} ${isSelected
             ? "selected"
             : ""}"
-          @click=${(e: Event) => this._handleFileClick(node.file!, e)}
-          @dblclick=${(e: Event) => this._handleFileDoubleClick(node.file!, e)}
-          @contextmenu=${(e: Event) => this._handleContextMenu(node.file!, e)}
+          @click=${(e: Event) => this._handleFileClick(file, e)}
+          @dblclick=${(e: Event) => this._handleFileDoubleClick(file, e)}
+          @contextmenu=${(e: Event) => this._startRename(file, e)}
+          title=${file.path}
         >
-          <div class="tree-toggle">
-            <span style="width: 16px;"></span>
-          </div>
+          <div class="tree-toggle"></div>
           <div class="tree-icon">
-            <ha-icon icon="mdi:file-code"></ha-icon>
+            <ha-icon icon="mdi:file-document-outline"></ha-icon>
           </div>
-          ${isEditing
-            ? html`
-                <div class="tree-label editing">
+          <div class="tree-label ${isEditing ? "editing" : ""}">
+            ${isEditing
+              ? html`
                   <input
-                    type="text"
                     .value=${this._editingName}
-                    @blur=${() => this._finishEditing(node.file!)}
+                    @input=${(e: Event) =>
+                      (this._editingName = (
+                        e.target as HTMLInputElement
+                      ).value)}
+                    @blur=${() => this._finishRename(file.id)}
                     @keydown=${(e: KeyboardEvent) => {
-                      if (e.key === "Enter") {
-                        this._finishEditing(node.file!);
-                      } else if (e.key === "Escape") {
-                        this._cancelEditing();
+                      if (e.key === "Enter") this._finishRename(file.id);
+                      if (e.key === "Escape") {
+                        this._editingFileId = null;
+                        this._editingName = "";
                       }
                     }}
-                    @click=${(e: Event) => e.stopPropagation()}
+                    autofocus
                   />
-                </div>
-              `
-            : html`<div class="tree-label">${node.name}</div>`}
-          ${node.file.hasUnsavedChanges
+                `
+              : file.name}
+          </div>
+          ${file.hasUnsavedChanges
             ? html`<div class="unsaved-indicator" title="Unsaved changes"></div>`
             : ""}
         </div>
@@ -328,40 +348,11 @@ export class STFileTree extends LitElement {
     `;
   }
 
-  private _finishEditing(file: ProjectFile): void {
-    if (this._editingName && this._editingName !== file.name) {
-      this.dispatchEvent(
-        new CustomEvent("file-rename", {
-          detail: { fileId: file.id, newName: this._editingName },
-          bubbles: true,
-          composed: true,
-        }),
-      );
-    }
-    this._editingFileId = null;
-    this._editingName = "";
-  }
-
-  private _cancelEditing(): void {
-    this._editingFileId = null;
-    this._editingName = "";
-  }
-
-  startRename(fileId: string): void {
-    const file = this.files.find((f) => f.id === fileId);
-    if (file) {
-      this._editingFileId = fileId;
-      this._editingName = file.name;
-    }
-  }
-
   render() {
     const tree = this._buildTree();
 
     return html`
-      <div class="file-tree">
-        ${this._renderNode(tree)}
-      </div>
+      <div class="file-tree">${this._renderNode(tree)}</div>
     `;
   }
 }

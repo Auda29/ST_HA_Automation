@@ -4,7 +4,7 @@ This document tracks the requirements for submitting ST for Home Assistant to th
 
 ## Requirements Status
 
-### ✅ Completed
+### Completed
 
 - [x] Repository is public and hosted on GitHub
 - [x] Repository can be added to HACS as a custom repository
@@ -13,8 +13,6 @@ This document tracks the requirements for submitting ST for Home Assistant to th
   - `render_readme`: true
   - `filename`: "st_hass"
   - `hacs`: "1.6.0"
-  - `domains`: ["st_hass"]
-  - `iot_class`: "Local Push"
   - `homeassistant`: "2024.1.0"
 - [x] `info.md` created for HACS store page
 - [x] `CHANGELOG.md` created and maintained
@@ -22,14 +20,14 @@ This document tracks the requirements for submitting ST for Home Assistant to th
 - [x] README is polished and user-friendly
 - [x] All documentation is complete (tutorials, references, FAQ, troubleshooting)
 
-### ⚠️ Pending Manual Steps
+### Pending Manual Steps
 
 - [x] **GitHub Actions Setup**: HACS Action and Hassfest are present in CI
   - HACS Action: configured in `.github/workflows/ci.yml`
   - Hassfest: configured in `.github/workflows/ci.yml`
 - [ ] **Create GitHub Release**: Create a full release (not just a tag) after actions pass
-  - Current version: 2.0.2
-  - Tag: `v2.0.2`
+  - Current version: 2.1.0
+  - Tag: `v2.1.0`
 - [ ] **Repository Settings** (verify on GitHub):
   - [ ] Repository has a description
   - [ ] Issues are enabled
@@ -44,7 +42,7 @@ This document tracks the requirements for submitting ST for Home Assistant to th
   - PR must be editable (not from organization account)
   - Fill out PR template correctly
 
-### 📋 Submission Process
+### Submission Process
 
 1. **Verify GitHub Actions**:
    ```yaml
@@ -53,16 +51,16 @@ This document tracks the requirements for submitting ST for Home Assistant to th
      uses: hacs/action@main
      with:
        category: integration
-   
+
    - name: Hassfest
      uses: home-assistant/actions/hassfest@master
    ```
 
 2. **Create GitHub Release**:
-   - Go to GitHub repository → Releases → Create new release
-   - Tag: `v2.0.2`
-   - Title: "Release 2.0.2"
-   - Description: Copy from CHANGELOG.md
+   - Go to GitHub repository -> Releases -> Create new release
+   - Tag: `v2.1.0`
+   - Title: "Release 2.1.0"
+   - Description: Copy from `CHANGELOG.md`
    - Mark as "Latest release"
 
 3. **Add to Brands Repository**:
