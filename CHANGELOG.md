@@ -5,6 +5,13 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.4] - 2026-04-22
+
+### Changed
+- The entity browser now supports direct `+ Input`, `+ Output`, and `Remove` actions, so bindings can be added or removed without relying on drag-and-drop
+- Drag-and-drop entity insertion remains available as an optional workflow instead of the only insertion path
+- The entity browser guidance now points users to both drag-and-drop and button-based binding actions
+
 ## [2.1.3] - 2026-04-22
 
 ### Fixed
@@ -156,6 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.1.4]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.4
 [2.1.2]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.2
 [2.1.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.3
 [2.1.1]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.1
