@@ -320,16 +320,37 @@ export class Transpiler {
   }
 
   private parseTimeToSeconds(timeLiteral: string): number {
-    // Parse T#1h30m15s format
-    const match = timeLiteral.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
-    if (!match) return 0;
+    if (!/^T#/i.test(timeLiteral)) return 0;
 
-    const hours = parseInt(match[1] || '0', 10);
-    const minutes = parseInt(match[2] || '0', 10);
-    const seconds = parseInt(match[3] || '0', 10);
-    const ms = parseInt(match[4] || '0', 10);
+    const body = timeLiteral.slice(2);
+    const pattern = /(\d+)(ms|h|m|s)/gi;
+    let totalSeconds = 0;
+    let consumed = '';
 
-    return hours * 3600 + minutes * 60 + seconds + ms / 1000;
+    for (const match of body.matchAll(pattern)) {
+      const value = parseInt(match[1], 10);
+      const unit = match[2].toLowerCase();
+      consumed += match[0];
+
+      switch (unit) {
+        case 'h':
+          totalSeconds += value * 3600;
+          break;
+        case 'm':
+          totalSeconds += value * 60;
+          break;
+        case 's':
+          totalSeconds += value;
+          break;
+        case 'ms':
+          totalSeconds += value / 1000;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return consumed.toLowerCase() === body.toLowerCase() ? totalSeconds : 0;
   }
 
   // ==========================================================================

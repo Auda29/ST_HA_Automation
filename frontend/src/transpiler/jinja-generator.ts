@@ -100,18 +100,37 @@ export class JinjaGenerator {
   }
 
   private convertTimeToSeconds(timeLiteral: string): string {
-    // T#1h30m15s -> 5415
-    // This is a simplified conversion - expand as needed
-    const match = timeLiteral.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
-    if (!match) return '0';
+    if (!/^T#/i.test(timeLiteral)) return '0';
 
-    const hours = parseInt(match[1] || '0', 10);
-    const minutes = parseInt(match[2] || '0', 10);
-    const seconds = parseInt(match[3] || '0', 10);
-    const ms = parseInt(match[4] || '0', 10);
+    const body = timeLiteral.slice(2);
+    const pattern = /(\d+)(ms|h|m|s)/gi;
+    let totalSeconds = 0;
+    let consumed = '';
 
-    const totalSeconds = hours * 3600 + minutes * 60 + seconds + ms / 1000;
-    return String(totalSeconds);
+    for (const match of body.matchAll(pattern)) {
+      const value = parseInt(match[1], 10);
+      const unit = match[2].toLowerCase();
+      consumed += match[0];
+
+      switch (unit) {
+        case 'h':
+          totalSeconds += value * 3600;
+          break;
+        case 'm':
+          totalSeconds += value * 60;
+          break;
+        case 's':
+          totalSeconds += value;
+          break;
+        case 'ms':
+          totalSeconds += value / 1000;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return consumed.toLowerCase() === body.toLowerCase() ? String(totalSeconds) : '0';
   }
 
   // ==========================================================================

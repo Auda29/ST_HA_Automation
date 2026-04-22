@@ -143,7 +143,29 @@ describe('Transpiler', () => {
       const result = transpile(parseResult.ast!);
 
       expect(result.automation.mode).toBe('restart');
-      expect(result.automation.action.some(a => 'delay' in a)).toBe(true);
+      const delayAction = result.automation.action.find(a => 'delay' in a) as any;
+      expect(delayAction).toBeDefined();
+      expect(delayAction.delay.seconds).toBe(0.5);
+    });
+
+    it('parses millisecond throttle literals as fractional seconds', () => {
+      const code = `
+        {throttle: T#500ms}
+        PROGRAM Test
+        VAR
+          x AT %I* : BOOL := 'binary_sensor.x';
+        END_VAR
+        END_PROGRAM
+      `;
+
+      const parseResult = parse(code);
+      expect(parseResult.success).toBe(true);
+
+      const result = transpile(parseResult.ast!);
+      const condition = result.automation.condition?.[0] as any;
+
+      expect(condition).toBeDefined();
+      expect(condition.value_template).toContain('> 0.5');
     });
   });
 

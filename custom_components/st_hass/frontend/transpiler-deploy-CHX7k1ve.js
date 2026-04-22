@@ -1,7 +1,7 @@
 var N = Object.defineProperty;
 var A = (p, e, t) => e in p ? N(p, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : p[e] = t;
 var c = (p, e, t) => A(p, typeof e != "symbol" ? e + "" : e, t);
-import { a as E, b as M, w as O, p as f } from "./analyzer-DbAWr__X.js";
+import { a as E, b as M, w as C, p as f } from "./analyzer-DbAWr__X.js";
 class _ {
   constructor(e, t) {
     c(this, "context");
@@ -57,10 +57,27 @@ class _ {
     }
   }
   convertTimeToSeconds(e) {
-    const t = e.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
-    if (!t) return "0";
-    const a = parseInt(t[1] || "0", 10), i = parseInt(t[2] || "0", 10), n = parseInt(t[3] || "0", 10), r = parseInt(t[4] || "0", 10), s = a * 3600 + i * 60 + n + r / 1e3;
-    return String(s);
+    if (!/^T#/i.test(e)) return "0";
+    const t = e.slice(2), a = /(\d+)(ms|h|m|s)/gi;
+    let i = 0, n = "";
+    for (const r of t.matchAll(a)) {
+      const s = parseInt(r[1], 10), o = r[2].toLowerCase();
+      switch (n += r[0], o) {
+        case "h":
+          i += s * 3600;
+          break;
+        case "m":
+          i += s * 60;
+          break;
+        case "s":
+          i += s;
+          break;
+        case "ms":
+          i += s / 1e3;
+          break;
+      }
+    }
+    return n.toLowerCase() === t.toLowerCase() ? String(i) : "0";
   }
   // ==========================================================================
   // Variable Reference Generation
@@ -262,7 +279,7 @@ class _ {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function C(p, e) {
+function O(p, e) {
   const t = `states('${p}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
@@ -285,8 +302,8 @@ function k(p, e) {
   {{ (now() - (last | as_datetime)).total_seconds() > ${e} }}
 {% endif %}`;
 }
-const I = 1e3;
-class T {
+const v = 1e3;
+class w {
   constructor(e, t, a) {
     c(this, "context");
     c(this, "jinja");
@@ -475,7 +492,7 @@ class T {
       variables: { [t]: `{{ ${t} + 1 }}` }
     }, n = this.generateCondition(e.condition), r = {
       condition: "template",
-      value_template: `{{ ${t} < ${I} }}`
+      value_template: `{{ ${t} < ${v} }}`
     };
     return {
       repeat: {
@@ -496,7 +513,7 @@ class T {
       variables: { [t]: `{{ ${t} + 1 }}` }
     }, n = this.generateCondition(e.condition), r = {
       condition: "template",
-      value_template: `{{ ${t} < ${I} }}`
+      value_template: `{{ ${t} < ${v} }}`
     };
     return {
       repeat: {
@@ -857,10 +874,29 @@ class j {
   }
   parseTimeToSeconds(e) {
     if (e.type === "Literal" && e.kind === "time") {
-      const a = e.raw.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
-      if (a) {
-        const i = parseInt(a[1] || "0", 10), n = parseInt(a[2] || "0", 10), r = parseInt(a[3] || "0", 10), s = parseInt(a[4] || "0", 10), o = i * 3600 + n * 60 + r + s / 1e3;
-        return String(o);
+      const t = e.raw;
+      if (/^T#/i.test(t)) {
+        const a = t.slice(2), i = /(\d+)(ms|h|m|s)/gi;
+        let n = 0, r = "";
+        for (const s of a.matchAll(i)) {
+          const o = parseInt(s[1], 10), u = s[2].toLowerCase();
+          switch (r += s[0], u) {
+            case "h":
+              n += o * 3600;
+              break;
+            case "m":
+              n += o * 60;
+              break;
+            case "s":
+              n += o;
+              break;
+            case "ms":
+              n += o / 1e3;
+              break;
+          }
+        }
+        if (r.toLowerCase() === a.toLowerCase())
+          return String(n);
       }
     }
     return this.jinja.generateExpression(e);
@@ -894,7 +930,7 @@ class H {
     return a === "Q" || a === "ET";
   }
 }
-class R {
+class L {
   constructor(e) {
     c(this, "mappings", /* @__PURE__ */ new Map());
     c(this, "currentPath", []);
@@ -1029,7 +1065,7 @@ class R {
     return t.toString(16);
   }
 }
-class w {
+class I {
   constructor(e, t = "default", a) {
     c(this, "ast");
     c(this, "projectName");
@@ -1043,7 +1079,7 @@ class w {
     c(this, "timerHelpers", []);
     c(this, "additionalAutomations", []);
     c(this, "timerMainActions", []);
-    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new R({
+    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new L({
       project: t,
       program: e.name,
       sourceFile: `${e.name}.st`,
@@ -1136,7 +1172,7 @@ class w {
       const a = t.dataType.name.toUpperCase();
       (a === "TON" || a === "TOF" || a === "TP") && e.set(t.name, a);
     }
-    e.size !== 0 && O(this.ast, {
+    e.size !== 0 && C(this.ast, {
       onFunctionCall: (t) => {
         const a = e.get(t.name);
         if (!a)
@@ -1221,10 +1257,27 @@ class w {
 {% endif %}`;
   }
   parseTimeToSeconds(e) {
-    const t = e.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
-    if (!t) return 0;
-    const a = parseInt(t[1] || "0", 10), i = parseInt(t[2] || "0", 10), n = parseInt(t[3] || "0", 10), r = parseInt(t[4] || "0", 10);
-    return a * 3600 + i * 60 + n + r / 1e3;
+    if (!/^T#/i.test(e)) return 0;
+    const t = e.slice(2), a = /(\d+)(ms|h|m|s)/gi;
+    let i = 0, n = "";
+    for (const r of t.matchAll(a)) {
+      const s = parseInt(r[1], 10), o = r[2].toLowerCase();
+      switch (n += r[0], o) {
+        case "h":
+          i += s * 3600;
+          break;
+        case "m":
+          i += s * 60;
+          break;
+        case "s":
+          i += s;
+          break;
+        case "ms":
+          i += s / 1e3;
+          break;
+      }
+    }
+    return n.toLowerCase() === t.toLowerCase() ? i : 0;
   }
   // ==========================================================================
   // Trigger Mapping
@@ -1279,7 +1332,7 @@ class w {
   // ==========================================================================
   generateScript() {
     var s;
-    const t = ((s = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : s.value) || "restart", a = new T(this.context, this.timerResolver, this.sourceMapBuilder), i = {
+    const t = ((s = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : s.value) || "restart", a = new w(this.context, this.timerResolver, this.sourceMapBuilder), i = {
       alias: `[ST] ${this.ast.name} Logic`,
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
@@ -1313,17 +1366,17 @@ class w {
     return e;
   }
 }
-function P(p, e, t) {
-  return new w(p, e, t).transpile();
+function R(p, e, t) {
+  return new I(p, e, t).transpile();
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  ActionGenerator: T,
+  ActionGenerator: w,
   JinjaGenerator: _,
-  Transpiler: w,
-  generateEntityStateRead: C,
+  Transpiler: I,
+  generateEntityStateRead: O,
   generateThrottleCondition: k,
-  transpile: P
+  transpile: R
 }, Symbol.toStringTag, { value: "Module" })), g = class g {
   constructor(e) {
     c(this, "connection");
@@ -1736,7 +1789,7 @@ class b {
       }
   }
 }
-const h = "st_hass_backups", v = 10;
+const h = "st_hass_backups", T = 10;
 class $ {
   constructor(e) {
     c(this, "api");
@@ -1810,10 +1863,10 @@ class $ {
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, v);
+    const a = t.slice(0, T);
     window.localStorage.setItem(h, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = v) {
+  async cleanupOldBackups(e = T) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
@@ -1827,7 +1880,7 @@ class $ {
   }
 }
 const m = "st_hass_schemas";
-class L {
+class P {
   save(e, t) {
     const a = this.loadAll();
     a[e] = t, localStorage.setItem(m, JSON.stringify(a));
@@ -1996,7 +2049,7 @@ class S {
     c(this, "backupManager");
     c(this, "schemaStorage");
     c(this, "migrationDetector");
-    this.api = e, this.helperManager = new b(e), this.backupManager = new $(e), this.schemaStorage = new L(), this.migrationDetector = new U();
+    this.api = e, this.helperManager = new b(e), this.backupManager = new $(e), this.schemaStorage = new P(), this.migrationDetector = new U();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -2272,4 +2325,4 @@ export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-B-QiLH-E.js.map
+//# sourceMappingURL=transpiler-deploy-CHX7k1ve.js.map

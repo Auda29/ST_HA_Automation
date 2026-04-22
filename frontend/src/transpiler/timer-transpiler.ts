@@ -417,16 +417,39 @@ export class TimerTranspiler {
 
   private parseTimeToSeconds(expr: Expression): string {
     if (expr.type === "Literal" && expr.kind === "time") {
-      // Parse T#1h30m15s format
       const raw = expr.raw;
-      const match = raw.match(/T#(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?(?:(\d+)ms)?/i);
-      if (match) {
-        const hours = parseInt(match[1] || "0", 10);
-        const minutes = parseInt(match[2] || "0", 10);
-        const seconds = parseInt(match[3] || "0", 10);
-        const ms = parseInt(match[4] || "0", 10);
-        const total = hours * 3600 + minutes * 60 + seconds + ms / 1000;
-        return String(total);
+      if (/^T#/i.test(raw)) {
+        const body = raw.slice(2);
+        const pattern = /(\d+)(ms|h|m|s)/gi;
+        let total = 0;
+        let consumed = "";
+
+        for (const match of body.matchAll(pattern)) {
+          const value = parseInt(match[1], 10);
+          const unit = match[2].toLowerCase();
+          consumed += match[0];
+
+          switch (unit) {
+            case "h":
+              total += value * 3600;
+              break;
+            case "m":
+              total += value * 60;
+              break;
+            case "s":
+              total += value;
+              break;
+            case "ms":
+              total += value / 1000;
+              break;
+            default:
+              break;
+          }
+        }
+
+        if (consumed.toLowerCase() === body.toLowerCase()) {
+          return String(total);
+        }
       }
     }
 
