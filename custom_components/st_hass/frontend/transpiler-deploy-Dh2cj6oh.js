@@ -866,7 +866,7 @@ class O {
     return this.jinja.generateExpression(e);
   }
 }
-class j {
+class k {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -894,7 +894,7 @@ class j {
     return a === "Q" || a === "ET";
   }
 }
-class k {
+class j {
   constructor(e) {
     c(this, "mappings", /* @__PURE__ */ new Map());
     c(this, "currentPath", []);
@@ -1043,7 +1043,7 @@ class v {
     c(this, "timerHelpers", []);
     c(this, "additionalAutomations", []);
     c(this, "timerMainActions", []);
-    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new k({
+    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new j({
       project: t,
       program: e.name,
       sourceFile: `${e.name}.st`,
@@ -1074,7 +1074,7 @@ class v {
           stLine: (s = n.location) == null ? void 0 : s.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new O(this.context), this.timerResolver = new j(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new O(this.context), this.timerResolver = new k(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1464,6 +1464,13 @@ class R {
       initial: e.initial ?? ""
     });
   }
+  async createTimer(e) {
+    await this.connection.sendMessagePromise({
+      type: "timer/create",
+      name: e.name,
+      duration: e.duration ?? "00:00:00"
+    });
+  }
   async setHelperValue(e, t) {
     const [a] = e.split(".");
     switch (a) {
@@ -1591,6 +1598,12 @@ class y {
         await this.api.createInputDateTime({
           name: t,
           initial: String(e.initial ?? "")
+        });
+        break;
+      case "timer":
+        await this.api.createTimer({
+          name: t,
+          duration: String(e.initial ?? "00:00:00")
         });
         break;
       default:
@@ -2153,4 +2166,4 @@ export {
   F as a,
   D as i
 };
-//# sourceMappingURL=transpiler-deploy-BeaFUkm9.js.map
+//# sourceMappingURL=transpiler-deploy-Dh2cj6oh.js.map

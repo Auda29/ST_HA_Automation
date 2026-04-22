@@ -134,6 +134,13 @@ export class HelperManager {
         });
         break;
 
+      case 'timer':
+        await this.api.createTimer({
+          name,
+          duration: String(config.initial ?? '00:00:00'),
+        });
+        break;
+
       default:
         throw new Error(`Unknown helper type: ${config.type} (${name})`);
     }

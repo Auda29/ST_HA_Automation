@@ -198,6 +198,17 @@ export class HAApiClient {
     });
   }
 
+  async createTimer(config: {
+    name: string;
+    duration?: string;
+  }): Promise<void> {
+    await this.connection.sendMessagePromise({
+      type: "timer/create",
+      name: config.name,
+      duration: config.duration ?? "00:00:00",
+    });
+  }
+
   async setHelperValue(entityId: string, value: unknown): Promise<void> {
     const [domain] = entityId.split(".");
 

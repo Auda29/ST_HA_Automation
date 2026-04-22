@@ -93,4 +93,22 @@ describe("HelperManager", () => {
       ),
     ).toBe(false);
   });
+
+  it("creates timer helpers via the timer create API", async () => {
+    const conn = new FakeConnection();
+    const api = new HAApiClient(conn);
+    const manager = new HelperManager(api, "st_");
+
+    await manager.createHelper({
+      id: "timer.st_project_prog_delay",
+      type: "timer",
+      name: "Delay Timer",
+    });
+
+    expect(conn.wsMessages).toContainEqual({
+      type: "timer/create",
+      name: "Delay Timer",
+      duration: "00:00:00",
+    });
+  });
 });
