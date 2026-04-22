@@ -1,7 +1,7 @@
 var ae = Object.defineProperty;
 var ne = (a, t, e) => t in a ? ae(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
 var l = (a, t, e) => ne(a, typeof t != "symbol" ? t + "" : t, e);
-import { S as oe, c as re, L as le, E as T, H as ce, s as de, a as Q, b as he, D as I, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as _e, m as xe, n as Se, o as Le, p as Ce, q as Oe, r as Ue, t as Ne, u as we, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
+import { S as oe, c as re, L as le, E as U, H as ce, s as de, a as Q, b as he, D as I, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as _e, m as xe, n as Se, o as Le, p as Ce, q as Oe, r as Ue, t as Ne, u as we, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
 import { W as m } from "./vendor-BhPS5zVw.js";
 import { i as Y, n as x, a as W, b as u, t as G, r as v } from "./lit-C178dhqO.js";
 import { s as Ie } from "./ha-websocket-DcUbagYv.js";
@@ -232,7 +232,7 @@ const p = {
   gutterBg: "#1e1e1e",
   gutterFg: "#858585",
   border: "#404040"
-}, $e = T.theme(
+}, $e = U.theme(
   {
     "&": {
       color: p.fg,
@@ -553,7 +553,7 @@ const We = he.define({
         return Ge(t.state.doc.toString(), e.value);
     return t.docChanged && (a = a.map(t.changes)), a;
   },
-  provide: (a) => T.decorations.from(a)
+  provide: (a) => U.decorations.from(a)
 });
 function Ge(a, t) {
   const e = [], s = a.split(`
@@ -579,7 +579,7 @@ function Ge(a, t) {
     e.map((n) => n.decoration.range(n.from, n.to))
   );
 }
-const He = T.baseTheme({
+const He = U.baseTheme({
   ".st-live-value-widget": {
     marginLeft: "16px",
     display: "inline-flex",
@@ -736,10 +736,14 @@ let _ = class extends W {
       Pe(),
       je(),
       qe(),
+      U.domEventHandlers({
+        dragover: (i) => (i.preventDefault(), i.stopPropagation(), i.dataTransfer && (i.dataTransfer.dropEffect = "copy"), !0),
+        drop: (i) => (i.preventDefault(), i.stopPropagation(), this._handleDrop(i), !0)
+      }),
       this._readOnlyCompartment.of(L.readOnly.of(this.readOnly)),
       L.tabSize.of(4)
     ];
-    this._editor = new T({
+    this._editor = new U({
       state: L.create({ doc: this.code, extensions: e }),
       parent: t,
       dispatch: (i) => {
@@ -751,11 +755,7 @@ let _ = class extends W {
           })
         );
       }
-    }), t.addEventListener("keydown", (i) => i.stopPropagation()), t.addEventListener("keyup", (i) => i.stopPropagation()), t.addEventListener("keypress", (i) => i.stopPropagation()), t.addEventListener("dragover", (i) => {
-      i.preventDefault(), i.stopPropagation(), i.dataTransfer && (i.dataTransfer.dropEffect = "copy");
-    }), t.addEventListener("drop", (i) => {
-      i.preventDefault(), i.stopPropagation(), this._handleDrop(i);
-    });
+    }), t.addEventListener("keydown", (i) => i.stopPropagation()), t.addEventListener("keyup", (i) => i.stopPropagation()), t.addEventListener("keypress", (i) => i.stopPropagation());
   }
   /**
    * Handle drop event from entity browser
@@ -857,7 +857,7 @@ var at = Object.defineProperty, Je = Object.getOwnPropertyDescriptor, ti = (a, t
     (o = a[n]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && at(t, e, i), i;
 }, ei = (a, t, e) => ti(a, t + "", e);
-let U = class extends W {
+let N = class extends W {
   constructor() {
     super();
     l(this, "_handleDocumentClick", null);
@@ -1045,7 +1045,7 @@ let U = class extends W {
     );
   }
 };
-ei(U, "styles", Y`
+ei(N, "styles", Y`
     :host {
       display: flex;
       align-items: center;
@@ -1281,13 +1281,13 @@ ei(U, "styles", Y`
   `);
 H([
   x({ type: Object })
-], U.prototype, "state", 2);
+], N.prototype, "state", 2);
 H([
   v()
-], U.prototype, "_showSettings", 2);
-U = H([
+], N.prototype, "_showSettings", 2);
+N = H([
   G("st-online-toolbar")
-], U);
+], N);
 const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii = r({
   name: "WhiteSpace",
   pattern: /\s+/,
@@ -1376,7 +1376,7 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), C = r({ name: "Assign", pattern: /:=/ }), mi = r({ name: "Output", pattern: /=>/ }), Gt = r({ name: "LessEqual", pattern: /<=/ }), Ht = r({
   name: "GreaterEqual",
   pattern: />=/
-}), qt = r({ name: "NotEqual", pattern: /<>/ }), Kt = r({ name: "Less", pattern: /</ }), Xt = r({ name: "Greater", pattern: />/ }), Qt = r({ name: "Equal", pattern: /=/ }), Zt = r({ name: "Plus", pattern: /\+/ }), $ = r({ name: "Minus", pattern: /-/ }), Jt = r({ name: "Star", pattern: /\*/ }), te = r({ name: "Slash", pattern: /\// }), N = r({ name: "LParen", pattern: /\(/ }), w = r({ name: "RParen", pattern: /\)/ }), bi = r({ name: "LBracket", pattern: /\[/ }), vi = r({ name: "RBracket", pattern: /\]/ }), z = r({ name: "Colon", pattern: /:/ }), E = r({ name: "Semicolon", pattern: /;/ }), j = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), ee = r({ name: "Range", pattern: /\.\./ }), y = r({
+}), qt = r({ name: "NotEqual", pattern: /<>/ }), Kt = r({ name: "Less", pattern: /</ }), Xt = r({ name: "Greater", pattern: />/ }), Qt = r({ name: "Equal", pattern: /=/ }), Zt = r({ name: "Plus", pattern: /\+/ }), $ = r({ name: "Minus", pattern: /-/ }), Jt = r({ name: "Star", pattern: /\*/ }), te = r({ name: "Slash", pattern: /\// }), w = r({ name: "LParen", pattern: /\(/ }), T = r({ name: "RParen", pattern: /\)/ }), bi = r({ name: "LBracket", pattern: /\[/ }), vi = r({ name: "RBracket", pattern: /\]/ }), z = r({ name: "Colon", pattern: /:/ }), E = r({ name: "Semicolon", pattern: /;/ }), j = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), ee = r({ name: "Range", pattern: /\.\./ }), y = r({
   name: "Identifier",
   pattern: /[a-zA-Z_][a-zA-Z0-9_]*/
 }), ie = [
@@ -1463,8 +1463,8 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   $,
   Jt,
   te,
-  N,
   w,
+  T,
   bi,
   vi,
   z,
@@ -1661,7 +1661,7 @@ class _i extends Me {
         { ALT: () => this.SUBRULE(this.identifierOrCall) },
         {
           ALT: () => {
-            this.CONSUME(N), this.SUBRULE(this.expression), this.CONSUME(w);
+            this.CONSUME(w), this.SUBRULE(this.expression), this.CONSUME(T);
           }
         }
       ]);
@@ -1670,9 +1670,9 @@ class _i extends Me {
       this.CONSUME(y), this.MANY(() => {
         this.CONSUME(V), this.CONSUME1(y);
       }), this.OPTION(() => {
-        this.CONSUME(N), this.OPTION1(() => {
+        this.CONSUME(w), this.OPTION1(() => {
           this.SUBRULE(this.argumentList);
-        }), this.CONSUME(w);
+        }), this.CONSUME(T);
       });
     }));
     l(this, "literal", this.RULE("literal", () => {
@@ -1691,9 +1691,9 @@ class _i extends Me {
       });
     }));
     l(this, "functionCall", this.RULE("functionCall", () => {
-      this.CONSUME(y), this.CONSUME(N), this.OPTION(() => {
+      this.CONSUME(y), this.CONSUME(w), this.OPTION(() => {
         this.SUBRULE(this.argumentList);
-      }), this.CONSUME(w);
+      }), this.CONSUME(T);
     }));
     l(this, "argumentList", this.RULE("argumentList", () => {
       this.SUBRULE(this.argument), this.MANY(() => {

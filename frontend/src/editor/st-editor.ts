@@ -215,6 +215,22 @@ export class STEditor extends LitElement {
       structuredText(),
       stTheme(),
       liveValuesExtension(),
+      EditorView.domEventHandlers({
+        dragover: (event: DragEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (event.dataTransfer) {
+            event.dataTransfer.dropEffect = "copy";
+          }
+          return true;
+        },
+        drop: (event: DragEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this._handleDrop(event);
+          return true;
+        },
+      }),
       this._readOnlyCompartment.of(EditorState.readOnly.of(this.readOnly)),
       EditorState.tabSize.of(4),
     ];
@@ -242,20 +258,6 @@ export class STEditor extends LitElement {
     container.addEventListener("keyup", (e) => e.stopPropagation());
     container.addEventListener("keypress", (e) => e.stopPropagation());
 
-    // Add drag-and-drop support for entity browser
-    container.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = "copy";
-      }
-    });
-
-    container.addEventListener("drop", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this._handleDrop(e);
-    });
   }
 
   /**
