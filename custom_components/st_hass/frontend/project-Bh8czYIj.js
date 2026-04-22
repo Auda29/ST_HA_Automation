@@ -1,7 +1,7 @@
 var I = Object.defineProperty;
-var $ = (a, e, t) => e in a ? I(a, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : a[e] = t;
-var u = (a, e, t) => $(a, typeof e != "symbol" ? e + "" : e, t);
-import { i as F, n as f, r as v, a as w, b as d, t as y } from "./lit-C178dhqO.js";
+var $ = (i, e, t) => e in i ? I(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t;
+var g = (i, e, t) => $(i, typeof e != "symbol" ? e + "" : e, t);
+import { i as F, n as u, r as v, a as w, b as d, t as y } from "./lit-C178dhqO.js";
 const x = "st_hass_project";
 class b {
   constructor(e, t) {
@@ -62,7 +62,7 @@ END_PROGRAM`,
    * Migrate from single-file mode to project mode
    */
   migrateFromSingleFile(e) {
-    const t = Date.now(), i = {
+    const t = Date.now(), a = {
       id: this._generateFileId(),
       name: "Main.st",
       path: "Main.st",
@@ -74,8 +74,8 @@ END_PROGRAM`,
     return {
       id: this._generateProjectId(),
       name: "My ST Project",
-      files: [i],
-      activeFileId: i.id,
+      files: [a],
+      activeFileId: a.id,
       createdAt: t,
       lastModified: t
     };
@@ -108,8 +108,8 @@ END_PROGRAM`,
     return {
       id: t.id,
       name: t.name,
-      files: t.files.map((i) => ({
-        ...i,
+      files: t.files.map((a) => ({
+        ...a,
         isOpen: !1,
         // Reset on load
         hasUnsavedChanges: !1
@@ -133,17 +133,17 @@ END_PROGRAM`,
     return `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }
-var P = Object.defineProperty, E = Object.getOwnPropertyDescriptor, M = (a, e, t) => e in a ? P(a, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : a[e] = t, p = (a, e, t, i) => {
-  for (var r = i > 1 ? void 0 : i ? E(e, t) : e, s = a.length - 1, o; s >= 0; s--)
-    (o = a[s]) && (r = (i ? o(e, t, r) : o(r)) || r);
-  return i && r && P(e, t, r), r;
-}, N = (a, e, t) => M(a, e + "", t);
+var P = Object.defineProperty, E = Object.getOwnPropertyDescriptor, M = (i, e, t) => e in i ? P(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t, p = (i, e, t, a) => {
+  for (var r = a > 1 ? void 0 : a ? E(e, t) : e, n = i.length - 1, o; n >= 0; n--)
+    (o = i[n]) && (r = (a ? o(e, t, r) : o(r)) || r);
+  return a && r && P(e, t, r), r;
+}, N = (i, e, t) => M(i, e + "", t);
 let l = class extends w {
   constructor() {
     super();
-    u(this, "_expandedPaths");
-    u(this, "_editingFileId");
-    u(this, "_editingName");
+    g(this, "_expandedPaths");
+    g(this, "_editingFileId");
+    g(this, "_editingName");
     this.files = [], this.activeFileId = null, this.selectedFileId = null, this._expandedPaths = /* @__PURE__ */ new Set(), this._editingFileId = null, this._editingName = "";
   }
   _buildTree() {
@@ -154,18 +154,18 @@ let l = class extends w {
       isFolder: !0
     };
     for (const t of this.files) {
-      const i = t.path.split("/");
+      const a = t.path.split("/");
       let r = e;
-      for (let s = 0; s < i.length; s++) {
-        const o = i[s], g = s === i.length - 1;
+      for (let n = 0; n < a.length; n++) {
+        const o = a[n], f = n === a.length - 1;
         r.children.has(o) || r.children.set(o, {
           name: o,
-          path: i.slice(0, s + 1).join("/"),
+          path: a.slice(0, n + 1).join("/"),
           children: /* @__PURE__ */ new Map(),
-          isFolder: !g
+          isFolder: !f
         });
-        const n = r.children.get(o);
-        g && (n.file = t), r = n;
+        const s = r.children.get(o);
+        f && (s.file = t), r = s;
       }
     }
     return e;
@@ -201,11 +201,11 @@ let l = class extends w {
     );
   }
   _renderNode(e, t = 0) {
-    const i = this._expandedPaths.has(e.path), r = e.children.size > 0;
+    const a = this._expandedPaths.has(e.path), r = e.children.size > 0;
     if (e.isFolder && e.path === "") {
-      const n = Array.from(e.children.values()).sort((c, _) => c.isFolder !== _.isFolder ? c.isFolder ? -1 : 1 : c.name.localeCompare(_.name));
+      const s = Array.from(e.children.values()).sort((c, _) => c.isFolder !== _.isFolder ? c.isFolder ? -1 : 1 : c.name.localeCompare(_.name));
       return d`
-        ${n.map((c) => this._renderNode(c, t))}
+        ${s.map((c) => this._renderNode(c, t))}
       `;
     }
     if (e.isFolder)
@@ -215,7 +215,7 @@ let l = class extends w {
             class="tree-item"
             @click=${() => this._toggleExpand(e.path)}
           >
-            <div class="tree-toggle ${i ? "expanded" : ""}">
+            <div class="tree-toggle ${a ? "expanded" : ""}">
               ${r ? d`<ha-icon icon="mdi:chevron-right"></ha-icon>` : d`<span style="width: 16px;"></span>`}
             </div>
             <div class="tree-icon">
@@ -223,22 +223,22 @@ let l = class extends w {
             </div>
             <div class="tree-label">${e.name}</div>
           </div>
-          ${i && r ? d`
+          ${a && r ? d`
                 <div class="tree-children">
-                  ${Array.from(e.children.values()).sort((n, c) => n.isFolder !== c.isFolder ? n.isFolder ? -1 : 1 : n.name.localeCompare(c.name)).map((n) => this._renderNode(n, t + 1))}
+                  ${Array.from(e.children.values()).sort((s, c) => s.isFolder !== c.isFolder ? s.isFolder ? -1 : 1 : s.name.localeCompare(c.name)).map((s) => this._renderNode(s, t + 1))}
                 </div>
               ` : ""}
         </div>
       `;
     if (!e.file) return d``;
-    const s = e.file.id === this.activeFileId, o = e.file.id === this.selectedFileId, g = this._editingFileId === e.file.id;
+    const n = e.file.id === this.activeFileId, o = e.file.id === this.selectedFileId, f = this._editingFileId === e.file.id;
     return d`
       <div class="tree-node">
         <div
-          class="tree-item ${s ? "active" : ""} ${o ? "selected" : ""}"
-          @click=${(n) => this._handleFileClick(e.file, n)}
-          @dblclick=${(n) => this._handleFileDoubleClick(e.file, n)}
-          @contextmenu=${(n) => this._handleContextMenu(e.file, n)}
+          class="tree-item ${n ? "active" : ""} ${o ? "selected" : ""}"
+          @click=${(s) => this._handleFileClick(e.file, s)}
+          @dblclick=${(s) => this._handleFileDoubleClick(e.file, s)}
+          @contextmenu=${(s) => this._handleContextMenu(e.file, s)}
         >
           <div class="tree-toggle">
             <span style="width: 16px;"></span>
@@ -246,16 +246,16 @@ let l = class extends w {
           <div class="tree-icon">
             <ha-icon icon="mdi:file-code"></ha-icon>
           </div>
-          ${g ? d`
+          ${f ? d`
                 <div class="tree-label editing">
                   <input
                     type="text"
                     .value=${this._editingName}
                     @blur=${() => this._finishEditing(e.file)}
-                    @keydown=${(n) => {
-      n.key === "Enter" ? this._finishEditing(e.file) : n.key === "Escape" && this._cancelEditing();
+                    @keydown=${(s) => {
+      s.key === "Enter" ? this._finishEditing(e.file) : s.key === "Escape" && this._cancelEditing();
     }}
-                    @click=${(n) => n.stopPropagation()}
+                    @click=${(s) => s.stopPropagation()}
                   />
                 </div>
               ` : d`<div class="tree-label">${e.name}</div>`}
@@ -277,7 +277,7 @@ let l = class extends w {
     this._editingFileId = null, this._editingName = "";
   }
   startRename(e) {
-    const t = this.files.find((i) => i.id === e);
+    const t = this.files.find((a) => a.id === e);
     t && (this._editingFileId = e, this._editingName = t.name);
   }
   render() {
@@ -394,13 +394,13 @@ N(l, "styles", F`
     }
   `);
 p([
-  f({ type: Array })
+  u({ type: Array })
 ], l.prototype, "files", 2);
 p([
-  f({ type: String })
+  u({ type: String })
 ], l.prototype, "activeFileId", 2);
 p([
-  f({ type: String })
+  u({ type: String })
 ], l.prototype, "selectedFileId", 2);
 p([
   v()
@@ -414,34 +414,32 @@ p([
 l = p([
   y("st-file-tree")
 ], l);
-var j = Object.defineProperty, C = Object.getOwnPropertyDescriptor, S = (a, e, t) => e in a ? j(a, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : a[e] = t, m = (a, e, t, i) => {
-  for (var r = i > 1 ? void 0 : i ? C(e, t) : e, s = a.length - 1, o; s >= 0; s--)
-    (o = a[s]) && (r = (i ? o(e, t, r) : o(r)) || r);
-  return i && r && j(e, t, r), r;
-}, O = (a, e, t) => S(a, e + "", t);
+var j = Object.defineProperty, C = Object.getOwnPropertyDescriptor, S = (i, e, t) => e in i ? j(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t, m = (i, e, t, a) => {
+  for (var r = a > 1 ? void 0 : a ? C(e, t) : e, n = i.length - 1, o; n >= 0; n--)
+    (o = i[n]) && (r = (a ? o(e, t, r) : o(r)) || r);
+  return a && r && j(e, t, r), r;
+}, O = (i, e, t) => S(i, e + "", t);
 let h = class extends w {
   constructor() {
-    super();
-    u(this, "_storage", null);
-    this.project = null;
+    super(), this.project = null, this._storage = null;
   }
   connectedCallback() {
     super.connectedCallback(), this._initializeStorage();
   }
-  updated(e) {
-    super.updated(e), e.has("hass") && this._initializeStorage();
+  updated(i) {
+    super.updated(i), i.has("hass") && this._initializeStorage();
   }
   _initializeStorage() {
-    var e, t;
-    if ((e = this.hass) != null && e.connection) {
-      const i = ((t = this.hass.config) == null ? void 0 : t.entry_id) || "default";
-      this._storage = new b(this.hass.connection, i);
+    var i, e;
+    if ((i = this.hass) != null && i.connection) {
+      const t = ((e = this.hass.config) == null ? void 0 : e.entry_id) || "default";
+      this._storage = new b(this.hass.connection, t);
     } else
       this._storage = new b(null, "default");
   }
   _handleNewFile() {
     if (!this.project) return;
-    const e = {
+    const i = {
       id: this._generateFileId(),
       name: "NewFile.st",
       path: "NewFile.st",
@@ -459,67 +457,73 @@ END_PROGRAM`,
     };
     this.dispatchEvent(
       new CustomEvent("file-created", {
-        detail: { file: e },
+        detail: { file: i },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileSelected(e) {
-    const { fileId: t } = e.detail;
+  _handleFileSelected(i) {
+    const { fileId: e } = i.detail;
     this.dispatchEvent(
       new CustomEvent("file-selected", {
-        detail: { fileId: t },
+        detail: { fileId: e },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileOpen(e) {
-    const { fileId: t } = e.detail;
+  _handleFileOpen(i) {
+    const { fileId: e } = i.detail;
     if (!this.project) return;
-    const i = this.project.files.map((s) => ({
-      ...s,
-      isOpen: s.id === t || s.isOpen
-    })), r = {
+    const t = this.project.files.map((r) => ({
+      ...r,
+      isOpen: r.id === e || r.isOpen
+    })), a = {
       ...this.project,
-      files: i,
-      activeFileId: t,
+      files: t,
+      activeFileId: e,
+      lastModified: Date.now()
+    };
+    this._updateProject(a), this.dispatchEvent(
+      new CustomEvent("file-open", {
+        detail: { fileId: e },
+        bubbles: !0,
+        composed: !0
+      })
+    );
+  }
+  _handleFileRename(i) {
+    const { fileId: e, newName: t } = i.detail;
+    if (!this.project) return;
+    const a = this.project.files.map((n) => n.id === e ? {
+      ...n,
+      name: t,
+      path: t,
+      // Simple: path = name for now
+      lastModified: Date.now()
+    } : n), r = {
+      ...this.project,
+      files: a,
       lastModified: Date.now()
     };
     this._updateProject(r), this.dispatchEvent(
-      new CustomEvent("file-open", {
-        detail: { fileId: t },
+      new CustomEvent("file-rename", {
+        detail: { fileId: e, newName: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileRename(e) {
-    const { fileId: t, newName: i } = e.detail;
-    if (!this.project) return;
-    const r = this.project.files.map((o) => o.id === t ? {
-      ...o,
-      name: i,
-      path: i,
-      // Simple: path = name for now
-      lastModified: Date.now()
-    } : o), s = {
-      ...this.project,
-      files: r,
-      lastModified: Date.now()
-    };
-    this._updateProject(s);
-  }
-  _updateProject(e) {
-    this.project = e, this._saveProject(), this.requestUpdate();
+  _updateProject(i) {
+    this.project = i, this._saveProject(), this.requestUpdate();
   }
   async _saveProject() {
     if (!(!this._storage || !this.project))
       try {
         await this._storage.saveProject(this.project);
-      } catch (e) {
-        console.error("Failed to save project", e);
+      } catch (i) {
+        console.error("Failed to save project", i);
       }
   }
   _generateFileId() {
@@ -572,9 +576,11 @@ O(h, "styles", F`
     }
     .header h3 {
       margin: 0;
-      font-size: 16px;
-      font-weight: 500;
+      font-size: 13px;
+      font-weight: 600;
       color: var(--primary-text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .header-actions {
       display: flex;
@@ -607,10 +613,10 @@ O(h, "styles", F`
     }
   `);
 m([
-  f({ attribute: !1 })
+  u({ attribute: !1 })
 ], h.prototype, "hass", 2);
 m([
-  f({ type: Object })
+  u({ type: Object })
 ], h.prototype, "project", 2);
 m([
   v()
@@ -623,4 +629,4 @@ export {
   l as STFileTree,
   h as STProjectExplorer
 };
-//# sourceMappingURL=project-CwEQ2u1-.js.map
+//# sourceMappingURL=project-Bh8czYIj.js.map

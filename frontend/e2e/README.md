@@ -41,7 +41,7 @@ npx playwright test e2e/deploy.spec.ts
 
 ### CI/CD
 
-E2E tests run automatically on push/PR to `main` and `dev` branches via GitHub Actions (`.github/workflows/e2e.yml`).
+E2E tests run automatically on push/PR to `master`, `main`, and `dev` branches via GitHub Actions (`.github/workflows/e2e.yml`).
 
 ## Test Setup
 

@@ -300,7 +300,7 @@ END_PROGRAM`;
     this._diagnostics = [];
     this._metadata = null;
     this._entityCount = 0;
-    this._onlineState = null;
+    this._onlineState = this._createDisconnectedOnlineState();
   }
 
   connectedCallback() {
@@ -402,17 +402,13 @@ END_PROGRAM`;
             </button>
           </div>
         </div>
-        ${this._onlineState
-          ? html`
-              <st-online-toolbar
-                .state=${this._onlineState}
-                @connect=${this._handleOnlineConnect}
-                @disconnect=${this._handleOnlineDisconnect}
-                @toggle-pause=${this._handleOnlineTogglePause}
-                @setting-change=${this._handleOnlineSettingChange}
-              ></st-online-toolbar>
-            `
-          : ""}
+        <st-online-toolbar
+          .state=${this._onlineState ?? this._createDisconnectedOnlineState()}
+          @connect=${this._handleOnlineConnect}
+          @disconnect=${this._handleOnlineDisconnect}
+          @toggle-pause=${this._handleOnlineTogglePause}
+          @setting-change=${this._handleOnlineSettingChange}
+        ></st-online-toolbar>
         <div class="main-content">
           ${this._showProjectExplorer
             ? html`
@@ -553,6 +549,17 @@ END_PROGRAM`;
       return activeFile?.content || "";
     }
     return this._code;
+  }
+
+  private _createDisconnectedOnlineState(): OnlineModeState {
+    return {
+      status: "disconnected",
+      bindings: [],
+      liveValues: new Map(),
+      updateRate: 100,
+      showConditions: true,
+      highlightChanges: true,
+    };
   }
 
   private _getOpenFiles(): ProjectFile[] {
@@ -769,7 +776,7 @@ END_PROGRAM`;
       return;
     }
 
-    const parseResult = parse(this._code);
+    const parseResult = parse(this._getCurrentCode());
     if (!parseResult.success || !parseResult.ast) {
       console.error("Cannot deploy: parsing failed");
       return;
@@ -838,7 +845,7 @@ END_PROGRAM`;
       return;
     }
 
-    const parseResult = parse(this._code);
+    const parseResult = parse(this._getCurrentCode());
     if (!parseResult.success || !parseResult.ast) {
       return;
     }
@@ -865,7 +872,7 @@ END_PROGRAM`;
     ) as STEditor | null;
     if (editor) {
       editor.stopOnlineMode();
-      this._onlineState = null;
+      this._onlineState = this._createDisconnectedOnlineState();
     }
   }
 
@@ -881,9 +888,16 @@ END_PROGRAM`;
   }
 
   private _handleOnlineSettingChange(e: CustomEvent): void {
-    // Settings changes would update the manager, but for now we just log
-    // eslint-disable-next-line no-console
-    console.log("Online setting changed", e.detail);
+    const currentState = this._onlineState ?? this._createDisconnectedOnlineState();
+    const { setting, value } = e.detail as {
+      setting: "highlightChanges" | "showConditions" | "updateRate";
+      value: boolean | number;
+    };
+
+    this._onlineState = {
+      ...currentState,
+      [setting]: value,
+    };
   }
 
   private async _toggleEntityBrowser(): Promise<void> {

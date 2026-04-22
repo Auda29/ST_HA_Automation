@@ -14,13 +14,13 @@ import "./file-tree";
 export class STProjectExplorer extends LitElement {
   @property({ attribute: false }) declare hass?: any;
   @property({ type: Object }) declare project: ProjectStructure | null;
+  @state() declare private _storage: ProjectStorage | null;
 
   constructor() {
     super();
     this.project = null;
+    this._storage = null;
   }
-
-  @state() private _storage: ProjectStorage | null = null;
 
   static styles = css`
     :host {

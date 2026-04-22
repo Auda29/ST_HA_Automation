@@ -9,8 +9,12 @@ import type { OnlineModeState, OnlineStatus } from "./types";
 @customElement("st-online-toolbar")
 export class OnlineToolbar extends LitElement {
   @property({ type: Object }) declare state: OnlineModeState;
+  @state() declare private _showSettings: boolean;
 
-  @state() private _showSettings: boolean = false;
+  constructor() {
+    super();
+    this._showSettings = false;
+  }
 
   static styles = css`
     :host {

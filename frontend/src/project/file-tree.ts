@@ -21,10 +21,9 @@ export class STFileTree extends LitElement {
   @property({ type: Array }) declare files: ProjectFile[];
   @property({ type: String }) declare activeFileId: string | null;
   @property({ type: String }) declare selectedFileId: string | null;
-
-  @state() private _expandedPaths: Set<string>;
-  @state() private _editingFileId: string | null;
-  @state() private _editingName: string;
+  @state() declare private _expandedPaths: Set<string>;
+  @state() declare private _editingFileId: string | null;
+  @state() declare private _editingName: string;
 
   constructor() {
     super();

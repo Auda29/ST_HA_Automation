@@ -1,7 +1,7 @@
 var se = Object.defineProperty;
 var ne = (n, t, e) => t in n ? se(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e;
 var l = (n, t, e) => ne(n, typeof t != "symbol" ? t + "" : t, e);
-import { S as ae, c as oe, L as re, E as T, H as le, s as ce, a as K, b as he, D as M, W as de, C as pe, d as y, l as ue, h as ge, e as me, f as fe, g as Ee, i as be, j as ve, k as Se, m as Le, n as ye, o as _e, p as Oe, q as Ue, r as Ce, t as Ne, u as Te, v as Re, w as Ae, x as we, y as Me } from "./codemirror-C8x9REUs.js";
+import { S as ae, c as oe, L as re, E as T, H as le, s as ce, a as K, b as he, D as M, W as de, C as pe, d as y, l as ue, h as ge, e as me, f as fe, g as Ee, i as be, j as ve, k as Se, m as Le, n as ye, o as _e, p as Oe, q as Ce, r as Ue, t as Ne, u as Te, v as Re, w as Ae, x as we, y as Me } from "./codemirror-C8x9REUs.js";
 import { W as g } from "./vendor-BhPS5zVw.js";
 import { i as j, n as L, a as W, b as u, t as G, r as E } from "./lit-C178dhqO.js";
 import { s as Be } from "./ha-websocket-DcUbagYv.js";
@@ -115,7 +115,7 @@ const X = [
   "CTU",
   "CTD",
   "CTUD"
-], ke = [
+], xe = [
   "trigger",
   "no_trigger",
   "persistent",
@@ -177,12 +177,12 @@ const X = [
     commentTokens: { line: "//", block: { open: "(*", close: "*)" } },
     closeBrackets: { brackets: ["(", "[", "{", "'"] }
   }
-}), xe = oe([
+}), ke = oe([
   ...X.map((n) => ({ label: n, type: "keyword" })),
   ...Q.map((n) => ({ label: n, type: "type" })),
   ...Z.map((n) => ({ label: n, type: "function" })),
   ...J.map((n) => ({ label: n, type: "class" })),
-  ...ke.map((n) => ({
+  ...xe.map((n) => ({
     label: `{${n}}`,
     type: "keyword",
     detail: "pragma"
@@ -208,9 +208,9 @@ END_IF`,
     detail: "template"
   }
 ]);
-function Pe() {
+function De() {
   return new re(H, [
-    H.data.of({ autocomplete: xe })
+    H.data.of({ autocomplete: ke })
   ]);
 }
 const d = {
@@ -231,7 +231,7 @@ const d = {
   gutterBg: "#1e1e1e",
   gutterFg: "#858585",
   border: "#404040"
-}, De = T.theme(
+}, Pe = T.theme(
   {
     "&": {
       color: d.fg,
@@ -308,10 +308,10 @@ const d = {
   { tag: g.operator, color: d.fg },
   { tag: g.invalid, color: "#ff0000", textDecoration: "underline wavy" }
 ]);
-function $e() {
-  return [De, ce(Fe)];
+function Ve() {
+  return [Pe, ce(Fe)];
 }
-class Ve {
+class $e {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(t) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -675,7 +675,7 @@ let S = class extends W {
     var e;
     if (!((e = this.hass) != null && e.connection))
       throw new Error("Home Assistant connection not available");
-    this._onlineManager || (this._onlineManager = new Ve(this.hass.connection), this._onlineUnsubscribe = this._onlineManager.subscribe((s) => {
+    this._onlineManager || (this._onlineManager = new $e(this.hass.connection), this._onlineUnsubscribe = this._onlineManager.subscribe((s) => {
       this._editor && s.liveValues && He(this._editor, s.liveValues);
     })), await this._onlineManager.start(t);
   }
@@ -723,8 +723,8 @@ let S = class extends W {
       ye(),
       _e(),
       Oe(),
-      Ue.of([
-        ...Ce,
+      Ce.of([
+        ...Ue,
         ...Ne,
         ...Te,
         ...Re,
@@ -732,8 +732,8 @@ let S = class extends W {
         ...we,
         Me
       ]),
-      Pe(),
-      $e(),
+      De(),
+      Ve(),
       Ye(),
       this._readOnlyCompartment.of(y.readOnly.of(this.readOnly)),
       y.tabSize.of(4)
@@ -856,35 +856,34 @@ var it = Object.defineProperty, Qe = Object.getOwnPropertyDescriptor, Ze = (n, t
     (o = n[a]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && it(t, e, i), i;
 }, Je = (n, t, e) => Ze(n, t + "", e);
-let U = class extends W {
+let C = class extends W {
   constructor() {
-    super(...arguments);
-    l(this, "_showSettings", !1);
+    super(), this._showSettings = !1;
   }
   get statusText() {
-    var e;
+    var t;
     return {
       disconnected: "Offline",
       connecting: "Connecting...",
       online: "Online",
       paused: "Paused",
       error: "Error"
-    }[((e = this.state) == null ? void 0 : e.status) || "disconnected"];
+    }[((t = this.state) == null ? void 0 : t.status) || "disconnected"];
   }
   get isPaused() {
-    var t;
-    return ((t = this.state) == null ? void 0 : t.status) === "paused";
+    var n;
+    return ((n = this.state) == null ? void 0 : n.status) === "paused";
   }
   get canConnect() {
-    var t;
-    return ["disconnected", "error"].includes(((t = this.state) == null ? void 0 : t.status) || "disconnected");
+    var n;
+    return ["disconnected", "error"].includes(((n = this.state) == null ? void 0 : n.status) || "disconnected");
   }
   render() {
-    var t, e, s, i;
+    var n, t, e, s;
     return u`
       <div class="status">
         <span
-          class="status-dot status-dot--${((t = this.state) == null ? void 0 : t.status) || "disconnected"}"
+          class="status-dot status-dot--${((n = this.state) == null ? void 0 : n.status) || "disconnected"}"
         ></span>
         <span class="status-text">${this.statusText}</span>
       </div>
@@ -904,8 +903,8 @@ let U = class extends W {
       <div class="spacer"></div>
 
       <div class="stats">
-        <div class="stat">📊 ${((s = (e = this.state) == null ? void 0 : e.liveValues) == null ? void 0 : s.size) || 0} Variables</div>
-        <div class="stat">⚡ ${((i = this.state) == null ? void 0 : i.updateRate) || 100}ms</div>
+        <div class="stat">📊 ${((e = (t = this.state) == null ? void 0 : t.liveValues) == null ? void 0 : e.size) || 0} Variables</div>
+        <div class="stat">⚡ ${((s = this.state) == null ? void 0 : s.updateRate) || 100}ms</div>
       </div>
 
       <div style="position: relative;">
@@ -917,14 +916,14 @@ let U = class extends W {
     `;
   }
   _renderSettings() {
-    var t, e, s, i, a, o;
+    var n, t, e, s, i, a;
     return u`
       <div class="settings-panel">
         <div class="setting">
           <input
             type="checkbox"
             id="highlight"
-            .checked=${(t = this.state) == null ? void 0 : t.highlightChanges}
+            .checked=${(n = this.state) == null ? void 0 : n.highlightChanges}
             @change=${this._handleHighlightChange}
           />
           <label for="highlight">Highlight changes</label>
@@ -933,7 +932,7 @@ let U = class extends W {
           <input
             type="checkbox"
             id="conditions"
-            .checked=${(e = this.state) == null ? void 0 : e.showConditions}
+            .checked=${(t = this.state) == null ? void 0 : t.showConditions}
             @change=${this._handleConditionsChange}
           />
           <label for="conditions">Show conditions</label>
@@ -941,16 +940,16 @@ let U = class extends W {
         <div class="setting">
           <label>Update rate:</label>
           <select @change=${this._handleRateChange}>
-            <option value="50" ?selected=${((s = this.state) == null ? void 0 : s.updateRate) === 50}>
+            <option value="50" ?selected=${((e = this.state) == null ? void 0 : e.updateRate) === 50}>
               50ms
             </option>
-            <option value="100" ?selected=${((i = this.state) == null ? void 0 : i.updateRate) === 100}>
+            <option value="100" ?selected=${((s = this.state) == null ? void 0 : s.updateRate) === 100}>
               100ms
             </option>
-            <option value="250" ?selected=${((a = this.state) == null ? void 0 : a.updateRate) === 250}>
+            <option value="250" ?selected=${((i = this.state) == null ? void 0 : i.updateRate) === 250}>
               250ms
             </option>
-            <option value="500" ?selected=${((o = this.state) == null ? void 0 : o.updateRate) === 500}>
+            <option value="500" ?selected=${((a = this.state) == null ? void 0 : a.updateRate) === 500}>
               500ms
             </option>
           </select>
@@ -973,38 +972,38 @@ let U = class extends W {
       new CustomEvent("toggle-pause", { bubbles: !0, composed: !0 })
     );
   }
-  _handleHighlightChange(t) {
-    const e = t.target.checked;
+  _handleHighlightChange(n) {
+    const t = n.target.checked;
     this.dispatchEvent(
       new CustomEvent("setting-change", {
-        detail: { setting: "highlightChanges", value: e },
+        detail: { setting: "highlightChanges", value: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleConditionsChange(t) {
-    const e = t.target.checked;
+  _handleConditionsChange(n) {
+    const t = n.target.checked;
     this.dispatchEvent(
       new CustomEvent("setting-change", {
-        detail: { setting: "showConditions", value: e },
+        detail: { setting: "showConditions", value: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleRateChange(t) {
-    const e = Number.parseInt(t.target.value, 10);
+  _handleRateChange(n) {
+    const t = Number.parseInt(n.target.value, 10);
     this.dispatchEvent(
       new CustomEvent("setting-change", {
-        detail: { setting: "updateRate", value: e },
+        detail: { setting: "updateRate", value: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
 };
-Je(U, "styles", j`
+Je(C, "styles", j`
     :host {
       display: flex;
       align-items: center;
@@ -1142,13 +1141,13 @@ Je(U, "styles", j`
   `);
 z([
   L({ type: Object })
-], U.prototype, "state", 2);
+], C.prototype, "state", 2);
 z([
   E()
-], U.prototype, "_showSettings", 2);
-U = z([
+], C.prototype, "_showSettings", 2);
+C = z([
   G("st-online-toolbar")
-], U);
+], C);
 const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti = r({
   name: "WhiteSpace",
   pattern: /\s+/,
@@ -1195,13 +1194,13 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
 }), gt = r({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), mt = c("Program", "PROGRAM"), oi = c("Function", "FUNCTION"), ft = c("Var", "VAR"), ri = c("Constant", "CONSTANT"), Et = c("If", "IF"), B = c("Then", "THEN"), bt = c("Elsif", "ELSIF"), I = c("Else", "ELSE"), vt = c("Case", "CASE"), St = c("Of", "OF"), Lt = c("For", "FOR"), yt = c("To", "TO"), _t = c("By", "BY"), k = c("Do", "DO"), Ot = c("While", "WHILE"), Ut = c("Repeat", "REPEAT"), Ct = c("Until", "UNTIL"), Nt = c("Return", "RETURN"), Tt = c("Exit", "EXIT"), li = c("Continue", "CONTINUE"), x = c("At", "AT"), Rt = c("And", "AND"), At = c("Or", "OR"), ci = c("Xor", "XOR"), wt = c("Not", "NOT"), Mt = c("Mod", "MOD"), Bt = c("True", "TRUE"), It = c("False", "FALSE"), kt = c("TypeBool", "BOOL"), xt = r({
+}), mt = c("Program", "PROGRAM"), oi = c("Function", "FUNCTION"), ft = c("Var", "VAR"), ri = c("Constant", "CONSTANT"), Et = c("If", "IF"), B = c("Then", "THEN"), bt = c("Elsif", "ELSIF"), I = c("Else", "ELSE"), vt = c("Case", "CASE"), St = c("Of", "OF"), Lt = c("For", "FOR"), yt = c("To", "TO"), _t = c("By", "BY"), x = c("Do", "DO"), Ot = c("While", "WHILE"), Ct = c("Repeat", "REPEAT"), Ut = c("Until", "UNTIL"), Nt = c("Return", "RETURN"), Tt = c("Exit", "EXIT"), li = c("Continue", "CONTINUE"), k = c("At", "AT"), Rt = c("And", "AND"), At = c("Or", "OR"), ci = c("Xor", "XOR"), wt = c("Not", "NOT"), Mt = c("Mod", "MOD"), Bt = c("True", "TRUE"), It = c("False", "FALSE"), xt = c("TypeBool", "BOOL"), kt = r({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
-}), Pt = r({
+}), Dt = r({
   name: "TypeReal",
   pattern: /\b(LREAL|REAL)\b/i
-}), Dt = r({
+}), Pt = r({
   name: "TypeString",
   pattern: /\b(WSTRING|STRING)\b/i
 }), Ft = r({
@@ -1210,7 +1209,7 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
 }), hi = r({
   name: "TypeByte",
   pattern: /\b(LWORD|DWORD|WORD|BYTE)\b/i
-}), $t = r({
+}), Vt = r({
   name: "TimeLiteral",
   pattern: /T(IME)?#[\d_]+(\.[\d_]+)?([a-z]+)?/i
 }), di = r({
@@ -1222,7 +1221,7 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
 }), ui = r({
   name: "OctalLiteral",
   pattern: /8#[0-7_]+/
-}), Vt = r({
+}), $t = r({
   name: "RealLiteral",
   pattern: /\d+\.\d+([eE][+-]?\d+)?/
 }), jt = r({
@@ -1231,13 +1230,13 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
 }), Wt = r({
   name: "StringLiteral",
   pattern: /'([^']|'')*'/
-}), P = r({
+}), D = r({
   name: "IoAddress",
   pattern: /%[IQM][XBWDLxbwdl]?(?:[\d.]+|\*)/i
 }), _ = r({ name: "Assign", pattern: /:=/ }), gi = r({ name: "Output", pattern: /=>/ }), Gt = r({ name: "LessEqual", pattern: /<=/ }), zt = r({
   name: "GreaterEqual",
   pattern: />=/
-}), Yt = r({ name: "NotEqual", pattern: /<>/ }), Ht = r({ name: "Less", pattern: /</ }), qt = r({ name: "Greater", pattern: />/ }), Kt = r({ name: "Equal", pattern: /=/ }), Xt = r({ name: "Plus", pattern: /\+/ }), D = r({ name: "Minus", pattern: /-/ }), Qt = r({ name: "Star", pattern: /\*/ }), Zt = r({ name: "Slash", pattern: /\// }), C = r({ name: "LParen", pattern: /\(/ }), N = r({ name: "RParen", pattern: /\)/ }), mi = r({ name: "LBracket", pattern: /\[/ }), fi = r({ name: "RBracket", pattern: /\]/ }), F = r({ name: "Colon", pattern: /:/ }), v = r({ name: "Semicolon", pattern: /;/ }), $ = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), Jt = r({ name: "Range", pattern: /\.\./ }), b = r({
+}), Yt = r({ name: "NotEqual", pattern: /<>/ }), Ht = r({ name: "Less", pattern: /</ }), qt = r({ name: "Greater", pattern: />/ }), Kt = r({ name: "Equal", pattern: /=/ }), Xt = r({ name: "Plus", pattern: /\+/ }), P = r({ name: "Minus", pattern: /-/ }), Qt = r({ name: "Star", pattern: /\*/ }), Zt = r({ name: "Slash", pattern: /\// }), U = r({ name: "LParen", pattern: /\(/ }), N = r({ name: "RParen", pattern: /\)/ }), mi = r({ name: "LBracket", pattern: /\[/ }), fi = r({ name: "RBracket", pattern: /\]/ }), F = r({ name: "Colon", pattern: /:/ }), v = r({ name: "Semicolon", pattern: /;/ }), V = r({ name: "Comma", pattern: /,/ }), $ = r({ name: "Dot", pattern: /\./ }), Jt = r({ name: "Range", pattern: /\.\./ }), b = r({
   name: "Identifier",
   pattern: /[a-zA-Z_][a-zA-Z0-9_]*/
 }), te = [
@@ -1276,14 +1275,14 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
   Lt,
   yt,
   _t,
-  k,
+  x,
   Ot,
-  Ut,
   Ct,
+  Ut,
   Nt,
   Tt,
   li,
-  x,
+  k,
   // Logical
   Rt,
   At,
@@ -1293,22 +1292,22 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
   Bt,
   It,
   // Types
-  kt,
   xt,
-  Pt,
+  kt,
   Dt,
+  Pt,
   Ft,
   hi,
   // Literals (order: specific before general)
-  $t,
+  Vt,
   di,
   pi,
   ui,
-  Vt,
+  $t,
   jt,
   Wt,
   // I/O
-  P,
+  D,
   // Multi-char operators
   _,
   gi,
@@ -1321,17 +1320,17 @@ const c = (n, t) => r({ name: n, pattern: new RegExp(`\\b${t}\\b`, "i") }), ti =
   qt,
   Kt,
   Xt,
-  D,
+  P,
   Qt,
   Zt,
-  C,
+  U,
   N,
   mi,
   fi,
   F,
   v,
-  $,
   V,
+  $,
   // Identifier last
   b
 ], Ei = new R(te, {
@@ -1368,13 +1367,13 @@ class vi extends Ie {
     }));
     l(this, "variableDeclaration", this.RULE("variableDeclaration", () => {
       this.MANY(() => this.SUBRULE(this.pragma)), this.CONSUME(b, { LABEL: "varName" }), this.OPTION(() => {
-        this.CONSUME(x), this.CONSUME(P);
+        this.CONSUME(k), this.CONSUME(D);
       }), this.OPTION1(() => {
         this.CONSUME(F), this.SUBRULE(this.typeSpec);
       }), this.OPTION2(() => {
         this.CONSUME(_), this.SUBRULE(this.expression);
       }), this.OPTION3(() => {
-        this.CONSUME1(x), this.CONSUME1(P);
+        this.CONSUME1(k), this.CONSUME1(D);
       }), this.CONSUME(v);
     }));
     l(this, "pragma", this.RULE("pragma", () => {
@@ -1382,10 +1381,10 @@ class vi extends Ie {
     }));
     l(this, "typeSpec", this.RULE("typeSpec", () => {
       this.OR([
-        { ALT: () => this.CONSUME(kt) },
         { ALT: () => this.CONSUME(xt) },
-        { ALT: () => this.CONSUME(Pt) },
+        { ALT: () => this.CONSUME(kt) },
         { ALT: () => this.CONSUME(Dt) },
+        { ALT: () => this.CONSUME(Pt) },
         { ALT: () => this.CONSUME(Ft) },
         { ALT: () => this.CONSUME(b) }
         // Custom type
@@ -1429,7 +1428,7 @@ class vi extends Ie {
     }));
     l(this, "caseLabelList", this.RULE("caseLabelList", () => {
       this.SUBRULE(this.caseLabel), this.MANY(() => {
-        this.CONSUME($), this.SUBRULE1(this.caseLabel);
+        this.CONSUME(V), this.SUBRULE1(this.caseLabel);
       });
     }));
     l(this, "caseLabel", this.RULE("caseLabel", () => {
@@ -1440,13 +1439,13 @@ class vi extends Ie {
     l(this, "forStatement", this.RULE("forStatement", () => {
       this.CONSUME(Lt), this.CONSUME(b, { LABEL: "controlVar" }), this.CONSUME(_), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(yt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
         this.CONSUME(_t), this.SUBRULE2(this.expression, { LABEL: "step" });
-      }), this.CONSUME(k), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(pt);
+      }), this.CONSUME(x), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(pt);
     }));
     l(this, "whileStatement", this.RULE("whileStatement", () => {
-      this.CONSUME(Ot), this.SUBRULE(this.expression), this.CONSUME(k), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(ut);
+      this.CONSUME(Ot), this.SUBRULE(this.expression), this.CONSUME(x), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(ut);
     }));
     l(this, "repeatStatement", this.RULE("repeatStatement", () => {
-      this.CONSUME(Ut), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(Ct), this.SUBRULE(this.expression), this.CONSUME(gt);
+      this.CONSUME(Ct), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(Ut), this.SUBRULE(this.expression), this.CONSUME(gt);
     }));
     l(this, "returnStatement", this.RULE("returnStatement", () => {
       this.CONSUME(Nt), this.CONSUME(v);
@@ -1487,7 +1486,7 @@ class vi extends Ie {
       this.SUBRULE(this.multiplicativeExpression, { LABEL: "lhs" }), this.MANY(() => {
         this.OR([
           { ALT: () => this.CONSUME(Xt) },
-          { ALT: () => this.CONSUME(D) }
+          { ALT: () => this.CONSUME(P) }
         ]), this.SUBRULE1(this.multiplicativeExpression, { LABEL: "rhs" });
       });
     }));
@@ -1509,7 +1508,7 @@ class vi extends Ie {
           ALT: () => {
             this.OR1([
               { ALT: () => this.CONSUME(wt) },
-              { ALT: () => this.CONSUME(D) }
+              { ALT: () => this.CONSUME(P) }
             ]), this.SUBRULE(this.unaryExpression);
           }
         },
@@ -1522,16 +1521,16 @@ class vi extends Ie {
         { ALT: () => this.SUBRULE(this.identifierOrCall) },
         {
           ALT: () => {
-            this.CONSUME(C), this.SUBRULE(this.expression), this.CONSUME(N);
+            this.CONSUME(U), this.SUBRULE(this.expression), this.CONSUME(N);
           }
         }
       ]);
     }));
     l(this, "identifierOrCall", this.RULE("identifierOrCall", () => {
       this.CONSUME(b), this.MANY(() => {
-        this.CONSUME(V), this.CONSUME1(b);
+        this.CONSUME($), this.CONSUME1(b);
       }), this.OPTION(() => {
-        this.CONSUME(C), this.OPTION1(() => {
+        this.CONSUME(U), this.OPTION1(() => {
           this.SUBRULE(this.argumentList);
         }), this.CONSUME(N);
       });
@@ -1541,24 +1540,24 @@ class vi extends Ie {
         { ALT: () => this.CONSUME(Bt) },
         { ALT: () => this.CONSUME(It) },
         { ALT: () => this.CONSUME(jt) },
-        { ALT: () => this.CONSUME(Vt) },
+        { ALT: () => this.CONSUME($t) },
         { ALT: () => this.CONSUME(Wt) },
-        { ALT: () => this.CONSUME($t) }
+        { ALT: () => this.CONSUME(Vt) }
       ]);
     }));
     l(this, "variableReference", this.RULE("variableReference", () => {
       this.CONSUME(b), this.MANY(() => {
-        this.CONSUME(V), this.CONSUME1(b);
+        this.CONSUME($), this.CONSUME1(b);
       });
     }));
     l(this, "functionCall", this.RULE("functionCall", () => {
-      this.CONSUME(b), this.CONSUME(C), this.OPTION(() => {
+      this.CONSUME(b), this.CONSUME(U), this.OPTION(() => {
         this.SUBRULE(this.argumentList);
       }), this.CONSUME(N);
     }));
     l(this, "argumentList", this.RULE("argumentList", () => {
       this.SUBRULE(this.argument), this.MANY(() => {
-        this.CONSUME($), this.SUBRULE1(this.argument);
+        this.CONSUME(V), this.SUBRULE1(this.argument);
       });
     }));
     /**
@@ -1968,7 +1967,7 @@ var ee = Object.defineProperty, _i = Object.getOwnPropertyDescriptor, Oi = (n, t
   for (var i = s > 1 ? void 0 : s ? _i(t, e) : t, a = n.length - 1, o; a >= 0; a--)
     (o = n[a]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && ee(t, e, i), i;
-}, Ui = (n, t, e) => Oi(n, t + "", e);
+}, Ci = (n, t, e) => Oi(n, t + "", e);
 let m = class extends W {
   constructor() {
     super();
@@ -1998,7 +1997,7 @@ ELSE
     light := FALSE;
 END_IF
 
-END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], this._metadata = null, this._entityCount = 0, this._onlineState = null;
+END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], this._metadata = null, this._entityCount = 0, this._onlineState = this._createDisconnectedOnlineState();
   }
   connectedCallback() {
     super.connectedCallback(), this._initializeProject(), this._analyzeCode();
@@ -2011,7 +2010,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   async _initializeStorage() {
     var e, s;
     if (this._storage) return;
-    const { ProjectStorage: t } = await import("./project-CwEQ2u1-.js");
+    const { ProjectStorage: t } = await import("./project-Bh8czYIj.js");
     if ((e = this.hass) != null && e.connection) {
       const i = ((s = this.hass.config) == null ? void 0 : s.entry_id) || "default";
       this._storage = new t(this.hass.connection, i);
@@ -2063,20 +2062,18 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
               <ha-icon icon="mdi:format-list-bulleted"></ha-icon>
               Entities
             </button>
-            <button @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
+            <button class="deploy-button" @click=${this._handleDeploy} ?disabled=${!this._syntaxOk}>
               ▶ Deploy
             </button>
           </div>
         </div>
-        ${this._onlineState ? u`
-              <st-online-toolbar
-                .state=${this._onlineState}
-                @connect=${this._handleOnlineConnect}
-                @disconnect=${this._handleOnlineDisconnect}
-                @toggle-pause=${this._handleOnlineTogglePause}
-                @setting-change=${this._handleOnlineSettingChange}
-              ></st-online-toolbar>
-            ` : ""}
+        <st-online-toolbar
+          .state=${this._onlineState ?? this._createDisconnectedOnlineState()}
+          @connect=${this._handleOnlineConnect}
+          @disconnect=${this._handleOnlineDisconnect}
+          @toggle-pause=${this._handleOnlineTogglePause}
+          @setting-change=${this._handleOnlineSettingChange}
+        ></st-online-toolbar>
         <div class="main-content">
           ${this._showProjectExplorer ? u`
                 <div class="project-sidebar">
@@ -2180,6 +2177,16 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     }
     return this._code;
   }
+  _createDisconnectedOnlineState() {
+    return {
+      status: "disconnected",
+      bindings: [],
+      liveValues: /* @__PURE__ */ new Map(),
+      updateRate: 100,
+      showConditions: !0,
+      highlightChanges: !0
+    };
+  }
   _getOpenFiles() {
     return this._project ? this._project.files.filter((t) => t.isOpen) : [];
   }
@@ -2257,7 +2264,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       }
   }
   async _toggleProjectExplorer() {
-    !this._projectExplorerLoaded && !this._showProjectExplorer && (await import("./project-CwEQ2u1-.js"), this._projectExplorerLoaded = !0), this._showProjectExplorer = !this._showProjectExplorer;
+    !this._projectExplorerLoaded && !this._showProjectExplorer && (await import("./project-Bh8czYIj.js"), this._projectExplorerLoaded = !0), this._showProjectExplorer = !this._showProjectExplorer;
   }
   /**
    * Parse and analyze the current code
@@ -2301,7 +2308,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       );
       return;
     }
-    const t = w(this._code);
+    const t = w(this._getCurrentCode());
     if (!t.success || !t.ast) {
       console.error("Cannot deploy: parsing failed");
       return;
@@ -2351,7 +2358,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     var a, o;
     if (!this._syntaxOk || !((a = this.hass) != null && a.connection))
       return;
-    const t = w(this._code);
+    const t = w(this._getCurrentCode());
     if (!t.success || !t.ast)
       return;
     const e = Y(t.ast), s = this._extractBindings(e.dependencies), i = (o = this.shadowRoot) == null ? void 0 : o.querySelector(
@@ -2369,7 +2376,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     const t = (e = this.shadowRoot) == null ? void 0 : e.querySelector(
       "st-editor"
     );
-    t && (t.stopOnlineMode(), this._onlineState = null);
+    t && (t.stopOnlineMode(), this._onlineState = this._createDisconnectedOnlineState());
   }
   _handleOnlineTogglePause() {
     var e;
@@ -2382,13 +2389,17 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     }
   }
   _handleOnlineSettingChange(t) {
-    console.log("Online setting changed", t.detail);
+    const e = this._onlineState ?? this._createDisconnectedOnlineState(), { setting: s, value: i } = t.detail;
+    this._onlineState = {
+      ...e,
+      [s]: i
+    };
   }
   async _toggleEntityBrowser() {
     !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-Cy2iDIVt.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
   }
 };
-Ui(m, "styles", j`
+Ci(m, "styles", j`
     :host {
       display: block;
       height: 100%;
@@ -2435,6 +2446,8 @@ Ui(m, "styles", j`
     .toolbar h1 {
       margin: 0;
       font-size: 20px;
+      font-weight: 400;
+      letter-spacing: -0.2px;
     }
     .toolbar-actions {
       display: flex;
@@ -2443,23 +2456,27 @@ Ui(m, "styles", j`
     }
     .toolbar-button {
       padding: 6px 12px;
-      border: 1px solid var(--divider-color);
+      border: 1px solid color-mix(in srgb, var(--app-header-text-color, #fff) 40%, transparent);
       border-radius: 4px;
-      background: var(--secondary-background-color);
-      color: var(--primary-text-color);
+      background: color-mix(in srgb, var(--app-header-text-color, #fff) 15%, transparent);
+      color: var(--app-header-text-color, #fff);
       cursor: pointer;
       font-size: 14px;
       display: flex;
       align-items: center;
       gap: 4px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
     }
     .toolbar-button:hover {
-      background: var(--divider-color);
+      background: color-mix(in srgb, var(--app-header-text-color, #fff) 25%, transparent);
     }
     .toolbar-button.active {
-      background: var(--primary-color);
-      color: var(--text-primary-color);
-      border-color: var(--primary-color);
+      background: color-mix(in srgb, var(--app-header-text-color, #fff) 35%, transparent);
+      border-color: color-mix(in srgb, var(--app-header-text-color, #fff) 60%, transparent);
+    }
+    .toolbar-button:focus-visible {
+      outline: 2px solid var(--app-header-text-color, #fff);
+      outline-offset: 2px;
     }
     .editor-container {
       flex: 1;
@@ -2473,11 +2490,12 @@ Ui(m, "styles", j`
     .status-bar {
       display: flex;
       gap: 16px;
-      padding: 8px 16px;
+      padding: 6px 16px;
       background: var(--secondary-background-color);
       border-top: 1px solid var(--divider-color);
       font-size: 12px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .status-ok {
       color: var(--success-color, #4caf50);
@@ -2488,26 +2506,36 @@ Ui(m, "styles", j`
     .status-warning {
       color: var(--warning-color, #ff9800);
     }
-    button {
+    .deploy-button {
       padding: 8px 16px;
       border: none;
       border-radius: 4px;
-      background: var(--primary-color);
-      color: var(--text-primary-color);
+      background: var(--app-header-text-color, #fff);
+      color: var(--app-header-background-color, #03a9f4);
       cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
     }
-    button:disabled {
+    .deploy-button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+    .deploy-button:focus-visible {
+      outline: 2px solid var(--app-header-text-color, #fff);
+      outline-offset: 2px;
+    }
+    .deploy-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
     .diagnostics-panel {
-      max-height: 150px;
+      max-height: 130px;
       overflow-y: auto;
-      padding: 8px 16px;
+      padding: 6px 16px;
       background: var(--secondary-background-color);
       border-top: 1px solid var(--divider-color);
       font-size: 12px;
-      font-family: monospace;
+      font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
     }
     .diagnostic {
       padding: 2px 0;
@@ -2634,11 +2662,11 @@ export {
   Z as ST_BUILTINS,
   J as ST_FUNCTION_BLOCKS,
   X as ST_KEYWORDS,
-  ke as ST_PRAGMAS,
+  xe as ST_PRAGMAS,
   Q as ST_TYPES,
-  De as stEditorTheme,
+  Pe as stEditorTheme,
   Fe as stHighlightStyle,
-  $e as stTheme,
-  Pe as structuredText
+  Ve as stTheme,
+  De as structuredText
 };
 //# sourceMappingURL=st-panel.js.map

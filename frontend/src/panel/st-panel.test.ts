@@ -41,5 +41,16 @@ describe("STPanel", () => {
 
     expect(getStatusText()).toContain("Syntax OK");
   });
+
+  it("renders the online toolbar in disconnected state before connecting", async () => {
+    const panel = document.createElement("st-panel") as any;
+    document.body.appendChild(panel);
+
+    await panel.updateComplete;
+
+    const toolbar = panel.shadowRoot?.querySelector("st-online-toolbar") as any;
+    expect(toolbar).toBeTruthy();
+    expect(toolbar.state.status).toBe("disconnected");
+  });
 });
 

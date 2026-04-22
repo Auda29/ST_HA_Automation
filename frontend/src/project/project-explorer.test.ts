@@ -2,7 +2,7 @@
  * Project Explorer Component Tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import type { ProjectStructure, ProjectFile } from "./types";
 import { ProjectStorage } from "./project-storage";
 import "./project-explorer";
@@ -105,6 +105,33 @@ describe("Project Explorer Integration", () => {
 
       expect(file.name).toBe("Renamed.st");
       expect(file.name).not.toBe(oldName);
+    });
+
+    it("bubbles file rename events to the parent panel", async () => {
+      const wrapper = document.createElement("div");
+      const explorer = document.createElement("st-project-explorer") as any;
+      explorer.project = project;
+      wrapper.appendChild(explorer);
+      document.body.appendChild(wrapper);
+      await explorer.updateComplete;
+
+      const renameListener = vi.fn();
+      wrapper.addEventListener("file-rename", renameListener);
+
+      const tree = explorer.shadowRoot?.querySelector("st-file-tree");
+      tree?.dispatchEvent(
+        new CustomEvent("file-rename", {
+          detail: { fileId: project.files[0].id, newName: "Renamed.st" },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+
+      expect(renameListener).toHaveBeenCalledTimes(1);
+      expect(renameListener.mock.calls[0][0].detail).toEqual({
+        fileId: project.files[0].id,
+        newName: "Renamed.st",
+      });
     });
 
     it("supports deleting files", () => {

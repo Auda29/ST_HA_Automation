@@ -2,13 +2,13 @@ name: E2E Tests
 
 on:
   push:
-    branches: [main, dev]
+    branches: [master, main, dev]
     paths:
       - 'frontend/**'
       - 'docker-compose.test.yml'
       - '.github/workflows/e2e.yml'
   pull_request:
-    branches: [main, dev]
+    branches: [master, main, dev]
     paths:
       - 'frontend/**'
       - 'docker-compose.test.yml'

@@ -21,7 +21,7 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 
 ## Project Status
 
-**Current Version**: 2.0.0  
+**Current Version**: 2.0.1  
 **Status**: Stable, Ready for Production Use
 
 ### Test Coverage
@@ -37,12 +37,12 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 | Online Mode | 10 | ✅ Passing |
 | Error Mapping | 10 | ✅ Passing |
 | Source Maps | 11 | ✅ Passing |
-| **Total** | **194** | **✅ 100% Passing** |
+| **Total** | **196** | **✅ 100% Passing** |
 
 ### Build Status
 
 - **TypeScript**: ✅ Passing (strict mode)
-- **ESLint**: ✅ Passing (0 errors)
+- **ESLint**: ✅ Passing (0 errors, warnings may still exist)
 - **Bundle Size**: 214 KB (gzipped, initial load) with code splitting
 
 ## Installation
@@ -259,7 +259,7 @@ npm run typecheck
 npm run lint
 npm run lint:fix  # Auto-fix issues
 
-# Unit tests
+# Unit tests (Vitest runs only src/**/*.test.ts)
 npm test          # Watch mode
 npm run test:run  # Single run
 ```

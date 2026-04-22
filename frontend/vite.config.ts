@@ -1,8 +1,24 @@
 import { defineConfig } from "vitest/config";
 import { resolve } from "path";
-import { visualizer } from "rollup-plugin-visualizer";
 
-export default defineConfig({
+export default defineConfig(async () => {
+  const plugins = [];
+
+  try {
+    const { visualizer } = await import("rollup-plugin-visualizer");
+    plugins.push(
+      visualizer({
+        filename: "../bundle-stats.html",
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+      }),
+    );
+  } catch {
+    // Bundle visualization is optional; keep build/test config loadable without it.
+  }
+
+  return {
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
@@ -55,14 +71,7 @@ export default defineConfig({
     },
     sourcemap: true,
   },
-  plugins: [
-    visualizer({
-      filename: "../bundle-stats.html",
-      open: false,
-      gzipSize: true,
-      brotliSize: true,
-    }),
-  ],
+  plugins,
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
@@ -72,5 +81,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setupLitWarnings.ts"],
+    include: ["src/**/*.test.ts"],
   },
+  };
 });

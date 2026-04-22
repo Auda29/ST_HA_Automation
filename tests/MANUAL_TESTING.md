@@ -71,6 +71,7 @@ This document provides a comprehensive testing checklist for the st-editor compo
 
 ## Online Mode (Live Value Display)
 
+- [x] Online toolbar is visible before connecting - **WORKS** (tested 2026-04-22)
 - [ ] `startOnlineMode()` displays live values next to variables
 - [ ] BOOL values show TRUE/FALSE with color coding
 - [ ] Numeric values format correctly (INT as integer, REAL with decimals)
@@ -120,12 +121,13 @@ This document provides a comprehensive testing checklist for the st-editor compo
 
 ## Deploy Functionality
 
+- [x] Deploy uses the currently active file in project mode - **WORKS** (tested 2026-04-22)
 - [ ] Deploy button creates Home Assistant automation
 - [ ] Backup is created before deployment
 - [ ] Helper entities are created correctly
 - [ ] Error messages display properly
 
-**Note:** Deploy testing deferred - WebSocket API integration needs fixes (sendMessagePromise vs callWS issue partially fixed, but automation creation API format still has issues).
+**Note:** Unit/build verification is green again. End-to-end deploy verification in a live Home Assistant instance is still pending.
 
 ---
 
@@ -133,6 +135,7 @@ This document provides a comprehensive testing checklist for the st-editor compo
 
 | Date | Tester | Version | Issues Found |
 |------|--------|---------|--------------|
+| 2026-04-22 | Codex | master | Online toolbar now visible before connect; active-file deploy path fixed |
 | 2025-01-21 | Claude | dev | Code folding not working (Ctrl+Shift+[/]) |
 | 2025-01-21 | Claude | dev | Deploy fails - automation creation API format issue |
 
@@ -142,4 +145,4 @@ This document provides a comprehensive testing checklist for the st-editor compo
 
 1. **Code Folding**: Ctrl+Shift+[ and Ctrl+Shift+] do not fold/unfold code blocks. May need to verify if folding extension is properly configured in CodeMirror setup.
 
-2. **Deploy Functionality**: WebSocket API calls updated from `callWS` to `sendMessagePromise`, but automation creation still fails with `[object Object]` error. The API message format for `config/automation/config/{id}` may need adjustment.
+2. **Deploy Functionality**: Live Home Assistant verification is still needed to confirm end-to-end automation/script/helper creation outside the unit test suite.

@@ -79,9 +79,9 @@ This creates an automation that:
 
 ## Documentation
 
-- [Quick Start Guide](https://github.com/Auda29/ST_HA_Automation/blob/main/docs/quickstart.md)
-- [Full Documentation](https://github.com/Auda29/ST_HA_Automation/tree/main/docs)
-- [Project Overview](https://github.com/Auda29/ST_HA_Automation/blob/main/docs/00_Project_Overview.md)
+- [Quick Start Guide](./docs/quickstart.md)
+- [Full Documentation](./docs)
+- [Project Overview](./docs/00_Project_Overview.md)
 
 ## Requirements
 

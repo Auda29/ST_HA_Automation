@@ -70,6 +70,10 @@ docker-compose -f docker-compose.test.yml ps
 docker-compose -f docker-compose.test.yml logs -f
 ```
 
+`docker-compose.test.yml` mounts:
+- `./ha-test-config` to `/config` for the prepared Home Assistant test instance
+- `./custom_components` to `/config/custom_components` so E2E tests use the current integration build from this repository
+
 ### Using Docker Directly
 
 ```bash

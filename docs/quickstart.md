@@ -127,7 +127,7 @@ Replace the example entity IDs with your actual entities:
 
 ### Step 4: Deploy
 
-Click the **Deploy** button to create the automation in Home Assistant.
+Click the **Deploy** button to create or update the automation in Home Assistant.
 
 ### Step 5: Test
 
@@ -161,7 +161,7 @@ Trigger your motion sensor and watch the light turn on!
 | Feature | Description |
 |---------|-------------|
 | **Syntax Highlighting** | Keywords, types, and values are color-coded |
-| **Online Mode** | Shows live entity values next to variables |
+| **Online Toolbar** | Starts disconnected and lets you connect/pause live values |
 | **Status Bar** | Displays syntax status, trigger count, and mode |
 | **Deploy Button** | Creates/updates the automation in HA |
 | **Autocomplete** | Press `Ctrl+Space` for suggestions |
@@ -322,8 +322,9 @@ END_PROGRAM
 ### Deploy Process
 
 1. Click the **Deploy** button
+2. In the current UI, deployment starts immediately; there is no separate preview dialog yet.
 
-2. Review the deployment preview:
+3. The system will:
    ```
    ┌──────────────────────────────────────────────────────────────────┐
    │  Deploy Preview                                                  │
@@ -339,9 +340,6 @@ END_PROGRAM
    └──────────────────────────────────────────────────────────────────┘
    ```
 
-3. Click **Deploy** to confirm
-
-4. The system will:
    - Create a backup of existing entities
    - Create/update the automation
    - Create/update the logic script
@@ -563,7 +561,7 @@ Now that you have your first program running:
 1. **Read the PRD:** [PRD_ST_HomeAssistant.md](./PRD_ST_HomeAssistant.md) for detailed specifications
 2. **Explore Pragmas:** Learn all available pragmas in the [Pragma Reference](./PRD_ST_HomeAssistant.md#pragma-reference)
 3. **Try Timers:** Use TON, TOF, TP for time-based logic
-4. **Use Online Mode:** Monitor live values while developing
+4. **Use the Online Toolbar:** Connect and monitor live values while developing
 5. **Join the Community:** Share your programs and get help
 
 ---
