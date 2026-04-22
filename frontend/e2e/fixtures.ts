@@ -4,7 +4,7 @@
  * Provides utilities and test data using pre-configured HA entities
  */
 
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 
 export const HA_URL = process.env.HA_URL || "http://localhost:8123";
 export const HA_USERNAME = process.env.HA_USERNAME || "testadmin";
@@ -192,7 +192,7 @@ export async function waitForEntityState(
  */
 export async function loginViaBrowser(page: Page): Promise<void> {
   // Navigate to HA root (will redirect to login if not authenticated)
-  await page.goto(HA_URL);
+  await page.goto(HA_URL, { waitUntil: "domcontentloaded" });
 
   // Wait for the login form to appear
   const usernameInput = page.getByRole("textbox", { name: /username/i });
@@ -210,11 +210,16 @@ export async function loginViaBrowser(page: Page): Promise<void> {
   await page.getByRole("textbox", { name: /password/i }).fill(HA_PASSWORD);
   await page.getByRole("button", { name: /log in/i }).click();
 
-  // Wait for login to complete (dashboard or any authenticated page)
-  await page.waitForURL(/.*(?<!auth\/authorize).*$/, { timeout: 15000 });
-
-  // Wait a bit for the page to fully load
-  await page.waitForTimeout(2000);
+  // Wait for login to complete and the app shell to become interactive.
+  await page.waitForFunction(
+    () => !window.location.pathname.includes("/auth/"),
+    undefined,
+    { timeout: 20000 },
+  );
+  await page.waitForLoadState("domcontentloaded");
+  await expect(page.locator("home-assistant")).toHaveCount(1, {
+    timeout: 20000,
+  });
 }
 
 /**
@@ -225,11 +230,29 @@ export async function navigateToSTPanel(page: Page): Promise<void> {
   await loginViaBrowser(page);
 
   // Navigate to ST panel
-  await page.goto(`${HA_URL}${ST_PANEL_URL}`);
+  await page.goto(`${HA_URL}${ST_PANEL_URL}`, { waitUntil: "domcontentloaded" });
 
-  // Wait for the st-panel custom element to be present and loaded
-  await page.waitForSelector("st-panel", { timeout: 15000 });
+  // Wait for the panel shell and first actionable controls.
+  await expect(page.locator("st-panel")).toHaveCount(1, { timeout: 20000 });
+  await expect(page.locator('button:has-text("Deploy")').first()).toBeVisible({
+    timeout: 20000,
+  });
+  await expect(page.locator("text=/Syntax/i").first()).toBeVisible({
+    timeout: 20000,
+  });
+}
 
-  // Additional wait for the editor to initialize
-  await page.waitForTimeout(1000);
+/**
+ * Replace the current editor content with a new ST program and wait for analysis.
+ */
+export async function replaceEditorCode(page: Page, code: string): Promise<void> {
+  const panel = page.locator("st-panel");
+  await panel.click({ position: { x: 160, y: 160 } });
+  await page.keyboard.press("Control+A");
+  await page.keyboard.insertText(code);
+
+  // Wait for the panel to show that parsing/analysis settled on the new code.
+  await expect(page.locator("text=/Syntax OK/i").first()).toBeVisible({
+    timeout: 15000,
+  });
 }

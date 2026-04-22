@@ -5,7 +5,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { navigateToSTPanel, TEST_ENTITIES } from "./fixtures";
+import { navigateToSTPanel, replaceEditorCode, TEST_ENTITIES } from "./fixtures";
 
 test.describe("Online Mode", () => {
   test("should enable online mode and show live values", async ({ page }) => {
@@ -24,12 +24,7 @@ light := motion;
 END_PROGRAM
     `.trim();
 
-    // Enter code
-    const editor = page.locator("st-panel");
-    await editor.click();
-    await page.keyboard.press("Control+A");
-    await page.keyboard.type(stCode);
-    await page.waitForTimeout(2000);
+    await replaceEditorCode(page, stCode);
 
     // Check syntax is OK first
     const syntaxOk = page.locator("text=/Syntax OK/i");
@@ -42,7 +37,6 @@ END_PROGRAM
 
     if ((await onlineButton.count()) > 0) {
       await onlineButton.first().click();
-      await page.waitForTimeout(2000);
 
       // Check that live values or online mode indicator is displayed
       // This might be shown as decorations in the editor or in a separate panel
@@ -75,7 +69,6 @@ END_PROGRAM
 
     if ((await entityBrowserButton.count()) > 0) {
       await entityBrowserButton.first().click();
-      await page.waitForTimeout(2000);
 
       // Check that entity browser panel is visible
       const entityPanel = page.locator(

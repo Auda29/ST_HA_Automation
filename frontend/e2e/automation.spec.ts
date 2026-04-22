@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { navigateToSTPanel, TEST_ENTITIES } from "./fixtures";
+import { navigateToSTPanel, replaceEditorCode, TEST_ENTITIES } from "./fixtures";
 
 test.describe("Automation Execution", () => {
   test("should trigger automation on entity state change", async ({ page }) => {
@@ -29,11 +29,7 @@ light := motion;
 END_PROGRAM
     `.trim();
 
-    const editor = page.locator("st-panel");
-    await editor.click();
-    await page.keyboard.press("Control+A");
-    await page.keyboard.type(stCode);
-    await page.waitForTimeout(2000);
+    await replaceEditorCode(page, stCode);
 
     // Verify syntax is OK
     const syntaxOk = page.locator("text=/Syntax OK/i");
@@ -65,11 +61,7 @@ END_IF
 END_PROGRAM
     `.trim();
 
-    const editor = page.locator("st-panel");
-    await editor.click();
-    await page.keyboard.press("Control+A");
-    await page.keyboard.type(stCode);
-    await page.waitForTimeout(2000);
+    await replaceEditorCode(page, stCode);
 
     // Check that persistent variable is identified
     const persistentIndicator = page.locator("text=/Persistent/i");
@@ -94,11 +86,7 @@ output := timer1.Q;
 END_PROGRAM
     `.trim();
 
-    const editor = page.locator("st-panel");
-    await editor.click();
-    await page.keyboard.press("Control+A");
-    await page.keyboard.type(stCode);
-    await page.waitForTimeout(2000);
+    await replaceEditorCode(page, stCode);
 
     // Check that syntax is OK (timer FB is recognized)
     const syntaxOk = page.locator("text=/Syntax OK/i");

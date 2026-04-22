@@ -13,7 +13,10 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Single worker to avoid HA connection conflicts
   reporter: 'html',
-  timeout: 60 * 1000, // 60 seconds per test
+  timeout: process.env.CI ? 90 * 1000 : 60 * 1000,
+  expect: {
+    timeout: process.env.CI ? 15 * 1000 : 10 * 1000,
+  },
   
   use: {
     baseURL: process.env.HA_URL || 'http://localhost:8123',

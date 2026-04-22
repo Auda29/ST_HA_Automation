@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { navigateToSTPanel } from "./fixtures";
+import { navigateToSTPanel, replaceEditorCode } from "./fixtures";
 
 test.describe("Deploy Workflow", () => {
   test("should parse, analyze, transpile, and deploy a simple ST program", async ({
@@ -26,16 +26,7 @@ light2 := light1;
 END_PROGRAM
     `.trim();
 
-    // Find the editor and type code
-    const editor = page.locator("st-panel");
-    await editor.click();
-
-    // Clear existing content and type new code
-    await page.keyboard.press("Control+A");
-    await page.keyboard.type(stCode);
-
-    // Wait for parsing/analysis to complete
-    await page.waitForTimeout(2000);
+    await replaceEditorCode(page, stCode);
 
     // Check that syntax is valid (no errors shown)
     const syntaxStatus = page.locator("text=/Syntax OK/i");
@@ -49,9 +40,6 @@ END_PROGRAM
     const deployButton = page.locator('button:has-text("Deploy")');
     if ((await deployButton.count()) > 0) {
       await deployButton.first().click();
-
-      // Wait for deploy dialog or action to complete
-      await page.waitForTimeout(3000);
 
       // Check for success message or status (may be in a toast or status bar)
       const successIndicator = page.locator(
@@ -76,9 +64,6 @@ END_PROGRAM
 
     // This test verifies the editor shows syntax validation status
     // The status bar should always be visible with some indication
-
-    // Wait for the panel to be fully loaded
-    await page.waitForTimeout(1000);
 
     // Check that the status bar area exists and shows syntax information
     const syntaxIndicator = page.locator("text=/Syntax/i");
