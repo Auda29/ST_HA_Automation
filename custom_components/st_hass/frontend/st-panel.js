@@ -2149,7 +2149,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   async _initializeStorage() {
     var e, s;
     if (this._storage) return;
-    const { ProjectStorage: t } = await import("./project-DHa4EBeG.js");
+    const { ProjectStorage: t } = await import("./project-Cq1UByWW.js");
     if ((e = this.hass) != null && e.connection) {
       const i = ((s = this.hass.config) == null ? void 0 : s.entry_id) || "default";
       this._storage = new t(this.hass.connection, i);
@@ -2516,7 +2516,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       }
   }
   async _toggleProjectExplorer() {
-    !this._projectExplorerLoaded && !this._showProjectExplorer && (await import("./project-DHa4EBeG.js"), this._projectExplorerLoaded = !0), this._showProjectExplorer = !this._showProjectExplorer;
+    !this._projectExplorerLoaded && !this._showProjectExplorer && (await import("./project-Cq1UByWW.js"), this._projectExplorerLoaded = !0), this._showProjectExplorer = !this._showProjectExplorer;
   }
   /**
    * Parse and analyze the current code
