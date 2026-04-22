@@ -68,6 +68,39 @@ describe("HelperManager", () => {
     expect(sync.toDelete).toEqual(["input_number.st_old_helper"]);
   });
 
+  it("ignores automation and script entities that only share the st_ prefix", async () => {
+    const conn = new FakeConnection();
+    conn.states = [
+      {
+        entity_id: "automation.st_program",
+        state: "on",
+        attributes: {},
+        last_changed: "",
+        last_updated: "",
+      },
+      {
+        entity_id: "script.st_program_logic",
+        state: "off",
+        attributes: {},
+        last_changed: "",
+        last_updated: "",
+      },
+      {
+        entity_id: "input_boolean.st_real_helper",
+        state: "off",
+        attributes: {},
+        last_changed: "",
+        last_updated: "",
+      },
+    ];
+    const api = new HAApiClient(conn);
+    const manager = new HelperManager(api, "st_");
+
+    const sync = await manager.calculateSync([]);
+
+    expect(sync.toDelete).toEqual(["input_boolean.st_real_helper"]);
+  });
+
   it("creates new input_number helpers via the create API instead of set_value", async () => {
     const conn = new FakeConnection();
     const api = new HAApiClient(conn);

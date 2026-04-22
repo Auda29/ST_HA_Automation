@@ -15,6 +15,15 @@ import type {
 
 export class HAApiClient {
   private readonly connection: HAConnection;
+  private static readonly HELPER_DOMAINS = new Set([
+    "input_boolean",
+    "input_number",
+    "input_text",
+    "input_datetime",
+    "input_select",
+    "counter",
+    "timer",
+  ]);
 
   constructor(connection: HAConnection) {
     this.connection = connection;
@@ -127,8 +136,12 @@ export class HAApiClient {
   async getSTHelpers(prefix: string = "st_"): Promise<HAState[]> {
     const states = await this.getStates();
     return states.filter((s) => {
-      const name = s.entity_id.split(".")[1];
-      return name?.startsWith(prefix);
+      const [domain, name] = s.entity_id.split(".");
+      return (
+        !!name &&
+        HAApiClient.HELPER_DOMAINS.has(domain) &&
+        name.startsWith(prefix)
+      );
     });
   }
 

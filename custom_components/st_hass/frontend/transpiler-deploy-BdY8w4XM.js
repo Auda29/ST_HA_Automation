@@ -1,8 +1,8 @@
-var w = Object.defineProperty;
-var S = (u, e, t) => e in u ? w(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
-var c = (u, e, t) => S(u, typeof e != "symbol" ? e + "" : e, t);
-import { a as N, b as A, w as E, p as g } from "./analyzer-DbAWr__X.js";
-class f {
+var N = Object.defineProperty;
+var A = (u, e, t) => e in u ? N(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
+var c = (u, e, t) => A(u, typeof e != "symbol" ? e + "" : e, t);
+import { a as E, b as M, w as C, p as f } from "./analyzer-DbAWr__X.js";
+class _ {
   constructor(e, t) {
     c(this, "context");
     c(this, "timerResolver");
@@ -262,7 +262,7 @@ class f {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function M(u, e) {
+function O(u, e) {
   const t = `states('${u}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
@@ -277,7 +277,7 @@ function M(u, e) {
       return `{{ ${t} }}`;
   }
 }
-function C(u, e) {
+function k(u, e) {
   return `{% set last = states('${u}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
@@ -285,13 +285,13 @@ function C(u, e) {
   {{ (now() - (last | as_datetime)).total_seconds() > ${e} }}
 {% endif %}`;
 }
-const _ = 1e3;
-class b {
+const b = 1e3;
+class I {
   constructor(e, t, a) {
     c(this, "context");
     c(this, "jinja");
     c(this, "sourceMap");
-    this.context = e, this.jinja = new f(e, t), this.sourceMap = a;
+    this.context = e, this.jinja = new _(e, t), this.sourceMap = a;
   }
   /**
    * Generate HA actions from ST statements
@@ -475,7 +475,7 @@ class b {
       variables: { [t]: `{{ ${t} + 1 }}` }
     }, n = this.generateCondition(e.condition), s = {
       condition: "template",
-      value_template: `{{ ${t} < ${_} }}`
+      value_template: `{{ ${t} < ${b} }}`
     };
     return {
       repeat: {
@@ -496,7 +496,7 @@ class b {
       variables: { [t]: `{{ ${t} + 1 }}` }
     }, n = this.generateCondition(e.condition), s = {
       condition: "template",
-      value_template: `{{ ${t} < ${_} }}`
+      value_template: `{{ ${t} < ${b} }}`
     };
     return {
       repeat: {
@@ -549,10 +549,10 @@ class b {
     };
   }
 }
-class O {
+class j {
   constructor(e) {
     c(this, "jinja");
-    this.jinja = new f(e);
+    this.jinja = new _(e);
   }
   /**
    * Check if a function call is a timer FB (by FB type name)
@@ -866,7 +866,7 @@ class O {
     return this.jinja.generateExpression(e);
   }
 }
-class k {
+class x {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -894,7 +894,7 @@ class k {
     return a === "Q" || a === "ET";
   }
 }
-class j {
+class R {
   constructor(e) {
     c(this, "mappings", /* @__PURE__ */ new Map());
     c(this, "currentPath", []);
@@ -1029,7 +1029,7 @@ class j {
     return t.toString(16);
   }
 }
-class v {
+class $ {
   constructor(e, t = "default", a) {
     c(this, "ast");
     c(this, "projectName");
@@ -1043,7 +1043,7 @@ class v {
     c(this, "timerHelpers", []);
     c(this, "additionalAutomations", []);
     c(this, "timerMainActions", []);
-    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new j({
+    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new R({
       project: t,
       program: e.name,
       sourceFile: `${e.name}.st`,
@@ -1055,7 +1055,7 @@ class v {
    * Transpile AST to HA automation and script
    */
   transpile() {
-    this.depAnalysis = N(this.ast), this.storageAnalysis = A(this.ast, this.projectName), this.diagnostics.push(
+    this.depAnalysis = E(this.ast), this.storageAnalysis = M(this.ast, this.projectName), this.diagnostics.push(
       ...this.depAnalysis.diagnostics.map((n) => {
         var s;
         return {
@@ -1074,7 +1074,7 @@ class v {
           stLine: (s = n.location) == null ? void 0 : s.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new O(this.context), this.timerResolver = new k(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new j(this.context), this.timerResolver = new x(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1136,7 +1136,7 @@ class v {
       const a = t.dataType.name.toUpperCase();
       (a === "TON" || a === "TOF" || a === "TP") && e.set(t.name, a);
     }
-    e.size !== 0 && E(this.ast, {
+    e.size !== 0 && C(this.ast, {
       onFunctionCall: (t) => {
         const a = e.get(t.name);
         if (!a)
@@ -1159,7 +1159,7 @@ class v {
   // ==========================================================================
   generateAutomation() {
     var n, s;
-    const e = g(this.ast.pragmas), t = (n = e.find((r) => r.name === "throttle")) == null ? void 0 : n.value, a = (s = e.find((r) => r.name === "debounce")) == null ? void 0 : s.value, i = {
+    const e = f(this.ast.pragmas), t = (n = e.find((r) => r.name === "throttle")) == null ? void 0 : n.value, a = (s = e.find((r) => r.name === "debounce")) == null ? void 0 : s.value, i = {
       id: `st_${this.projectName}_${this.ast.name}`.toLowerCase().replace(/[^a-z0-9_]/g, "_"),
       alias: `[ST] ${this.ast.name}`,
       description: `Generated from ST program: ${this.ast.name}`,
@@ -1203,7 +1203,7 @@ class v {
   }
   createThrottleHelper() {
     var a;
-    return ((a = g(this.ast.pragmas).find((i) => i.name === "throttle")) == null ? void 0 : a.value) ? {
+    return ((a = f(this.ast.pragmas).find((i) => i.name === "throttle")) == null ? void 0 : a.value) ? {
       id: this.buildEntityId("input_datetime", `st_${this.projectName}_${this.ast.name}_last_run`),
       type: "input_datetime",
       name: `ST ${this.ast.name} Last Run`
@@ -1279,7 +1279,7 @@ class v {
   // ==========================================================================
   generateScript() {
     var r;
-    const t = ((r = g(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : r.value) || "restart", a = new b(this.context, this.timerResolver, this.sourceMapBuilder), i = {
+    const t = ((r = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : r.value) || "restart", a = new I(this.context, this.timerResolver, this.sourceMapBuilder), i = {
       alias: `[ST] ${this.ast.name} Logic`,
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
@@ -1313,19 +1313,18 @@ class v {
     return e;
   }
 }
-function x(u, e, t) {
-  return new v(u, e, t).transpile();
+function P(u, e, t) {
+  return new $(u, e, t).transpile();
 }
-const D = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  ActionGenerator: b,
-  JinjaGenerator: f,
-  Transpiler: v,
-  generateEntityStateRead: M,
-  generateThrottleCondition: C,
-  transpile: x
-}, Symbol.toStringTag, { value: "Module" }));
-class R {
+  ActionGenerator: I,
+  JinjaGenerator: _,
+  Transpiler: $,
+  generateEntityStateRead: O,
+  generateThrottleCondition: k,
+  transpile: P
+}, Symbol.toStringTag, { value: "Module" })), g = class g {
   constructor(e) {
     c(this, "connection");
     this.connection = e;
@@ -1416,8 +1415,8 @@ class R {
   }
   async getSTHelpers(e = "st_") {
     return (await this.getStates()).filter((a) => {
-      const i = a.entity_id.split(".")[1];
-      return i == null ? void 0 : i.startsWith(e);
+      const [i, n] = a.entity_id.split(".");
+      return !!n && g.HELPER_DOMAINS.has(i) && n.startsWith(e);
     });
   }
   async deleteHelper(e) {
@@ -1516,8 +1515,18 @@ class R {
         break;
     }
   }
-}
-class y {
+};
+c(g, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
+  "input_boolean",
+  "input_number",
+  "input_text",
+  "input_datetime",
+  "input_select",
+  "counter",
+  "timer"
+]));
+let y = g;
+class T {
   constructor(e, t = "st_") {
     c(this, "api");
     c(this, "projectPrefix");
@@ -1644,12 +1653,12 @@ class y {
       }
   }
 }
-const h = "st_hass_backups", T = 10;
-class I {
+const h = "st_hass_backups", v = 10;
+class w {
   constructor(e) {
     c(this, "api");
     c(this, "helperManager");
-    this.api = e, this.helperManager = new y(e);
+    this.api = e, this.helperManager = new T(e);
   }
   async createBackup(e, t) {
     const a = await this.api.getAutomation(e), i = `st_${e}_logic`, n = await this.api.getScript(i), r = (await this.helperManager.getExistingHelpers()).map((d) => ({
@@ -1718,10 +1727,10 @@ class I {
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, T);
+    const a = t.slice(0, v);
     window.localStorage.setItem(h, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = T) {
+  async cleanupOldBackups(e = v) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
@@ -1732,7 +1741,7 @@ class I {
   }
 }
 const m = "st_hass_schemas";
-class P {
+class L {
   save(e, t) {
     const a = this.loadAll();
     a[e] = t, localStorage.setItem(m, JSON.stringify(a));
@@ -1894,14 +1903,14 @@ class H {
     }[e]) == null ? void 0 : i.includes(t)) ?? !1;
   }
 }
-class $ {
+class S {
   constructor(e) {
     c(this, "api");
     c(this, "helperManager");
     c(this, "backupManager");
     c(this, "schemaStorage");
     c(this, "migrationDetector");
-    this.api = e, this.helperManager = new y(e), this.backupManager = new I(e), this.schemaStorage = new P(), this.migrationDetector = new H();
+    this.api = e, this.helperManager = new T(e), this.backupManager = new w(e), this.schemaStorage = new L(), this.migrationDetector = new H();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -2151,19 +2160,19 @@ class $ {
     return !0;
   }
 }
-async function L(u, e, t) {
-  return new $(u).deploy(e, t);
+async function U(u, e, t) {
+  return new S(u).deploy(e, t);
 }
-const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const z = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  BackupManager: I,
-  DeployManager: $,
-  HAApiClient: R,
-  HelperManager: y,
-  deploy: L
+  BackupManager: w,
+  DeployManager: S,
+  HAApiClient: y,
+  HelperManager: T,
+  deploy: U
 }, Symbol.toStringTag, { value: "Module" }));
 export {
-  F as a,
-  D as i
+  z as a,
+  F as i
 };
-//# sourceMappingURL=transpiler-deploy-Dh2cj6oh.js.map
+//# sourceMappingURL=transpiler-deploy-BdY8w4XM.js.map
