@@ -267,11 +267,15 @@ export class STEntityBrowser extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("hass")) {
       const previous = changedProperties.get("hass");
-      if (previous && (previous as any).connection !== this.hass?.connection) {
+      const previousConnection = (previous as any)?.connection;
+      const nextConnection = this.hass?.connection;
+
+      if (previousConnection && previousConnection !== nextConnection) {
         this._disconnect();
-        if (this.hass?.connection) {
-          this._connect();
-        }
+      }
+
+      if (nextConnection && !this._unsubscribe) {
+        this._connect();
       }
     }
   }
@@ -288,6 +292,10 @@ export class STEntityBrowser extends LitElement {
 
       if (!this.hass.connection.haVersion && this.hass.config?.version) {
         this.hass.connection.haVersion = this.hass.config.version;
+      }
+
+      if (this.hass.states) {
+        this._handleEntityUpdate(this.hass.states);
       }
 
       this._unsubscribe = subscribeEntities(this.hass.connection, (entities: any) => {

@@ -2661,7 +2661,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     };
   }
   async _toggleEntityBrowser() {
-    !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-DSclhqiT.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
+    !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-5pGETIqa.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
   }
 };
 Oi(g, "styles", z`

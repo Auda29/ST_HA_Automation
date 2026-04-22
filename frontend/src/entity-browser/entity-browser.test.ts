@@ -68,6 +68,22 @@ describe("STEntityBrowser", () => {
       expect(component["_isConnected"]).toBe(true);
     });
 
+    it("connects when hass is assigned after the component is already connected", async () => {
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
+      document.body.appendChild(component);
+
+      await component.updateComplete;
+      expect(mockSubscribeEntities).not.toHaveBeenCalled();
+
+      component.hass = mockHass;
+      await component.updateComplete;
+
+      expect(mockSubscribeEntities).toHaveBeenCalledTimes(1);
+      expect(component["_isConnected"]).toBe(true);
+    });
+
     it("handles connection errors gracefully", async () => {
       const errorMessage = "Connection failed";
       mockSubscribeEntities.mockImplementation(() => {
@@ -182,6 +198,34 @@ describe("STEntityBrowser", () => {
       expect(kitchenLight?.domain).toBe("light");
       expect(kitchenLight?.friendlyName).toBe("Kitchen Light");
       expect(kitchenLight?.state).toBe("on");
+    });
+
+    it("seeds the entity list from hass.states before websocket updates arrive", async () => {
+      mockHass = {
+        connection: {},
+        states: {
+          "light.kitchen": {
+            entity_id: "light.kitchen",
+            state: "on",
+            attributes: { friendly_name: "Kitchen Light" },
+            last_changed: "2026-01-14T10:00:00Z",
+          },
+        },
+      };
+
+      component = document.createElement(
+        "st-entity-browser",
+      ) as STEntityBrowser;
+      component.hass = mockHass;
+      document.body.appendChild(component);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await component.updateComplete;
+
+      expect(component["_entities"].size).toBe(1);
+      expect(component["_entities"].get("light.kitchen")?.friendlyName).toBe(
+        "Kitchen Light",
+      );
     });
 
     it("extracts entity icons from attributes", async () => {

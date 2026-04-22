@@ -1,33 +1,33 @@
 var I = Object.defineProperty;
-var D = (n, t, e) => t in n ? I(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e;
-var c = (n, t, e) => D(n, typeof t != "symbol" ? t + "" : t, e);
+var D = (a, t, e) => t in a ? I(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
+var c = (a, t, e) => D(a, typeof t != "symbol" ? t + "" : t, e);
 import { i as g, n as l, a as b, b as o, t as y, r as O } from "./lit-C178dhqO.js";
 import { s as k } from "./ha-websocket-DcUbagYv.js";
-var x = Object.defineProperty, C = Object.getOwnPropertyDescriptor, T = (n, t, e) => t in n ? x(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, f = (n, t, e, a) => {
-  for (var i = a > 1 ? void 0 : a ? C(t, e) : t, s = n.length - 1, r; s >= 0; s--)
-    (r = n[s]) && (i = (a ? r(t, e, i) : r(i)) || i);
-  return a && i && x(t, e, i), i;
-}, z = (n, t, e) => T(n, t + "", e);
+var x = Object.defineProperty, C = Object.getOwnPropertyDescriptor, T = (a, t, e) => t in a ? x(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, f = (a, t, e, n) => {
+  for (var i = n > 1 ? void 0 : n ? C(t, e) : t, s = a.length - 1, r; s >= 0; s--)
+    (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
+  return n && i && x(t, e, i), i;
+}, z = (a, t, e) => T(a, t + "", e);
 let d = class extends b {
-  _handleDragStart(n) {
-    if (!n.dataTransfer || !this.entity) return;
-    const t = n.shiftKey ? "output" : "input", e = t === "input" ? "%I*" : "%Q*", i = `${this._entityIdToVarName(this.entity.entityId)} AT ${e} : ${this.inferredType} := '${this.entity.entityId}';`, s = {
+  _handleDragStart(a) {
+    if (!a.dataTransfer || !this.entity) return;
+    const t = a.shiftKey ? "output" : "input", e = t === "input" ? "%I*" : "%Q*", i = `${this._entityIdToVarName(this.entity.entityId)} AT ${e} : ${this.inferredType} := '${this.entity.entityId}';`, s = {
       entityId: this.entity.entityId,
       dataType: this.inferredType,
       direction: t,
       bindingSyntax: i
     };
-    n.dataTransfer.effectAllowed = "copy", n.dataTransfer.setData("text/plain", i), n.dataTransfer.setData("application/json", JSON.stringify(s)), this.classList.add("dragging");
+    a.dataTransfer.effectAllowed = "copy", a.dataTransfer.setData("text/plain", i), a.dataTransfer.setData("application/json", JSON.stringify(s)), this.classList.add("dragging");
   }
   _handleDragEnd() {
     this.classList.remove("dragging");
   }
-  _entityIdToVarName(n) {
-    const t = n.split(".");
-    return t.length < 2 ? n : t[1].split("_").map((a, i) => i === 0 ? a : a.charAt(0).toUpperCase() + a.slice(1)).join("");
+  _entityIdToVarName(a) {
+    const t = a.split(".");
+    return t.length < 2 ? a : t[1].split("_").map((n, i) => i === 0 ? n : n.charAt(0).toUpperCase() + n.slice(1)).join("");
   }
-  _getStateClass(n) {
-    const t = n.toLowerCase();
+  _getStateClass(a) {
+    const t = a.toLowerCase();
     return t === "on" || t === "open" || t === "active" ? "on" : t === "off" || t === "closed" || t === "inactive" ? "off" : t === "unavailable" || t === "unknown" ? "unavailable" : "";
   }
   _getEntityIcon() {
@@ -48,7 +48,7 @@ let d = class extends b {
   }
   render() {
     if (!this.entity) return o``;
-    const n = this._getStateClass(this.entity.state), t = this._getEntityIcon(), e = this.entity.friendlyName || this.entity.entityId;
+    const a = this._getStateClass(this.entity.state), t = this._getEntityIcon(), e = this.entity.friendlyName || this.entity.entityId;
     return o`
       <div
         class="entity-item"
@@ -71,7 +71,7 @@ let d = class extends b {
           <div class="entity-name">${e}</div>
           <div class="entity-id">${this.entity.entityId}</div>
         </div>
-        <div class="entity-state ${n}">${this.entity.state}</div>
+        <div class="entity-state ${a}">${this.entity.state}</div>
       </div>
     `;
   }
@@ -217,11 +217,11 @@ f([
 d = f([
   y("st-entity-item")
 ], d);
-var v = Object.defineProperty, E = Object.getOwnPropertyDescriptor, N = (n, t, e) => t in n ? v(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, m = (n, t, e, a) => {
-  for (var i = a > 1 ? void 0 : a ? E(t, e) : t, s = n.length - 1, r; s >= 0; s--)
-    (r = n[s]) && (i = (a ? r(t, e, i) : r(i)) || i);
-  return a && i && v(t, e, i), i;
-}, S = (n, t, e) => N(n, t + "", e);
+var v = Object.defineProperty, E = Object.getOwnPropertyDescriptor, N = (a, t, e) => t in a ? v(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, m = (a, t, e, n) => {
+  for (var i = n > 1 ? void 0 : n ? E(t, e) : t, s = a.length - 1, r; s >= 0; s--)
+    (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
+  return n && i && v(t, e, i), i;
+}, S = (a, t, e) => N(a, t + "", e);
 let p = class extends b {
   constructor() {
     super();
@@ -279,8 +279,8 @@ let p = class extends b {
   _filterEntities(t) {
     return t.filter((e) => {
       if (this.filter.searchQuery) {
-        const a = this.filter.searchQuery.toLowerCase();
-        if (!(e.entityId.toLowerCase().includes(a) || e.friendlyName && e.friendlyName.toLowerCase().includes(a))) return !1;
+        const n = this.filter.searchQuery.toLowerCase();
+        if (!(e.entityId.toLowerCase().includes(n) || e.friendlyName && e.friendlyName.toLowerCase().includes(n))) return !1;
       }
       return !(this.filter.selectedDomain && e.domain !== this.filter.selectedDomain || this.filter.showInputsOnly && !this._isInputEntity(e) || this.filter.showOutputsOnly && !this._isOutputEntity(e));
     });
@@ -289,9 +289,9 @@ let p = class extends b {
     const e = /* @__PURE__ */ new Map();
     for (const i of t)
       e.has(i.domain) || e.set(i.domain, []), e.get(i.domain).push(i);
-    const a = [];
+    const n = [];
     for (const [i, s] of e.entries())
-      a.push({
+      n.push({
         domain: i,
         entities: s.sort(
           (r, u) => (r.friendlyName || r.entityId).localeCompare(
@@ -301,7 +301,7 @@ let p = class extends b {
         icon: this._getDomainIcon(i),
         expanded: this._expandedDomains.has(i)
       });
-    return a.sort((i, s) => i.domain.localeCompare(s.domain));
+    return n.sort((i, s) => i.domain.localeCompare(s.domain));
   }
   _toggleDomain(t) {
     this._expandedDomains.has(t) ? this._expandedDomains.delete(t) : this._expandedDomains.add(t), this._expandedDomains = new Set(this._expandedDomains), this.requestUpdate();
@@ -314,24 +314,24 @@ let p = class extends b {
         </div>
       ` : o`
       ${e.map(
-      (a) => o`
+      (n) => o`
           <div class="domain-group">
             <div
               class="domain-header"
-              @click=${() => this._toggleDomain(a.domain)}
+              @click=${() => this._toggleDomain(n.domain)}
             >
               <div class="domain-icon">
-                <ha-icon .icon=${a.icon}></ha-icon>
+                <ha-icon .icon=${n.icon}></ha-icon>
               </div>
-              <div class="domain-name">${a.domain}</div>
-              <div class="domain-count">${a.entities.length}</div>
-              <div class="domain-toggle ${a.expanded ? "expanded" : ""}">
+              <div class="domain-name">${n.domain}</div>
+              <div class="domain-count">${n.entities.length}</div>
+              <div class="domain-toggle ${n.expanded ? "expanded" : ""}">
                 <ha-icon icon="mdi:chevron-right"></ha-icon>
               </div>
             </div>
-            ${a.expanded ? o`
+            ${n.expanded ? o`
                   <div class="domain-entities">
-                    ${a.entities.map(
+                    ${n.entities.map(
         (i) => o`
                         <st-entity-item
                           .entity=${i}
@@ -454,11 +454,11 @@ m([
 p = m([
   y("st-entity-list")
 ], p);
-var _ = Object.defineProperty, A = Object.getOwnPropertyDescriptor, P = (n, t, e) => t in n ? _(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, w = (n, t, e, a) => {
-  for (var i = a > 1 ? void 0 : a ? A(t, e) : t, s = n.length - 1, r; s >= 0; s--)
-    (r = n[s]) && (i = (a ? r(t, e, i) : r(i)) || i);
-  return a && i && _(t, e, i), i;
-}, L = (n, t, e) => P(n, t + "", e);
+var _ = Object.defineProperty, A = Object.getOwnPropertyDescriptor, P = (a, t, e) => t in a ? _(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, w = (a, t, e, n) => {
+  for (var i = n > 1 ? void 0 : n ? A(t, e) : t, s = a.length - 1, r; s >= 0; s--)
+    (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
+  return n && i && _(t, e, i), i;
+}, L = (a, t, e) => P(a, t + "", e);
 let h = class extends b {
   constructor() {
     super(...arguments);
@@ -482,10 +482,10 @@ let h = class extends b {
     super.disconnectedCallback(), this._disconnect();
   }
   updated(t) {
-    var e, a;
+    var e;
     if (super.updated(t), t.has("hass")) {
-      const i = t.get("hass");
-      i && i.connection !== ((e = this.hass) == null ? void 0 : e.connection) && (this._disconnect(), (a = this.hass) != null && a.connection && this._connect());
+      const n = t.get("hass"), i = n == null ? void 0 : n.connection, s = (e = this.hass) == null ? void 0 : e.connection;
+      i && i !== s && this._disconnect(), s && !this._unsubscribe && this._connect();
     }
   }
   async _connect() {
@@ -495,11 +495,11 @@ let h = class extends b {
       return;
     }
     try {
-      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this._unsubscribe = k(this.hass.connection, (a) => {
-        this._handleEntityUpdate(a);
+      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this.hass.states && this._handleEntityUpdate(this.hass.states), this._unsubscribe = k(this.hass.connection, (n) => {
+        this._handleEntityUpdate(n);
       }), this._isConnected = !0;
-    } catch (a) {
-      this._error = a instanceof Error ? a.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", a);
+    } catch (n) {
+      this._error = n instanceof Error ? n.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", n);
     }
   }
   _disconnect() {
@@ -507,10 +507,10 @@ let h = class extends b {
   }
   _handleEntityUpdate(t) {
     var i;
-    const e = /* @__PURE__ */ new Map(), a = /* @__PURE__ */ new Set();
+    const e = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Set();
     for (const [s, r] of Object.entries(t)) {
       const u = s.split(".")[0];
-      a.add(u);
+      n.add(u);
       const $ = {
         entityId: s,
         state: r.state,
@@ -523,7 +523,7 @@ let h = class extends b {
       };
       e.set(s, $);
     }
-    this._entities = e, this._domains = Array.from(a).sort(), this.requestUpdate();
+    this._entities = e, this._domains = Array.from(n).sort(), this.requestUpdate();
   }
   _getFriendlyName(t) {
     var e;
@@ -556,9 +556,9 @@ let h = class extends b {
         reason: "Climate entities often expose temperature setpoints"
       };
     if (e === "sensor") {
-      const a = Number(t.state);
-      if (!Number.isNaN(a)) {
-        const i = Number.isInteger(a) && !t.state.includes(".");
+      const n = Number(t.state);
+      if (!Number.isNaN(n)) {
+        const i = Number.isInteger(n) && !t.state.includes(".");
         return {
           dataType: i ? "INT" : "REAL",
           confidence: "medium",
@@ -606,7 +606,7 @@ let h = class extends b {
     }, this.requestUpdate();
   }
   render() {
-    const t = this._getFilteredEntities(), e = this._error ? "status-error" : this._isConnected ? "status-connected" : "status-connecting", a = this._error ? this._error : this._isConnected ? "Connected to Home Assistant" : "Connecting to Home Assistant";
+    const t = this._getFilteredEntities(), e = this._error ? "status-error" : this._isConnected ? "status-connected" : "status-connecting", n = this._error ? this._error : this._isConnected ? "Connected to Home Assistant" : "Connecting to Home Assistant";
     return o`
       <div class="header">
         <div class="eyebrow">Entity Linker</div>
@@ -681,7 +681,7 @@ let h = class extends b {
       <div class="status-bar">
         <span class="status-indicator ${e}">
           <span class="status-dot"></span>
-          ${a}
+          ${n}
         </span>
         <span>${t.length} entities</span>
       </div>
@@ -938,4 +938,4 @@ export {
   p as STEntityList,
   j as inferDataType
 };
-//# sourceMappingURL=entity-browser-DSclhqiT.js.map
+//# sourceMappingURL=entity-browser-5pGETIqa.js.map
