@@ -141,5 +141,38 @@ describe("STPanel", () => {
       "All files are closed",
     );
   });
+
+  it("shows visible deploy feedback when deployment is blocked by syntax errors", async () => {
+    const panel = document.createElement("st-panel") as any;
+    document.body.appendChild(panel);
+
+    await panel.updateComplete;
+    panel._syntaxOk = false;
+
+    await panel._handleDeploy();
+    await panel.updateComplete;
+
+    const feedback = panel.shadowRoot?.querySelector(".deploy-feedback");
+    expect(feedback?.textContent).toContain(
+      "Cannot deploy while syntax errors are present",
+    );
+  });
+
+  it("shows visible deploy feedback when Home Assistant connection is unavailable", async () => {
+    const panel = document.createElement("st-panel") as any;
+    panel._syntaxOk = true;
+    panel.hass = null;
+    document.body.appendChild(panel);
+
+    await panel.updateComplete;
+
+    await panel._handleDeploy();
+    await panel.updateComplete;
+
+    const feedback = panel.shadowRoot?.querySelector(".deploy-feedback");
+    expect(feedback?.textContent).toContain(
+      "Home Assistant connection is not available",
+    );
+  });
 });
 

@@ -29,6 +29,11 @@ interface CombinedDiagnostic {
   column?: number;
 }
 
+interface DeployFeedback {
+  tone: "success" | "error" | "info";
+  message: string;
+}
+
 @customElement("st-panel")
 export class STPanel extends LitElement {
   @property({ attribute: false }) declare public hass?: any;
@@ -46,6 +51,7 @@ export class STPanel extends LitElement {
   @state() declare private _showProjectExplorer: boolean;
   @state() declare private _storage: ProjectStorage | null;
   @state() declare private _isDeploying: boolean;
+  @state() declare private _deployFeedback: DeployFeedback | null;
   private _entityBrowserLoaded = false;
   private _projectExplorerLoaded = false;
 
@@ -325,6 +331,35 @@ export class STPanel extends LitElement {
       40% { content: ".."; }
       60%, 100% { content: "…"; }
     }
+    .deploy-feedback {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      font-size: var(--font-size-sm, 13px);
+      font-weight: var(--font-weight-medium, 500);
+      background: rgba(8, 14, 20, 0.9);
+    }
+    .deploy-feedback ha-icon {
+      --mdc-icon-size: 16px;
+      flex-shrink: 0;
+    }
+    .deploy-feedback.error {
+      color: var(--ui-error, #ff7272);
+      background: rgba(255, 114, 114, 0.08);
+      border-bottom-color: rgba(255, 114, 114, 0.24);
+    }
+    .deploy-feedback.success {
+      color: var(--ui-success, #4fd39e);
+      background: rgba(79, 211, 158, 0.08);
+      border-bottom-color: rgba(79, 211, 158, 0.22);
+    }
+    .deploy-feedback.info {
+      color: var(--ui-info, #6bc9ff);
+      background: rgba(107, 201, 255, 0.08);
+      border-bottom-color: rgba(107, 201, 255, 0.22);
+    }
     .diagnostics-panel {
       max-height: 150px;
       overflow-y: auto;
@@ -590,6 +625,7 @@ END_PROGRAM`;
     this._entityCount = 0;
     this._onlineState = this._createDisconnectedOnlineState();
     this._isDeploying = false;
+    this._deployFeedback = null;
   }
 
   connectedCallback() {
@@ -721,6 +757,20 @@ END_PROGRAM`;
             </button>
           </div>
         </div>
+        ${this._deployFeedback
+          ? html`
+              <div
+                class="deploy-feedback ${this._deployFeedback.tone}"
+                role="status"
+                aria-live="polite"
+              >
+                <ha-icon
+                  icon=${this._getDeployFeedbackIcon(this._deployFeedback.tone)}
+                ></ha-icon>
+                <span>${this._deployFeedback.message}</span>
+              </div>
+            `
+          : ""}
         <st-online-toolbar
           .state=${this._onlineState ?? this._createDisconnectedOnlineState()}
           @connect=${this._handleOnlineConnect}
@@ -916,6 +966,25 @@ END_PROGRAM`;
       default:
         return "mdi:information-outline";
     }
+  }
+
+  private _getDeployFeedbackIcon(tone: DeployFeedback["tone"]): string {
+    switch (tone) {
+      case "success":
+        return "mdi:check-circle";
+      case "error":
+        return "mdi:alert-circle";
+      case "info":
+      default:
+        return "mdi:information";
+    }
+  }
+
+  private _setDeployFeedback(
+    tone: DeployFeedback["tone"],
+    message: string,
+  ): void {
+    this._deployFeedback = { tone, message };
   }
 
   private _handleCodeChange(e: CustomEvent<{ code: string }>) {
@@ -1201,11 +1270,19 @@ END_PROGRAM`;
     if (this._isDeploying) return;
 
     if (!this._syntaxOk) {
+      this._setDeployFeedback(
+        "error",
+        "Cannot deploy while syntax errors are present.",
+      );
       console.error("Cannot deploy: syntax errors present");
       return;
     }
 
     if (!this.hass?.connection) {
+      this._setDeployFeedback(
+        "error",
+        "Cannot deploy because the Home Assistant connection is not available.",
+      );
       console.error(
         "Cannot deploy: Home Assistant connection is not available",
       );
@@ -1214,11 +1291,13 @@ END_PROGRAM`;
 
     const parseResult = parse(this._getCurrentCode());
     if (!parseResult.success || !parseResult.ast) {
+      this._setDeployFeedback("error", "Cannot deploy because parsing failed.");
       console.error("Cannot deploy: parsing failed");
       return;
     }
 
     this._isDeploying = true;
+    this._deployFeedback = null;
     try {
       // Lazy load transpiler and deploy modules
       const [{ transpile }, { deploy, HAApiClient }] = await Promise.all([
@@ -1228,6 +1307,10 @@ END_PROGRAM`;
 
       const transpilerResult = transpile(parseResult.ast, "home");
       if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
+        this._setDeployFeedback(
+          "error",
+          "Cannot deploy because transpilation reported errors.",
+        );
         console.error(
           "Cannot deploy: transpiler reported errors",
           transpilerResult.diagnostics,
@@ -1240,12 +1323,24 @@ END_PROGRAM`;
         createBackup: true,
       });
       if (!deployResult.success) {
+        this._setDeployFeedback(
+          "error",
+          deployResult.errors[0]?.message || "Deployment failed.",
+        );
         console.error("Deploy failed", deployResult.errors);
       } else {
+        this._setDeployFeedback(
+          "success",
+          `Deploy successful (${deployResult.transactionId}).`,
+        );
         // eslint-disable-next-line no-console
         console.log("Deploy successful", deployResult.transactionId);
       }
     } catch (error) {
+      this._setDeployFeedback(
+        "error",
+        error instanceof Error ? error.message : "Deploy error",
+      );
       console.error("Deploy error", error);
     } finally {
       this._isDeploying = false;
