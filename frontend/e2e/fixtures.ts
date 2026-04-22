@@ -229,17 +229,40 @@ export async function navigateToSTPanel(page: Page): Promise<void> {
   // First ensure we're logged in
   await loginViaBrowser(page);
 
-  // Navigate to ST panel
-  await page.goto(`${HA_URL}${ST_PANEL_URL}`, { waitUntil: "domcontentloaded" });
+  let lastError: unknown;
 
-  // Wait for the panel shell and first actionable controls.
-  await expect(page.locator("st-panel")).toHaveCount(1, { timeout: 20000 });
-  await expect(page.locator('button:has-text("Deploy")').first()).toBeVisible({
-    timeout: 20000,
-  });
-  await expect(page.locator("text=/Syntax/i").first()).toBeVisible({
-    timeout: 20000,
-  });
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await page.goto(`${HA_URL}${ST_PANEL_URL}`, {
+        waitUntil: "domcontentloaded",
+      });
+
+      await page.waitForFunction(
+        () =>
+          !!customElements.get("st-panel") ||
+          !!document.querySelector("st-panel"),
+        undefined,
+        { timeout: 10000 },
+      );
+
+      await expect(page.locator("st-panel")).toHaveCount(1, { timeout: 20000 });
+      await expect(page.locator('button:has-text("Deploy")').first()).toBeVisible({
+        timeout: 20000,
+      });
+      await expect(page.locator("text=/Syntax/i").first()).toBeVisible({
+        timeout: 20000,
+      });
+      return;
+    } catch (error) {
+      lastError = error;
+      await page.goto(HA_URL, { waitUntil: "domcontentloaded" });
+      await page.waitForTimeout(2000 * attempt);
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Failed to load ST panel");
 }
 
 /**
