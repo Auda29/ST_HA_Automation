@@ -86,10 +86,11 @@ export class STEntityBrowser extends LitElement {
       color: var(--ui-text-primary, #f3f7fb);
       font-size: var(--font-size-md, 14px);
       font-family: inherit;
+      transition: var(--transition-fast, all 160ms ease);
     }
 
     .search-box {
-      padding: 0 12px 0 38px;
+      padding: 0 36px 0 38px;
     }
 
     .search-box:focus,
@@ -97,6 +98,63 @@ export class STEntityBrowser extends LitElement {
       outline: none;
       border-color: rgba(71, 187, 226, 0.48);
       box-shadow: 0 0 0 3px rgba(14, 165, 215, 0.12);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: var(--ui-text-muted, #8ea1af);
+      cursor: pointer;
+      border-radius: var(--radius-sm, 6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast, all 160ms ease);
+    }
+
+    .search-clear:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--ui-text-primary, #f3f7fb);
+    }
+
+    .search-clear ha-icon {
+      --mdc-icon-size: 14px;
+    }
+
+    .drag-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: var(--space-3, 12px);
+      padding: 8px 12px;
+      border-radius: var(--radius-md, 10px);
+      background: rgba(14, 165, 215, 0.08);
+      border: 1px dashed rgba(91, 212, 255, 0.3);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-xs, 11px);
+      line-height: 1.4;
+    }
+
+    .drag-hint ha-icon {
+      --mdc-icon-size: 14px;
+      color: var(--ui-info, #6bc9ff);
+      flex-shrink: 0;
+    }
+
+    .drag-hint kbd {
+      padding: 1px 5px;
+      border: 1px solid rgba(140, 169, 193, 0.26);
+      border-radius: 4px;
+      background: rgba(9, 17, 25, 0.9);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
     }
 
     .filters {
@@ -136,7 +194,22 @@ export class STEntityBrowser extends LitElement {
       border-bottom: 1px solid rgba(88, 127, 146, 0.18);
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: var(--space-3, 12px);
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
     }
 
     .status-connected {
@@ -145,6 +218,25 @@ export class STEntityBrowser extends LitElement {
 
     .status-error {
       color: var(--status-error, #ff6b6b);
+    }
+
+    .status-connecting {
+      color: var(--status-connecting, #6bc9ff);
+    }
+
+    .status-connecting .status-dot {
+      animation: entity-pulse 1.1s infinite;
+    }
+
+    @keyframes entity-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .status-connecting .status-dot {
+        animation: none;
+      }
     }
 
     .entity-list-container {
@@ -356,6 +448,17 @@ export class STEntityBrowser extends LitElement {
   render() {
     const entities = this._getFilteredEntities();
 
+    const statusClass = this._error
+      ? "status-error"
+      : this._isConnected
+        ? "status-connected"
+        : "status-connecting";
+    const statusText = this._error
+      ? this._error
+      : this._isConnected
+        ? "Connected to Home Assistant"
+        : "Connecting to Home Assistant";
+
     return html`
       <div class="header">
         <div class="eyebrow">Entity Linker</div>
@@ -368,10 +471,27 @@ export class STEntityBrowser extends LitElement {
             .value=${this._filter.searchQuery}
             @input=${this._handleSearchInput}
             placeholder="Filter entities, devices, or states"
+            aria-label="Search entities"
           />
+          ${this._filter.searchQuery
+            ? html`
+                <button
+                  class="search-clear"
+                  @click=${this._clearSearch}
+                  title="Clear search"
+                  aria-label="Clear search"
+                >
+                  <ha-icon icon="mdi:close"></ha-icon>
+                </button>
+              `
+            : ""}
         </div>
         <div class="filters">
-          <select class="filter-select" @change=${this._handleDomainChange}>
+          <select
+            class="filter-select"
+            @change=${this._handleDomainChange}
+            aria-label="Filter by domain"
+          >
             <option value="">All Domains</option>
             ${this._domains.map(
               (domain) => html`
@@ -403,15 +523,19 @@ export class STEntityBrowser extends LitElement {
             </label>
           </div>
         </div>
+        <div class="drag-hint">
+          <ha-icon icon="mdi:drag-variant"></ha-icon>
+          <span>
+            Drag an entity onto the editor. Hold <kbd>Shift</kbd> for an output
+            binding.
+          </span>
+        </div>
       </div>
 
       <div class="status-bar">
-        <span class=${this._isConnected ? "status-connected" : "status-error"}>
-          ${this._error
-            ? this._error
-            : this._isConnected
-              ? "Connected to Home Assistant"
-              : "Connecting to Home Assistant"}
+        <span class="status-indicator ${statusClass}">
+          <span class="status-dot"></span>
+          ${statusText}
         </span>
         <span>${entities.length} entities</span>
       </div>
@@ -433,6 +557,11 @@ export class STEntityBrowser extends LitElement {
             `}
       </div>
     `;
+  }
+
+  private _clearSearch(): void {
+    this._filter = { ...this._filter, searchQuery: "" };
+    this.requestUpdate();
   }
 }
 

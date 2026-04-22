@@ -10,10 +10,42 @@ import type { OnlineModeState, OnlineStatus } from "./types";
 export class OnlineToolbar extends LitElement {
   @property({ type: Object }) declare state: OnlineModeState;
   @state() declare private _showSettings: boolean;
+  private _handleDocumentClick: ((e: MouseEvent) => void) | null = null;
+  private _handleKeyDown: ((e: KeyboardEvent) => void) | null = null;
 
   constructor() {
     super();
     this._showSettings = false;
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    this._handleDocumentClick = (e: MouseEvent) => {
+      if (!this._showSettings) return;
+      const path = e.composedPath();
+      if (!path.includes(this)) {
+        this._showSettings = false;
+      }
+    };
+    this._handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && this._showSettings) {
+        this._showSettings = false;
+      }
+    };
+    document.addEventListener("click", this._handleDocumentClick, true);
+    document.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._handleDocumentClick) {
+      document.removeEventListener("click", this._handleDocumentClick, true);
+      this._handleDocumentClick = null;
+    }
+    if (this._handleKeyDown) {
+      document.removeEventListener("keydown", this._handleKeyDown);
+      this._handleKeyDown = null;
+    }
   }
 
   static styles = css`
@@ -120,6 +152,15 @@ export class OnlineToolbar extends LitElement {
       transform: translateY(-1px);
     }
 
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     button:disabled {
       opacity: 0.45;
       cursor: not-allowed;
@@ -136,6 +177,12 @@ export class OnlineToolbar extends LitElement {
       min-width: 36px;
       justify-content: center;
       padding: 0;
+    }
+
+    button.settings-toggle.open {
+      background: rgba(14, 165, 215, 0.18);
+      border-color: rgba(91, 212, 255, 0.42);
+      color: #dff7ff;
     }
 
     ha-icon {
@@ -174,7 +221,7 @@ export class OnlineToolbar extends LitElement {
       position: absolute;
       top: calc(100% + 10px);
       right: 0;
-      min-width: 220px;
+      min-width: 240px;
       padding: var(--space-4, 16px);
       border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
       border-radius: var(--radius-xl, 18px);
@@ -182,6 +229,24 @@ export class OnlineToolbar extends LitElement {
         linear-gradient(180deg, rgba(22, 31, 38, 0.98), rgba(14, 20, 26, 0.98));
       box-shadow: var(--shadow-popover, 0 18px 42px rgba(0, 0, 0, 0.35));
       z-index: 100;
+      animation: settings-pop 160ms ease;
+    }
+
+    @keyframes settings-pop {
+      from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .settings-panel {
+        animation: none;
+      }
     }
 
     .settings-title {
@@ -288,9 +353,12 @@ export class OnlineToolbar extends LitElement {
 
       <div class="settings-shell">
         <button
-          class="settings-toggle"
+          class="settings-toggle ${this._showSettings ? "open" : ""}"
           @click=${() => (this._showSettings = !this._showSettings)}
           title="Online settings"
+          aria-label="Online settings"
+          aria-haspopup="true"
+          aria-expanded=${this._showSettings}
         >
           <ha-icon icon="mdi:cog"></ha-icon>
         </button>
