@@ -1,4 +1,4 @@
-import { i as _, n as u, r as m, a as y, b as d, t as w } from "./lit-C178dhqO.js";
+import { i as _, n as u, r as m, a as w, b as d, t as y } from "./lit-C178dhqO.js";
 const b = "st_hass_project";
 class x {
   constructor(t, i) {
@@ -130,12 +130,12 @@ END_PROGRAM`,
     return `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }
-var F = Object.defineProperty, P = Object.getOwnPropertyDescriptor, $ = (e, t, i) => t in e ? F(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, h = (e, t, i, a) => {
-  for (var r = a > 1 ? void 0 : a ? P(t, i) : t, s = e.length - 1, o; s >= 0; s--)
+var F = Object.defineProperty, j = Object.getOwnPropertyDescriptor, $ = (e, t, i) => t in e ? F(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, h = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? j(t, i) : t, s = e.length - 1, o; s >= 0; s--)
     (o = e[s]) && (r = (a ? o(t, i, r) : o(r)) || r);
   return a && r && F(t, i, r), r;
 }, I = (e, t, i) => $(e, t + "", i);
-let c = class extends y {
+let c = class extends w {
   constructor() {
     super(), this.files = [], this.activeFileId = null, this.selectedFileId = null, this._expandedPaths = /* @__PURE__ */ new Set(), this._editingFileId = null, this._editingName = "";
   }
@@ -203,7 +203,7 @@ let c = class extends y {
   _renderNode(e, t = 0) {
     const i = this._expandedPaths.has(e.path), a = e.children.size > 0;
     if (e.isFolder && e.path === "") {
-      const n = Array.from(e.children.values()).sort((p, v) => p.isFolder !== v.isFolder ? p.isFolder ? -1 : 1 : p.name.localeCompare(v.name));
+      const n = Array.from(e.children.values()).sort((p, g) => p.isFolder !== g.isFolder ? p.isFolder ? -1 : 1 : p.name.localeCompare(g.name));
       return d`${n.map((p) => this._renderNode(p, t))}`;
     }
     if (e.isFolder)
@@ -514,14 +514,14 @@ h([
   m()
 ], c.prototype, "_editingName", 2);
 c = h([
-  w("st-file-tree")
+  y("st-file-tree")
 ], c);
-var j = Object.defineProperty, D = Object.getOwnPropertyDescriptor, k = (e, t, i) => t in e ? j(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, g = (e, t, i, a) => {
+var P = Object.defineProperty, D = Object.getOwnPropertyDescriptor, k = (e, t, i) => t in e ? P(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, v = (e, t, i, a) => {
   for (var r = a > 1 ? void 0 : a ? D(t, i) : t, s = e.length - 1, o; s >= 0; s--)
     (o = e[s]) && (r = (a ? o(t, i, r) : o(r)) || r);
-  return a && r && j(t, i, r), r;
-}, N = (e, t, i) => k(e, t + "", i);
-let f = class extends y {
+  return a && r && P(t, i, r), r;
+}, E = (e, t, i) => k(e, t + "", i);
+let f = class extends w {
   constructor() {
     super(), this.project = null, this._storage = null;
   }
@@ -596,6 +596,7 @@ END_PROGRAM`,
     );
   }
   _handleFileRename(e) {
+    e.stopPropagation();
     const { fileId: t, newName: i } = e.detail;
     if (!this.project) return;
     const a = this.project.files.map((s) => s.id === t ? {
@@ -608,7 +609,13 @@ END_PROGRAM`,
       files: a,
       lastModified: Date.now()
     };
-    this._updateProject(r);
+    this._updateProject(r), this.dispatchEvent(
+      new CustomEvent("file-rename", {
+        detail: { fileId: t, newName: i },
+        bubbles: !0,
+        composed: !0
+      })
+    );
   }
   _handleFileDeleted(e) {
     var s;
@@ -688,7 +695,7 @@ END_PROGRAM`,
       `;
   }
 };
-N(f, "styles", _`
+E(f, "styles", _`
     :host {
       display: flex;
       flex-direction: column;
@@ -812,21 +819,21 @@ N(f, "styles", _`
       font-size: var(--font-size-md, 14px);
     }
   `);
-g([
+v([
   u({ attribute: !1 })
 ], f.prototype, "hass", 2);
-g([
+v([
   u({ type: Object })
 ], f.prototype, "project", 2);
-g([
+v([
   m()
 ], f.prototype, "_storage", 2);
-f = g([
-  w("st-project-explorer")
+f = v([
+  y("st-project-explorer")
 ], f);
 export {
   x as ProjectStorage,
   c as STFileTree,
   f as STProjectExplorer
 };
-//# sourceMappingURL=project-Cy27UAJ8.js.map
+//# sourceMappingURL=project-DwWQHIot.js.map

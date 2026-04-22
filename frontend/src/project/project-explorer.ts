@@ -236,6 +236,7 @@ END_PROGRAM`,
   }
 
   private _handleFileRename(e: CustomEvent): void {
+    e.stopPropagation();
     const { fileId, newName } = e.detail;
     if (!this.project) return;
 
@@ -258,6 +259,14 @@ END_PROGRAM`,
     };
 
     this._updateProject(updatedProject);
+
+    this.dispatchEvent(
+      new CustomEvent("file-rename", {
+        detail: { fileId, newName },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private _handleFileDeleted(e: CustomEvent): void {

@@ -62,6 +62,18 @@ describe("OnlineStateManager", () => {
 
     expect(manager.getState().status).toBe("paused");
   });
+
+  it("applies runtime settings to state", async () => {
+    await manager.start([]);
+    manager.setUpdateRate(250);
+    manager.setShowConditions(false);
+    manager.setHighlightChanges(false);
+
+    const state = manager.getState();
+    expect(state.updateRate).toBe(250);
+    expect(state.showConditions).toBe(false);
+    expect(state.highlightChanges).toBe(false);
+  });
 });
 
 describe("ValueFormatter", () => {

@@ -251,5 +251,80 @@ describe("STPanel", () => {
 
     expect(panel._project.files[0].hasUnsavedChanges).toBe(false);
   });
+
+  it("reopens the fallback file when deleting the active file", async () => {
+    const panel = document.createElement("st-panel") as any;
+    panel._project = {
+      id: "project_1",
+      name: "My ST Project",
+      files: [
+        {
+          id: "file_1",
+          name: "Main.st",
+          path: "Main.st",
+          content: "PROGRAM Main\nEND_PROGRAM",
+          lastModified: Date.now(),
+          isOpen: true,
+          hasUnsavedChanges: false,
+        },
+        {
+          id: "file_2",
+          name: "Closed.st",
+          path: "Closed.st",
+          content: "PROGRAM Closed\nEND_PROGRAM",
+          lastModified: Date.now(),
+          isOpen: false,
+          hasUnsavedChanges: false,
+        },
+      ],
+      activeFileId: "file_1",
+      createdAt: Date.now(),
+      lastModified: Date.now(),
+    };
+    document.body.appendChild(panel);
+
+    await panel.updateComplete;
+
+    panel._handleFileDeleted(
+      new CustomEvent("file-deleted", {
+        detail: { fileId: "file_1" },
+      }),
+    );
+    await panel.updateComplete;
+
+    expect(panel._project.activeFileId).toBe("file_2");
+    expect(panel._project.files[0].isOpen).toBe(true);
+    expect(panel.shadowRoot?.querySelectorAll(".tab").length).toBe(1);
+  });
+
+  it("forwards online toolbar settings to the editor", async () => {
+    const panel = document.createElement("st-panel") as any;
+    document.body.appendChild(panel);
+    await panel.updateComplete;
+
+    const editor = panel.shadowRoot?.querySelector("st-editor") as any;
+    editor.setOnlineSettings = vi.fn();
+    editor.getOnlineState = vi.fn().mockReturnValue({
+      status: "disconnected",
+      bindings: [],
+      liveValues: new Map(),
+      updateRate: 250,
+      showConditions: true,
+      highlightChanges: true,
+    });
+
+    panel._handleOnlineSettingChange(
+      new CustomEvent("setting-change", {
+        detail: { setting: "updateRate", value: 250 },
+      }),
+    );
+
+    expect(editor.setOnlineSettings).toHaveBeenCalledWith({
+      updateRate: 250,
+      showConditions: undefined,
+      highlightChanges: undefined,
+    });
+    expect(panel._onlineState.updateRate).toBe(250);
+  });
 });
 

@@ -1,12 +1,12 @@
 var ae = Object.defineProperty;
 var ne = (a, t, e) => t in a ? ae(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
 var l = (a, t, e) => ne(a, typeof t != "symbol" ? t + "" : t, e);
-import { S as oe, c as re, L as le, E as U, H as ce, s as de, a as Q, b as he, D as I, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as _e, m as xe, n as Se, o as Le, p as Ce, q as Oe, r as Ue, t as Ne, u as we, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
+import { S as oe, c as re, L as le, E as U, H as ce, s as de, a as Q, b as he, D as M, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as Se, m as _e, n as xe, o as Le, p as Ce, q as Oe, r as Ue, t as we, u as Ne, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
 import { W as m } from "./vendor-BhPS5zVw.js";
-import { i as Y, n as x, a as W, b as u, t as G, r as v } from "./lit-C178dhqO.js";
-import { s as Ie } from "./ha-websocket-DcUbagYv.js";
-import "./project-Cy27UAJ8.js";
-import { c as r, L as R, C as Me } from "./chevrotain-cBR36crC.js";
+import { i as Y, n as x, a as W, b as g, t as G, r as v } from "./lit-C178dhqO.js";
+import { s as Me } from "./ha-websocket-DcUbagYv.js";
+import "./project-DwWQHIot.js";
+import { c as r, L as R, C as Ie } from "./chevrotain-cBR36crC.js";
 import { a as q } from "./analyzer-DbAWr__X.js";
 const Be = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-semibold: 600;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 6px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 20px;--radius-pill: 999px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-focus-ring: 0 0 0 3px rgba(24, 183, 230, .32);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .16s ease;--transition-medium: all .24s ease;--transition-slow: all .32s ease;--focus-ring: 2px solid rgba(91, 212, 255, .7);--focus-ring-offset: 2px}@media (prefers-reduced-motion: reduce){:root{--transition-fast: none;--transition-medium: none;--transition-slow: none}}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', Z = [
   "PROGRAM",
@@ -214,7 +214,7 @@ function Pe() {
     K.data.of({ autocomplete: Fe })
   ]);
 }
-const p = {
+const u = {
   bg: "#1e1e1e",
   bgLight: "#252526",
   fg: "#d4d4d4",
@@ -235,16 +235,16 @@ const p = {
 }, $e = U.theme(
   {
     "&": {
-      color: p.fg,
-      backgroundColor: p.bg,
+      color: u.fg,
+      backgroundColor: u.bg,
       fontSize: "14px",
       fontFamily: '"Fira Code", "Consolas", monospace'
     },
     ".cm-content": {
-      caretColor: p.cursor
+      caretColor: u.cursor
     },
     ".cm-cursor": {
-      borderLeftColor: p.cursor,
+      borderLeftColor: u.cursor,
       borderLeftWidth: "2px"
     },
     // Selection highlighting - semi-transparent so text remains visible
@@ -268,45 +268,45 @@ const p = {
       backgroundColor: "rgba(38, 79, 120, 0.5)"
     },
     ".cm-activeLine": {
-      backgroundColor: p.lineHighlight
+      backgroundColor: u.lineHighlight
     },
     ".cm-gutters": {
-      backgroundColor: p.gutterBg,
-      color: p.gutterFg,
+      backgroundColor: u.gutterBg,
+      color: u.gutterFg,
       border: "none",
-      borderRight: `1px solid ${p.border}`
+      borderRight: `1px solid ${u.border}`
     },
     ".cm-activeLineGutter": {
-      backgroundColor: p.lineHighlight,
-      color: p.fg
+      backgroundColor: u.lineHighlight,
+      color: u.fg
     },
     ".cm-foldGutter .cm-gutterElement": {
       cursor: "pointer"
     },
     ".cm-tooltip": {
-      backgroundColor: p.bgLight,
-      border: `1px solid ${p.border}`
+      backgroundColor: u.bgLight,
+      border: `1px solid ${u.border}`
     },
     ".cm-tooltip-autocomplete ul li[aria-selected]": {
-      backgroundColor: p.selection
+      backgroundColor: u.selection
     }
   },
   { dark: !0 }
 ), ze = ce.define([
-  { tag: m.keyword, color: p.keyword, fontWeight: "bold" },
-  { tag: m.typeName, color: p.type },
+  { tag: m.keyword, color: u.keyword, fontWeight: "bold" },
+  { tag: m.typeName, color: u.type },
   {
     tag: [m.function(m.variableName), m.standard(m.function(m.variableName))],
-    color: p.function
+    color: u.function
   },
-  { tag: m.className, color: p.type },
-  { tag: m.variableName, color: p.variable },
-  { tag: m.propertyName, color: p.variable },
-  { tag: m.string, color: p.string },
-  { tag: m.number, color: p.number },
-  { tag: m.comment, color: p.comment, fontStyle: "italic" },
-  { tag: m.meta, color: p.pragma },
-  { tag: m.operator, color: p.fg },
+  { tag: m.className, color: u.type },
+  { tag: m.variableName, color: u.variable },
+  { tag: m.propertyName, color: u.variable },
+  { tag: m.string, color: u.string },
+  { tag: m.number, color: u.number },
+  { tag: m.comment, color: u.comment, fontStyle: "italic" },
+  { tag: m.meta, color: u.pragma },
+  { tag: m.operator, color: u.fg },
   { tag: m.invalid, color: "#ff0000", textDecoration: "underline wavy" }
 ]);
 function je() {
@@ -337,7 +337,7 @@ class Ve {
     for (const e of t)
       this.bindings.set(e.variableName, e);
     try {
-      this.unsubscribe = Ie(
+      this.unsubscribe = Me(
         this.connection,
         (e) => {
           this.handleHassEntityUpdate(e);
@@ -358,6 +358,15 @@ class Ve {
    */
   setPaused(t) {
     this.status = t ? "paused" : "online", this.notifySubscribers();
+  }
+  setUpdateRate(t) {
+    this.updateRate = t, this.notifySubscribers();
+  }
+  setShowConditions(t) {
+    this.showConditions = t, this.notifySubscribers();
+  }
+  setHighlightChanges(t) {
+    this.highlightChanges = t, this.notifySubscribers();
   }
   /**
    * Subscribe to state changes
@@ -411,14 +420,14 @@ class Ve {
     for (const [s, i] of this.bindings) {
       const n = this.entityStates.get(i.entityId);
       if (!n) continue;
-      const o = this.parseValue(n.state, i.dataType), d = this.liveValues.get(s), c = {
+      const o = this.parseValue(n.state, i.dataType), c = this.liveValues.get(s), d = {
         binding: i,
         currentValue: o,
-        previousValue: d == null ? void 0 : d.currentValue,
-        hasChanged: d ? d.currentValue.raw !== o.raw : !1,
+        previousValue: c == null ? void 0 : c.currentValue,
+        hasChanged: c ? c.currentValue.raw !== o.raw : !1,
         lastUpdate: e
       };
-      this.liveValues.set(s, c);
+      this.liveValues.set(s, d);
     }
     this.notifySubscribers();
   }
@@ -545,7 +554,7 @@ Last update: ${new Date(this.value.lastUpdate).toLocaleTimeString()}`, t.appendC
 }
 const We = he.define({
   create() {
-    return I.none;
+    return M.none;
   },
   update(a, t) {
     for (const e of t.effects)
@@ -560,22 +569,22 @@ function Ge(a, t) {
 `);
   let i = 0;
   for (let n = 0; n < s.length; n++) {
-    const o = s[n], d = i + o.length;
-    for (const [, c] of t)
-      if (c.binding.line === n + 1) {
-        const f = I.widget({
-          widget: new Ye(c, !0),
+    const o = s[n], c = i + o.length;
+    for (const [, d] of t)
+      if (d.binding.line === n + 1) {
+        const p = M.widget({
+          widget: new Ye(d, !0),
           side: 1
         });
         e.push({
-          from: d,
-          to: d,
-          decoration: f
+          from: c,
+          to: c,
+          decoration: p
         });
       }
-    i = d + 1;
+    i = c + 1;
   }
-  return e.sort((n, o) => n.from - o.from), I.set(
+  return e.sort((n, o) => n.from - o.from), M.set(
     e.map((n) => n.decoration.range(n.from, n.to))
   );
 }
@@ -694,6 +703,9 @@ let _ = class extends W {
     var e;
     (e = this._onlineManager) == null || e.setPaused(t);
   }
+  setOnlineSettings(t) {
+    this._onlineManager && (typeof t.updateRate == "number" && this._onlineManager.setUpdateRate(t.updateRate), typeof t.showConditions == "boolean" && this._onlineManager.setShowConditions(t.showConditions), typeof t.highlightChanges == "boolean" && this._onlineManager.setHighlightChanges(t.highlightChanges));
+  }
   /**
    * Get current online state
    */
@@ -719,15 +731,15 @@ let _ = class extends W {
       ye(),
       L.allowMultipleSelections.of(!0),
       Ee(),
+      Se(),
       _e(),
       xe(),
-      Se(),
       Le(),
       Ce(),
       Oe.of([
         ...Ue,
-        ...Ne,
         ...we,
+        ...Ne,
         ...Te,
         ...Re,
         ...ke,
@@ -801,7 +813,7 @@ let _ = class extends W {
     (t = this._editor) == null || t.focus();
   }
   render() {
-    return u`<div id="editor-container"></div>`;
+    return g`<div id="editor-container"></div>`;
   }
 };
 Ze(_, "styles", Y`
@@ -857,7 +869,7 @@ var at = Object.defineProperty, Je = Object.getOwnPropertyDescriptor, ti = (a, t
     (o = a[n]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && at(t, e, i), i;
 }, ei = (a, t, e) => ti(a, t + "", e);
-let N = class extends W {
+let w = class extends W {
   constructor() {
     super();
     l(this, "_handleDocumentClick", null);
@@ -897,7 +909,7 @@ let N = class extends W {
   }
   render() {
     var t, e, s, i;
-    return u`
+    return g`
       <div class="status">
         <span
           class="status-dot status-dot--${((t = this.state) == null ? void 0 : t.status) || "disconnected"}"
@@ -906,12 +918,12 @@ let N = class extends W {
       </div>
 
       <div class="controls">
-        ${this.canConnect ? u`
+        ${this.canConnect ? g`
               <button @click=${this._handleConnect}>
                 <ha-icon icon="mdi:play"></ha-icon>
                 Connect
               </button>
-            ` : u`
+            ` : g`
               <button
                 @click=${this._handleTogglePause}
                 class="${this.isPaused ? "active" : ""}"
@@ -958,7 +970,7 @@ let N = class extends W {
   }
   _renderSettings() {
     var t, e, s, i, n, o;
-    return u`
+    return g`
       <div class="settings-panel">
         <div class="settings-title">Online Settings</div>
         <div class="setting">
@@ -1045,7 +1057,7 @@ let N = class extends W {
     );
   }
 };
-ei(N, "styles", Y`
+ei(w, "styles", Y`
     :host {
       display: flex;
       align-items: center;
@@ -1281,13 +1293,13 @@ ei(N, "styles", Y`
   `);
 H([
   x({ type: Object })
-], N.prototype, "state", 2);
+], w.prototype, "state", 2);
 H([
   v()
-], N.prototype, "_showSettings", 2);
-N = H([
+], w.prototype, "_showSettings", 2);
+w = H([
   G("st-online-toolbar")
-], N);
+], w);
 const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii = r({
   name: "WhiteSpace",
   pattern: /\s+/,
@@ -1334,7 +1346,7 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), mt = r({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), bt = h("Program", "PROGRAM"), li = h("Function", "FUNCTION"), vt = h("Var", "VAR"), ci = h("Constant", "CONSTANT"), yt = h("If", "IF"), M = h("Then", "THEN"), Et = h("Elsif", "ELSIF"), B = h("Else", "ELSE"), _t = h("Case", "CASE"), xt = h("Of", "OF"), St = h("For", "FOR"), Lt = h("To", "TO"), Ct = h("By", "BY"), D = h("Do", "DO"), Ot = h("While", "WHILE"), Ut = h("Repeat", "REPEAT"), Nt = h("Until", "UNTIL"), wt = h("Return", "RETURN"), Tt = h("Exit", "EXIT"), di = h("Continue", "CONTINUE"), F = h("At", "AT"), Rt = h("And", "AND"), kt = h("Or", "OR"), hi = h("Xor", "XOR"), At = h("Not", "NOT"), It = h("Mod", "MOD"), Mt = h("True", "TRUE"), Bt = h("False", "FALSE"), Dt = h("TypeBool", "BOOL"), Ft = r({
+}), bt = h("Program", "PROGRAM"), li = h("Function", "FUNCTION"), vt = h("Var", "VAR"), ci = h("Constant", "CONSTANT"), yt = h("If", "IF"), I = h("Then", "THEN"), Et = h("Elsif", "ELSIF"), B = h("Else", "ELSE"), St = h("Case", "CASE"), _t = h("Of", "OF"), xt = h("For", "FOR"), Lt = h("To", "TO"), Ct = h("By", "BY"), D = h("Do", "DO"), Ot = h("While", "WHILE"), Ut = h("Repeat", "REPEAT"), wt = h("Until", "UNTIL"), Nt = h("Return", "RETURN"), Tt = h("Exit", "EXIT"), di = h("Continue", "CONTINUE"), F = h("At", "AT"), Rt = h("And", "AND"), kt = h("Or", "OR"), hi = h("Xor", "XOR"), At = h("Not", "NOT"), Mt = h("Mod", "MOD"), It = h("True", "TRUE"), Bt = h("False", "FALSE"), Dt = h("TypeBool", "BOOL"), Ft = r({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
 }), Pt = r({
@@ -1376,7 +1388,7 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), C = r({ name: "Assign", pattern: /:=/ }), mi = r({ name: "Output", pattern: /=>/ }), Gt = r({ name: "LessEqual", pattern: /<=/ }), Ht = r({
   name: "GreaterEqual",
   pattern: />=/
-}), qt = r({ name: "NotEqual", pattern: /<>/ }), Kt = r({ name: "Less", pattern: /</ }), Xt = r({ name: "Greater", pattern: />/ }), Qt = r({ name: "Equal", pattern: /=/ }), Zt = r({ name: "Plus", pattern: /\+/ }), $ = r({ name: "Minus", pattern: /-/ }), Jt = r({ name: "Star", pattern: /\*/ }), te = r({ name: "Slash", pattern: /\// }), w = r({ name: "LParen", pattern: /\(/ }), T = r({ name: "RParen", pattern: /\)/ }), bi = r({ name: "LBracket", pattern: /\[/ }), vi = r({ name: "RBracket", pattern: /\]/ }), z = r({ name: "Colon", pattern: /:/ }), E = r({ name: "Semicolon", pattern: /;/ }), j = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), ee = r({ name: "Range", pattern: /\.\./ }), y = r({
+}), qt = r({ name: "NotEqual", pattern: /<>/ }), Kt = r({ name: "Less", pattern: /</ }), Xt = r({ name: "Greater", pattern: />/ }), Qt = r({ name: "Equal", pattern: /=/ }), Zt = r({ name: "Plus", pattern: /\+/ }), $ = r({ name: "Minus", pattern: /-/ }), Jt = r({ name: "Star", pattern: /\*/ }), te = r({ name: "Slash", pattern: /\// }), N = r({ name: "LParen", pattern: /\(/ }), T = r({ name: "RParen", pattern: /\)/ }), bi = r({ name: "LBracket", pattern: /\[/ }), vi = r({ name: "RBracket", pattern: /\]/ }), z = r({ name: "Colon", pattern: /:/ }), S = r({ name: "Semicolon", pattern: /;/ }), j = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), ee = r({ name: "Range", pattern: /\.\./ }), y = r({
   name: "Identifier",
   pattern: /[a-zA-Z_][a-zA-Z0-9_]*/
 }), ie = [
@@ -1407,19 +1419,19 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   vt,
   ci,
   yt,
-  M,
+  I,
   Et,
   B,
+  St,
   _t,
   xt,
-  St,
   Lt,
   Ct,
   D,
   Ot,
   Ut,
-  Nt,
   wt,
+  Nt,
   Tt,
   di,
   F,
@@ -1428,8 +1440,8 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   kt,
   hi,
   At,
-  It,
   Mt,
+  It,
   Bt,
   // Types
   Dt,
@@ -1463,12 +1475,12 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   $,
   Jt,
   te,
-  w,
+  N,
   T,
   bi,
   vi,
   z,
-  E,
+  S,
   j,
   V,
   // Identifier last
@@ -1485,7 +1497,7 @@ function Ei(a) {
     errors: t.errors
   };
 }
-class _i extends Me {
+class Si extends Ie {
   constructor() {
     super(ie, {
       recoveryEnabled: !0,
@@ -1514,7 +1526,7 @@ class _i extends Me {
         this.CONSUME(C), this.SUBRULE(this.expression);
       }), this.OPTION3(() => {
         this.CONSUME1(F), this.CONSUME1(P);
-      }), this.CONSUME(E);
+      }), this.CONSUME(S);
     }));
     l(this, "pragma", this.RULE("pragma", () => {
       this.CONSUME(nt);
@@ -1545,11 +1557,11 @@ class _i extends Me {
       ]);
     }));
     l(this, "assignmentStatement", this.RULE("assignmentStatement", () => {
-      this.SUBRULE(this.variableReference), this.CONSUME(C), this.SUBRULE(this.expression), this.CONSUME(E);
+      this.SUBRULE(this.variableReference), this.CONSUME(C), this.SUBRULE(this.expression), this.CONSUME(S);
     }));
     l(this, "ifStatement", this.RULE("ifStatement", () => {
-      this.CONSUME(yt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(M), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
-        this.CONSUME(Et), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(M), this.MANY2(
+      this.CONSUME(yt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(I), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
+        this.CONSUME(Et), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(I), this.MANY2(
           () => this.SUBRULE1(this.statement, { LABEL: "elsifStatements" })
         );
       }), this.OPTION(() => {
@@ -1559,7 +1571,7 @@ class _i extends Me {
       }), this.CONSUME(pt);
     }));
     l(this, "caseStatement", this.RULE("caseStatement", () => {
-      this.CONSUME(_t), this.SUBRULE(this.expression, { LABEL: "selector" }), this.CONSUME(xt), this.MANY(() => this.SUBRULE(this.caseClause)), this.OPTION(() => {
+      this.CONSUME(St), this.SUBRULE(this.expression, { LABEL: "selector" }), this.CONSUME(_t), this.MANY(() => this.SUBRULE(this.caseClause)), this.OPTION(() => {
         this.CONSUME(B), this.MANY1(() => this.SUBRULE(this.statement));
       }), this.CONSUME(ut);
     }));
@@ -1577,7 +1589,7 @@ class _i extends Me {
       });
     }));
     l(this, "forStatement", this.RULE("forStatement", () => {
-      this.CONSUME(St), this.CONSUME(y, { LABEL: "controlVar" }), this.CONSUME(C), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(Lt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
+      this.CONSUME(xt), this.CONSUME(y, { LABEL: "controlVar" }), this.CONSUME(C), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(Lt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
         this.CONSUME(Ct), this.SUBRULE2(this.expression, { LABEL: "step" });
       }), this.CONSUME(D), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(gt);
     }));
@@ -1585,16 +1597,16 @@ class _i extends Me {
       this.CONSUME(Ot), this.SUBRULE(this.expression), this.CONSUME(D), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(ft);
     }));
     l(this, "repeatStatement", this.RULE("repeatStatement", () => {
-      this.CONSUME(Ut), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(Nt), this.SUBRULE(this.expression), this.CONSUME(mt);
+      this.CONSUME(Ut), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(wt), this.SUBRULE(this.expression), this.CONSUME(mt);
     }));
     l(this, "returnStatement", this.RULE("returnStatement", () => {
-      this.CONSUME(wt), this.CONSUME(E);
+      this.CONSUME(Nt), this.CONSUME(S);
     }));
     l(this, "exitStatement", this.RULE("exitStatement", () => {
-      this.CONSUME(Tt), this.CONSUME(E);
+      this.CONSUME(Tt), this.CONSUME(S);
     }));
     l(this, "functionCallStatement", this.RULE("functionCallStatement", () => {
-      this.SUBRULE(this.functionCall), this.CONSUME(E);
+      this.SUBRULE(this.functionCall), this.CONSUME(S);
     }));
     // Expressions with operator precedence
     l(this, "expression", this.RULE("expression", () => {
@@ -1637,7 +1649,7 @@ class _i extends Me {
           this.OR([
             { ALT: () => this.CONSUME(Jt) },
             { ALT: () => this.CONSUME(te) },
-            { ALT: () => this.CONSUME(It) }
+            { ALT: () => this.CONSUME(Mt) }
           ]), this.SUBRULE1(this.unaryExpression, { LABEL: "rhs" });
         });
       }
@@ -1661,7 +1673,7 @@ class _i extends Me {
         { ALT: () => this.SUBRULE(this.identifierOrCall) },
         {
           ALT: () => {
-            this.CONSUME(w), this.SUBRULE(this.expression), this.CONSUME(T);
+            this.CONSUME(N), this.SUBRULE(this.expression), this.CONSUME(T);
           }
         }
       ]);
@@ -1670,14 +1682,14 @@ class _i extends Me {
       this.CONSUME(y), this.MANY(() => {
         this.CONSUME(V), this.CONSUME1(y);
       }), this.OPTION(() => {
-        this.CONSUME(w), this.OPTION1(() => {
+        this.CONSUME(N), this.OPTION1(() => {
           this.SUBRULE(this.argumentList);
         }), this.CONSUME(T);
       });
     }));
     l(this, "literal", this.RULE("literal", () => {
       this.OR([
-        { ALT: () => this.CONSUME(Mt) },
+        { ALT: () => this.CONSUME(It) },
         { ALT: () => this.CONSUME(Bt) },
         { ALT: () => this.CONSUME(Yt) },
         { ALT: () => this.CONSUME(Vt) },
@@ -1691,7 +1703,7 @@ class _i extends Me {
       });
     }));
     l(this, "functionCall", this.RULE("functionCall", () => {
-      this.CONSUME(y), this.CONSUME(w), this.OPTION(() => {
+      this.CONSUME(y), this.CONSUME(N), this.OPTION(() => {
         this.SUBRULE(this.argumentList);
       }), this.CONSUME(T);
     }));
@@ -1714,8 +1726,8 @@ class _i extends Me {
     this.performSelfAnalysis();
   }
 }
-const O = new _i(), xi = O.getBaseCstVisitorConstructor();
-class Si extends xi {
+const O = new Si(), _i = O.getBaseCstVisitorConstructor();
+class xi extends _i {
   constructor() {
     super(), this.validateVisitor();
   }
@@ -1740,7 +1752,7 @@ class Si extends xi {
     }) : [];
   }
   variableDeclaration(t) {
-    const e = t.pragma ? t.pragma.map((d) => this.visit(d)) : [], s = t.varName[0].image, i = t.typeSpec ? this.visit(t.typeSpec[0]) : this.createDataType("UNKNOWN"), n = t.expression ? this.visit(t.expression[0]) : void 0;
+    const e = t.pragma ? t.pragma.map((c) => this.visit(c)) : [], s = t.varName[0].image, i = t.typeSpec ? this.visit(t.typeSpec[0]) : this.createDataType("UNKNOWN"), n = t.expression ? this.visit(t.expression[0]) : void 0;
     let o;
     return t.IoAddress && (o = this.parseIoAddress(t.IoAddress[0].image), n && n.type === "Literal" && n.kind === "string" && (o.entityId = n.value)), {
       type: "VariableDeclaration",
@@ -1792,11 +1804,11 @@ class Si extends xi {
     };
   }
   ifStatement(t) {
-    const e = this.visit(t.condition[0]), s = t.thenStatements ? t.thenStatements.map((o) => this.visit(o)) : [], i = t.elsifCondition ? t.elsifCondition.map((o, d) => {
-      const c = t.elsifStatements && t.elsifStatements[d] ? this.visit(t.elsifStatements[d]) : [];
+    const e = this.visit(t.condition[0]), s = t.thenStatements ? t.thenStatements.map((o) => this.visit(o)) : [], i = t.elsifCondition ? t.elsifCondition.map((o, c) => {
+      const d = t.elsifStatements && t.elsifStatements[c] ? this.visit(t.elsifStatements[c]) : [];
       return {
         condition: this.visit(o),
-        body: Array.isArray(c) ? c : [c]
+        body: Array.isArray(d) ? d : [d]
       };
     }) : [], n = t.elseStatements ? t.elseStatements.map((o) => this.visit(o)) : void 0;
     return {
@@ -2059,7 +2071,7 @@ class Si extends xi {
     return e.sort((s, i) => s.startOffset - i.startOffset);
   }
 }
-const Li = new Si();
+const Li = new xi();
 function A(a) {
   const t = [], e = Ei(a);
   if (e.errors.length > 0 && e.errors.forEach((i) => {
@@ -2108,7 +2120,7 @@ var se = Object.defineProperty, Ci = Object.getOwnPropertyDescriptor, Oi = (a, t
     (o = a[n]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && se(t, e, i), i;
 }, Ui = (a, t, e) => Oi(a, t + "", e);
-let g = class extends W {
+let f = class extends W {
   constructor() {
     super();
     l(this, "_entityBrowserLoaded", !1);
@@ -2149,7 +2161,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   async _initializeStorage() {
     var e, s;
     if (this._storage) return;
-    const { ProjectStorage: t } = await import("./project-Cy27UAJ8.js");
+    const { ProjectStorage: t } = await import("./project-DwWQHIot.js");
     if ((e = this.hass) != null && e.connection) {
       const i = ((s = this.hass.config) == null ? void 0 : s.entry_id) || "default";
       this._storage = new t(this.hass.connection, i);
@@ -2178,13 +2190,13 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
       }
   }
   render() {
-    var n, o, d;
+    var n, o, c;
     const t = this._diagnostics.filter(
-      (c) => c.severity === "Error"
+      (d) => d.severity === "Error"
     ).length, e = this._diagnostics.filter(
-      (c) => c.severity === "Warning"
+      (d) => d.severity === "Warning"
     ).length, s = this._isDeploying, i = this._syntaxOk ? this._isDeploying ? "Deploy in progress" : "Deploy to Home Assistant" : "Show deploy errors";
-    return u`
+    return g`
       <div class="container">
         <div class="toolbar" role="banner">
           <div class="toolbar-brand">
@@ -2223,7 +2235,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
             </button>
           </div>
         </div>
-        ${this._deployFeedback ? u`
+        ${this._deployFeedback ? g`
               <div
                 class="deploy-feedback ${this._deployFeedback.tone}"
                 role="status"
@@ -2255,34 +2267,34 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
             ></st-project-explorer>
           </div>
           <div class="content-area">
-            ${this._project ? u`
+            ${this._project ? g`
                   <div class="tabs-container" role="tablist">
                     ${this._getOpenFiles().map(
-      (c) => u`
+      (d) => g`
                         <button
-                          class="tab ${c.id === this._project.activeFileId ? "active" : ""}"
-                          @click=${() => this._switchToFile(c.id)}
-                          @auxclick=${(f) => {
-        f.button === 1 && (f.preventDefault(), this._closeFile(c.id));
+                          class="tab ${d.id === this._project.activeFileId ? "active" : ""}"
+                          @click=${() => this._switchToFile(d.id)}
+                          @auxclick=${(p) => {
+        p.button === 1 && (p.preventDefault(), this._closeFile(d.id));
       }}
-                          title=${c.path}
+                          title=${d.path}
                           role="tab"
-                          aria-selected=${c.id === this._project.activeFileId}
+                          aria-selected=${d.id === this._project.activeFileId}
                         >
-                          <span class="tab-label">${this._getFileDisplayName(c.name)}</span>
-                          ${c.hasUnsavedChanges ? u`<div
+                          <span class="tab-label">${this._getFileDisplayName(d.name)}</span>
+                          ${d.hasUnsavedChanges ? g`<div
                                 class="unsaved-dot"
                                 title="Unsaved changes"
                                 aria-label="Unsaved changes"
                               ></div>` : ""}
                           <div
                             class="tab-close"
-                            @click=${(f) => {
-        f.stopPropagation(), this._closeFile(c.id);
+                            @click=${(p) => {
+        p.stopPropagation(), this._closeFile(d.id);
       }}
                             title="Close (middle-click also works)"
                             role="button"
-                            aria-label="Close ${c.name}"
+                            aria-label="Close ${d.name}"
                           >
                             <ha-icon icon="mdi:close"></ha-icon>
                           </div>
@@ -2292,11 +2304,11 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
                   </div>
                 ` : ""}
             <div class="editor-container">
-              ${this._project && !this._project.activeFileId ? u`
+              ${this._project && !this._project.activeFileId ? g`
                     <div class="empty-editor">
                       All files are closed. Open a file from the project explorer or create a new one.
                     </div>
-                  ` : u`
+                  ` : g`
                     <st-editor
                       .code=${this._getCurrentCode()}
                       .hass=${this.hass}
@@ -2304,7 +2316,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
                     ></st-editor>
                   `}
             </div>
-            ${this._showEntityBrowser ? u`
+            ${this._showEntityBrowser ? g`
                   <div class="entity-overlay" role="dialog" aria-label="Entity Browser">
                     <button
                       class="entity-overlay-close"
@@ -2319,7 +2331,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
                 ` : ""}
           </div>
         </div>
-        ${this._diagnostics.length > 0 ? u`
+        ${this._diagnostics.length > 0 ? g`
               <div
                 class="diagnostics-panel"
                 role="log"
@@ -2331,19 +2343,19 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
                   <span>Diagnostics (${this._diagnostics.length})</span>
                 </div>
                 ${this._diagnostics.map(
-      (c) => u`
+      (d) => g`
                     <div
-                      class="diagnostic diagnostic-${c.severity.toLowerCase()}"
+                      class="diagnostic diagnostic-${d.severity.toLowerCase()}"
                     >
                       <ha-icon
                         class="diagnostic-icon"
-                        icon=${this._getDiagnosticIcon(c.severity)}
+                        icon=${this._getDiagnosticIcon(d.severity)}
                       ></ha-icon>
                       <span class="diagnostic-location">
-                        ${c.line ? `Ln ${c.line}, Col ${c.column || 0}` : ""}
+                        ${d.line ? `Ln ${d.line}, Col ${d.column || 0}` : ""}
                       </span>
                       <span class="diagnostic-message">
-                        ${c.code ? u`<span class="diagnostic-code">${c.code}</span>` : ""}${c.message}
+                        ${d.code ? g`<span class="diagnostic-code">${d.code}</span>` : ""}${d.message}
                       </span>
                     </div>
                   `
@@ -2351,19 +2363,19 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
               </div>
             ` : ""}
         <div class="status-bar" role="status" aria-live="polite">
-          ${this._syntaxOk ? u`<span class="syntax-chip status-ok" aria-label="Syntax OK"
+          ${this._syntaxOk ? g`<span class="syntax-chip status-ok" aria-label="Syntax OK"
                 >Syntax OK</span
-              >` : u`<span class="syntax-chip status-error" aria-label="Syntax Error"
+              >` : g`<span class="syntax-chip status-error" aria-label="Syntax Error"
                 >Syntax Error</span
               >`}
-          ${t > 0 ? u`<span
+          ${t > 0 ? g`<span
                 class="status-pill status-error"
                 title="${t} error${t === 1 ? "" : "s"}"
               >
                 <ha-icon icon="mdi:alert-circle"></ha-icon>
                 ${t} Error${t === 1 ? "" : "s"}
               </span>` : ""}
-          ${e > 0 ? u`<span
+          ${e > 0 ? g`<span
                 class="status-pill status-warning"
                 title="${e} warning${e === 1 ? "" : "s"}"
               >
@@ -2378,15 +2390,15 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
             <ha-icon icon="mdi:link-variant"></ha-icon>
             Entities: ${this._entityCount}
           </span>
-          ${(n = this._metadata) != null && n.mode ? u`<span class="status-pill" title="Execution mode">
+          ${(n = this._metadata) != null && n.mode ? g`<span class="status-pill" title="Execution mode">
                 <ha-icon icon="mdi:cog-outline"></ha-icon>
                 Mode: ${this._metadata.mode}
               </span>` : ""}
-          ${(o = this._metadata) != null && o.hasPersistentVars ? u`<span class="status-pill status-accent" title="Persistent variables">
+          ${(o = this._metadata) != null && o.hasPersistentVars ? g`<span class="status-pill status-accent" title="Persistent variables">
                 <ha-icon icon="mdi:database-outline"></ha-icon>
                 Persistent
               </span>` : ""}
-          ${(d = this._metadata) != null && d.hasTimers ? u`<span class="status-pill status-accent" title="Timers used">
+          ${(c = this._metadata) != null && c.hasTimers ? g`<span class="status-pill status-accent" title="Timers used">
                 <ha-icon icon="mdi:timer-outline"></ha-icon>
                 Timers
               </span>` : ""}
@@ -2514,27 +2526,30 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     i && (i.name = s, i.path = s, i.lastModified = Date.now(), this._project.lastModified = Date.now(), this._saveProject());
   }
   _handleFileDeleted(t) {
-    var o, d;
+    var c, d;
     const { fileId: e } = t.detail;
     if (!this._project) return;
-    const s = this._project.files.filter((c) => c.id !== e);
+    const s = this._project.files.filter((p) => p.id !== e);
     let i = this._project.activeFileId;
     if (i === e) {
-      const c = s.find((f) => f.isOpen);
-      i = (c == null ? void 0 : c.id) ?? ((o = s[0]) == null ? void 0 : o.id) ?? null;
+      const p = s.find((E) => E.isOpen);
+      i = (p == null ? void 0 : p.id) ?? ((c = s[0]) == null ? void 0 : c.id) ?? null;
     }
+    const n = s.map(
+      (p) => p.id === i ? { ...p, isOpen: !0 } : p
+    );
     this._project = {
       ...this._project,
-      files: s,
+      files: n,
       activeFileId: i,
       lastModified: Date.now()
     };
-    const n = (d = this.shadowRoot) == null ? void 0 : d.querySelector(
+    const o = (d = this.shadowRoot) == null ? void 0 : d.querySelector(
       "st-editor"
     );
-    if (n && i) {
-      const c = this._project.files.find((f) => f.id === i);
-      c && n.setCode(c.content);
+    if (o && i) {
+      const p = this._project.files.find((E) => E.id === i);
+      p && o.setCode(p.content);
     }
     this._saveProject(), this._analyzeCode(), this.requestUpdate();
   }
@@ -2578,13 +2593,13 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
         });
     if (this._syntaxOk = s.success && s.ast !== void 0, s.success && s.ast) {
       const o = q(s.ast);
-      for (const d of o.diagnostics)
+      for (const c of o.diagnostics)
         t.push({
-          severity: d.severity,
-          code: d.code,
-          message: d.message,
-          line: (i = d.location) == null ? void 0 : i.line,
-          column: (n = d.location) == null ? void 0 : n.column
+          severity: c.severity,
+          code: c.code,
+          message: c.message,
+          line: (i = c.location) == null ? void 0 : i.line,
+          column: (n = c.location) == null ? void 0 : n.column
         });
       this._triggers = o.triggers, this._metadata = o.metadata, this._entityCount = o.dependencies.length;
     } else
@@ -2618,29 +2633,29 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     this._isDeploying = !0, this._deployFeedback = null;
     try {
       const [{ transpile: i }, { deploy: n, HAApiClient: o }] = await Promise.all([
-        import("./transpiler-deploy-DElPdORQ.js").then((S) => S.i),
-        import("./transpiler-deploy-DElPdORQ.js").then((S) => S.a)
-      ]), d = i(t.ast, "home");
-      if (d.diagnostics.some((S) => S.severity === "Error")) {
+        import("./transpiler-deploy-DElPdORQ.js").then((E) => E.i),
+        import("./transpiler-deploy-DElPdORQ.js").then((E) => E.a)
+      ]), c = i(t.ast, "home");
+      if (c.diagnostics.some((E) => E.severity === "Error")) {
         this._setDeployFeedback(
           "error",
           "Cannot deploy because transpilation reported errors."
         ), console.error(
           "Cannot deploy: transpiler reported errors",
-          d.diagnostics
+          c.diagnostics
         );
         return;
       }
-      const c = new o(this.hass.connection), f = await n(c, d, {
+      const d = new o(this.hass.connection), p = await n(d, c, {
         createBackup: !0
       });
-      f.success ? (this._setDeployFeedback(
+      p.success ? (this._setDeployFeedback(
         "success",
-        `Deploy successful (${f.transactionId}).`
-      ), console.log("Deploy successful", f.transactionId)) : (this._setDeployFeedback(
+        `Deploy successful (${p.transactionId}).`
+      ), console.log("Deploy successful", p.transactionId)) : (this._setDeployFeedback(
         "error",
-        ((s = f.errors[0]) == null ? void 0 : s.message) || "Deployment failed."
-      ), console.error("Deploy failed", f.errors));
+        ((s = p.errors[0]) == null ? void 0 : s.message) || "Deployment failed."
+      ), console.error("Deploy failed", p.errors));
     } catch (i) {
       this._setDeployFeedback(
         "error",
@@ -2682,9 +2697,15 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     );
     if (i)
       try {
-        await i.startOnlineMode(s), this._onlineState = i.getOnlineState();
-      } catch (d) {
-        console.error("Failed to start online mode", d);
+        await i.startOnlineMode(s);
+        const c = this._onlineState ?? this._createDisconnectedOnlineState();
+        i.setOnlineSettings({
+          updateRate: c.updateRate,
+          showConditions: c.showConditions,
+          highlightChanges: c.highlightChanges
+        }), this._onlineState = i.getOnlineState();
+      } catch (c) {
+        console.error("Failed to start online mode", c);
       }
   }
   _handleOnlineDisconnect() {
@@ -2705,17 +2726,26 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     }
   }
   _handleOnlineSettingChange(t) {
+    var o;
     const e = this._onlineState ?? this._createDisconnectedOnlineState(), { setting: s, value: i } = t.detail;
     this._onlineState = {
       ...e,
       [s]: i
     };
+    const n = (o = this.shadowRoot) == null ? void 0 : o.querySelector(
+      "st-editor"
+    );
+    n == null || n.setOnlineSettings({
+      updateRate: s === "updateRate" && typeof i == "number" ? i : void 0,
+      showConditions: s === "showConditions" && typeof i == "boolean" ? i : void 0,
+      highlightChanges: s === "highlightChanges" && typeof i == "boolean" ? i : void 0
+    }), n && (this._onlineState = n.getOnlineState() ?? this._onlineState);
   }
   async _toggleEntityBrowser() {
     !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-BAvmIZm8.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
   }
 };
-Ui(g, "styles", Y`
+Ui(f, "styles", Y`
     :host {
       display: block;
       height: 100%;
@@ -3297,51 +3327,51 @@ Ui(g, "styles", Y`
   `);
 b([
   x({ attribute: !1 })
-], g.prototype, "hass", 2);
+], f.prototype, "hass", 2);
 b([
   x({ type: Boolean })
-], g.prototype, "narrow", 2);
+], f.prototype, "narrow", 2);
 b([
   v()
-], g.prototype, "_code", 2);
+], f.prototype, "_code", 2);
 b([
   v()
-], g.prototype, "_project", 2);
+], f.prototype, "_project", 2);
 b([
   v()
-], g.prototype, "_syntaxOk", 2);
+], f.prototype, "_syntaxOk", 2);
 b([
   v()
-], g.prototype, "_triggers", 2);
+], f.prototype, "_triggers", 2);
 b([
   v()
-], g.prototype, "_diagnostics", 2);
+], f.prototype, "_diagnostics", 2);
 b([
   v()
-], g.prototype, "_metadata", 2);
+], f.prototype, "_metadata", 2);
 b([
   v()
-], g.prototype, "_entityCount", 2);
+], f.prototype, "_entityCount", 2);
 b([
   v()
-], g.prototype, "_onlineState", 2);
+], f.prototype, "_onlineState", 2);
 b([
   v()
-], g.prototype, "_showEntityBrowser", 2);
+], f.prototype, "_showEntityBrowser", 2);
 b([
   v()
-], g.prototype, "_storage", 2);
+], f.prototype, "_storage", 2);
 b([
   v()
-], g.prototype, "_isDeploying", 2);
+], f.prototype, "_isDeploying", 2);
 b([
   v()
-], g.prototype, "_deployFeedback", 2);
-g = b([
+], f.prototype, "_deployFeedback", 2);
+f = b([
   G("st-panel")
-], g);
-const Ni = document.getElementById("st-ha-design-system");
-if (!Ni) {
+], f);
+const wi = document.getElementById("st-ha-design-system");
+if (!wi) {
   const a = document.createElement("style");
   a.id = "st-ha-design-system", a.textContent = Be, document.head.appendChild(a);
 }

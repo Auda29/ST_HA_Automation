@@ -91,6 +91,21 @@ export class OnlineStateManager {
     this.notifySubscribers();
   }
 
+  setUpdateRate(updateRate: number): void {
+    this.updateRate = updateRate;
+    this.notifySubscribers();
+  }
+
+  setShowConditions(showConditions: boolean): void {
+    this.showConditions = showConditions;
+    this.notifySubscribers();
+  }
+
+  setHighlightChanges(highlightChanges: boolean): void {
+    this.highlightChanges = highlightChanges;
+    this.notifySubscribers();
+  }
+
   /**
    * Subscribe to state changes
    */

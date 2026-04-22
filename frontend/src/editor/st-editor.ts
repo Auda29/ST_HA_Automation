@@ -171,6 +171,24 @@ export class STEditor extends LitElement {
     this._onlineManager?.setPaused(paused);
   }
 
+  setOnlineSettings(settings: {
+    updateRate?: number;
+    showConditions?: boolean;
+    highlightChanges?: boolean;
+  }): void {
+    if (!this._onlineManager) return;
+
+    if (typeof settings.updateRate === "number") {
+      this._onlineManager.setUpdateRate(settings.updateRate);
+    }
+    if (typeof settings.showConditions === "boolean") {
+      this._onlineManager.setShowConditions(settings.showConditions);
+    }
+    if (typeof settings.highlightChanges === "boolean") {
+      this._onlineManager.setHighlightChanges(settings.highlightChanges);
+    }
+  }
+
   /**
    * Get current online state
    */

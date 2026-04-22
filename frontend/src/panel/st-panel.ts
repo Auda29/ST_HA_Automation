@@ -1212,9 +1212,13 @@ END_PROGRAM`;
       nextActiveId = nextOpen?.id ?? remainingFiles[0]?.id ?? null;
     }
 
+    const normalizedFiles = remainingFiles.map((file) =>
+      file.id === nextActiveId ? { ...file, isOpen: true } : file,
+    );
+
     this._project = {
       ...this._project,
-      files: remainingFiles,
+      files: normalizedFiles,
       activeFileId: nextActiveId,
       lastModified: Date.now(),
     };
@@ -1448,6 +1452,13 @@ END_PROGRAM`;
     if (editor) {
       try {
         await editor.startOnlineMode(bindings);
+        const currentState =
+          this._onlineState ?? this._createDisconnectedOnlineState();
+        editor.setOnlineSettings({
+          updateRate: currentState.updateRate,
+          showConditions: currentState.showConditions,
+          highlightChanges: currentState.highlightChanges,
+        });
         this._onlineState = editor.getOnlineState();
       } catch (error) {
         console.error("Failed to start online mode", error);
@@ -1487,6 +1498,28 @@ END_PROGRAM`;
       ...currentState,
       [setting]: value,
     };
+
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
+    editor?.setOnlineSettings({
+      updateRate:
+        setting === "updateRate" && typeof value === "number"
+          ? value
+          : undefined,
+      showConditions:
+        setting === "showConditions" && typeof value === "boolean"
+          ? value
+          : undefined,
+      highlightChanges:
+        setting === "highlightChanges" && typeof value === "boolean"
+          ? value
+          : undefined,
+    });
+
+    if (editor) {
+      this._onlineState = editor.getOnlineState() ?? this._onlineState;
+    }
   }
 
   private async _toggleEntityBrowser(): Promise<void> {

@@ -5,6 +5,13 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] - 2026-04-22
+
+### Fixed
+- File renames from the project explorer now propagate cleanly into the panel state, so tabs and later saves keep the new filename
+- Deleting the active file now reopens the fallback file when needed instead of leaving the editor on a hidden closed tab
+- Online toolbar settings for update rate, condition visibility, and highlight changes now flow into the live online-mode state instead of only updating the toolbar UI
+
 ## [2.1.2] - 2026-04-22
 
 ### Fixed
@@ -150,6 +157,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error translation from HA errors to ST context
 
 [2.1.2]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.2
+[2.1.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.3
 [2.1.1]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.1
 [2.1.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.0
 [2.0.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.3
