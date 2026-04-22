@@ -1038,6 +1038,50 @@ END_PROGRAM`;
     this._deployFeedback = { tone, message };
   }
 
+  private _formatDeployError(error: unknown): string {
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+
+    if (typeof error === "string") {
+      return error;
+    }
+
+    if (error && typeof error === "object") {
+      const candidate = error as {
+        message?: unknown;
+        body?: { message?: unknown; error?: unknown } | unknown;
+        error?: unknown;
+      };
+
+      if (typeof candidate.message === "string" && candidate.message.trim()) {
+        return candidate.message;
+      }
+
+      if (candidate.body && typeof candidate.body === "object") {
+        const body = candidate.body as { message?: unknown; error?: unknown };
+        if (typeof body.message === "string" && body.message.trim()) {
+          return body.message;
+        }
+        if (typeof body.error === "string" && body.error.trim()) {
+          return body.error;
+        }
+      }
+
+      if (typeof candidate.error === "string" && candidate.error.trim()) {
+        return candidate.error;
+      }
+
+      try {
+        return JSON.stringify(error);
+      } catch {
+        return "Deploy error";
+      }
+    }
+
+    return "Deploy error";
+  }
+
   private _getFileDisplayName(name: string): string {
     return name.replace(/\.st$/i, "");
   }
@@ -1398,7 +1442,7 @@ END_PROGRAM`;
     } catch (error) {
       this._setDeployFeedback(
         "error",
-        error instanceof Error ? error.message : "Deploy error",
+        this._formatDeployError(error),
       );
       console.error("Deploy error", error);
     } finally {

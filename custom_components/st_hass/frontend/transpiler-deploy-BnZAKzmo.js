@@ -1,6 +1,6 @@
 var w = Object.defineProperty;
-var S = (l, e, t) => e in l ? w(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t;
-var c = (l, e, t) => S(l, typeof e != "symbol" ? e + "" : e, t);
+var S = (u, e, t) => e in u ? w(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
+var c = (u, e, t) => S(u, typeof e != "symbol" ? e + "" : e, t);
 import { a as A, b as N, w as E, p as g } from "./analyzer-DbAWr__X.js";
 class f {
   constructor(e, t) {
@@ -262,8 +262,8 @@ class f {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function C(l, e) {
-  const t = `states('${l}')`, a = "['unavailable', 'unknown', 'none', '']";
+function C(u, e) {
+  const t = `states('${u}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
       return `{{ ${t} in ['on', 'true', 'True', '1'] }}`;
@@ -277,8 +277,8 @@ function C(l, e) {
       return `{{ ${t} }}`;
   }
 }
-function M(l, e) {
-  return `{% set last = states('${l}') %}
+function M(u, e) {
+  return `{% set last = states('${u}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
@@ -431,10 +431,10 @@ class T {
     const t = this.jinja.generateExpression(e.selector), a = [];
     for (const n of e.cases) {
       const s = n.values.map((o) => {
-        const u = this.jinja.generateExpression(o);
+        const l = this.jinja.generateExpression(o);
         return {
           condition: "template",
-          value_template: `{{ ${t} == ${u} }}`
+          value_template: `{{ ${t} == ${l} }}`
         };
       }), r = s.length === 1 ? s[0] : { condition: "or", conditions: s };
       a.push({
@@ -866,7 +866,7 @@ class O {
     return this.jinja.generateExpression(e);
   }
 }
-class k {
+class j {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -894,7 +894,7 @@ class k {
     return a === "Q" || a === "ET";
   }
 }
-class j {
+class k {
   constructor(e) {
     c(this, "mappings", /* @__PURE__ */ new Map());
     c(this, "currentPath", []);
@@ -1029,7 +1029,7 @@ class j {
     return t.toString(16);
   }
 }
-class $ {
+class b {
   constructor(e, t = "default", a) {
     c(this, "ast");
     c(this, "projectName");
@@ -1043,7 +1043,7 @@ class $ {
     c(this, "timerHelpers", []);
     c(this, "additionalAutomations", []);
     c(this, "timerMainActions", []);
-    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new j({
+    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new k({
       project: t,
       program: e.name,
       sourceFile: `${e.name}.st`,
@@ -1074,7 +1074,7 @@ class $ {
           stLine: (s = n.location) == null ? void 0 : s.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new O(this.context), this.timerResolver = new k(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new O(this.context), this.timerResolver = new j(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1099,7 +1099,7 @@ class $ {
     var a, i, n;
     const e = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
     for (const s of this.ast.variables) {
-      const r = this.storageAnalysis.variables.find((p) => p.name === s.name), o = this.depAnalysis.dependencies.find((p) => p.variableName === s.name), u = {
+      const r = this.storageAnalysis.variables.find((p) => p.name === s.name), o = this.depAnalysis.dependencies.find((p) => p.variableName === s.name), l = {
         name: s.name,
         dataType: s.dataType.name,
         isInput: ((a = s.binding) == null ? void 0 : a.direction) === "INPUT" || s.section === "VAR_INPUT",
@@ -1108,7 +1108,7 @@ class $ {
         helperId: r == null ? void 0 : r.storage.helperId,
         entityId: (o == null ? void 0 : o.entityId) || ((n = s.binding) == null ? void 0 : n.entityId)
       };
-      e.set(s.name, u), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(s.name, {
+      e.set(s.name, l), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(s.name, {
         entityId: o.entityId,
         variableName: s.name,
         direction: o.direction,
@@ -1313,14 +1313,14 @@ class $ {
     return e;
   }
 }
-function R(l, e, t) {
-  return new $(l, e, t).transpile();
+function R(u, e, t) {
+  return new b(u, e, t).transpile();
 }
 const D = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   ActionGenerator: T,
   JinjaGenerator: f,
-  Transpiler: $,
+  Transpiler: b,
   generateEntityStateRead: C,
   generateThrottleCondition: M,
   transpile: R
@@ -1580,7 +1580,7 @@ class y {
   }
 }
 const h = "st_hass_backups", v = 10;
-class b {
+class $ {
   constructor(e) {
     c(this, "api");
     c(this, "helperManager");
@@ -1592,7 +1592,7 @@ class b {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: d.type,
       name: d.attributes.friendly_name || d.entityId
-    })), o = r.map((d) => d.id), u = await this.helperManager.getHelperStates(o), p = {
+    })), o = r.map((d) => d.id), l = await this.helperManager.getHelperStates(o), p = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1603,7 +1603,7 @@ class b {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         script: n,
         helpers: r,
-        helperStates: u
+        helperStates: l
       }
     };
     return await this.saveBackup(p), p;
@@ -1712,8 +1712,8 @@ class P {
       if (!o)
         a.push(this.createAddedIssue(r));
       else {
-        const u = this.detectChanges(o, r);
-        a.push(...u);
+        const l = this.detectChanges(o, r);
+        a.push(...l);
       }
     }
     return {
@@ -1836,7 +1836,7 @@ class I {
     c(this, "backupManager");
     c(this, "schemaStorage");
     c(this, "migrationDetector");
-    this.api = e, this.helperManager = new y(e), this.backupManager = new b(e), this.schemaStorage = new x(), this.migrationDetector = new P();
+    this.api = e, this.helperManager = new y(e), this.backupManager = new $(e), this.schemaStorage = new x(), this.migrationDetector = new P();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -1855,7 +1855,7 @@ class I {
         try {
           await this.applyOperation(s), s.status = "applied";
         } catch (r) {
-          return s.status = "failed", s.error = r instanceof Error ? r.message : String(r), await this.rollback(a), {
+          return s.status = "failed", s.error = this.formatError(r), await this.rollback(a), {
             success: !1,
             transactionId: a.id,
             operations: i,
@@ -1887,7 +1887,7 @@ class I {
     } catch (i) {
       a.status = "failed";
       const n = {
-        message: i instanceof Error ? i.message : String(i),
+        message: this.formatError(i),
         code: "DEPLOY_ERROR"
       };
       return {
@@ -2015,6 +2015,31 @@ class I {
   generateId() {
     return `op_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
   }
+  formatError(e) {
+    if (e instanceof Error && e.message)
+      return e.message;
+    if (typeof e == "string")
+      return e;
+    if (e && typeof e == "object") {
+      const t = e;
+      if (typeof t.message == "string" && t.message.trim())
+        return t.message;
+      if (t.body && typeof t.body == "object") {
+        const a = t.body;
+        if (typeof a.message == "string" && a.message.trim())
+          return a.message;
+        if (typeof a.error == "string" && a.error.trim())
+          return a.error;
+      }
+      if (typeof t.error == "string" && t.error.trim())
+        return t.error;
+      try {
+        return JSON.stringify(e);
+      } catch {
+      }
+    }
+    return "Unknown deploy error";
+  }
   getScriptId(e) {
     return `${e.automation.id}_logic`;
   }
@@ -2061,12 +2086,12 @@ class I {
     return !0;
   }
 }
-async function L(l, e, t) {
-  return new I(l).deploy(e, t);
+async function L(u, e, t) {
+  return new I(u).deploy(e, t);
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  BackupManager: b,
+  BackupManager: $,
   DeployManager: I,
   HAApiClient: H,
   HelperManager: y,
@@ -2076,4 +2101,4 @@ export {
   F as a,
   D as i
 };
-//# sourceMappingURL=transpiler-deploy-DElPdORQ.js.map
+//# sourceMappingURL=transpiler-deploy-BnZAKzmo.js.map

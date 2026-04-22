@@ -2434,6 +2434,32 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
   _setDeployFeedback(t, e) {
     this._deployFeedback = { tone: t, message: e };
   }
+  _formatDeployError(t) {
+    if (t instanceof Error && t.message)
+      return t.message;
+    if (typeof t == "string")
+      return t;
+    if (t && typeof t == "object") {
+      const e = t;
+      if (typeof e.message == "string" && e.message.trim())
+        return e.message;
+      if (e.body && typeof e.body == "object") {
+        const s = e.body;
+        if (typeof s.message == "string" && s.message.trim())
+          return s.message;
+        if (typeof s.error == "string" && s.error.trim())
+          return s.error;
+      }
+      if (typeof e.error == "string" && e.error.trim())
+        return e.error;
+      try {
+        return JSON.stringify(t);
+      } catch {
+        return "Deploy error";
+      }
+    }
+    return "Deploy error";
+  }
   _getFileDisplayName(t) {
     return t.replace(/\.st$/i, "");
   }
@@ -2633,8 +2659,8 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     this._isDeploying = !0, this._deployFeedback = null;
     try {
       const [{ transpile: i }, { deploy: n, HAApiClient: o }] = await Promise.all([
-        import("./transpiler-deploy-DElPdORQ.js").then((E) => E.i),
-        import("./transpiler-deploy-DElPdORQ.js").then((E) => E.a)
+        import("./transpiler-deploy-BnZAKzmo.js").then((E) => E.i),
+        import("./transpiler-deploy-BnZAKzmo.js").then((E) => E.a)
       ]), c = i(t.ast, "home");
       if (c.diagnostics.some((E) => E.severity === "Error")) {
         this._setDeployFeedback(
@@ -2659,7 +2685,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     } catch (i) {
       this._setDeployFeedback(
         "error",
-        i instanceof Error ? i.message : "Deploy error"
+        this._formatDeployError(i)
       ), console.error("Deploy error", i);
     } finally {
       this._isDeploying = !1;

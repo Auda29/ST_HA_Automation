@@ -16,6 +16,7 @@ class FakeConnection implements HAConnection {
   public automations = new Map<string, HAAutomationConfig>();
   public scripts = new Map<string, HAScriptConfig>();
   public failScriptSave = false;
+  public failScriptSaveWithObject = false;
 
   async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);
@@ -38,6 +39,13 @@ class FakeConnection implements HAConnection {
       }
       case "config/script/config": {
         if ("config" in message) {
+          if (this.failScriptSaveWithObject) {
+            throw {
+              body: {
+                message: "Script save rejected by Home Assistant",
+              },
+            };
+          }
           if (this.failScriptSave) {
             throw new Error("script save failed");
           }
@@ -152,5 +160,20 @@ describe("DeployManager", () => {
     expect(deployResult.success).toBe(false);
     // Automation should not remain after rollback
     expect(conn.automations.has("st_default_prog")).toBe(false);
+  });
+
+  it("formats object-shaped deploy errors into readable messages", async () => {
+    const conn = new FakeConnection();
+    conn.failScriptSaveWithObject = true;
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+    const result = makeTranspilerResult();
+
+    const deployResult = await manager.deploy(result);
+
+    expect(deployResult.success).toBe(false);
+    expect(deployResult.errors[0]?.message).toContain(
+      "Script save rejected by Home Assistant",
+    );
   });
 });

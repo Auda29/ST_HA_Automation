@@ -70,7 +70,7 @@ export class DeployManager {
           op.status = 'applied';
         } catch (error) {
           op.status = 'failed';
-          op.error = error instanceof Error ? error.message : String(error);
+          op.error = this.formatError(error);
 
           await this.rollback(transaction);
 
@@ -120,7 +120,7 @@ export class DeployManager {
       transaction.status = 'failed';
 
       const deployError: DeployError = {
-        message: error instanceof Error ? error.message : String(error),
+        message: this.formatError(error),
         code: 'DEPLOY_ERROR',
       };
 
@@ -282,6 +282,51 @@ export class DeployManager {
 
   private generateId(): string {
     return `op_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
+  }
+
+  private formatError(error: unknown): string {
+    if (error instanceof Error && error.message) {
+      return error.message;
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (error && typeof error === 'object') {
+      const candidate = error as {
+        message?: unknown;
+        body?: { message?: unknown; error?: unknown } | unknown;
+        error?: unknown;
+        code?: unknown;
+      };
+
+      if (typeof candidate.message === 'string' && candidate.message.trim()) {
+        return candidate.message;
+      }
+
+      if (candidate.body && typeof candidate.body === 'object') {
+        const body = candidate.body as { message?: unknown; error?: unknown };
+        if (typeof body.message === 'string' && body.message.trim()) {
+          return body.message;
+        }
+        if (typeof body.error === 'string' && body.error.trim()) {
+          return body.error;
+        }
+      }
+
+      if (typeof candidate.error === 'string' && candidate.error.trim()) {
+        return candidate.error;
+      }
+
+      try {
+        return JSON.stringify(error);
+      } catch {
+        // Fall through to generic message.
+      }
+    }
+
+    return 'Unknown deploy error';
   }
 
   private getScriptId(result: TranspilerResult): string {
