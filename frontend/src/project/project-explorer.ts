@@ -102,8 +102,35 @@ export class STProjectExplorer extends LitElement {
       transform: translateY(-1px);
     }
 
+    .header-button:active {
+      transform: translateY(0);
+    }
+
+    .header-button:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .header-button ha-icon {
       --mdc-icon-size: 18px;
+    }
+
+    .tip-footer {
+      padding: var(--space-3, 12px) var(--space-4, 16px);
+      border-top: 1px solid rgba(140, 169, 193, 0.1);
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-xs, 11px);
+      line-height: 1.55;
+    }
+
+    .tip-footer kbd {
+      padding: 1px 5px;
+      border: 1px solid rgba(140, 169, 193, 0.26);
+      border-radius: 4px;
+      background: rgba(9, 17, 25, 0.9);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
     }
 
     .file-tree-container {
@@ -286,6 +313,9 @@ END_PROGRAM`,
           @file-open=${this._handleFileOpen}
           @file-rename=${this._handleFileRename}
         ></st-file-tree>
+      </div>
+      <div class="tip-footer">
+        <kbd>Enter</kbd> opens · <kbd>F2</kbd> rename · <kbd>Del</kbd> delete
       </div>
     `;
   }

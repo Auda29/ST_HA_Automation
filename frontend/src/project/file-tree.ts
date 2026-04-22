@@ -77,6 +77,11 @@ export class STFileTree extends LitElement {
       transform: translateX(1px);
     }
 
+    .tree-item:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .tree-item.active {
       background:
         linear-gradient(180deg, rgba(14, 165, 215, 0.2), rgba(10, 131, 173, 0.2));
@@ -87,6 +92,49 @@ export class STFileTree extends LitElement {
 
     .tree-item.selected {
       background: rgba(19, 28, 35, 0.92);
+    }
+
+    .tree-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity var(--transition-fast, 160ms ease);
+    }
+
+    .tree-item:hover .tree-actions,
+    .tree-item:focus-within .tree-actions {
+      opacity: 1;
+    }
+
+    .tree-action-btn {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: none;
+      border-radius: var(--radius-sm, 6px);
+      background: transparent;
+      color: var(--ui-text-muted, #8ea1af);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast, all 160ms ease);
+    }
+
+    .tree-action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--ui-text-primary, #f3f7fb);
+    }
+
+    .tree-action-btn.danger:hover {
+      background: rgba(255, 114, 114, 0.16);
+      color: var(--ui-error, #ff7272);
+    }
+
+    .tree-action-btn ha-icon {
+      --mdc-icon-size: 14px;
     }
 
     .tree-toggle,
@@ -158,6 +206,21 @@ export class STFileTree extends LitElement {
       background: var(--status-paused, #ffce73);
       box-shadow: 0 0 8px rgba(255, 206, 115, 0.4);
       flex-shrink: 0;
+    }
+
+    .empty-hint {
+      padding: var(--space-5, 20px) var(--space-4, 16px);
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-sm, 12px);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .empty-hint ha-icon {
+      display: block;
+      margin: 0 auto 8px;
+      color: rgba(132, 212, 238, 0.7);
+      --mdc-icon-size: 28px;
     }
   `;
 
@@ -312,7 +375,11 @@ export class STFileTree extends LitElement {
           @click=${(e: Event) => this._handleFileClick(file, e)}
           @dblclick=${(e: Event) => this._handleFileDoubleClick(file, e)}
           @contextmenu=${(e: Event) => this._startRename(file, e)}
-          title=${file.path}
+          @keydown=${(e: KeyboardEvent) => this._handleItemKey(e, file)}
+          tabindex="0"
+          role="treeitem"
+          aria-selected=${isActive}
+          title="${file.path} — double-click to open, F2 to rename, Delete to remove"
         >
           <div class="tree-toggle"></div>
           <div class="tree-icon">
@@ -343,16 +410,77 @@ export class STFileTree extends LitElement {
           ${file.hasUnsavedChanges
             ? html`<div class="unsaved-indicator" title="Unsaved changes"></div>`
             : ""}
+          ${isEditing
+            ? ""
+            : html`
+                <div class="tree-actions">
+                  <button
+                    class="tree-action-btn"
+                    title="Rename (F2)"
+                    aria-label="Rename ${file.name}"
+                    @click=${(e: Event) => this._startRename(file, e)}
+                  >
+                    <ha-icon icon="mdi:pencil-outline"></ha-icon>
+                  </button>
+                  <button
+                    class="tree-action-btn danger"
+                    title="Delete"
+                    aria-label="Delete ${file.name}"
+                    @click=${(e: Event) => this._handleDelete(file, e)}
+                  >
+                    <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+                  </button>
+                </div>
+              `}
         </div>
       </div>
     `;
   }
 
+  private _handleItemKey(e: KeyboardEvent, file: ProjectFile): void {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this._handleFileDoubleClick(file, e);
+    } else if (e.key === "F2") {
+      e.preventDefault();
+      this._startRename(file, e);
+    } else if (e.key === "Delete") {
+      e.preventDefault();
+      this._handleDelete(file, e);
+    }
+  }
+
+  private _handleDelete(file: ProjectFile, e: Event): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const ok = confirm(
+      `Delete "${file.name}"? This cannot be undone.`,
+    );
+    if (!ok) return;
+    this.dispatchEvent(
+      new CustomEvent("file-deleted", {
+        detail: { fileId: file.id },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   render() {
     const tree = this._buildTree();
 
+    if (this.files.length === 0) {
+      return html`
+        <div class="empty-hint">
+          <ha-icon icon="mdi:file-plus-outline"></ha-icon>
+          No files yet. Use <strong>New File</strong> to create your first ST
+          program.
+        </div>
+      `;
+    }
+
     return html`
-      <div class="file-tree">${this._renderNode(tree)}</div>
+      <div class="file-tree" role="tree">${this._renderNode(tree)}</div>
     `;
   }
 }

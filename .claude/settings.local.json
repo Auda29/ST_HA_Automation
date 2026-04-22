@@ -28,7 +28,9 @@
       "Bash(mkdir -p design-extract)",
       "Bash(gunzip -c \"C:/Users/wecke/.claude/projects/C--Users-wecke-Projects-ST-HA-Automation--claude-worktrees-amazing-satoshi-1812e0/2506c420-cf98-4071-b146-235dc10f8428/tool-results/webfetch-1776783139827-pyo75r.bin\")",
       "Bash(tar -x -C design-extract)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx vitest *)",
+      "Bash(npm install *)"
     ]
   }
 }

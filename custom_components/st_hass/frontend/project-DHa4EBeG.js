@@ -1,17 +1,17 @@
-import { i as x, n as u, r as v, a as w, b as d, t as F } from "./lit-C178dhqO.js";
+import { i as _, n as u, r as v, a as y, b as o, t as w } from "./lit-C178dhqO.js";
 const b = "st_hass_project";
-class _ {
-  constructor(e, i) {
+class x {
+  constructor(t, i) {
   }
   /**
    * Load project structure from localStorage
    * Note: HA storage API integration can be added later if needed
    */
   async loadProject() {
-    const e = localStorage.getItem(b);
-    if (e)
+    const t = localStorage.getItem(b);
+    if (t)
       try {
-        const i = JSON.parse(e);
+        const i = JSON.parse(t);
         return this._deserializeProject(i);
       } catch (i) {
         console.error("Failed to parse localStorage project data", i);
@@ -22,15 +22,15 @@ class _ {
    * Save project structure to localStorage
    * Note: HA storage API integration can be added later if needed
    */
-  async saveProject(e) {
-    const i = this._serializeProject(e);
+  async saveProject(t) {
+    const i = this._serializeProject(t);
     localStorage.setItem(b, JSON.stringify(i));
   }
   /**
    * Create a new project with default structure
    */
   createDefaultProject() {
-    const e = Date.now(), i = {
+    const t = Date.now(), i = {
       id: this._generateFileId(),
       name: "Main.st",
       path: "Main.st",
@@ -42,7 +42,7 @@ END_VAR
 (* Your ST code here *)
 
 END_PROGRAM`,
-      lastModified: e,
+      lastModified: t,
       isOpen: !0,
       hasUnsavedChanges: !1
     };
@@ -51,19 +51,19 @@ END_PROGRAM`,
       name: "My ST Project",
       files: [i],
       activeFileId: i.id,
-      createdAt: e,
-      lastModified: e
+      createdAt: t,
+      lastModified: t
     };
   }
   /**
    * Migrate from single-file mode to project mode
    */
-  migrateFromSingleFile(e) {
+  migrateFromSingleFile(t) {
     const i = Date.now(), a = {
       id: this._generateFileId(),
       name: "Main.st",
       path: "Main.st",
-      content: e,
+      content: t,
       lastModified: i,
       isOpen: !0,
       hasUnsavedChanges: !1
@@ -80,11 +80,11 @@ END_PROGRAM`,
   /**
    * Serialize project for storage (exclude transient state)
    */
-  _serializeProject(e) {
+  _serializeProject(t) {
     return {
-      id: e.id,
-      name: e.name,
-      files: e.files.map((i) => ({
+      id: t.id,
+      name: t.name,
+      files: t.files.map((i) => ({
         id: i.id,
         name: i.name,
         path: i.path,
@@ -92,16 +92,16 @@ END_PROGRAM`,
         lastModified: i.lastModified
         // Don't serialize isOpen and hasUnsavedChanges (transient state)
       })),
-      activeFileId: e.activeFileId,
-      createdAt: e.createdAt,
-      lastModified: e.lastModified
+      activeFileId: t.activeFileId,
+      createdAt: t.createdAt,
+      lastModified: t.lastModified
     };
   }
   /**
    * Deserialize project from storage
    */
-  _deserializeProject(e) {
-    const i = e;
+  _deserializeProject(t) {
+    const i = t;
     return {
       id: i.id,
       name: i.name,
@@ -130,114 +130,118 @@ END_PROGRAM`,
     return `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }
-var y = Object.defineProperty, j = Object.getOwnPropertyDescriptor, $ = (t, e, i) => e in t ? y(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i, p = (t, e, i, a) => {
-  for (var r = a > 1 ? void 0 : a ? j(e, i) : e, s = t.length - 1, o; s >= 0; s--)
-    (o = t[s]) && (r = (a ? o(e, i, r) : o(r)) || r);
-  return a && r && y(e, i, r), r;
-}, I = (t, e, i) => $(t, e + "", i);
-let l = class extends w {
+var F = Object.defineProperty, $ = Object.getOwnPropertyDescriptor, j = (e, t, i) => t in e ? F(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, p = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? $(t, i) : t, s = e.length - 1, d; s >= 0; s--)
+    (d = e[s]) && (r = (a ? d(t, i, r) : d(r)) || r);
+  return a && r && F(t, i, r), r;
+}, I = (e, t, i) => j(e, t + "", i);
+let l = class extends y {
   constructor() {
     super(), this.files = [], this.activeFileId = null, this.selectedFileId = null, this._expandedPaths = /* @__PURE__ */ new Set(), this._editingFileId = null, this._editingName = "";
   }
   _buildTree() {
-    const t = {
+    const e = {
       name: "",
       path: "",
       children: /* @__PURE__ */ new Map(),
       isFolder: !0
     };
-    for (const e of this.files) {
-      const i = e.path.split("/");
-      let a = t;
+    for (const t of this.files) {
+      const i = t.path.split("/");
+      let a = e;
       for (let r = 0; r < i.length; r++) {
-        const s = i[r], o = r === i.length - 1;
+        const s = i[r], d = r === i.length - 1;
         a.children.has(s) || a.children.set(s, {
           name: s,
           path: i.slice(0, r + 1).join("/"),
           children: /* @__PURE__ */ new Map(),
-          isFolder: !o
+          isFolder: !d
         });
-        const f = a.children.get(s);
-        o && (f.file = e), a = f;
+        const h = a.children.get(s);
+        d && (h.file = t), a = h;
       }
     }
-    return t;
+    return e;
   }
-  _toggleExpand(t) {
-    this._expandedPaths.has(t) ? this._expandedPaths.delete(t) : this._expandedPaths.add(t), this._expandedPaths = new Set(this._expandedPaths), this.requestUpdate();
+  _toggleExpand(e) {
+    this._expandedPaths.has(e) ? this._expandedPaths.delete(e) : this._expandedPaths.add(e), this._expandedPaths = new Set(this._expandedPaths), this.requestUpdate();
   }
-  _handleFileClick(t, e) {
-    e.stopPropagation(), this.dispatchEvent(
+  _handleFileClick(e, t) {
+    t.stopPropagation(), this.dispatchEvent(
       new CustomEvent("file-selected", {
-        detail: { fileId: t.id },
+        detail: { fileId: e.id },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileDoubleClick(t, e) {
-    e.stopPropagation(), this.dispatchEvent(
+  _handleFileDoubleClick(e, t) {
+    t.stopPropagation(), this.dispatchEvent(
       new CustomEvent("file-open", {
-        detail: { fileId: t.id },
+        detail: { fileId: e.id },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _startRename(t, e) {
-    e.preventDefault(), e.stopPropagation(), this._editingFileId = t.id, this._editingName = t.name;
+  _startRename(e, t) {
+    t.preventDefault(), t.stopPropagation(), this._editingFileId = e.id, this._editingName = e.name;
   }
-  _finishRename(t) {
-    const e = this._editingName.trim();
-    e && this.dispatchEvent(
+  _finishRename(e) {
+    const t = this._editingName.trim();
+    t && this.dispatchEvent(
       new CustomEvent("file-rename", {
-        detail: { fileId: t, newName: e },
+        detail: { fileId: e, newName: t },
         bubbles: !0,
         composed: !0
       })
     ), this._editingFileId = null, this._editingName = "";
   }
-  _renderNode(t, e = 0) {
-    const i = this._expandedPaths.has(t.path), a = t.children.size > 0;
-    if (t.isFolder && t.path === "") {
-      const n = Array.from(t.children.values()).sort((c, m) => c.isFolder !== m.isFolder ? c.isFolder ? -1 : 1 : c.name.localeCompare(m.name));
-      return d`${n.map((c) => this._renderNode(c, e))}`;
+  _renderNode(e, t = 0) {
+    const i = this._expandedPaths.has(e.path), a = e.children.size > 0;
+    if (e.isFolder && e.path === "") {
+      const n = Array.from(e.children.values()).sort((c, g) => c.isFolder !== g.isFolder ? c.isFolder ? -1 : 1 : c.name.localeCompare(g.name));
+      return o`${n.map((c) => this._renderNode(c, t))}`;
     }
-    if (t.isFolder)
-      return d`
+    if (e.isFolder)
+      return o`
         <div class="tree-node">
-          <div class="tree-item" @click=${() => this._toggleExpand(t.path)}>
+          <div class="tree-item" @click=${() => this._toggleExpand(e.path)}>
             <div class="tree-toggle ${i ? "expanded" : ""}">
-              ${a ? d`<ha-icon icon="mdi:chevron-right"></ha-icon>` : d`<span style="width: 16px;"></span>`}
+              ${a ? o`<ha-icon icon="mdi:chevron-right"></ha-icon>` : o`<span style="width: 16px;"></span>`}
             </div>
             <div class="tree-icon">
               <ha-icon icon="mdi:folder-open-outline"></ha-icon>
             </div>
-            <div class="tree-label">${t.name}</div>
+            <div class="tree-label">${e.name}</div>
           </div>
-          ${i ? d`
+          ${i ? o`
                 <div class="tree-children">
-                  ${Array.from(t.children.values()).sort((n, c) => n.isFolder !== c.isFolder ? n.isFolder ? -1 : 1 : n.name.localeCompare(c.name)).map((n) => this._renderNode(n, e + 1))}
+                  ${Array.from(e.children.values()).sort((n, c) => n.isFolder !== c.isFolder ? n.isFolder ? -1 : 1 : n.name.localeCompare(c.name)).map((n) => this._renderNode(n, t + 1))}
                 </div>
               ` : ""}
         </div>
       `;
-    const r = t.file, s = r.id === this.activeFileId, o = r.id === this.selectedFileId, f = r.id === this._editingFileId;
-    return d`
+    const r = e.file, s = r.id === this.activeFileId, d = r.id === this.selectedFileId, h = r.id === this._editingFileId;
+    return o`
       <div class="tree-node">
         <div
-          class="tree-item ${s ? "active" : ""} ${o ? "selected" : ""}"
+          class="tree-item ${s ? "active" : ""} ${d ? "selected" : ""}"
           @click=${(n) => this._handleFileClick(r, n)}
           @dblclick=${(n) => this._handleFileDoubleClick(r, n)}
           @contextmenu=${(n) => this._startRename(r, n)}
-          title=${r.path}
+          @keydown=${(n) => this._handleItemKey(n, r)}
+          tabindex="0"
+          role="treeitem"
+          aria-selected=${s}
+          title="${r.path} — double-click to open, F2 to rename, Delete to remove"
         >
           <div class="tree-toggle"></div>
           <div class="tree-icon">
             <ha-icon icon="mdi:file-document-outline"></ha-icon>
           </div>
-          <div class="tree-label ${f ? "editing" : ""}">
-            ${f ? d`
+          <div class="tree-label ${h ? "editing" : ""}">
+            ${h ? o`
                   <input
                     .value=${this._editingName}
                     @input=${(n) => this._editingName = n.target.value}
@@ -249,19 +253,59 @@ let l = class extends w {
                   />
                 ` : r.name}
           </div>
-          ${r.hasUnsavedChanges ? d`<div class="unsaved-indicator" title="Unsaved changes"></div>` : ""}
+          ${r.hasUnsavedChanges ? o`<div class="unsaved-indicator" title="Unsaved changes"></div>` : ""}
+          ${h ? "" : o`
+                <div class="tree-actions">
+                  <button
+                    class="tree-action-btn"
+                    title="Rename (F2)"
+                    aria-label="Rename ${r.name}"
+                    @click=${(n) => this._startRename(r, n)}
+                  >
+                    <ha-icon icon="mdi:pencil-outline"></ha-icon>
+                  </button>
+                  <button
+                    class="tree-action-btn danger"
+                    title="Delete"
+                    aria-label="Delete ${r.name}"
+                    @click=${(n) => this._handleDelete(r, n)}
+                  >
+                    <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+                  </button>
+                </div>
+              `}
         </div>
       </div>
     `;
   }
+  _handleItemKey(e, t) {
+    e.key === "Enter" ? (e.preventDefault(), this._handleFileDoubleClick(t, e)) : e.key === "F2" ? (e.preventDefault(), this._startRename(t, e)) : e.key === "Delete" && (e.preventDefault(), this._handleDelete(t, e));
+  }
+  _handleDelete(e, t) {
+    t.preventDefault(), t.stopPropagation(), confirm(
+      `Delete "${e.name}"? This cannot be undone.`
+    ) && this.dispatchEvent(
+      new CustomEvent("file-deleted", {
+        detail: { fileId: e.id },
+        bubbles: !0,
+        composed: !0
+      })
+    );
+  }
   render() {
-    const t = this._buildTree();
-    return d`
-      <div class="file-tree">${this._renderNode(t)}</div>
+    const e = this._buildTree();
+    return this.files.length === 0 ? o`
+        <div class="empty-hint">
+          <ha-icon icon="mdi:file-plus-outline"></ha-icon>
+          No files yet. Use <strong>New File</strong> to create your first ST
+          program.
+        </div>
+      ` : o`
+      <div class="file-tree" role="tree">${this._renderNode(e)}</div>
     `;
   }
 };
-I(l, "styles", x`
+I(l, "styles", _`
     :host {
       display: block;
       height: 100%;
@@ -302,6 +346,11 @@ I(l, "styles", x`
       transform: translateX(1px);
     }
 
+    .tree-item:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .tree-item.active {
       background:
         linear-gradient(180deg, rgba(14, 165, 215, 0.2), rgba(10, 131, 173, 0.2));
@@ -312,6 +361,49 @@ I(l, "styles", x`
 
     .tree-item.selected {
       background: rgba(19, 28, 35, 0.92);
+    }
+
+    .tree-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity var(--transition-fast, 160ms ease);
+    }
+
+    .tree-item:hover .tree-actions,
+    .tree-item:focus-within .tree-actions {
+      opacity: 1;
+    }
+
+    .tree-action-btn {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: none;
+      border-radius: var(--radius-sm, 6px);
+      background: transparent;
+      color: var(--ui-text-muted, #8ea1af);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast, all 160ms ease);
+    }
+
+    .tree-action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--ui-text-primary, #f3f7fb);
+    }
+
+    .tree-action-btn.danger:hover {
+      background: rgba(255, 114, 114, 0.16);
+      color: var(--ui-error, #ff7272);
+    }
+
+    .tree-action-btn ha-icon {
+      --mdc-icon-size: 14px;
     }
 
     .tree-toggle,
@@ -384,6 +476,21 @@ I(l, "styles", x`
       box-shadow: 0 0 8px rgba(255, 206, 115, 0.4);
       flex-shrink: 0;
     }
+
+    .empty-hint {
+      padding: var(--space-5, 20px) var(--space-4, 16px);
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-sm, 12px);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .empty-hint ha-icon {
+      display: block;
+      margin: 0 auto 8px;
+      color: rgba(132, 212, 238, 0.7);
+      --mdc-icon-size: 28px;
+    }
   `);
 p([
   u({ type: Array })
@@ -404,34 +511,34 @@ p([
   v()
 ], l.prototype, "_editingName", 2);
 l = p([
-  F("st-file-tree")
+  w("st-file-tree")
 ], l);
-var P = Object.defineProperty, N = Object.getOwnPropertyDescriptor, M = (t, e, i) => e in t ? P(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i, g = (t, e, i, a) => {
-  for (var r = a > 1 ? void 0 : a ? N(e, i) : e, s = t.length - 1, o; s >= 0; s--)
-    (o = t[s]) && (r = (a ? o(e, i, r) : o(r)) || r);
-  return a && r && P(e, i, r), r;
-}, E = (t, e, i) => M(t, e + "", i);
-let h = class extends w {
+var P = Object.defineProperty, k = Object.getOwnPropertyDescriptor, D = (e, t, i) => t in e ? P(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, m = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? k(t, i) : t, s = e.length - 1, d; s >= 0; s--)
+    (d = e[s]) && (r = (a ? d(t, i, r) : d(r)) || r);
+  return a && r && P(t, i, r), r;
+}, z = (e, t, i) => D(e, t + "", i);
+let f = class extends y {
   constructor() {
     super(), this.project = null, this._storage = null;
   }
   connectedCallback() {
     super.connectedCallback(), this._initializeStorage();
   }
-  updated(t) {
-    super.updated(t), t.has("hass") && this._initializeStorage();
+  updated(e) {
+    super.updated(e), e.has("hass") && this._initializeStorage();
   }
   _initializeStorage() {
-    var t, e;
-    if ((t = this.hass) != null && t.connection) {
-      const i = ((e = this.hass.config) == null ? void 0 : e.entry_id) || "default";
-      this._storage = new _(this.hass.connection, i);
+    var e, t;
+    if ((e = this.hass) != null && e.connection) {
+      const i = ((t = this.hass.config) == null ? void 0 : t.entry_id) || "default";
+      this._storage = new x(this.hass.connection, i);
     } else
-      this._storage = new _(null, "default");
+      this._storage = new x(null, "default");
   }
   _handleNewFile() {
     if (!this.project) return;
-    const t = {
+    const e = {
       id: this._generateFileId(),
       name: "NewFile.st",
       path: "NewFile.st",
@@ -449,46 +556,46 @@ END_PROGRAM`,
     };
     this.dispatchEvent(
       new CustomEvent("file-created", {
-        detail: { file: t },
+        detail: { file: e },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileSelected(t) {
-    const { fileId: e } = t.detail;
+  _handleFileSelected(e) {
+    const { fileId: t } = e.detail;
     this.dispatchEvent(
       new CustomEvent("file-selected", {
-        detail: { fileId: e },
+        detail: { fileId: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileOpen(t) {
-    const { fileId: e } = t.detail;
+  _handleFileOpen(e) {
+    const { fileId: t } = e.detail;
     if (!this.project) return;
     const i = this.project.files.map((r) => ({
       ...r,
-      isOpen: r.id === e || r.isOpen
+      isOpen: r.id === t || r.isOpen
     })), a = {
       ...this.project,
       files: i,
-      activeFileId: e,
+      activeFileId: t,
       lastModified: Date.now()
     };
     this._updateProject(a), this.dispatchEvent(
       new CustomEvent("file-open", {
-        detail: { fileId: e },
+        detail: { fileId: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileRename(t) {
-    const { fileId: e, newName: i } = t.detail;
+  _handleFileRename(e) {
+    const { fileId: t, newName: i } = e.detail;
     if (!this.project) return;
-    const a = this.project.files.map((s) => s.id === e ? {
+    const a = this.project.files.map((s) => s.id === t ? {
       ...s,
       name: i,
       path: i,
@@ -500,22 +607,22 @@ END_PROGRAM`,
     };
     this._updateProject(r);
   }
-  _updateProject(t) {
-    this.project = t, this._saveProject(), this.requestUpdate();
+  _updateProject(e) {
+    this.project = e, this._saveProject(), this.requestUpdate();
   }
   async _saveProject() {
     if (!(!this._storage || !this.project))
       try {
         await this._storage.saveProject(this.project);
-      } catch (t) {
-        console.error("Failed to save project", t);
+      } catch (e) {
+        console.error("Failed to save project", e);
       }
   }
   _generateFileId() {
     return `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
   render() {
-    return this.project ? d`
+    return this.project ? o`
       <div class="header">
         <div class="header-copy">
           <div class="eyebrow">Project Workspace</div>
@@ -542,14 +649,17 @@ END_PROGRAM`,
           @file-rename=${this._handleFileRename}
         ></st-file-tree>
       </div>
-    ` : d`
+      <div class="tip-footer">
+        <kbd>Enter</kbd> opens · <kbd>F2</kbd> rename · <kbd>Del</kbd> delete
+      </div>
+    ` : o`
         <div class="empty-state">
           No project loaded. Create a new file to start.
         </div>
       `;
   }
 };
-E(h, "styles", x`
+z(f, "styles", _`
     :host {
       display: flex;
       flex-direction: column;
@@ -629,8 +739,35 @@ E(h, "styles", x`
       transform: translateY(-1px);
     }
 
+    .header-button:active {
+      transform: translateY(0);
+    }
+
+    .header-button:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .header-button ha-icon {
       --mdc-icon-size: 18px;
+    }
+
+    .tip-footer {
+      padding: var(--space-3, 12px) var(--space-4, 16px);
+      border-top: 1px solid rgba(140, 169, 193, 0.1);
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-xs, 11px);
+      line-height: 1.55;
+    }
+
+    .tip-footer kbd {
+      padding: 1px 5px;
+      border: 1px solid rgba(140, 169, 193, 0.26);
+      border-radius: 4px;
+      background: rgba(9, 17, 25, 0.9);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
     }
 
     .file-tree-container {
@@ -644,21 +781,21 @@ E(h, "styles", x`
       font-size: var(--font-size-md, 14px);
     }
   `);
-g([
+m([
   u({ attribute: !1 })
-], h.prototype, "hass", 2);
-g([
+], f.prototype, "hass", 2);
+m([
   u({ type: Object })
-], h.prototype, "project", 2);
-g([
+], f.prototype, "project", 2);
+m([
   v()
-], h.prototype, "_storage", 2);
-h = g([
-  F("st-project-explorer")
-], h);
+], f.prototype, "_storage", 2);
+f = m([
+  w("st-project-explorer")
+], f);
 export {
-  _ as ProjectStorage,
+  x as ProjectStorage,
   l as STFileTree,
-  h as STProjectExplorer
+  f as STProjectExplorer
 };
-//# sourceMappingURL=project-B48wM8Lq.js.map
+//# sourceMappingURL=project-DHa4EBeG.js.map

@@ -39,16 +39,24 @@ export class STEntityItem extends LitElement {
 
     .entity-item:hover {
       background: rgba(21, 31, 39, 0.96);
-      border-color: rgba(88, 127, 146, 0.18);
+      border-color: rgba(88, 127, 146, 0.22);
       transform: translateX(1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
     }
 
     .entity-item:active {
       cursor: grabbing;
     }
 
+    .entity-item:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .entity-item.dragging {
       opacity: 0.5;
+      border-style: dashed;
+      border-color: rgba(91, 212, 255, 0.5);
     }
 
     .direction-indicator {
@@ -226,6 +234,9 @@ export class STEntityItem extends LitElement {
       <div
         class="entity-item"
         draggable="true"
+        tabindex="0"
+        role="button"
+        aria-label="${displayName} — ${this.entity.entityId} — drag to editor to bind"
         @dragstart=${this._handleDragStart}
         @dragend=${this._handleDragEnd}
         title="Drag to editor. Hold Shift while dragging for an output binding."

@@ -45,6 +45,7 @@ export class STPanel extends LitElement {
   @state() declare private _showEntityBrowser: boolean;
   @state() declare private _showProjectExplorer: boolean;
   @state() declare private _storage: ProjectStorage | null;
+  @state() declare private _isDeploying: boolean;
   private _entityBrowserLoaded = false;
   private _projectExplorerLoaded = false;
 
@@ -54,6 +55,7 @@ export class STPanel extends LitElement {
       height: 100%;
       background:
         radial-gradient(circle at top left, rgba(24, 183, 230, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(14, 127, 166, 0.08), transparent 36%),
         linear-gradient(180deg, #081018, #091119 26%, #070d13 100%);
       color: var(--ui-text-primary, var(--primary-text-color));
       font-family: var(--font-ui, var(--paper-font-common-base_-_font-family));
@@ -67,6 +69,7 @@ export class STPanel extends LitElement {
       display: flex;
       flex: 1;
       overflow: hidden;
+      min-height: 0;
     }
     .sidebar {
       width: var(--sidebar-width-default, 320px);
@@ -88,11 +91,13 @@ export class STPanel extends LitElement {
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
     .toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: var(--space-4, 16px);
       padding: 18px 20px 14px;
       background:
         linear-gradient(135deg, rgba(24, 183, 230, 0.16), transparent 28%),
@@ -101,17 +106,30 @@ export class STPanel extends LitElement {
       color: var(--ui-text-header, var(--app-header-text-color));
       border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       box-shadow: var(--shadow-header);
+      flex-wrap: wrap;
     }
     .toolbar-brand {
       display: flex;
       flex-direction: column;
       gap: 4px;
+      min-width: 0;
     }
     .toolbar-kicker {
-      font-size: 11px;
+      font-size: var(--font-size-xs, 11px);
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: rgba(237, 246, 255, 0.58);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toolbar-kicker::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4ad7ff, var(--ui-primary, #18b7e6));
+      box-shadow: 0 0 10px rgba(74, 215, 255, 0.6);
     }
     .toolbar h1 {
       margin: 0;
@@ -123,6 +141,7 @@ export class STPanel extends LitElement {
     .toolbar-subtitle {
       font-size: var(--font-size-sm, 12px);
       color: rgba(237, 246, 255, 0.7);
+      max-width: 56ch;
     }
     .toolbar-actions {
       display: flex;
@@ -138,25 +157,32 @@ export class STPanel extends LitElement {
       color: var(--ui-text-header, #fff);
       cursor: pointer;
       font-size: var(--font-size-md, 14px);
+      font-weight: var(--font-weight-semibold, 600);
       font-family: var(--font-ui, inherit);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
       backdrop-filter: blur(10px);
-      transition: var(--transition-medium, background-color 0.2s ease);
+      transition: var(--transition-fast, all 160ms ease);
     }
     .toolbar-button:hover {
       background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.22);
       transform: translateY(-1px);
+    }
+    .toolbar-button:active {
+      transform: translateY(0);
     }
     .toolbar-button.active {
       background: linear-gradient(135deg, var(--ui-primary-soft), rgba(24, 183, 230, 0.22));
       border-color: rgba(91, 212, 255, 0.48);
       color: #f6fdff;
+      box-shadow: inset 0 0 0 1px rgba(91, 212, 255, 0.2),
+        0 6px 18px rgba(24, 183, 230, 0.12);
     }
     .toolbar-button:focus-visible {
-      outline: 2px solid var(--ui-text-header, #fff);
-      outline-offset: 2px;
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
     }
     .editor-container {
       flex: 1;
@@ -167,12 +193,14 @@ export class STPanel extends LitElement {
         rgba(255, 255, 255, 0.03),
         transparent 24%
       );
+      min-height: 0;
     }
     st-editor {
       height: 100%;
       border-radius: var(--radius-lg, 16px);
       box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
       border: 1px solid rgba(255, 255, 255, 0.04);
+      overflow: hidden;
     }
     .status-bar {
       display: flex;
@@ -190,11 +218,24 @@ export class STPanel extends LitElement {
       align-items: center;
       gap: 6px;
       padding: 5px 10px;
-      border-radius: 999px;
+      border-radius: var(--radius-pill, 999px);
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
       color: var(--ui-text-secondary);
       line-height: 1;
+      font-weight: var(--font-weight-medium, 500);
+    }
+    .status-pill ha-icon {
+      --mdc-icon-size: 14px;
+      color: var(--ui-text-muted, #8ea1af);
+    }
+    .status-pill.status-accent {
+      border-color: rgba(91, 212, 255, 0.22);
+      background: rgba(24, 183, 230, 0.1);
+      color: var(--ui-text-primary, #f3f7fb);
+    }
+    .status-pill.status-accent ha-icon {
+      color: var(--ui-info, #6bc9ff);
     }
     .status-ok {
       color: var(--ui-success, var(--success-color, #4caf50));
@@ -205,134 +246,243 @@ export class STPanel extends LitElement {
     .status-warning {
       color: var(--ui-warning, var(--warning-color, #ff9800));
     }
-    .status-bar > .status-ok:first-child,
-    .status-bar > .status-error:first-child {
+    .syntax-chip {
       display: inline-flex;
       align-items: center;
+      gap: 6px;
       padding: 5px 10px;
-      border-radius: 999px;
+      border-radius: var(--radius-pill, 999px);
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      font-size: 0;
+      font-weight: var(--font-weight-semibold, 600);
       line-height: 1;
     }
-    .status-bar > .status-ok:first-child::after {
-      content: "Syntax OK";
-      font-size: var(--font-size-sm, 12px);
-      font-weight: var(--font-weight-medium, 500);
+    .syntax-chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 10px currentColor;
+      opacity: 0.9;
     }
-    .status-bar > .status-error:first-child::after {
-      content: "Syntax Error";
-      font-size: var(--font-size-sm, 12px);
-      font-weight: var(--font-weight-medium, 500);
+    .syntax-chip.status-ok {
+      background: rgba(79, 211, 158, 0.1);
+      border-color: rgba(79, 211, 158, 0.24);
+    }
+    .syntax-chip.status-error {
+      background: rgba(255, 114, 114, 0.1);
+      border-color: rgba(255, 114, 114, 0.28);
     }
     .deploy-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       padding: 11px 18px;
       border: 1px solid transparent;
       border-radius: var(--radius-md, 10px);
       background: linear-gradient(135deg, #eafaff, #c9f3ff);
       color: #08141b;
       cursor: pointer;
-      font-size: 0;
+      font-size: var(--font-size-md, 14px);
       font-weight: var(--font-weight-bold, 700);
       font-family: var(--font-ui, inherit);
+      letter-spacing: 0.02em;
       box-shadow: 0 10px 22px rgba(24, 183, 230, 0.18);
+      transition: var(--transition-fast, all 160ms ease);
     }
-    .deploy-button::before {
-      content: "Deploy";
-      font-size: var(--font-size-md, 14px);
+    .deploy-button ha-icon {
+      --mdc-icon-size: 16px;
     }
     .deploy-button:hover:not(:disabled) {
       transform: translateY(-1px);
-      filter: brightness(1.02);
+      filter: brightness(1.05);
+      box-shadow: 0 14px 28px rgba(24, 183, 230, 0.28);
+    }
+    .deploy-button:active:not(:disabled) {
+      transform: translateY(0);
     }
     .deploy-button:focus-visible {
-      outline: 2px solid var(--ui-text-header, #fff);
-      outline-offset: 2px;
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
     }
     .deploy-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      box-shadow: none;
+    }
+    .deploy-button.deploying {
+      pointer-events: none;
+    }
+    .deploy-button.deploying .deploy-label::after {
+      content: "…";
+      display: inline-block;
+      animation: deploy-dots 1.2s infinite;
+    }
+    @keyframes deploy-dots {
+      0%, 20% { content: "."; }
+      40% { content: ".."; }
+      60%, 100% { content: "…"; }
     }
     .diagnostics-panel {
-      max-height: 130px;
+      max-height: 150px;
       overflow-y: auto;
-      padding: 8px 16px;
+      padding: var(--space-2, 8px) 0;
       background: rgba(8, 14, 20, 0.9);
       border-top: 1px solid var(--ui-divider, var(--divider-color));
       font-size: var(--font-size-sm, 12px);
       font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
     }
+    .diagnostics-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px var(--space-4, 16px);
+      color: var(--ui-text-muted, #8ea1af);
+      font-family: var(--font-ui, inherit);
+      font-size: var(--font-size-xs, 11px);
+      font-weight: var(--font-weight-semibold, 600);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border-bottom: 1px solid rgba(140, 169, 193, 0.08);
+    }
     .diagnostic {
-      padding: 4px 0;
+      display: grid;
+      grid-template-columns: 18px minmax(72px, auto) 1fr;
+      gap: 10px;
+      padding: 6px var(--space-4, 16px);
+      align-items: baseline;
+      border-left: 2px solid transparent;
+    }
+    .diagnostic:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .diagnostic-icon {
+      --mdc-icon-size: 14px;
+      align-self: center;
+    }
+    .diagnostic-location {
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-xs, 11px);
+      text-align: right;
+    }
+    .diagnostic-message {
+      color: var(--ui-text-primary, #edf6ff);
+      overflow-wrap: anywhere;
+    }
+    .diagnostic-code {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 1px 6px;
+      border-radius: var(--radius-sm, 6px);
+      background: rgba(140, 169, 193, 0.1);
+      color: var(--ui-text-secondary, #8ea6bd);
+      font-size: var(--font-size-xs, 11px);
     }
     .diagnostic-error {
-      color: var(--error-color, #f44336);
+      border-left-color: var(--ui-error, #ff7272);
+    }
+    .diagnostic-error .diagnostic-icon {
+      color: var(--ui-error, #ff7272);
     }
     .diagnostic-warning {
-      color: var(--warning-color, #ff9800);
+      border-left-color: var(--ui-warning, #ffbf47);
+    }
+    .diagnostic-warning .diagnostic-icon {
+      color: var(--ui-warning, #ffbf47);
     }
     .diagnostic-info {
-      color: var(--info-color, #2196f3);
+      border-left-color: var(--ui-info, #6bc9ff);
+    }
+    .diagnostic-info .diagnostic-icon {
+      color: var(--ui-info, #6bc9ff);
     }
     .diagnostic-hint {
-      color: var(--disabled-text-color, #9e9e9e);
+      border-left-color: var(--ui-disabled, #6c8194);
+    }
+    .diagnostic-hint .diagnostic-icon {
+      color: var(--ui-disabled, #6c8194);
     }
     .tabs-container {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       padding: 10px 14px 0;
       background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(140, 169, 193, 0.3) transparent;
+    }
+    .tabs-container::-webkit-scrollbar {
+      height: 6px;
+    }
+    .tabs-container::-webkit-scrollbar-thumb {
+      background: rgba(140, 169, 193, 0.22);
+      border-radius: 3px;
     }
     .tab {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 10px 12px;
+      gap: 8px;
+      padding: 9px 12px;
       background: rgba(255, 255, 255, 0.03);
       color: var(--ui-text-secondary, var(--primary-text-color));
       cursor: pointer;
       border: 1px solid rgba(255, 255, 255, 0.04);
       border-bottom: none;
-      border-radius: 12px 12px 0 0;
+      border-radius: 10px 10px 0 0;
       font-size: var(--font-size-base, 13px);
       font-family: var(--font-ui, inherit);
       white-space: nowrap;
-      transition: all 0.2s;
+      transition: var(--transition-fast, all 160ms ease);
+      max-width: 220px;
     }
     .tab:hover {
       background: rgba(255, 255, 255, 0.06);
       color: var(--ui-text-primary);
     }
+    .tab:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: -2px;
+    }
     .tab.active {
-      background: linear-gradient(180deg, rgba(24, 183, 230, 0.14), rgba(255, 255, 255, 0.02));
-      border-color: rgba(91, 212, 255, 0.24);
+      background: linear-gradient(180deg, rgba(24, 183, 230, 0.16), rgba(255, 255, 255, 0.02));
+      border-color: rgba(91, 212, 255, 0.28);
       color: var(--ui-text-primary, var(--primary-text-color));
-      box-shadow: inset 0 2px 0 rgba(91, 212, 255, 0.5);
+      box-shadow: inset 0 2px 0 rgba(91, 212, 255, 0.6);
+    }
+    .tab-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: var(--font-weight-medium, 500);
     }
     .tab-close {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 2px;
-      opacity: 0.6;
+      border-radius: var(--radius-sm, 6px);
+      opacity: 0.55;
+      transition: var(--transition-fast, all 160ms ease);
     }
     .tab-close:hover {
       opacity: 1;
-      background: var(--ui-divider, var(--divider-color));
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ui-text-primary);
+    }
+    .tab-close ha-icon {
+      --mdc-icon-size: 12px;
     }
     .unsaved-dot {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background-color: var(--ui-warning, var(--warning-color, #ff9800));
+      box-shadow: 0 0 6px rgba(255, 191, 71, 0.45);
+      flex-shrink: 0;
     }
     .project-sidebar {
       width: 292px;
@@ -350,6 +500,54 @@ export class STPanel extends LitElement {
     .toolbar-icon {
       width: 18px;
       height: 18px;
+      --mdc-icon-size: 18px;
+    }
+    .empty-editor {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8, 32px);
+      color: var(--ui-text-muted, #8ea1af);
+      font-size: var(--font-size-md, 14px);
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .toolbar {
+        padding: 14px 16px 12px;
+      }
+      .toolbar h1 {
+        font-size: 22px;
+      }
+      .toolbar-subtitle {
+        display: none;
+      }
+      .sidebar,
+      .project-sidebar {
+        width: 260px;
+        min-width: 220px;
+      }
+      .editor-container {
+        padding: 12px;
+      }
+    }
+    @media (max-width: 640px) {
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .toolbar-actions {
+        justify-content: flex-end;
+      }
+      .main-content {
+        flex-direction: column;
+      }
+      .sidebar,
+      .project-sidebar {
+        width: 100%;
+        max-width: none;
+        max-height: 40vh;
+      }
     }
   `;
 
@@ -391,6 +589,7 @@ END_PROGRAM`;
     this._metadata = null;
     this._entityCount = 0;
     this._onlineState = this._createDisconnectedOnlineState();
+    this._isDeploying = false;
   }
 
   connectedCallback() {
@@ -464,9 +663,16 @@ END_PROGRAM`;
       (d) => d.severity === "Warning",
     ).length;
 
+    const deployDisabled = !this._syntaxOk || this._isDeploying;
+    const deployTitle = !this._syntaxOk
+      ? "Fix syntax errors before deploying"
+      : this._isDeploying
+        ? "Deploy in progress"
+        : "Deploy to Home Assistant";
+
     return html`
       <div class="container">
-        <div class="toolbar">
+        <div class="toolbar" role="banner">
           <div class="toolbar-brand">
             <div class="toolbar-kicker">Structured Text Runtime</div>
             <h1 class="st-h1">ST for Home Assistant</h1>
@@ -475,13 +681,15 @@ END_PROGRAM`;
               surface.
             </div>
           </div>
-          <div class="toolbar-actions">
+          <div class="toolbar-actions" role="toolbar" aria-label="Panel actions">
             <button
               class="toolbar-button ${this._showProjectExplorer
                 ? "active"
                 : ""}"
               @click=${this._toggleProjectExplorer}
               title="Toggle Project Explorer"
+              aria-pressed=${this._showProjectExplorer}
+              aria-label="Toggle project explorer"
             >
               <ha-icon class="toolbar-icon" icon="mdi:folder-multiple"></ha-icon>
               Project
@@ -490,6 +698,8 @@ END_PROGRAM`;
               class="toolbar-button ${this._showEntityBrowser ? "active" : ""}"
               @click=${this._toggleEntityBrowser}
               title="Toggle Entity Browser"
+              aria-pressed=${this._showEntityBrowser}
+              aria-label="Toggle entity browser"
             >
               <ha-icon
                 class="toolbar-icon"
@@ -498,11 +708,16 @@ END_PROGRAM`;
               Entities
             </button>
             <button
-              class="deploy-button"
+              class="deploy-button ${this._isDeploying ? "deploying" : ""}"
               @click=${this._handleDeploy}
-              ?disabled=${!this._syntaxOk}
+              ?disabled=${deployDisabled}
+              title=${deployTitle}
+              aria-label=${deployTitle}
             >
-              ▶ Deploy
+              <ha-icon
+                icon=${this._isDeploying ? "mdi:progress-upload" : "mdi:rocket-launch"}
+              ></ha-icon>
+              <span class="deploy-label">${this._isDeploying ? "Deploying" : "Deploy"}</span>
             </button>
           </div>
         </div>
@@ -535,7 +750,7 @@ END_PROGRAM`;
           <div class="content-area">
             ${this._project
               ? html`
-                  <div class="tabs-container">
+                  <div class="tabs-container" role="tablist">
                     ${this._getOpenFiles().map(
                       (file) => html`
                         <button
@@ -543,11 +758,23 @@ END_PROGRAM`;
                             ? "active"
                             : ""}"
                           @click=${() => this._switchToFile(file.id)}
+                          @auxclick=${(e: MouseEvent) => {
+                            if (e.button === 1) {
+                              e.preventDefault();
+                              this._closeFile(file.id);
+                            }
+                          }}
                           title=${file.path}
+                          role="tab"
+                          aria-selected=${file.id === this._project!.activeFileId}
                         >
-                          <span>${file.name}</span>
+                          <span class="tab-label">${file.name}</span>
                           ${file.hasUnsavedChanges
-                            ? html`<div class="unsaved-dot"></div>`
+                            ? html`<div
+                                class="unsaved-dot"
+                                title="Unsaved changes"
+                                aria-label="Unsaved changes"
+                              ></div>`
                             : ""}
                           <div
                             class="tab-close"
@@ -555,12 +782,11 @@ END_PROGRAM`;
                               e.stopPropagation();
                               this._closeFile(file.id);
                             }}
-                            title="Close"
+                            title="Close (middle-click also works)"
+                            role="button"
+                            aria-label="Close ${file.name}"
                           >
-                            <ha-icon
-                              icon="mdi:close"
-                              style="width: 12px; height: 12px;"
-                            ></ha-icon>
+                            <ha-icon icon="mdi:close"></ha-icon>
                           </div>
                         </button>
                       `,
@@ -579,47 +805,109 @@ END_PROGRAM`;
         </div>
         ${this._diagnostics.length > 0
           ? html`
-              <div class="diagnostics-panel">
+              <div
+                class="diagnostics-panel"
+                role="log"
+                aria-label="Diagnostics"
+                aria-live="polite"
+              >
+                <div class="diagnostics-header">
+                  <ha-icon icon="mdi:message-alert-outline"></ha-icon>
+                  <span>Diagnostics (${this._diagnostics.length})</span>
+                </div>
                 ${this._diagnostics.map(
                   (d) => html`
                     <div
                       class="diagnostic diagnostic-${d.severity.toLowerCase()}"
                     >
-                      ${d.line ? `[${d.line}:${d.column || 0}] ` : ""}${d.code
-                        ? `${d.code}: `
-                        : ""}${d.message}
+                      <ha-icon
+                        class="diagnostic-icon"
+                        icon=${this._getDiagnosticIcon(d.severity)}
+                      ></ha-icon>
+                      <span class="diagnostic-location">
+                        ${d.line ? `Ln ${d.line}, Col ${d.column || 0}` : ""}
+                      </span>
+                      <span class="diagnostic-message">
+                        ${d.code
+                          ? html`<span class="diagnostic-code">${d.code}</span>`
+                          : ""}${d.message}
+                      </span>
                     </div>
                   `,
                 )}
               </div>
             `
           : ""}
-        <div class="status-bar">
+        <div class="status-bar" role="status" aria-live="polite">
           ${this._syntaxOk
-            ? html`<span class="status-ok">✓ Syntax OK</span>`
-            : html`<span class="status-error">✗ Syntax Error</span>`}
-          ${errorCount > 0
-            ? html`<span class="status-pill status-error"
-                >${errorCount} Error(s)</span
+            ? html`<span class="syntax-chip status-ok" aria-label="Syntax OK"
+                >Syntax OK</span
               >`
+            : html`<span class="syntax-chip status-error" aria-label="Syntax Error"
+                >Syntax Error</span
+              >`}
+          ${errorCount > 0
+            ? html`<span
+                class="status-pill status-error"
+                title="${errorCount} error${errorCount === 1 ? "" : "s"}"
+              >
+                <ha-icon icon="mdi:alert-circle"></ha-icon>
+                ${errorCount} Error${errorCount === 1 ? "" : "s"}
+              </span>`
             : ""}
           ${warningCount > 0
-            ? html`<span class="status-pill status-warning"
-                >${warningCount} Warning(s)</span
-              >`
+            ? html`<span
+                class="status-pill status-warning"
+                title="${warningCount} warning${warningCount === 1 ? "" : "s"}"
+              >
+                <ha-icon icon="mdi:alert"></ha-icon>
+                ${warningCount} Warning${warningCount === 1 ? "" : "s"}
+              </span>`
             : ""}
-          <span class="status-pill">Triggers: ${this._triggers.length}</span>
-          <span class="status-pill">Entities: ${this._entityCount}</span>
+          <span class="status-pill" title="Number of triggers">
+            <ha-icon icon="mdi:flash"></ha-icon>
+            Triggers: ${this._triggers.length}
+          </span>
+          <span class="status-pill" title="Bound entities">
+            <ha-icon icon="mdi:link-variant"></ha-icon>
+            Entities: ${this._entityCount}
+          </span>
           ${this._metadata?.mode
-            ? html`<span class="status-pill">Mode: ${this._metadata.mode}</span>`
+            ? html`<span class="status-pill" title="Execution mode">
+                <ha-icon icon="mdi:cog-outline"></ha-icon>
+                Mode: ${this._metadata.mode}
+              </span>`
             : ""}
           ${this._metadata?.hasPersistentVars
-            ? html`<span>💾 Persistent</span>`
+            ? html`<span class="status-pill status-accent" title="Persistent variables">
+                <ha-icon icon="mdi:database-outline"></ha-icon>
+                Persistent
+              </span>`
             : ""}
-          ${this._metadata?.hasTimers ? html`<span>⏱️ Timers</span>` : ""}
+          ${this._metadata?.hasTimers
+            ? html`<span class="status-pill status-accent" title="Timers used">
+                <ha-icon icon="mdi:timer-outline"></ha-icon>
+                Timers
+              </span>`
+            : ""}
         </div>
       </div>
     `;
+  }
+
+  private _getDiagnosticIcon(severity: CombinedDiagnostic["severity"]): string {
+    switch (severity) {
+      case "Error":
+        return "mdi:alert-circle";
+      case "Warning":
+        return "mdi:alert";
+      case "Info":
+        return "mdi:information";
+      case "Hint":
+        return "mdi:lightbulb-outline";
+      default:
+        return "mdi:information-outline";
+    }
   }
 
   private _handleCodeChange(e: CustomEvent<{ code: string }>) {
@@ -770,7 +1058,33 @@ END_PROGRAM`;
 
   private _handleFileDeleted(e: CustomEvent): void {
     const { fileId } = e.detail;
-    this._closeFile(fileId);
+    if (!this._project) return;
+
+    const remainingFiles = this._project.files.filter((f) => f.id !== fileId);
+    let nextActiveId = this._project.activeFileId;
+    if (nextActiveId === fileId) {
+      const nextOpen = remainingFiles.find((f) => f.isOpen);
+      nextActiveId = nextOpen?.id ?? remainingFiles[0]?.id ?? null;
+    }
+
+    this._project = {
+      ...this._project,
+      files: remainingFiles,
+      activeFileId: nextActiveId,
+      lastModified: Date.now(),
+    };
+
+    const editor = this.shadowRoot?.querySelector(
+      "st-editor",
+    ) as STEditor | null;
+    if (editor && nextActiveId) {
+      const activeFile = this._project.files.find((f) => f.id === nextActiveId);
+      if (activeFile) editor.setCode(activeFile.content);
+    }
+
+    this._saveProject();
+    this._analyzeCode();
+    this.requestUpdate();
   }
 
   private _handleFileCreated(e: CustomEvent): void {
@@ -870,6 +1184,8 @@ END_PROGRAM`;
   }
 
   private async _handleDeploy() {
+    if (this._isDeploying) return;
+
     if (!this._syntaxOk) {
       console.error("Cannot deploy: syntax errors present");
       return;
@@ -888,23 +1204,24 @@ END_PROGRAM`;
       return;
     }
 
-    // Lazy load transpiler and deploy modules
-    const [{ transpile }, { deploy, HAApiClient }] = await Promise.all([
-      import("../transpiler"),
-      import("../deploy"),
-    ]);
-
-    const transpilerResult = transpile(parseResult.ast, "home");
-    if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
-      console.error(
-        "Cannot deploy: transpiler reported errors",
-        transpilerResult.diagnostics,
-      );
-      return;
-    }
-
-    const api = new HAApiClient(this.hass.connection);
+    this._isDeploying = true;
     try {
+      // Lazy load transpiler and deploy modules
+      const [{ transpile }, { deploy, HAApiClient }] = await Promise.all([
+        import("../transpiler"),
+        import("../deploy"),
+      ]);
+
+      const transpilerResult = transpile(parseResult.ast, "home");
+      if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
+        console.error(
+          "Cannot deploy: transpiler reported errors",
+          transpilerResult.diagnostics,
+        );
+        return;
+      }
+
+      const api = new HAApiClient(this.hass.connection);
       const deployResult = await deploy(api, transpilerResult, {
         createBackup: true,
       });
@@ -916,6 +1233,8 @@ END_PROGRAM`;
       }
     } catch (error) {
       console.error("Deploy error", error);
+    } finally {
+      this._isDeploying = false;
     }
   }
 

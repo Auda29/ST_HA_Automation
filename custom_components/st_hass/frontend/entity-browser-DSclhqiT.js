@@ -2,29 +2,29 @@ var I = Object.defineProperty;
 var D = (n, t, e) => t in n ? I(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e;
 var c = (n, t, e) => D(n, typeof t != "symbol" ? t + "" : t, e);
 import { i as g, n as l, a as b, b as o, t as y, r as O } from "./lit-C178dhqO.js";
-import { s as C } from "./ha-websocket-DcUbagYv.js";
-var v = Object.defineProperty, T = Object.getOwnPropertyDescriptor, E = (n, t, e) => t in n ? v(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, f = (n, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? T(t, e) : t, a = n.length - 1, r; a >= 0; a--)
-    (r = n[a]) && (i = (s ? r(t, e, i) : r(i)) || i);
-  return s && i && v(t, e, i), i;
-}, k = (n, t, e) => E(n, t + "", e);
+import { s as k } from "./ha-websocket-DcUbagYv.js";
+var x = Object.defineProperty, C = Object.getOwnPropertyDescriptor, T = (n, t, e) => t in n ? x(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, f = (n, t, e, a) => {
+  for (var i = a > 1 ? void 0 : a ? C(t, e) : t, s = n.length - 1, r; s >= 0; s--)
+    (r = n[s]) && (i = (a ? r(t, e, i) : r(i)) || i);
+  return a && i && x(t, e, i), i;
+}, z = (n, t, e) => T(n, t + "", e);
 let d = class extends b {
   _handleDragStart(n) {
     if (!n.dataTransfer || !this.entity) return;
-    const t = n.shiftKey ? "output" : "input", e = t === "input" ? "%I*" : "%Q*", i = `${this._entityIdToVarName(this.entity.entityId)} AT ${e} : ${this.inferredType} := '${this.entity.entityId}';`, a = {
+    const t = n.shiftKey ? "output" : "input", e = t === "input" ? "%I*" : "%Q*", i = `${this._entityIdToVarName(this.entity.entityId)} AT ${e} : ${this.inferredType} := '${this.entity.entityId}';`, s = {
       entityId: this.entity.entityId,
       dataType: this.inferredType,
       direction: t,
       bindingSyntax: i
     };
-    n.dataTransfer.effectAllowed = "copy", n.dataTransfer.setData("text/plain", i), n.dataTransfer.setData("application/json", JSON.stringify(a)), this.classList.add("dragging");
+    n.dataTransfer.effectAllowed = "copy", n.dataTransfer.setData("text/plain", i), n.dataTransfer.setData("application/json", JSON.stringify(s)), this.classList.add("dragging");
   }
   _handleDragEnd() {
     this.classList.remove("dragging");
   }
   _entityIdToVarName(n) {
     const t = n.split(".");
-    return t.length < 2 ? n : t[1].split("_").map((s, i) => i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1)).join("");
+    return t.length < 2 ? n : t[1].split("_").map((a, i) => i === 0 ? a : a.charAt(0).toUpperCase() + a.slice(1)).join("");
   }
   _getStateClass(n) {
     const t = n.toLowerCase();
@@ -53,6 +53,9 @@ let d = class extends b {
       <div
         class="entity-item"
         draggable="true"
+        tabindex="0"
+        role="button"
+        aria-label="${e} — ${this.entity.entityId} — drag to editor to bind"
         @dragstart=${this._handleDragStart}
         @dragend=${this._handleDragEnd}
         title="Drag to editor. Hold Shift while dragging for an output binding."
@@ -73,7 +76,7 @@ let d = class extends b {
     `;
   }
 };
-k(d, "styles", g`
+z(d, "styles", g`
     :host {
       display: block;
     }
@@ -96,16 +99,24 @@ k(d, "styles", g`
 
     .entity-item:hover {
       background: rgba(21, 31, 39, 0.96);
-      border-color: rgba(88, 127, 146, 0.18);
+      border-color: rgba(88, 127, 146, 0.22);
       transform: translateX(1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
     }
 
     .entity-item:active {
       cursor: grabbing;
     }
 
+    .entity-item:focus-visible {
+      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
+      outline-offset: var(--focus-ring-offset, 2px);
+    }
+
     .entity-item.dragging {
       opacity: 0.5;
+      border-style: dashed;
+      border-color: rgba(91, 212, 255, 0.5);
     }
 
     .direction-indicator {
@@ -206,11 +217,11 @@ f([
 d = f([
   y("st-entity-item")
 ], d);
-var x = Object.defineProperty, N = Object.getOwnPropertyDescriptor, z = (n, t, e) => t in n ? x(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, m = (n, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? N(t, e) : t, a = n.length - 1, r; a >= 0; a--)
-    (r = n[a]) && (i = (s ? r(t, e, i) : r(i)) || i);
-  return s && i && x(t, e, i), i;
-}, S = (n, t, e) => z(n, t + "", e);
+var v = Object.defineProperty, E = Object.getOwnPropertyDescriptor, N = (n, t, e) => t in n ? v(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, m = (n, t, e, a) => {
+  for (var i = a > 1 ? void 0 : a ? E(t, e) : t, s = n.length - 1, r; s >= 0; s--)
+    (r = n[s]) && (i = (a ? r(t, e, i) : r(i)) || i);
+  return a && i && v(t, e, i), i;
+}, S = (n, t, e) => N(n, t + "", e);
 let p = class extends b {
   constructor() {
     super();
@@ -268,8 +279,8 @@ let p = class extends b {
   _filterEntities(t) {
     return t.filter((e) => {
       if (this.filter.searchQuery) {
-        const s = this.filter.searchQuery.toLowerCase();
-        if (!(e.entityId.toLowerCase().includes(s) || e.friendlyName && e.friendlyName.toLowerCase().includes(s))) return !1;
+        const a = this.filter.searchQuery.toLowerCase();
+        if (!(e.entityId.toLowerCase().includes(a) || e.friendlyName && e.friendlyName.toLowerCase().includes(a))) return !1;
       }
       return !(this.filter.selectedDomain && e.domain !== this.filter.selectedDomain || this.filter.showInputsOnly && !this._isInputEntity(e) || this.filter.showOutputsOnly && !this._isOutputEntity(e));
     });
@@ -278,11 +289,11 @@ let p = class extends b {
     const e = /* @__PURE__ */ new Map();
     for (const i of t)
       e.has(i.domain) || e.set(i.domain, []), e.get(i.domain).push(i);
-    const s = [];
-    for (const [i, a] of e.entries())
-      s.push({
+    const a = [];
+    for (const [i, s] of e.entries())
+      a.push({
         domain: i,
-        entities: a.sort(
+        entities: s.sort(
           (r, u) => (r.friendlyName || r.entityId).localeCompare(
             u.friendlyName || u.entityId
           )
@@ -290,7 +301,7 @@ let p = class extends b {
         icon: this._getDomainIcon(i),
         expanded: this._expandedDomains.has(i)
       });
-    return s.sort((i, a) => i.domain.localeCompare(a.domain));
+    return a.sort((i, s) => i.domain.localeCompare(s.domain));
   }
   _toggleDomain(t) {
     this._expandedDomains.has(t) ? this._expandedDomains.delete(t) : this._expandedDomains.add(t), this._expandedDomains = new Set(this._expandedDomains), this.requestUpdate();
@@ -303,24 +314,24 @@ let p = class extends b {
         </div>
       ` : o`
       ${e.map(
-      (s) => o`
+      (a) => o`
           <div class="domain-group">
             <div
               class="domain-header"
-              @click=${() => this._toggleDomain(s.domain)}
+              @click=${() => this._toggleDomain(a.domain)}
             >
               <div class="domain-icon">
-                <ha-icon .icon=${s.icon}></ha-icon>
+                <ha-icon .icon=${a.icon}></ha-icon>
               </div>
-              <div class="domain-name">${s.domain}</div>
-              <div class="domain-count">${s.entities.length}</div>
-              <div class="domain-toggle ${s.expanded ? "expanded" : ""}">
+              <div class="domain-name">${a.domain}</div>
+              <div class="domain-count">${a.entities.length}</div>
+              <div class="domain-toggle ${a.expanded ? "expanded" : ""}">
                 <ha-icon icon="mdi:chevron-right"></ha-icon>
               </div>
             </div>
-            ${s.expanded ? o`
+            ${a.expanded ? o`
                   <div class="domain-entities">
-                    ${s.entities.map(
+                    ${a.entities.map(
         (i) => o`
                         <st-entity-item
                           .entity=${i}
@@ -443,10 +454,10 @@ m([
 p = m([
   y("st-entity-list")
 ], p);
-var _ = Object.defineProperty, A = Object.getOwnPropertyDescriptor, P = (n, t, e) => t in n ? _(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, w = (n, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? A(t, e) : t, a = n.length - 1, r; a >= 0; a--)
-    (r = n[a]) && (i = (s ? r(t, e, i) : r(i)) || i);
-  return s && i && _(t, e, i), i;
+var _ = Object.defineProperty, A = Object.getOwnPropertyDescriptor, P = (n, t, e) => t in n ? _(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, w = (n, t, e, a) => {
+  for (var i = a > 1 ? void 0 : a ? A(t, e) : t, s = n.length - 1, r; s >= 0; s--)
+    (r = n[s]) && (i = (a ? r(t, e, i) : r(i)) || i);
+  return a && i && _(t, e, i), i;
 }, L = (n, t, e) => P(n, t + "", e);
 let h = class extends b {
   constructor() {
@@ -471,10 +482,10 @@ let h = class extends b {
     super.disconnectedCallback(), this._disconnect();
   }
   updated(t) {
-    var e, s;
+    var e, a;
     if (super.updated(t), t.has("hass")) {
       const i = t.get("hass");
-      i && i.connection !== ((e = this.hass) == null ? void 0 : e.connection) && (this._disconnect(), (s = this.hass) != null && s.connection && this._connect());
+      i && i.connection !== ((e = this.hass) == null ? void 0 : e.connection) && (this._disconnect(), (a = this.hass) != null && a.connection && this._connect());
     }
   }
   async _connect() {
@@ -484,11 +495,11 @@ let h = class extends b {
       return;
     }
     try {
-      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this._unsubscribe = C(this.hass.connection, (s) => {
-        this._handleEntityUpdate(s);
+      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this._unsubscribe = k(this.hass.connection, (a) => {
+        this._handleEntityUpdate(a);
       }), this._isConnected = !0;
-    } catch (s) {
-      this._error = s instanceof Error ? s.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", s);
+    } catch (a) {
+      this._error = a instanceof Error ? a.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", a);
     }
   }
   _disconnect() {
@@ -496,12 +507,12 @@ let h = class extends b {
   }
   _handleEntityUpdate(t) {
     var i;
-    const e = /* @__PURE__ */ new Map(), s = /* @__PURE__ */ new Set();
-    for (const [a, r] of Object.entries(t)) {
-      const u = a.split(".")[0];
-      s.add(u);
+    const e = /* @__PURE__ */ new Map(), a = /* @__PURE__ */ new Set();
+    for (const [s, r] of Object.entries(t)) {
+      const u = s.split(".")[0];
+      a.add(u);
       const $ = {
-        entityId: a,
+        entityId: s,
         state: r.state,
         attributes: r.attributes || {},
         domain: u,
@@ -510,9 +521,9 @@ let h = class extends b {
         icon: this._getEntityIcon(r),
         lastChanged: r.lastChanged
       };
-      e.set(a, $);
+      e.set(s, $);
     }
-    this._entities = e, this._domains = Array.from(s).sort(), this.requestUpdate();
+    this._entities = e, this._domains = Array.from(a).sort(), this.requestUpdate();
   }
   _getFriendlyName(t) {
     var e;
@@ -545,9 +556,9 @@ let h = class extends b {
         reason: "Climate entities often expose temperature setpoints"
       };
     if (e === "sensor") {
-      const s = Number(t.state);
-      if (!Number.isNaN(s)) {
-        const i = Number.isInteger(s) && !t.state.includes(".");
+      const a = Number(t.state);
+      if (!Number.isNaN(a)) {
+        const i = Number.isInteger(a) && !t.state.includes(".");
         return {
           dataType: i ? "INT" : "REAL",
           confidence: "medium",
@@ -595,7 +606,7 @@ let h = class extends b {
     }, this.requestUpdate();
   }
   render() {
-    const t = this._getFilteredEntities();
+    const t = this._getFilteredEntities(), e = this._error ? "status-error" : this._isConnected ? "status-connected" : "status-connecting", a = this._error ? this._error : this._isConnected ? "Connected to Home Assistant" : "Connecting to Home Assistant";
     return o`
       <div class="header">
         <div class="eyebrow">Entity Linker</div>
@@ -608,18 +619,33 @@ let h = class extends b {
             .value=${this._filter.searchQuery}
             @input=${this._handleSearchInput}
             placeholder="Filter entities, devices, or states"
+            aria-label="Search entities"
           />
+          ${this._filter.searchQuery ? o`
+                <button
+                  class="search-clear"
+                  @click=${this._clearSearch}
+                  title="Clear search"
+                  aria-label="Clear search"
+                >
+                  <ha-icon icon="mdi:close"></ha-icon>
+                </button>
+              ` : ""}
         </div>
         <div class="filters">
-          <select class="filter-select" @change=${this._handleDomainChange}>
+          <select
+            class="filter-select"
+            @change=${this._handleDomainChange}
+            aria-label="Filter by domain"
+          >
             <option value="">All Domains</option>
             ${this._domains.map(
-      (e) => o`
+      (i) => o`
                 <option
-                  value=${e}
-                  ?selected=${this._filter.selectedDomain === e}
+                  value=${i}
+                  ?selected=${this._filter.selectedDomain === i}
                 >
-                  ${e}
+                  ${i}
                 </option>
               `
     )}
@@ -643,11 +669,19 @@ let h = class extends b {
             </label>
           </div>
         </div>
+        <div class="drag-hint">
+          <ha-icon icon="mdi:drag-variant"></ha-icon>
+          <span>
+            Drag an entity onto the editor. Hold <kbd>Shift</kbd> for an output
+            binding.
+          </span>
+        </div>
       </div>
 
       <div class="status-bar">
-        <span class=${this._isConnected ? "status-connected" : "status-error"}>
-          ${this._error ? this._error : this._isConnected ? "Connected to Home Assistant" : "Connecting to Home Assistant"}
+        <span class="status-indicator ${e}">
+          <span class="status-dot"></span>
+          ${a}
         </span>
         <span>${t.length} entities</span>
       </div>
@@ -665,6 +699,9 @@ let h = class extends b {
             `}
       </div>
     `;
+  }
+  _clearSearch() {
+    this._filter = { ...this._filter, searchQuery: "" }, this.requestUpdate();
   }
 };
 L(h, "styles", g`
@@ -724,10 +761,11 @@ L(h, "styles", g`
       color: var(--ui-text-primary, #f3f7fb);
       font-size: var(--font-size-md, 14px);
       font-family: inherit;
+      transition: var(--transition-fast, all 160ms ease);
     }
 
     .search-box {
-      padding: 0 12px 0 38px;
+      padding: 0 36px 0 38px;
     }
 
     .search-box:focus,
@@ -735,6 +773,63 @@ L(h, "styles", g`
       outline: none;
       border-color: rgba(71, 187, 226, 0.48);
       box-shadow: 0 0 0 3px rgba(14, 165, 215, 0.12);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: var(--ui-text-muted, #8ea1af);
+      cursor: pointer;
+      border-radius: var(--radius-sm, 6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast, all 160ms ease);
+    }
+
+    .search-clear:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--ui-text-primary, #f3f7fb);
+    }
+
+    .search-clear ha-icon {
+      --mdc-icon-size: 14px;
+    }
+
+    .drag-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: var(--space-3, 12px);
+      padding: 8px 12px;
+      border-radius: var(--radius-md, 10px);
+      background: rgba(14, 165, 215, 0.08);
+      border: 1px dashed rgba(91, 212, 255, 0.3);
+      color: var(--ui-text-secondary, #b6c4cf);
+      font-size: var(--font-size-xs, 11px);
+      line-height: 1.4;
+    }
+
+    .drag-hint ha-icon {
+      --mdc-icon-size: 14px;
+      color: var(--ui-info, #6bc9ff);
+      flex-shrink: 0;
+    }
+
+    .drag-hint kbd {
+      padding: 1px 5px;
+      border: 1px solid rgba(140, 169, 193, 0.26);
+      border-radius: 4px;
+      background: rgba(9, 17, 25, 0.9);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-family: var(--font-mono, monospace);
+      font-size: 10px;
     }
 
     .filters {
@@ -774,7 +869,22 @@ L(h, "styles", g`
       border-bottom: 1px solid rgba(88, 127, 146, 0.18);
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: var(--space-3, 12px);
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
     }
 
     .status-connected {
@@ -783,6 +893,25 @@ L(h, "styles", g`
 
     .status-error {
       color: var(--status-error, #ff6b6b);
+    }
+
+    .status-connecting {
+      color: var(--status-connecting, #6bc9ff);
+    }
+
+    .status-connecting .status-dot {
+      animation: entity-pulse 1.1s infinite;
+    }
+
+    @keyframes entity-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .status-connecting .status-dot {
+        animation: none;
+      }
     }
 
     .entity-list-container {
@@ -809,4 +938,4 @@ export {
   p as STEntityList,
   j as inferDataType
 };
-//# sourceMappingURL=entity-browser-LjCBNnug.js.map
+//# sourceMappingURL=entity-browser-DSclhqiT.js.map
