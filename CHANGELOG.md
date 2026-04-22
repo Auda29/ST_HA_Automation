@@ -5,6 +5,11 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] - 2026-04-22
+
+### Fixed
+- Home Assistant panel assets now use a versioned `module_url`, so HACS/browser updates actually load the new frontend bundle instead of serving a stale cached `st-panel.js`
+
 ## [2.0.2] - 2026-04-22
 
 ### Fixed
@@ -116,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.0.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.3
 [2.0.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.0
 [2.0.2]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.2
 [2.0.1]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.1

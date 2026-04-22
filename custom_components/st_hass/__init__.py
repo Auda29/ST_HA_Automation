@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,8 @@ from homeassistant.helpers import config_validation as cv
 from .const import DOMAIN, PANEL_ICON, PANEL_TITLE, PANEL_URL
 
 _LOGGER = logging.getLogger(__name__)
+_MANIFEST = json.loads((Path(__file__).parent / "manifest.json").read_text())
+_INTEGRATION_VERSION = _MANIFEST.get("version", "0.0.0")
 
 # Platforms this integration supports
 PLATFORMS: list[Platform] = []
@@ -59,7 +62,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 "name": "st-panel",
                 "embed_iframe": False,
                 "trust_external": False,
-                "module_url": "/st_hass/frontend/st-panel.js",
+                # Add the integration version to bust browser caches on HACS updates.
+                "module_url": f"/st_hass/frontend/st-panel.js?v={_INTEGRATION_VERSION}",
             }
         },
         require_admin=True,
