@@ -5,6 +5,15 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.5] - 2026-04-22
+
+### Fixed
+- Helper discovery now ignores non-helper `automation.st_*` and `script.st_*` entities during sync and delete planning
+- Helper update/delete rollback now preserves previous helper configuration and helper state for reliable revert behaviour
+- Backup and restore now use the same script ID format as deploy, avoiding `st_st_*_logic` mismatches
+- Millisecond time literals like `T#500ms` are now parsed correctly for debounce, throttle, and timer generation
+- Loop lowering no longer resets `FOR` iterators or `WHILE`/`REPEAT` safety guards on every iteration
+
 ## [2.1.4] - 2026-04-22
 
 ### Changed
