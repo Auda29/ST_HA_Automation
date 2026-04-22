@@ -5,6 +5,13 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2026-04-22
+
+### Fixed
+- Deploy now surfaces visible error feedback even when users click Deploy with syntax errors or no Home Assistant connection
+- Restored projects immediately reopen the active file tab and refresh diagnostics, trigger counts, and entity analysis on load
+- Project files no longer stay permanently marked as unsaved after a successful save cycle
+
 ## [2.1.1] - 2026-04-22
 
 ### Fixed
@@ -142,6 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.1.2]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.2
 [2.1.1]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.1
 [2.1.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.0
 [2.0.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.3
