@@ -1,8 +1,7 @@
 /**
  * Global setup for E2E tests
  *
- * Ensures Home Assistant Docker container is running and the ST panel assets
- * are actually registered before browser tests start.
+ * Ensures Home Assistant Docker container is running before browser tests start.
  */
 
 import { execSync } from "child_process";
@@ -14,8 +13,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const HA_URL = process.env.HA_URL || "http://localhost:8123";
-const PANEL_BUNDLE_URL = `${HA_URL}/st_hass/frontend/st-panel.js`;
-
 async function checkHAHealth(): Promise<boolean> {
   try {
     const response = await fetch(`${HA_URL}/api/`);
@@ -26,39 +23,18 @@ async function checkHAHealth(): Promise<boolean> {
   }
 }
 
-async function checkSTPanelReady(): Promise<boolean> {
-  try {
-    const response = await fetch(PANEL_BUNDLE_URL, {
-      redirect: "follow",
-      headers: {
-        "Cache-Control": "no-cache",
-      },
-    });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
 async function waitForHA(maxAttempts = 60, delayMs = 2000): Promise<void> {
   for (let i = 0; i < maxAttempts; i++) {
-    const [haReady, panelReady] = await Promise.all([
-      checkHAHealth(),
-      checkSTPanelReady(),
-    ]);
-
-    if (haReady && panelReady) {
-      console.log("Home Assistant and ST panel are ready");
+    if (await checkHAHealth()) {
+      console.log("Home Assistant is ready");
       return;
     }
 
-    console.log(
-      `Waiting for Home Assistant/ST panel... (${i + 1}/${maxAttempts})`,
-    );
+    console.log(`Waiting for Home Assistant... (${i + 1}/${maxAttempts})`);
     await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
 
-  throw new Error("Home Assistant or ST panel did not become ready in time");
+  throw new Error("Home Assistant did not become ready in time");
 }
 
 async function startHAContainer(): Promise<void> {
