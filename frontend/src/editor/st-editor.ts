@@ -332,11 +332,12 @@ export class STEditor extends LitElement {
   insertBinding(bindingSyntax: string): void {
     if (!this._editor || !bindingSyntax) return;
 
-    const selection = this._editor.state.selection.main;
-    const insertPos = selection.empty ? selection.head : selection.from;
-    const prefix = insertPos > 0 && this.getCode()[insertPos - 1] !== "\n" ? "\n" : "";
-    const suffix = bindingSyntax.endsWith("\n") ? "" : "\n";
-    const content = `${prefix}${bindingSyntax}${suffix}`;
+    const code = this.getCode();
+    if (code.includes(bindingSyntax)) {
+      return;
+    }
+
+    const { insertPos, content } = this._getBindingInsertTarget(code, bindingSyntax);
 
     this._editor.dispatch({
       changes: { from: insertPos, insert: content },
@@ -360,6 +361,90 @@ export class STEditor extends LitElement {
       changes: { from: 0, to: doc.length, insert: nextLines.join("\n") },
     });
     this._editor.focus();
+  }
+
+  private _getBindingInsertTarget(
+    code: string,
+    bindingSyntax: string,
+  ): { insertPos: number; content: string } {
+    const lines = code.split("\n");
+    const lineStarts = this._getLineStarts(lines);
+    const declarationBlock = this._findDeclarationBlock(lines);
+
+    if (declarationBlock) {
+      const indent = this._getDeclarationIndent(
+        lines,
+        declarationBlock.startLine,
+        declarationBlock.endLine,
+      );
+      return {
+        insertPos: lineStarts[declarationBlock.endLine],
+        content: `${indent}${bindingSyntax}\n`,
+      };
+    }
+
+    const headerLine = lines.findIndex((line) =>
+      /^\s*(PROGRAM|FUNCTION_BLOCK|FUNCTION)\b/i.test(line),
+    );
+    if (headerLine !== -1) {
+      const insertAtLine = Math.min(headerLine + 1, lines.length - 1);
+      return {
+        insertPos: lineStarts[insertAtLine],
+        content: `VAR\n    ${bindingSyntax}\nEND_VAR\n`,
+      };
+    }
+
+    const prefix = code.length > 0 && !code.endsWith("\n") ? "\n" : "";
+    return {
+      insertPos: code.length,
+      content: `${prefix}VAR\n    ${bindingSyntax}\nEND_VAR\n`,
+    };
+  }
+
+  private _findDeclarationBlock(
+    lines: string[],
+  ): { startLine: number; endLine: number } | null {
+    let startLine = -1;
+    for (let index = 0; index < lines.length; index += 1) {
+      const trimmed = lines[index].trim().toUpperCase();
+      if (/^VAR(?:_(INPUT|OUTPUT|IN_OUT|GLOBAL|TEMP))?$/.test(trimmed)) {
+        startLine = index;
+        continue;
+      }
+
+      if (trimmed === "END_VAR" && startLine !== -1) {
+        return { startLine, endLine: index };
+      }
+    }
+
+    return null;
+  }
+
+  private _getDeclarationIndent(
+    lines: string[],
+    startLine: number,
+    endLine: number,
+  ): string {
+    for (let index = startLine + 1; index < endLine; index += 1) {
+      const match = lines[index].match(/^(\s*)\S/);
+      if (match) {
+        return match[1];
+      }
+    }
+
+    return "    ";
+  }
+
+  private _getLineStarts(lines: string[]): number[] {
+    const starts: number[] = [];
+    let offset = 0;
+
+    for (const line of lines) {
+      starts.push(offset);
+      offset += line.length + 1;
+    }
+
+    return starts;
   }
 
   getCode(): string {
