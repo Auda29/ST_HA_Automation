@@ -12,7 +12,7 @@ import { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const HA_URL = process.env.HA_URL || "http://localhost:8123";
+const HA_URL = process.env.HA_URL || "http://127.0.0.1:8123";
 async function checkHAHealth(): Promise<boolean> {
   try {
     const response = await fetch(`${HA_URL}/api/`);

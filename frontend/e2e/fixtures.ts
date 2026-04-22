@@ -6,7 +6,7 @@
 
 import { expect, Page } from "@playwright/test";
 
-export const HA_URL = process.env.HA_URL || "http://localhost:8123";
+export const HA_URL = process.env.HA_URL || "http://127.0.0.1:8123";
 export const HA_USERNAME = process.env.HA_USERNAME || "testadmin";
 export const HA_PASSWORD = process.env.HA_PASSWORD || "TestHA2024!";
 export const ST_PANEL_URL = "/st-hass";

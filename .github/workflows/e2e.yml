@@ -44,13 +44,13 @@ jobs:
         run: |
           docker compose -f ../docker-compose.test.yml up -d
           echo "Waiting for Home Assistant to be ready..."
-          timeout 300 bash -c 'until code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8123/api/) && [ "$code" = "200" -o "$code" = "401" ]; do sleep 5; done' || true
+          timeout 300 bash -c 'until code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8123/api/) && [ "$code" = "200" -o "$code" = "401" ]; do sleep 5; done' || true
 
       - name: Wait for Home Assistant
         run: |
           echo "Waiting for Home Assistant to be fully ready..."
           for i in {1..60}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8123/api/ || true)
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8123/api/ || true)
             if [ "$code" = "200" ] || [ "$code" = "401" ]; then
               echo "Home Assistant is ready (HTTP $code)!"
               break
@@ -62,7 +62,7 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
         env:
-          HA_URL: http://localhost:8123
+          HA_URL: http://127.0.0.1:8123
           HA_USERNAME: testadmin
           HA_PASSWORD: TestHA2024!
           SKIP_HA_START: "true" # HA is already started by previous step

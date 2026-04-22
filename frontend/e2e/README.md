@@ -62,7 +62,7 @@ The `fixtures.ts` file provides:
 ## Configuration
 
 Test configuration is in `playwright.config.ts`:
-- Base URL: `http://localhost:8123` (configurable via `HA_URL` env var)
+- Base URL: `http://127.0.0.1:8123` (configurable via `HA_URL` env var)
 - Single worker to avoid HA connection conflicts
 - Sequential test execution to avoid state conflicts
 - Screenshots and videos on failure

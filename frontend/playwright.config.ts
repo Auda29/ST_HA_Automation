@@ -19,7 +19,7 @@ export default defineConfig({
   },
   
   use: {
-    baseURL: process.env.HA_URL || 'http://localhost:8123',
+    baseURL: process.env.HA_URL || 'http://127.0.0.1:8123',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
