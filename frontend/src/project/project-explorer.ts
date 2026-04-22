@@ -258,6 +258,37 @@ END_PROGRAM`,
     this._updateProject(updatedProject);
   }
 
+  private _handleFileDeleted(e: CustomEvent): void {
+    e.stopPropagation();
+    const { fileId } = e.detail;
+    if (!this.project) return;
+
+    const remainingFiles = this.project.files.filter((file) => file.id !== fileId);
+    let nextActiveFileId = this.project.activeFileId;
+
+    if (nextActiveFileId === fileId) {
+      const nextOpenFile = remainingFiles.find((file) => file.isOpen);
+      nextActiveFileId = nextOpenFile?.id ?? remainingFiles[0]?.id ?? null;
+    }
+
+    const updatedProject: ProjectStructure = {
+      ...this.project,
+      files: remainingFiles,
+      activeFileId: nextActiveFileId,
+      lastModified: Date.now(),
+    };
+
+    this._updateProject(updatedProject);
+
+    this.dispatchEvent(
+      new CustomEvent("file-deleted", {
+        detail: { fileId },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   private _updateProject(project: ProjectStructure): void {
     this.project = project;
     this._saveProject();
@@ -312,6 +343,7 @@ END_PROGRAM`,
           @file-selected=${this._handleFileSelected}
           @file-open=${this._handleFileOpen}
           @file-rename=${this._handleFileRename}
+          @file-deleted=${this._handleFileDeleted}
         ></st-file-tree>
       </div>
       <div class="tip-footer">

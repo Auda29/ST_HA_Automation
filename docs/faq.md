@@ -297,7 +297,7 @@ Not yet - this is planned for Phase 3. Currently, only built-in function blocks 
 
 ### Can I use multiple programs?
 
-Yes! Use the Project Explorer to manage multiple ST files in a project.
+Yes. Use the Project Explorer to create, rename, open, and delete multiple ST files in one project. The current UI also supports keyboard shortcuts like `Enter` to open, `F2` to rename, and `Delete` to remove a file.
 
 ### Can I import/export programs?
 

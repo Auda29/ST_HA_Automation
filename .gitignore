@@ -14,6 +14,8 @@ coverage/
 *.log
 frontend/playwright-report/
 frontend/test-results/
+.claude/worktrees/
+.codex
 
 # Home Assistant Test Instance (local development only)
 ha-test-config/

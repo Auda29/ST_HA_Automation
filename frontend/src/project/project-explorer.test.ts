@@ -144,6 +144,32 @@ describe("Project Explorer Integration", () => {
       ).toBeUndefined();
     });
 
+    it("bubbles file delete events to the parent panel", async () => {
+      const wrapper = document.createElement("div");
+      const explorer = document.createElement("st-project-explorer") as any;
+      explorer.project = project;
+      wrapper.appendChild(explorer);
+      document.body.appendChild(wrapper);
+      await explorer.updateComplete;
+
+      const deleteListener = vi.fn();
+      wrapper.addEventListener("file-deleted", deleteListener);
+
+      const tree = explorer.shadowRoot?.querySelector("st-file-tree");
+      tree?.dispatchEvent(
+        new CustomEvent("file-deleted", {
+          detail: { fileId: project.files[0].id },
+          bubbles: true,
+          composed: true,
+        }),
+      );
+
+      expect(deleteListener).toHaveBeenCalledTimes(1);
+      expect(deleteListener.mock.calls[0][0].detail).toEqual({
+        fileId: project.files[0].id,
+      });
+    });
+
     it("handles file paths with folders", () => {
       const file: ProjectFile = {
         id: "file_folder",
