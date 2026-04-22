@@ -34,12 +34,12 @@ export class STProjectExplorer extends LitElement {
     }
 
     .header {
-      padding: var(--space-5, 20px) var(--space-4, 16px) var(--space-4, 16px);
+      padding: 16px 14px 12px;
       border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: var(--space-3, 12px);
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
     }
 
     .header-copy {
@@ -57,7 +57,7 @@ export class STProjectExplorer extends LitElement {
 
     .header h3 {
       margin: 0;
-      font-size: var(--font-size-lg, 18px);
+      font-size: 15px;
       font-weight: var(--font-weight-bold, 700);
       color: var(--ui-text-primary, #f3f7fb);
       overflow: hidden;
@@ -66,9 +66,9 @@ export class STProjectExplorer extends LitElement {
     }
 
     .header-meta {
-      margin-top: 6px;
+      margin-top: 4px;
       color: var(--ui-text-secondary, #b6c4cf);
-      font-size: var(--font-size-sm, 12px);
+      font-size: 11px;
     }
 
     .header-actions {
@@ -79,9 +79,11 @@ export class STProjectExplorer extends LitElement {
     .header-button {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: var(--space-2, 8px);
-      min-height: 40px;
-      padding: 0 var(--space-4, 16px);
+      min-height: 36px;
+      width: 100%;
+      padding: 0 12px;
       border: 1px solid rgba(120, 173, 199, 0.26);
       border-radius: var(--radius-md, 12px);
       background: rgba(24, 37, 46, 0.94);
@@ -116,11 +118,11 @@ export class STProjectExplorer extends LitElement {
     }
 
     .tip-footer {
-      padding: var(--space-3, 12px) var(--space-4, 16px);
+      padding: 10px 14px;
       border-top: 1px solid rgba(140, 169, 193, 0.1);
       color: var(--ui-text-muted, #8ea1af);
       font-size: var(--font-size-xs, 11px);
-      line-height: 1.55;
+      line-height: 1.45;
     }
 
     .tip-footer kbd {

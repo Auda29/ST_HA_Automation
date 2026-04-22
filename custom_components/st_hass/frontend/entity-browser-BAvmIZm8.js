@@ -1,8 +1,8 @@
 var I = Object.defineProperty;
 var D = (a, t, e) => t in a ? I(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
 var c = (a, t, e) => D(a, typeof t != "symbol" ? t + "" : t, e);
-import { i as g, n as l, a as b, b as o, t as y, r as O } from "./lit-C178dhqO.js";
-import { s as k } from "./ha-websocket-DcUbagYv.js";
+import { i as g, n as l, a as b, b as o, t as y, r as k } from "./lit-C178dhqO.js";
+import { s as O } from "./ha-websocket-DcUbagYv.js";
 var x = Object.defineProperty, C = Object.getOwnPropertyDescriptor, T = (a, t, e) => t in a ? x(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, f = (a, t, e, n) => {
   for (var i = n > 1 ? void 0 : n ? C(t, e) : t, s = a.length - 1, r; s >= 0; s--)
     (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
@@ -449,7 +449,7 @@ m([
   l({ type: Object })
 ], p.prototype, "filter", 2);
 m([
-  O()
+  k()
 ], p.prototype, "_expandedDomains", 2);
 p = m([
   y("st-entity-list")
@@ -495,7 +495,7 @@ let h = class extends b {
       return;
     }
     try {
-      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this.hass.states && this._handleEntityUpdate(this.hass.states), this._unsubscribe = k(this.hass.connection, (n) => {
+      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this.hass.states && this._handleEntityUpdate(this.hass.states), this._unsubscribe = O(this.hass.connection, (n) => {
         this._handleEntityUpdate(n);
       }), this._isConnected = !0;
     } catch (n) {
@@ -683,7 +683,7 @@ let h = class extends b {
           <span class="status-dot"></span>
           ${n}
         </span>
-        <span>${t.length} entities</span>
+        <span class="status-count">${t.length} entities</span>
       </div>
 
       <div class="entity-list-container">
@@ -710,14 +710,16 @@ L(h, "styles", g`
       flex-direction: column;
       height: 100%;
       background:
-        linear-gradient(180deg, rgba(15, 21, 27, 0.98), rgba(10, 14, 18, 0.98));
+        linear-gradient(180deg, rgba(15, 21, 27, 0.94), rgba(10, 14, 18, 0.94));
       color: var(--ui-text-primary, #f3f7fb);
       font-family: var(--font-ui, inherit);
     }
 
     .header {
-      padding: var(--space-5, 20px) var(--space-4, 16px) var(--space-4, 16px);
+      padding: 18px 16px 14px;
       border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
+      background: rgba(8, 14, 20, 0.46);
+      backdrop-filter: blur(10px);
     }
 
     .eyebrow {
@@ -730,8 +732,8 @@ L(h, "styles", g`
     }
 
     .header h2 {
-      margin: 0 0 var(--space-3, 12px);
-      font-size: var(--font-size-xl, 22px);
+      margin: 0 0 10px;
+      font-size: 20px;
       font-weight: var(--font-weight-semibold, 600);
       color: var(--ui-text-primary, #f3f7fb);
     }
@@ -806,7 +808,7 @@ L(h, "styles", g`
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: var(--space-3, 12px);
+      margin-top: 12px;
       padding: 8px 12px;
       border-radius: var(--radius-md, 10px);
       background: rgba(14, 165, 215, 0.08);
@@ -863,7 +865,7 @@ L(h, "styles", g`
     }
 
     .status-bar {
-      padding: var(--space-3, 12px) var(--space-4, 16px);
+      padding: 12px 16px;
       font-size: var(--font-size-sm, 12px);
       color: var(--ui-text-secondary, #b6c4cf);
       border-bottom: 1px solid rgba(88, 127, 146, 0.18);
@@ -871,12 +873,22 @@ L(h, "styles", g`
       justify-content: space-between;
       align-items: center;
       gap: var(--space-3, 12px);
+      background: rgba(7, 12, 16, 0.78);
     }
 
     .status-indicator {
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .status-count {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(88, 127, 146, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-weight: 600;
     }
 
     .status-dot {
@@ -917,6 +929,7 @@ L(h, "styles", g`
     .entity-list-container {
       flex: 1;
       overflow: hidden;
+      padding: 8px;
     }
 
     .empty-state {
@@ -938,4 +951,4 @@ export {
   p as STEntityList,
   j as inferDataType
 };
-//# sourceMappingURL=entity-browser-5pGETIqa.js.map
+//# sourceMappingURL=entity-browser-BAvmIZm8.js.map

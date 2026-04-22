@@ -314,6 +314,13 @@ export class STFileTree extends LitElement {
     this._editingName = "";
   }
 
+  private _getDisplayName(name: string, isEditing: boolean): string {
+    if (isEditing) {
+      return name;
+    }
+    return name.replace(/\.st$/i, "");
+  }
+
   private _renderNode(node: FileTreeNode, depth: number = 0): unknown {
     const isExpanded = this._expandedPaths.has(node.path);
     const hasChildren = node.children.size > 0;
@@ -405,7 +412,7 @@ export class STFileTree extends LitElement {
                     autofocus
                   />
                 `
-              : file.name}
+              : this._getDisplayName(file.name, isEditing)}
           </div>
           ${file.hasUnsavedChanges
             ? html`<div class="unsaved-indicator" title="Unsaved changes"></div>`

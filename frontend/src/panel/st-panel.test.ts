@@ -218,7 +218,7 @@ describe("STPanel", () => {
 
     expect(panel._project.files.find((f: any) => f.id === "file_2").isOpen).toBe(true);
     expect(panel.shadowRoot?.querySelectorAll(".tab").length).toBe(1);
-    expect(panel.shadowRoot?.querySelector(".tab")?.textContent).toContain("Broken.st");
+    expect(panel.shadowRoot?.querySelector(".tab")?.textContent).toContain("Broken");
     expect(panel._syntaxOk).toBe(false);
     expect(panel._diagnostics.length).toBeGreaterThan(0);
   });

@@ -3,9 +3,9 @@ import { customElement, property, state } from "lit/decorators.js";
 import "../colors_and_type.css";
 import "../editor";
 import "../online/online-toolbar";
-// Entity browser and project explorer are lazy loaded when shown
+import "../project";
+// Entity browser is lazy loaded when shown
 // import "../entity-browser";
-// import "../project";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
 import type {
@@ -48,12 +48,10 @@ export class STPanel extends LitElement {
   @state() declare private _entityCount: number;
   @state() declare private _onlineState: OnlineModeState | null;
   @state() declare private _showEntityBrowser: boolean;
-  @state() declare private _showProjectExplorer: boolean;
   @state() declare private _storage: ProjectStorage | null;
   @state() declare private _isDeploying: boolean;
   @state() declare private _deployFeedback: DeployFeedback | null;
   private _entityBrowserLoaded = false;
-  private _projectExplorerLoaded = false;
 
   static styles = css`
     :host {
@@ -72,27 +70,14 @@ export class STPanel extends LitElement {
       height: 100%;
     }
     .main-content {
+      position: relative;
       display: flex;
       flex: 1;
       overflow: hidden;
       min-height: 0;
     }
-    .sidebar {
-      width: var(--sidebar-width-default, 320px);
-      min-width: var(--sidebar-width-min, 240px);
-      max-width: var(--sidebar-width-max, 400px);
-      border-right: 1px solid var(--ui-divider, var(--divider-color));
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
-        var(--ui-bg-card, var(--card-background-color));
-      overflow: hidden;
-      box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
-    }
-    .sidebar.hidden {
-      display: none;
-    }
     .content-area {
+      position: relative;
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -520,17 +505,69 @@ export class STPanel extends LitElement {
       flex-shrink: 0;
     }
     .project-sidebar {
-      width: 292px;
-      min-width: 240px;
-      max-width: 380px;
+      width: 236px;
+      min-width: 212px;
+      max-width: 260px;
       border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%),
         var(--ui-bg-card, var(--card-background-color));
     }
-    .project-sidebar.hidden {
-      display: none;
+    .entity-overlay {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      bottom: 18px;
+      width: min(420px, calc(100% - 36px));
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(91, 212, 255, 0.18);
+      border-radius: var(--radius-xl, 18px);
+      overflow: hidden;
+      background: rgba(6, 12, 16, 0.86);
+      backdrop-filter: blur(16px);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+      z-index: 3;
+    }
+    .entity-overlay::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(24, 183, 230, 0.14), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%);
+      pointer-events: none;
+    }
+    .entity-overlay st-entity-browser {
+      position: relative;
+      z-index: 1;
+    }
+    .entity-overlay-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(8, 14, 20, 0.82);
+      color: var(--ui-text-primary, #edf6ff);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-fast, all 160ms ease);
+    }
+    .entity-overlay-close:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .entity-overlay-close ha-icon {
+      --mdc-icon-size: 16px;
     }
     .toolbar-icon {
       width: 18px;
@@ -557,10 +594,15 @@ export class STPanel extends LitElement {
       .toolbar-subtitle {
         display: none;
       }
-      .sidebar,
       .project-sidebar {
-        width: 260px;
-        min-width: 220px;
+        width: 220px;
+        min-width: 200px;
+      }
+      .entity-overlay {
+        top: 12px;
+        left: 12px;
+        bottom: 12px;
+        width: min(380px, calc(100% - 24px));
       }
       .editor-container {
         padding: 12px;
@@ -577,11 +619,17 @@ export class STPanel extends LitElement {
       .main-content {
         flex-direction: column;
       }
-      .sidebar,
       .project-sidebar {
         width: 100%;
         max-width: none;
-        max-height: 40vh;
+        max-height: 32vh;
+      }
+      .entity-overlay {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
       }
     }
   `;
@@ -590,7 +638,6 @@ export class STPanel extends LitElement {
     super();
     this.narrow = false;
     this._showEntityBrowser = false;
-    this._showProjectExplorer = false;
     this._project = null;
     this._storage = null;
     this._code = `{mode: restart}
@@ -727,18 +774,6 @@ END_PROGRAM`;
           </div>
           <div class="toolbar-actions" role="toolbar" aria-label="Panel actions">
             <button
-              class="toolbar-button ${this._showProjectExplorer
-                ? "active"
-                : ""}"
-              @click=${this._toggleProjectExplorer}
-              title="Toggle Project Explorer"
-              aria-pressed=${this._showProjectExplorer}
-              aria-label="Toggle project explorer"
-            >
-              <ha-icon class="toolbar-icon" icon="mdi:folder-multiple"></ha-icon>
-              Project
-            </button>
-            <button
               class="toolbar-button ${this._showEntityBrowser ? "active" : ""}"
               @click=${this._toggleEntityBrowser}
               title="Toggle Entity Browser"
@@ -787,23 +822,16 @@ END_PROGRAM`;
           @setting-change=${this._handleOnlineSettingChange}
         ></st-online-toolbar>
         <div class="main-content">
-          ${this._showProjectExplorer
-            ? html`
-                <div class="project-sidebar">
-                  <st-project-explorer
-                    .hass=${this.hass}
-                    .project=${this._project}
-                    @file-open=${this._handleFileOpen}
-                    @file-selected=${this._handleFileSelected}
-                    @file-rename=${this._handleFileRename}
-                    @file-deleted=${this._handleFileDeleted}
-                    @file-created=${this._handleFileCreated}
-                  ></st-project-explorer>
-                </div>
-              `
-            : ""}
-          <div class="sidebar ${this._showEntityBrowser ? "" : "hidden"}">
-            <st-entity-browser .hass=${this.hass}></st-entity-browser>
+          <div class="project-sidebar">
+            <st-project-explorer
+              .hass=${this.hass}
+              .project=${this._project}
+              @file-open=${this._handleFileOpen}
+              @file-selected=${this._handleFileSelected}
+              @file-rename=${this._handleFileRename}
+              @file-deleted=${this._handleFileDeleted}
+              @file-created=${this._handleFileCreated}
+            ></st-project-explorer>
           </div>
           <div class="content-area">
             ${this._project
@@ -826,7 +854,7 @@ END_PROGRAM`;
                           role="tab"
                           aria-selected=${file.id === this._project!.activeFileId}
                         >
-                          <span class="tab-label">${file.name}</span>
+                          <span class="tab-label">${this._getFileDisplayName(file.name)}</span>
                           ${file.hasUnsavedChanges
                             ? html`<div
                                 class="unsaved-dot"
@@ -867,6 +895,21 @@ END_PROGRAM`;
                     ></st-editor>
                   `}
             </div>
+            ${this._showEntityBrowser
+              ? html`
+                  <div class="entity-overlay" role="dialog" aria-label="Entity Browser">
+                    <button
+                      class="entity-overlay-close"
+                      @click=${this._toggleEntityBrowser}
+                      title="Close Entity Browser"
+                      aria-label="Close entity browser"
+                    >
+                      <ha-icon icon="mdi:close"></ha-icon>
+                    </button>
+                    <st-entity-browser .hass=${this.hass}></st-entity-browser>
+                  </div>
+                `
+              : ""}
           </div>
         </div>
         ${this._diagnostics.length > 0
@@ -993,6 +1036,10 @@ END_PROGRAM`;
     message: string,
   ): void {
     this._deployFeedback = { tone, message };
+  }
+
+  private _getFileDisplayName(name: string): string {
+    return name.replace(/\.st$/i, "");
   }
 
   private _markProjectSaved(): void {
@@ -1219,15 +1266,6 @@ END_PROGRAM`;
     } catch (error) {
       console.error("Failed to save project", error);
     }
-  }
-
-  private async _toggleProjectExplorer(): Promise<void> {
-    if (!this._projectExplorerLoaded && !this._showProjectExplorer) {
-      // Lazy load project explorer module when first shown
-      await import("../project");
-      this._projectExplorerLoaded = true;
-    }
-    this._showProjectExplorer = !this._showProjectExplorer;
   }
 
   /**

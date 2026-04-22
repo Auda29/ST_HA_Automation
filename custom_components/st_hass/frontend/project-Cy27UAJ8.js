@@ -1,4 +1,4 @@
-import { i as _, n as u, r as v, a as w, b as d, t as y } from "./lit-C178dhqO.js";
+import { i as _, n as u, r as m, a as y, b as d, t as w } from "./lit-C178dhqO.js";
 const b = "st_hass_project";
 class x {
   constructor(t, i) {
@@ -131,11 +131,11 @@ END_PROGRAM`,
   }
 }
 var F = Object.defineProperty, P = Object.getOwnPropertyDescriptor, $ = (e, t, i) => t in e ? F(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, h = (e, t, i, a) => {
-  for (var r = a > 1 ? void 0 : a ? P(t, i) : t, n = e.length - 1, o; n >= 0; n--)
-    (o = e[n]) && (r = (a ? o(t, i, r) : o(r)) || r);
+  for (var r = a > 1 ? void 0 : a ? P(t, i) : t, s = e.length - 1, o; s >= 0; s--)
+    (o = e[s]) && (r = (a ? o(t, i, r) : o(r)) || r);
   return a && r && F(t, i, r), r;
 }, I = (e, t, i) => $(e, t + "", i);
-let l = class extends w {
+let c = class extends y {
   constructor() {
     super(), this.files = [], this.activeFileId = null, this.selectedFileId = null, this._expandedPaths = /* @__PURE__ */ new Set(), this._editingFileId = null, this._editingName = "";
   }
@@ -150,15 +150,15 @@ let l = class extends w {
       const i = t.path.split("/");
       let a = e;
       for (let r = 0; r < i.length; r++) {
-        const n = i[r], o = r === i.length - 1;
-        a.children.has(n) || a.children.set(n, {
-          name: n,
+        const s = i[r], o = r === i.length - 1;
+        a.children.has(s) || a.children.set(s, {
+          name: s,
           path: i.slice(0, r + 1).join("/"),
           children: /* @__PURE__ */ new Map(),
           isFolder: !o
         });
-        const c = a.children.get(n);
-        o && (c.file = t), a = c;
+        const l = a.children.get(s);
+        o && (l.file = t), a = l;
       }
     }
     return e;
@@ -197,11 +197,14 @@ let l = class extends w {
       })
     ), this._editingFileId = null, this._editingName = "";
   }
+  _getDisplayName(e, t) {
+    return t ? e : e.replace(/\.st$/i, "");
+  }
   _renderNode(e, t = 0) {
     const i = this._expandedPaths.has(e.path), a = e.children.size > 0;
     if (e.isFolder && e.path === "") {
-      const s = Array.from(e.children.values()).sort((p, g) => p.isFolder !== g.isFolder ? p.isFolder ? -1 : 1 : p.name.localeCompare(g.name));
-      return d`${s.map((p) => this._renderNode(p, t))}`;
+      const n = Array.from(e.children.values()).sort((p, v) => p.isFolder !== v.isFolder ? p.isFolder ? -1 : 1 : p.name.localeCompare(v.name));
+      return d`${n.map((p) => this._renderNode(p, t))}`;
     }
     if (e.isFolder)
       return d`
@@ -217,50 +220,50 @@ let l = class extends w {
           </div>
           ${i ? d`
                 <div class="tree-children">
-                  ${Array.from(e.children.values()).sort((s, p) => s.isFolder !== p.isFolder ? s.isFolder ? -1 : 1 : s.name.localeCompare(p.name)).map((s) => this._renderNode(s, t + 1))}
+                  ${Array.from(e.children.values()).sort((n, p) => n.isFolder !== p.isFolder ? n.isFolder ? -1 : 1 : n.name.localeCompare(p.name)).map((n) => this._renderNode(n, t + 1))}
                 </div>
               ` : ""}
         </div>
       `;
-    const r = e.file, n = r.id === this.activeFileId, o = r.id === this.selectedFileId, c = r.id === this._editingFileId;
+    const r = e.file, s = r.id === this.activeFileId, o = r.id === this.selectedFileId, l = r.id === this._editingFileId;
     return d`
       <div class="tree-node">
         <div
-          class="tree-item ${n ? "active" : ""} ${o ? "selected" : ""}"
-          @click=${(s) => this._handleFileClick(r, s)}
-          @dblclick=${(s) => this._handleFileDoubleClick(r, s)}
-          @contextmenu=${(s) => this._startRename(r, s)}
-          @keydown=${(s) => this._handleItemKey(s, r)}
+          class="tree-item ${s ? "active" : ""} ${o ? "selected" : ""}"
+          @click=${(n) => this._handleFileClick(r, n)}
+          @dblclick=${(n) => this._handleFileDoubleClick(r, n)}
+          @contextmenu=${(n) => this._startRename(r, n)}
+          @keydown=${(n) => this._handleItemKey(n, r)}
           tabindex="0"
           role="treeitem"
-          aria-selected=${n}
+          aria-selected=${s}
           title="${r.path} — double-click to open, F2 to rename, Delete to remove"
         >
           <div class="tree-toggle"></div>
           <div class="tree-icon">
             <ha-icon icon="mdi:file-document-outline"></ha-icon>
           </div>
-          <div class="tree-label ${c ? "editing" : ""}">
-            ${c ? d`
+          <div class="tree-label ${l ? "editing" : ""}">
+            ${l ? d`
                   <input
                     .value=${this._editingName}
-                    @input=${(s) => this._editingName = s.target.value}
+                    @input=${(n) => this._editingName = n.target.value}
                     @blur=${() => this._finishRename(r.id)}
-                    @keydown=${(s) => {
-      s.key === "Enter" && this._finishRename(r.id), s.key === "Escape" && (this._editingFileId = null, this._editingName = "");
+                    @keydown=${(n) => {
+      n.key === "Enter" && this._finishRename(r.id), n.key === "Escape" && (this._editingFileId = null, this._editingName = "");
     }}
                     autofocus
                   />
-                ` : r.name}
+                ` : this._getDisplayName(r.name, l)}
           </div>
           ${r.hasUnsavedChanges ? d`<div class="unsaved-indicator" title="Unsaved changes"></div>` : ""}
-          ${c ? "" : d`
+          ${l ? "" : d`
                 <div class="tree-actions">
                   <button
                     class="tree-action-btn"
                     title="Rename (F2)"
                     aria-label="Rename ${r.name}"
-                    @click=${(s) => this._startRename(r, s)}
+                    @click=${(n) => this._startRename(r, n)}
                   >
                     <ha-icon icon="mdi:pencil-outline"></ha-icon>
                   </button>
@@ -268,7 +271,7 @@ let l = class extends w {
                     class="tree-action-btn danger"
                     title="Delete"
                     aria-label="Delete ${r.name}"
-                    @click=${(s) => this._handleDelete(r, s)}
+                    @click=${(n) => this._handleDelete(r, n)}
                   >
                     <ha-icon icon="mdi:trash-can-outline"></ha-icon>
                   </button>
@@ -305,7 +308,7 @@ let l = class extends w {
     `;
   }
 };
-I(l, "styles", _`
+I(c, "styles", _`
     :host {
       display: block;
       height: 100%;
@@ -494,31 +497,31 @@ I(l, "styles", _`
   `);
 h([
   u({ type: Array })
-], l.prototype, "files", 2);
+], c.prototype, "files", 2);
 h([
   u({ type: String })
-], l.prototype, "activeFileId", 2);
+], c.prototype, "activeFileId", 2);
 h([
   u({ type: String })
-], l.prototype, "selectedFileId", 2);
+], c.prototype, "selectedFileId", 2);
 h([
-  v()
-], l.prototype, "_expandedPaths", 2);
+  m()
+], c.prototype, "_expandedPaths", 2);
 h([
-  v()
-], l.prototype, "_editingFileId", 2);
+  m()
+], c.prototype, "_editingFileId", 2);
 h([
-  v()
-], l.prototype, "_editingName", 2);
-l = h([
-  y("st-file-tree")
-], l);
-var j = Object.defineProperty, D = Object.getOwnPropertyDescriptor, k = (e, t, i) => t in e ? j(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, m = (e, t, i, a) => {
-  for (var r = a > 1 ? void 0 : a ? D(t, i) : t, n = e.length - 1, o; n >= 0; n--)
-    (o = e[n]) && (r = (a ? o(t, i, r) : o(r)) || r);
+  m()
+], c.prototype, "_editingName", 2);
+c = h([
+  w("st-file-tree")
+], c);
+var j = Object.defineProperty, D = Object.getOwnPropertyDescriptor, k = (e, t, i) => t in e ? j(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, g = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? D(t, i) : t, s = e.length - 1, o; s >= 0; s--)
+    (o = e[s]) && (r = (a ? o(t, i, r) : o(r)) || r);
   return a && r && j(t, i, r), r;
-}, E = (e, t, i) => k(e, t + "", i);
-let f = class extends w {
+}, N = (e, t, i) => k(e, t + "", i);
+let f = class extends y {
   constructor() {
     super(), this.project = null, this._storage = null;
   }
@@ -595,12 +598,12 @@ END_PROGRAM`,
   _handleFileRename(e) {
     const { fileId: t, newName: i } = e.detail;
     if (!this.project) return;
-    const a = this.project.files.map((n) => n.id === t ? {
-      ...n,
+    const a = this.project.files.map((s) => s.id === t ? {
+      ...s,
       name: i,
       path: i,
       lastModified: Date.now()
-    } : n), r = {
+    } : s), r = {
       ...this.project,
       files: a,
       lastModified: Date.now()
@@ -608,15 +611,15 @@ END_PROGRAM`,
     this._updateProject(r);
   }
   _handleFileDeleted(e) {
-    var n;
+    var s;
     e.stopPropagation();
     const { fileId: t } = e.detail;
     if (!this.project) return;
     const i = this.project.files.filter((o) => o.id !== t);
     let a = this.project.activeFileId;
     if (a === t) {
-      const o = i.find((c) => c.isOpen);
-      a = (o == null ? void 0 : o.id) ?? ((n = i[0]) == null ? void 0 : n.id) ?? null;
+      const o = i.find((l) => l.isOpen);
+      a = (o == null ? void 0 : o.id) ?? ((s = i[0]) == null ? void 0 : s.id) ?? null;
     }
     const r = {
       ...this.project,
@@ -685,7 +688,7 @@ END_PROGRAM`,
       `;
   }
 };
-E(f, "styles", _`
+N(f, "styles", _`
     :host {
       display: flex;
       flex-direction: column;
@@ -697,12 +700,12 @@ E(f, "styles", _`
     }
 
     .header {
-      padding: var(--space-5, 20px) var(--space-4, 16px) var(--space-4, 16px);
+      padding: 16px 14px 12px;
       border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: var(--space-3, 12px);
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
     }
 
     .header-copy {
@@ -720,7 +723,7 @@ E(f, "styles", _`
 
     .header h3 {
       margin: 0;
-      font-size: var(--font-size-lg, 18px);
+      font-size: 15px;
       font-weight: var(--font-weight-bold, 700);
       color: var(--ui-text-primary, #f3f7fb);
       overflow: hidden;
@@ -729,9 +732,9 @@ E(f, "styles", _`
     }
 
     .header-meta {
-      margin-top: 6px;
+      margin-top: 4px;
       color: var(--ui-text-secondary, #b6c4cf);
-      font-size: var(--font-size-sm, 12px);
+      font-size: 11px;
     }
 
     .header-actions {
@@ -742,9 +745,11 @@ E(f, "styles", _`
     .header-button {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: var(--space-2, 8px);
-      min-height: 40px;
-      padding: 0 var(--space-4, 16px);
+      min-height: 36px;
+      width: 100%;
+      padding: 0 12px;
       border: 1px solid rgba(120, 173, 199, 0.26);
       border-radius: var(--radius-md, 12px);
       background: rgba(24, 37, 46, 0.94);
@@ -779,11 +784,11 @@ E(f, "styles", _`
     }
 
     .tip-footer {
-      padding: var(--space-3, 12px) var(--space-4, 16px);
+      padding: 10px 14px;
       border-top: 1px solid rgba(140, 169, 193, 0.1);
       color: var(--ui-text-muted, #8ea1af);
       font-size: var(--font-size-xs, 11px);
-      line-height: 1.55;
+      line-height: 1.45;
     }
 
     .tip-footer kbd {
@@ -807,21 +812,21 @@ E(f, "styles", _`
       font-size: var(--font-size-md, 14px);
     }
   `);
-m([
+g([
   u({ attribute: !1 })
 ], f.prototype, "hass", 2);
-m([
+g([
   u({ type: Object })
 ], f.prototype, "project", 2);
-m([
-  v()
+g([
+  m()
 ], f.prototype, "_storage", 2);
-f = m([
-  y("st-project-explorer")
+f = g([
+  w("st-project-explorer")
 ], f);
 export {
   x as ProjectStorage,
-  l as STFileTree,
+  c as STFileTree,
   f as STProjectExplorer
 };
-//# sourceMappingURL=project-Cq1UByWW.js.map
+//# sourceMappingURL=project-Cy27UAJ8.js.map

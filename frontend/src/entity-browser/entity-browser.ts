@@ -35,14 +35,16 @@ export class STEntityBrowser extends LitElement {
       flex-direction: column;
       height: 100%;
       background:
-        linear-gradient(180deg, rgba(15, 21, 27, 0.98), rgba(10, 14, 18, 0.98));
+        linear-gradient(180deg, rgba(15, 21, 27, 0.94), rgba(10, 14, 18, 0.94));
       color: var(--ui-text-primary, #f3f7fb);
       font-family: var(--font-ui, inherit);
     }
 
     .header {
-      padding: var(--space-5, 20px) var(--space-4, 16px) var(--space-4, 16px);
+      padding: 18px 16px 14px;
       border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
+      background: rgba(8, 14, 20, 0.46);
+      backdrop-filter: blur(10px);
     }
 
     .eyebrow {
@@ -55,8 +57,8 @@ export class STEntityBrowser extends LitElement {
     }
 
     .header h2 {
-      margin: 0 0 var(--space-3, 12px);
-      font-size: var(--font-size-xl, 22px);
+      margin: 0 0 10px;
+      font-size: 20px;
       font-weight: var(--font-weight-semibold, 600);
       color: var(--ui-text-primary, #f3f7fb);
     }
@@ -131,7 +133,7 @@ export class STEntityBrowser extends LitElement {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: var(--space-3, 12px);
+      margin-top: 12px;
       padding: 8px 12px;
       border-radius: var(--radius-md, 10px);
       background: rgba(14, 165, 215, 0.08);
@@ -188,7 +190,7 @@ export class STEntityBrowser extends LitElement {
     }
 
     .status-bar {
-      padding: var(--space-3, 12px) var(--space-4, 16px);
+      padding: 12px 16px;
       font-size: var(--font-size-sm, 12px);
       color: var(--ui-text-secondary, #b6c4cf);
       border-bottom: 1px solid rgba(88, 127, 146, 0.18);
@@ -196,12 +198,22 @@ export class STEntityBrowser extends LitElement {
       justify-content: space-between;
       align-items: center;
       gap: var(--space-3, 12px);
+      background: rgba(7, 12, 16, 0.78);
     }
 
     .status-indicator {
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .status-count {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(88, 127, 146, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-weight: 600;
     }
 
     .status-dot {
@@ -242,6 +254,7 @@ export class STEntityBrowser extends LitElement {
     .entity-list-container {
       flex: 1;
       overflow: hidden;
+      padding: 8px;
     }
 
     .empty-state {
@@ -545,7 +558,7 @@ export class STEntityBrowser extends LitElement {
           <span class="status-dot"></span>
           ${statusText}
         </span>
-        <span>${entities.length} entities</span>
+        <span class="status-count">${entities.length} entities</span>
       </div>
 
       <div class="entity-list-container">
