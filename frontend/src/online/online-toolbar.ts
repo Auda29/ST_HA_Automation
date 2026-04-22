@@ -20,10 +20,11 @@ export class OnlineToolbar extends LitElement {
     :host {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
-      background: var(--secondary-background-color);
-      border-bottom: 1px solid var(--divider-color);
+      gap: var(--space-3, 12px);
+      padding: var(--space-2, 8px) var(--space-4, 16px);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
+      font-family: var(--font-ui, inherit);
     }
 
     .status {
@@ -39,25 +40,25 @@ export class OnlineToolbar extends LitElement {
     }
 
     .status-dot--online {
-      background: #4ec9b0;
-      box-shadow: 0 0 4px #4ec9b0;
+      background: var(--status-online, #4ec9b0);
+      box-shadow: 0 0 4px var(--status-online, #4ec9b0);
     }
 
     .status-dot--paused {
-      background: #dcdcaa;
+      background: var(--status-paused, #dcdcaa);
     }
 
     .status-dot--connecting {
-      background: #569cd6;
+      background: var(--status-connecting, #569cd6);
       animation: pulse 1s infinite;
     }
 
     .status-dot--disconnected {
-      background: #808080;
+      background: var(--status-disconnected, #808080);
     }
 
     .status-dot--error {
-      background: #f44747;
+      background: var(--status-error, #f44747);
     }
 
     @keyframes pulse {
@@ -71,30 +72,30 @@ export class OnlineToolbar extends LitElement {
     }
 
     .status-text {
-      font-size: 13px;
+      font-size: var(--font-size-base, 13px);
       font-weight: 500;
     }
 
     .controls {
       display: flex;
-      gap: 8px;
+      gap: var(--space-2, 8px);
     }
 
     button {
-      padding: 6px 12px;
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      background: var(--card-background-color);
-      color: var(--primary-text-color);
+      padding: 6px var(--space-3, 12px);
+      border: 1px solid var(--ui-divider, var(--divider-color));
+      border-radius: var(--radius-md, 4px);
+      background: var(--ui-bg-secondary, var(--secondary-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
       cursor: pointer;
-      font-size: 13px;
+      font-size: var(--font-size-base, 13px);
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--space-1, 4px);
     }
 
     button:hover {
-      background: var(--secondary-background-color);
+      background: var(--ui-divider, var(--divider-color));
     }
 
     button:disabled {
@@ -103,9 +104,9 @@ export class OnlineToolbar extends LitElement {
     }
 
     button.active {
-      background: var(--primary-color);
-      color: var(--text-primary-color);
-      border-color: var(--primary-color);
+      background: var(--ui-primary, var(--primary-color));
+      color: var(--ui-text-on-primary, var(--text-primary-color));
+      border-color: var(--ui-primary, var(--primary-color));
     }
 
     .spacer {
@@ -114,9 +115,9 @@ export class OnlineToolbar extends LitElement {
 
     .stats {
       display: flex;
-      gap: 16px;
-      font-size: 12px;
-      color: var(--secondary-text-color);
+      gap: var(--space-4, 16px);
+      font-size: var(--font-size-sm, 12px);
+      color: var(--ui-text-secondary, var(--secondary-text-color));
     }
 
     .stat {
@@ -129,19 +130,19 @@ export class OnlineToolbar extends LitElement {
       position: absolute;
       top: 100%;
       right: 0;
-      background: var(--card-background-color);
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border: 1px solid var(--ui-divider, var(--divider-color));
+      border-radius: var(--radius-md, 4px);
+      padding: var(--space-3, 12px);
+      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
       z-index: 100;
     }
 
     .setting {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: var(--space-2, 8px);
+      margin-bottom: var(--space-2, 8px);
     }
 
     .setting:last-child {
@@ -149,7 +150,7 @@ export class OnlineToolbar extends LitElement {
     }
 
     .setting label {
-      font-size: 13px;
+      font-size: var(--font-size-base, 13px);
     }
   `;
 

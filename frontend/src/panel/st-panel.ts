@@ -51,7 +51,9 @@ export class STPanel extends LitElement {
     :host {
       display: block;
       height: 100%;
-      background: var(--primary-background-color);
+      background: var(--ui-bg, var(--primary-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
+      font-family: var(--font-ui, var(--paper-font-common-base_-_font-family));
     }
     .container {
       display: flex;
@@ -64,13 +66,13 @@ export class STPanel extends LitElement {
       overflow: hidden;
     }
     .sidebar {
-      width: 320px;
-      min-width: 280px;
-      max-width: 400px;
-      border-right: 1px solid var(--divider-color);
+      width: var(--sidebar-width-default, 320px);
+      min-width: var(--sidebar-width-min, 240px);
+      max-width: var(--sidebar-width-max, 400px);
+      border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
-      background: var(--primary-background-color);
+      background: var(--ui-bg-card, var(--card-background-color));
       overflow: hidden;
     }
     .sidebar.hidden {
@@ -86,90 +88,99 @@ export class STPanel extends LitElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 16px;
-      background: var(--app-header-background-color);
-      color: var(--app-header-text-color);
-      border-bottom: 1px solid var(--divider-color);
+      padding: var(--space-2, 8px) var(--space-4, 16px);
+      background: var(--ui-bg-header, var(--app-header-background-color));
+      color: var(--ui-text-header, var(--app-header-text-color));
+      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
     }
     .toolbar h1 {
       margin: 0;
-      font-size: 20px;
-      font-weight: 400;
+      font-size: var(--font-size-2xl, 20px);
+      font-weight: var(--font-weight-normal, 400);
       letter-spacing: -0.2px;
+      font-family: var(--font-ui, inherit);
     }
     .toolbar-actions {
       display: flex;
-      gap: 8px;
+      gap: var(--space-2, 8px);
       align-items: center;
     }
     .toolbar-button {
-      padding: 6px 12px;
-      border: 1px solid color-mix(in srgb, var(--app-header-text-color, #fff) 40%, transparent);
-      border-radius: 4px;
-      background: color-mix(in srgb, var(--app-header-text-color, #fff) 15%, transparent);
-      color: var(--app-header-text-color, #fff);
+      padding: 6px var(--space-3, 12px);
+      border: 1px solid color-mix(in srgb, var(--ui-text-header, #fff) 40%, transparent);
+      border-radius: var(--radius-md, 4px);
+      background: color-mix(in srgb, var(--ui-text-header, #fff) 15%, transparent);
+      color: var(--ui-text-header, #fff);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-md, 14px);
+      font-family: var(--font-ui, inherit);
       display: flex;
       align-items: center;
-      gap: 4px;
-      transition: background-color 0.2s ease, border-color 0.2s ease;
+      gap: var(--space-1, 4px);
+      transition: var(--transition-fast, background-color 0.2s ease);
     }
     .toolbar-button:hover {
-      background: color-mix(in srgb, var(--app-header-text-color, #fff) 25%, transparent);
+      background: color-mix(in srgb, var(--ui-text-header, #fff) 25%, transparent);
     }
     .toolbar-button.active {
-      background: color-mix(in srgb, var(--app-header-text-color, #fff) 35%, transparent);
-      border-color: color-mix(in srgb, var(--app-header-text-color, #fff) 60%, transparent);
+      background: color-mix(in srgb, var(--ui-text-header, #fff) 35%, transparent);
+      border-color: color-mix(in srgb, var(--ui-text-header, #fff) 60%, transparent);
     }
     .toolbar-button:focus-visible {
-      outline: 2px solid var(--app-header-text-color, #fff);
+      outline: 2px solid var(--ui-text-header, #fff);
       outline-offset: 2px;
     }
     .editor-container {
       flex: 1;
       overflow: hidden;
-      padding: 16px;
+      padding: var(--space-4, 16px);
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--ui-bg-secondary, #e5e5e5) 32%, transparent),
+        transparent 32%
+      );
     }
     st-editor {
       height: 100%;
-      border-radius: 4px;
+      border-radius: var(--radius-md, 4px);
+      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
     }
     .status-bar {
       display: flex;
-      gap: 16px;
-      padding: 6px 16px;
-      background: var(--secondary-background-color);
-      border-top: 1px solid var(--divider-color);
-      font-size: 12px;
+      gap: var(--space-4, 16px);
+      padding: 6px var(--space-4, 16px);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border-top: 1px solid var(--ui-divider, var(--divider-color));
+      font-size: var(--font-size-sm, 12px);
       flex-wrap: wrap;
       align-items: center;
+      font-family: var(--font-ui, inherit);
     }
     .status-ok {
-      color: var(--success-color, #4caf50);
+      color: var(--ui-success, var(--success-color, #4caf50));
     }
     .status-error {
-      color: var(--error-color, #f44336);
+      color: var(--ui-error, var(--error-color, #f44336));
     }
     .status-warning {
-      color: var(--warning-color, #ff9800);
+      color: var(--ui-warning, var(--warning-color, #ff9800));
     }
     .deploy-button {
-      padding: 8px 16px;
+      padding: var(--space-2, 8px) var(--space-4, 16px);
       border: none;
-      border-radius: 4px;
-      background: var(--app-header-text-color, #fff);
-      color: var(--app-header-background-color, #03a9f4);
+      border-radius: var(--radius-md, 4px);
+      background: var(--ui-text-header, #fff);
+      color: var(--ui-bg-header, #03a9f4);
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: inherit;
+      font-size: var(--font-size-md, 14px);
+      font-weight: var(--font-weight-bold, 700);
+      font-family: var(--font-ui, inherit);
     }
     .deploy-button:hover:not(:disabled) {
       opacity: 0.9;
     }
     .deploy-button:focus-visible {
-      outline: 2px solid var(--app-header-text-color, #fff);
+      outline: 2px solid var(--ui-text-header, #fff);
       outline-offset: 2px;
     }
     .deploy-button:disabled {
@@ -179,10 +190,10 @@ export class STPanel extends LitElement {
     .diagnostics-panel {
       max-height: 130px;
       overflow-y: auto;
-      padding: 6px 16px;
-      background: var(--secondary-background-color);
-      border-top: 1px solid var(--divider-color);
-      font-size: 12px;
+      padding: 6px var(--space-4, 16px);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border-top: 1px solid var(--ui-divider, var(--divider-color));
+      font-size: var(--font-size-sm, 12px);
       font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
     }
     .diagnostic {
@@ -203,9 +214,9 @@ export class STPanel extends LitElement {
     .tabs-container {
       display: flex;
       gap: 2px;
-      padding: 0 8px;
-      background: var(--secondary-background-color);
-      border-bottom: 1px solid var(--divider-color);
+      padding: 0 var(--space-2, 8px);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       overflow-x: auto;
     }
     .tab {
@@ -213,22 +224,23 @@ export class STPanel extends LitElement {
       align-items: center;
       gap: 6px;
       padding: 8px 12px;
-      background: var(--secondary-background-color);
-      color: var(--primary-text-color);
+      background: var(--ui-bg-card, var(--card-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
       cursor: pointer;
       border: none;
       border-bottom: 2px solid transparent;
-      font-size: 13px;
+      font-size: var(--font-size-base, 13px);
+      font-family: var(--font-ui, inherit);
       white-space: nowrap;
       transition: all 0.2s;
     }
     .tab:hover {
-      background: var(--divider-color);
+      background: color-mix(in srgb, var(--ui-primary, #03a9f4) 8%, var(--ui-bg-card, #fff));
     }
     .tab.active {
-      background: var(--card-background-color);
-      border-bottom-color: var(--primary-color);
-      color: var(--primary-text-color);
+      background: var(--ui-bg, var(--primary-background-color));
+      border-bottom-color: var(--ui-primary, var(--primary-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
     }
     .tab-close {
       width: 16px;
@@ -241,22 +253,22 @@ export class STPanel extends LitElement {
     }
     .tab-close:hover {
       opacity: 1;
-      background: var(--divider-color);
+      background: var(--ui-divider, var(--divider-color));
     }
     .unsaved-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background-color: var(--warning-color, #ff9800);
+      background-color: var(--ui-warning, var(--warning-color, #ff9800));
     }
     .project-sidebar {
       width: 280px;
       min-width: 240px;
       max-width: 360px;
-      border-right: 1px solid var(--divider-color);
+      border-right: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       flex-direction: column;
-      background: var(--primary-background-color);
+      background: var(--ui-bg-card, var(--card-background-color));
     }
     .project-sidebar.hidden {
       display: none;

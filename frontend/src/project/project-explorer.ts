@@ -27,51 +27,54 @@ export class STProjectExplorer extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background: var(--primary-background-color);
+      background: var(--ui-bg-card, var(--card-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
+      font-family: var(--font-ui, inherit);
     }
     .header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--divider-color);
+      padding: var(--space-3, 12px) var(--space-4, 16px);
+      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .header h3 {
       margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--primary-text-color);
+      font-size: var(--font-size-base, 13px);
+      font-weight: var(--font-weight-bold, 700);
+      color: var(--ui-text-primary, var(--primary-text-color));
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.08em;
     }
     .header-actions {
       display: flex;
-      gap: 4px;
+      gap: var(--space-1, 4px);
     }
     .header-button {
-      padding: 4px 8px;
-      border: none;
-      background: transparent;
-      color: var(--primary-text-color);
+      padding: var(--space-1, 4px) var(--space-2, 8px);
+      border: 1px solid var(--ui-divider, var(--divider-color));
+      background: var(--ui-bg-secondary, var(--secondary-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: var(--radius-md, 4px);
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
+      gap: var(--space-1, 4px);
+      font-size: var(--font-size-sm, 12px);
+      font-family: var(--font-ui, inherit);
     }
     .header-button:hover {
-      background-color: var(--divider-color);
+      background-color: var(--ui-divider, var(--divider-color));
     }
     .file-tree-container {
       flex: 1;
       overflow: hidden;
     }
     .empty-state {
-      padding: 32px 16px;
+      padding: var(--space-8, 32px) var(--space-4, 16px);
       text-align: center;
-      color: var(--secondary-text-color);
-      font-size: 14px;
+      color: var(--ui-text-secondary, var(--secondary-text-color));
+      font-size: var(--font-size-md, 14px);
     }
   `;
 

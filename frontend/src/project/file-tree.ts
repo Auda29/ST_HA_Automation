@@ -40,10 +40,13 @@ export class STFileTree extends LitElement {
       display: block;
       height: 100%;
       overflow-y: auto;
-      font-size: 14px;
+      font-size: var(--font-size-md, 14px);
+      font-family: var(--font-ui, inherit);
+      background: var(--ui-bg-card, var(--card-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
     }
     .file-tree {
-      padding: 8px;
+      padding: var(--space-2, 8px);
     }
     .tree-node {
       user-select: none;
@@ -51,21 +54,21 @@ export class STFileTree extends LitElement {
     .tree-item {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
+      gap: var(--space-1, 4px);
+      padding: var(--space-1, 4px) var(--space-2, 8px);
       cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.2s;
+      border-radius: var(--radius-md, 4px);
+      transition: var(--transition-fast, background-color 0.2s);
     }
     .tree-item:hover {
-      background-color: var(--divider-color, rgba(0, 0, 0, 0.1));
+      background-color: var(--ui-divider, rgba(0, 0, 0, 0.1));
     }
     .tree-item.active {
-      background-color: var(--primary-color);
-      color: var(--text-primary-color);
+      background-color: var(--ui-primary, var(--primary-color));
+      color: var(--ui-text-on-primary, var(--text-primary-color));
     }
     .tree-item.selected {
-      background-color: var(--secondary-background-color);
+      background-color: var(--ui-bg-secondary, var(--secondary-background-color));
     }
     .tree-toggle {
       width: 16px;
@@ -99,17 +102,17 @@ export class STFileTree extends LitElement {
     }
     .tree-label.editing {
       padding: 2px 4px;
-      border: 1px solid var(--primary-color);
-      border-radius: 2px;
-      background: var(--card-background-color);
+      border: 1px solid var(--ui-primary, var(--primary-color));
+      border-radius: var(--radius-sm, 2px);
+      background: var(--ui-bg-card, var(--card-background-color));
     }
     .tree-label input {
       width: 100%;
       border: none;
       outline: none;
       background: transparent;
-      color: var(--primary-text-color);
-      font-size: 14px;
+      color: var(--ui-text-primary, var(--primary-text-color));
+      font-size: var(--font-size-md, 14px);
     }
     .tree-children {
       margin-left: 16px;
@@ -118,25 +121,25 @@ export class STFileTree extends LitElement {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background-color: var(--warning-color, #ff9800);
+      background-color: var(--ui-warning, var(--warning-color, #ff9800));
       flex-shrink: 0;
     }
     .context-menu {
       position: fixed;
-      background: var(--card-background-color);
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border: 1px solid var(--ui-divider, var(--divider-color));
+      border-radius: var(--radius-md, 4px);
+      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
       z-index: 1000;
       min-width: 150px;
     }
     .context-menu-item {
-      padding: 8px 12px;
+      padding: var(--space-2, 8px) var(--space-3, 12px);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-md, 14px);
     }
     .context-menu-item:hover {
-      background-color: var(--divider-color);
+      background-color: var(--ui-divider, var(--divider-color));
     }
   `;
 

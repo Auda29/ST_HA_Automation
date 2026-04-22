@@ -1,23 +1,20 @@
-var I = Object.defineProperty;
-var $ = (i, e, t) => e in i ? I(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t;
-var g = (i, e, t) => $(i, typeof e != "symbol" ? e + "" : e, t);
-import { i as F, n as u, r as v, a as w, b as d, t as y } from "./lit-C178dhqO.js";
-const x = "st_hass_project";
-class b {
-  constructor(e, t) {
+import { i as x, n as u, r as v, a as b, b as o, t as y } from "./lit-C178dhqO.js";
+const m = "st_hass_project";
+class _ {
+  constructor(t, i) {
   }
   /**
    * Load project structure from localStorage
    * Note: HA storage API integration can be added later if needed
    */
   async loadProject() {
-    const e = localStorage.getItem(x);
-    if (e)
+    const t = localStorage.getItem(m);
+    if (t)
       try {
-        const t = JSON.parse(e);
-        return this._deserializeProject(t);
-      } catch (t) {
-        console.error("Failed to parse localStorage project data", t);
+        const i = JSON.parse(t);
+        return this._deserializeProject(i);
+      } catch (i) {
+        console.error("Failed to parse localStorage project data", i);
       }
     return null;
   }
@@ -25,15 +22,15 @@ class b {
    * Save project structure to localStorage
    * Note: HA storage API integration can be added later if needed
    */
-  async saveProject(e) {
-    const t = this._serializeProject(e);
-    localStorage.setItem(x, JSON.stringify(t));
+  async saveProject(t) {
+    const i = this._serializeProject(t);
+    localStorage.setItem(m, JSON.stringify(i));
   }
   /**
    * Create a new project with default structure
    */
   createDefaultProject() {
-    const e = Date.now(), t = {
+    const t = Date.now(), i = {
       id: this._generateFileId(),
       name: "Main.st",
       path: "Main.st",
@@ -45,29 +42,29 @@ END_VAR
 (* Your ST code here *)
 
 END_PROGRAM`,
-      lastModified: e,
+      lastModified: t,
       isOpen: !0,
       hasUnsavedChanges: !1
     };
     return {
       id: this._generateProjectId(),
       name: "My ST Project",
-      files: [t],
-      activeFileId: t.id,
-      createdAt: e,
-      lastModified: e
+      files: [i],
+      activeFileId: i.id,
+      createdAt: t,
+      lastModified: t
     };
   }
   /**
    * Migrate from single-file mode to project mode
    */
-  migrateFromSingleFile(e) {
-    const t = Date.now(), a = {
+  migrateFromSingleFile(t) {
+    const i = Date.now(), a = {
       id: this._generateFileId(),
       name: "Main.st",
       path: "Main.st",
-      content: e,
-      lastModified: t,
+      content: t,
+      lastModified: i,
       isOpen: !0,
       hasUnsavedChanges: !1
     };
@@ -76,48 +73,48 @@ END_PROGRAM`,
       name: "My ST Project",
       files: [a],
       activeFileId: a.id,
-      createdAt: t,
-      lastModified: t
+      createdAt: i,
+      lastModified: i
     };
   }
   /**
    * Serialize project for storage (exclude transient state)
    */
-  _serializeProject(e) {
+  _serializeProject(t) {
     return {
-      id: e.id,
-      name: e.name,
-      files: e.files.map((t) => ({
-        id: t.id,
-        name: t.name,
-        path: t.path,
-        content: t.content,
-        lastModified: t.lastModified
+      id: t.id,
+      name: t.name,
+      files: t.files.map((i) => ({
+        id: i.id,
+        name: i.name,
+        path: i.path,
+        content: i.content,
+        lastModified: i.lastModified
         // Don't serialize isOpen and hasUnsavedChanges (transient state)
       })),
-      activeFileId: e.activeFileId,
-      createdAt: e.createdAt,
-      lastModified: e.lastModified
+      activeFileId: t.activeFileId,
+      createdAt: t.createdAt,
+      lastModified: t.lastModified
     };
   }
   /**
    * Deserialize project from storage
    */
-  _deserializeProject(e) {
-    const t = e;
+  _deserializeProject(t) {
+    const i = t;
     return {
-      id: t.id,
-      name: t.name,
-      files: t.files.map((a) => ({
+      id: i.id,
+      name: i.name,
+      files: i.files.map((a) => ({
         ...a,
         isOpen: !1,
         // Reset on load
         hasUnsavedChanges: !1
         // Reset on load
       })),
-      activeFileId: t.activeFileId,
-      createdAt: t.createdAt,
-      lastModified: t.lastModified
+      activeFileId: i.activeFileId,
+      createdAt: i.createdAt,
+      lastModified: i.lastModified
     };
   }
   /**
@@ -133,18 +130,14 @@ END_PROGRAM`,
     return `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }
-var P = Object.defineProperty, E = Object.getOwnPropertyDescriptor, M = (i, e, t) => e in i ? P(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t, p = (i, e, t, a) => {
-  for (var r = a > 1 ? void 0 : a ? E(e, t) : e, n = i.length - 1, o; n >= 0; n--)
-    (o = i[n]) && (r = (a ? o(e, t, r) : o(r)) || r);
-  return a && r && P(e, t, r), r;
-}, N = (i, e, t) => M(i, e + "", t);
-let l = class extends w {
+var w = Object.defineProperty, P = Object.getOwnPropertyDescriptor, j = (e, t, i) => t in e ? w(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, p = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? P(t, i) : t, n = e.length - 1, d; n >= 0; n--)
+    (d = e[n]) && (r = (a ? d(t, i, r) : d(r)) || r);
+  return a && r && w(t, i, r), r;
+}, I = (e, t, i) => j(e, t + "", i);
+let l = class extends b {
   constructor() {
-    super();
-    g(this, "_expandedPaths");
-    g(this, "_editingFileId");
-    g(this, "_editingName");
-    this.files = [], this.activeFileId = null, this.selectedFileId = null, this._expandedPaths = /* @__PURE__ */ new Set(), this._editingFileId = null, this._editingName = "";
+    super(), this.files = [], this.activeFileId = null, this.selectedFileId = null, this._expandedPaths = /* @__PURE__ */ new Set(), this._editingFileId = null, this._editingName = "";
   }
   _buildTree() {
     const e = {
@@ -154,18 +147,18 @@ let l = class extends w {
       isFolder: !0
     };
     for (const t of this.files) {
-      const a = t.path.split("/");
-      let r = e;
-      for (let n = 0; n < a.length; n++) {
-        const o = a[n], f = n === a.length - 1;
-        r.children.has(o) || r.children.set(o, {
-          name: o,
-          path: a.slice(0, n + 1).join("/"),
+      const i = t.path.split("/");
+      let a = e;
+      for (let r = 0; r < i.length; r++) {
+        const n = i[r], d = r === i.length - 1;
+        a.children.has(n) || a.children.set(n, {
+          name: n,
+          path: i.slice(0, r + 1).join("/"),
           children: /* @__PURE__ */ new Map(),
-          isFolder: !f
+          isFolder: !d
         });
-        const s = r.children.get(o);
-        f && (s.file = t), r = s;
+        const s = a.children.get(n);
+        d && (s.file = t), a = s;
       }
     }
     return e;
@@ -201,41 +194,41 @@ let l = class extends w {
     );
   }
   _renderNode(e, t = 0) {
-    const a = this._expandedPaths.has(e.path), r = e.children.size > 0;
+    const i = this._expandedPaths.has(e.path), a = e.children.size > 0;
     if (e.isFolder && e.path === "") {
-      const s = Array.from(e.children.values()).sort((c, _) => c.isFolder !== _.isFolder ? c.isFolder ? -1 : 1 : c.name.localeCompare(_.name));
-      return d`
+      const s = Array.from(e.children.values()).sort((c, g) => c.isFolder !== g.isFolder ? c.isFolder ? -1 : 1 : c.name.localeCompare(g.name));
+      return o`
         ${s.map((c) => this._renderNode(c, t))}
       `;
     }
     if (e.isFolder)
-      return d`
+      return o`
         <div class="tree-node">
           <div
             class="tree-item"
             @click=${() => this._toggleExpand(e.path)}
           >
-            <div class="tree-toggle ${a ? "expanded" : ""}">
-              ${r ? d`<ha-icon icon="mdi:chevron-right"></ha-icon>` : d`<span style="width: 16px;"></span>`}
+            <div class="tree-toggle ${i ? "expanded" : ""}">
+              ${a ? o`<ha-icon icon="mdi:chevron-right"></ha-icon>` : o`<span style="width: 16px;"></span>`}
             </div>
             <div class="tree-icon">
               <ha-icon icon="mdi:folder"></ha-icon>
             </div>
             <div class="tree-label">${e.name}</div>
           </div>
-          ${a && r ? d`
+          ${i && a ? o`
                 <div class="tree-children">
                   ${Array.from(e.children.values()).sort((s, c) => s.isFolder !== c.isFolder ? s.isFolder ? -1 : 1 : s.name.localeCompare(c.name)).map((s) => this._renderNode(s, t + 1))}
                 </div>
               ` : ""}
         </div>
       `;
-    if (!e.file) return d``;
-    const n = e.file.id === this.activeFileId, o = e.file.id === this.selectedFileId, f = this._editingFileId === e.file.id;
-    return d`
+    if (!e.file) return o``;
+    const r = e.file.id === this.activeFileId, n = e.file.id === this.selectedFileId, d = this._editingFileId === e.file.id;
+    return o`
       <div class="tree-node">
         <div
-          class="tree-item ${n ? "active" : ""} ${o ? "selected" : ""}"
+          class="tree-item ${r ? "active" : ""} ${n ? "selected" : ""}"
           @click=${(s) => this._handleFileClick(e.file, s)}
           @dblclick=${(s) => this._handleFileDoubleClick(e.file, s)}
           @contextmenu=${(s) => this._handleContextMenu(e.file, s)}
@@ -246,7 +239,7 @@ let l = class extends w {
           <div class="tree-icon">
             <ha-icon icon="mdi:file-code"></ha-icon>
           </div>
-          ${f ? d`
+          ${d ? o`
                 <div class="tree-label editing">
                   <input
                     type="text"
@@ -258,8 +251,8 @@ let l = class extends w {
                     @click=${(s) => s.stopPropagation()}
                   />
                 </div>
-              ` : d`<div class="tree-label">${e.name}</div>`}
-          ${e.file.hasUnsavedChanges ? d`<div class="unsaved-indicator" title="Unsaved changes"></div>` : ""}
+              ` : o`<div class="tree-label">${e.name}</div>`}
+          ${e.file.hasUnsavedChanges ? o`<div class="unsaved-indicator" title="Unsaved changes"></div>` : ""}
         </div>
       </div>
     `;
@@ -277,27 +270,30 @@ let l = class extends w {
     this._editingFileId = null, this._editingName = "";
   }
   startRename(e) {
-    const t = this.files.find((a) => a.id === e);
+    const t = this.files.find((i) => i.id === e);
     t && (this._editingFileId = e, this._editingName = t.name);
   }
   render() {
     const e = this._buildTree();
-    return d`
+    return o`
       <div class="file-tree">
         ${this._renderNode(e)}
       </div>
     `;
   }
 };
-N(l, "styles", F`
+I(l, "styles", x`
     :host {
       display: block;
       height: 100%;
       overflow-y: auto;
-      font-size: 14px;
+      font-size: var(--font-size-md, 14px);
+      font-family: var(--font-ui, inherit);
+      background: var(--ui-bg-card, var(--card-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
     }
     .file-tree {
-      padding: 8px;
+      padding: var(--space-2, 8px);
     }
     .tree-node {
       user-select: none;
@@ -305,21 +301,21 @@ N(l, "styles", F`
     .tree-item {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
+      gap: var(--space-1, 4px);
+      padding: var(--space-1, 4px) var(--space-2, 8px);
       cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.2s;
+      border-radius: var(--radius-md, 4px);
+      transition: var(--transition-fast, background-color 0.2s);
     }
     .tree-item:hover {
-      background-color: var(--divider-color, rgba(0, 0, 0, 0.1));
+      background-color: var(--ui-divider, rgba(0, 0, 0, 0.1));
     }
     .tree-item.active {
-      background-color: var(--primary-color);
-      color: var(--text-primary-color);
+      background-color: var(--ui-primary, var(--primary-color));
+      color: var(--ui-text-on-primary, var(--text-primary-color));
     }
     .tree-item.selected {
-      background-color: var(--secondary-background-color);
+      background-color: var(--ui-bg-secondary, var(--secondary-background-color));
     }
     .tree-toggle {
       width: 16px;
@@ -353,17 +349,17 @@ N(l, "styles", F`
     }
     .tree-label.editing {
       padding: 2px 4px;
-      border: 1px solid var(--primary-color);
-      border-radius: 2px;
-      background: var(--card-background-color);
+      border: 1px solid var(--ui-primary, var(--primary-color));
+      border-radius: var(--radius-sm, 2px);
+      background: var(--ui-bg-card, var(--card-background-color));
     }
     .tree-label input {
       width: 100%;
       border: none;
       outline: none;
       background: transparent;
-      color: var(--primary-text-color);
-      font-size: 14px;
+      color: var(--ui-text-primary, var(--primary-text-color));
+      font-size: var(--font-size-md, 14px);
     }
     .tree-children {
       margin-left: 16px;
@@ -372,25 +368,25 @@ N(l, "styles", F`
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background-color: var(--warning-color, #ff9800);
+      background-color: var(--ui-warning, var(--warning-color, #ff9800));
       flex-shrink: 0;
     }
     .context-menu {
       position: fixed;
-      background: var(--card-background-color);
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      background: var(--ui-bg-card, var(--card-background-color));
+      border: 1px solid var(--ui-divider, var(--divider-color));
+      border-radius: var(--radius-md, 4px);
+      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
       z-index: 1000;
       min-width: 150px;
     }
     .context-menu-item {
-      padding: 8px 12px;
+      padding: var(--space-2, 8px) var(--space-3, 12px);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-md, 14px);
     }
     .context-menu-item:hover {
-      background-color: var(--divider-color);
+      background-color: var(--ui-divider, var(--divider-color));
     }
   `);
 p([
@@ -414,32 +410,32 @@ p([
 l = p([
   y("st-file-tree")
 ], l);
-var j = Object.defineProperty, C = Object.getOwnPropertyDescriptor, S = (i, e, t) => e in i ? j(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t, m = (i, e, t, a) => {
-  for (var r = a > 1 ? void 0 : a ? C(e, t) : e, n = i.length - 1, o; n >= 0; n--)
-    (o = i[n]) && (r = (a ? o(e, t, r) : o(r)) || r);
-  return a && r && j(e, t, r), r;
-}, O = (i, e, t) => S(i, e + "", t);
-let h = class extends w {
+var F = Object.defineProperty, $ = Object.getOwnPropertyDescriptor, E = (e, t, i) => t in e ? F(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i, f = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? $(t, i) : t, n = e.length - 1, d; n >= 0; n--)
+    (d = e[n]) && (r = (a ? d(t, i, r) : d(r)) || r);
+  return a && r && F(t, i, r), r;
+}, M = (e, t, i) => E(e, t + "", i);
+let h = class extends b {
   constructor() {
     super(), this.project = null, this._storage = null;
   }
   connectedCallback() {
     super.connectedCallback(), this._initializeStorage();
   }
-  updated(i) {
-    super.updated(i), i.has("hass") && this._initializeStorage();
+  updated(e) {
+    super.updated(e), e.has("hass") && this._initializeStorage();
   }
   _initializeStorage() {
-    var i, e;
-    if ((i = this.hass) != null && i.connection) {
-      const t = ((e = this.hass.config) == null ? void 0 : e.entry_id) || "default";
-      this._storage = new b(this.hass.connection, t);
+    var e, t;
+    if ((e = this.hass) != null && e.connection) {
+      const i = ((t = this.hass.config) == null ? void 0 : t.entry_id) || "default";
+      this._storage = new _(this.hass.connection, i);
     } else
-      this._storage = new b(null, "default");
+      this._storage = new _(null, "default");
   }
   _handleNewFile() {
     if (!this.project) return;
-    const i = {
+    const e = {
       id: this._generateFileId(),
       name: "NewFile.st",
       path: "NewFile.st",
@@ -457,49 +453,49 @@ END_PROGRAM`,
     };
     this.dispatchEvent(
       new CustomEvent("file-created", {
-        detail: { file: i },
+        detail: { file: e },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileSelected(i) {
-    const { fileId: e } = i.detail;
+  _handleFileSelected(e) {
+    const { fileId: t } = e.detail;
     this.dispatchEvent(
       new CustomEvent("file-selected", {
-        detail: { fileId: e },
+        detail: { fileId: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileOpen(i) {
-    const { fileId: e } = i.detail;
+  _handleFileOpen(e) {
+    const { fileId: t } = e.detail;
     if (!this.project) return;
-    const t = this.project.files.map((r) => ({
+    const i = this.project.files.map((r) => ({
       ...r,
-      isOpen: r.id === e || r.isOpen
+      isOpen: r.id === t || r.isOpen
     })), a = {
       ...this.project,
-      files: t,
-      activeFileId: e,
+      files: i,
+      activeFileId: t,
       lastModified: Date.now()
     };
     this._updateProject(a), this.dispatchEvent(
       new CustomEvent("file-open", {
-        detail: { fileId: e },
+        detail: { fileId: t },
         bubbles: !0,
         composed: !0
       })
     );
   }
-  _handleFileRename(i) {
-    const { fileId: e, newName: t } = i.detail;
+  _handleFileRename(e) {
+    const { fileId: t, newName: i } = e.detail;
     if (!this.project) return;
-    const a = this.project.files.map((n) => n.id === e ? {
+    const a = this.project.files.map((n) => n.id === t ? {
       ...n,
-      name: t,
-      path: t,
+      name: i,
+      path: i,
       // Simple: path = name for now
       lastModified: Date.now()
     } : n), r = {
@@ -507,30 +503,24 @@ END_PROGRAM`,
       files: a,
       lastModified: Date.now()
     };
-    this._updateProject(r), this.dispatchEvent(
-      new CustomEvent("file-rename", {
-        detail: { fileId: e, newName: t },
-        bubbles: !0,
-        composed: !0
-      })
-    );
+    this._updateProject(r);
   }
-  _updateProject(i) {
-    this.project = i, this._saveProject(), this.requestUpdate();
+  _updateProject(e) {
+    this.project = e, this._saveProject(), this.requestUpdate();
   }
   async _saveProject() {
     if (!(!this._storage || !this.project))
       try {
         await this._storage.saveProject(this.project);
-      } catch (i) {
-        console.error("Failed to save project", i);
+      } catch (e) {
+        console.error("Failed to save project", e);
       }
   }
   _generateFileId() {
     return `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
   render() {
-    return this.project ? d`
+    return this.project ? o`
       <div class="header">
         <h3>${this.project.name}</h3>
         <div class="header-actions">
@@ -553,80 +543,83 @@ END_PROGRAM`,
           @file-rename=${this._handleFileRename}
         ></st-file-tree>
       </div>
-    ` : d`
+    ` : o`
         <div class="empty-state">
           No project loaded. Create a new file to start.
         </div>
       `;
   }
 };
-O(h, "styles", F`
+M(h, "styles", x`
     :host {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background: var(--primary-background-color);
+      background: var(--ui-bg-card, var(--card-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
+      font-family: var(--font-ui, inherit);
     }
     .header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--divider-color);
+      padding: var(--space-3, 12px) var(--space-4, 16px);
+      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .header h3 {
       margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--primary-text-color);
+      font-size: var(--font-size-base, 13px);
+      font-weight: var(--font-weight-bold, 700);
+      color: var(--ui-text-primary, var(--primary-text-color));
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.08em;
     }
     .header-actions {
       display: flex;
-      gap: 4px;
+      gap: var(--space-1, 4px);
     }
     .header-button {
-      padding: 4px 8px;
-      border: none;
-      background: transparent;
-      color: var(--primary-text-color);
+      padding: var(--space-1, 4px) var(--space-2, 8px);
+      border: 1px solid var(--ui-divider, var(--divider-color));
+      background: var(--ui-bg-secondary, var(--secondary-background-color));
+      color: var(--ui-text-primary, var(--primary-text-color));
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: var(--radius-md, 4px);
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
+      gap: var(--space-1, 4px);
+      font-size: var(--font-size-sm, 12px);
+      font-family: var(--font-ui, inherit);
     }
     .header-button:hover {
-      background-color: var(--divider-color);
+      background-color: var(--ui-divider, var(--divider-color));
     }
     .file-tree-container {
       flex: 1;
       overflow: hidden;
     }
     .empty-state {
-      padding: 32px 16px;
+      padding: var(--space-8, 32px) var(--space-4, 16px);
       text-align: center;
-      color: var(--secondary-text-color);
-      font-size: 14px;
+      color: var(--ui-text-secondary, var(--secondary-text-color));
+      font-size: var(--font-size-md, 14px);
     }
   `);
-m([
+f([
   u({ attribute: !1 })
 ], h.prototype, "hass", 2);
-m([
+f([
   u({ type: Object })
 ], h.prototype, "project", 2);
-m([
+f([
   v()
 ], h.prototype, "_storage", 2);
-h = m([
+h = f([
   y("st-project-explorer")
 ], h);
 export {
-  b as ProjectStorage,
+  _ as ProjectStorage,
   l as STFileTree,
   h as STProjectExplorer
 };
-//# sourceMappingURL=project-Bh8czYIj.js.map
+//# sourceMappingURL=project-DSJgCpej.js.map
