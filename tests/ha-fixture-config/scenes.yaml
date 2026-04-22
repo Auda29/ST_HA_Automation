@@ -1,0 +1,41 @@
+# Test Scenes
+- id: scene_gemuetlich
+  name: "Gemütlich"
+  icon: mdi:sofa
+  entities:
+    light.wohnzimmer_deckenlampe:
+      state: "on"
+      brightness: 77  # ca. 30%
+    input_select.light_scene:
+      state: "Gemütlich"
+
+- id: scene_kino
+  name: "Kino"
+  icon: mdi:movie
+  entities:
+    light.wohnzimmer_deckenlampe:
+      state: "on"
+      brightness: 25  # ca. 10%
+    input_select.light_scene:
+      state: "Kino"
+
+- id: scene_party
+  name: "Party"
+  icon: mdi:party-popper
+  entities:
+    light.wohnzimmer_deckenlampe:
+      state: "on"
+      brightness: 255  # 100%
+    input_select.light_scene:
+      state: "Party"
+
+- id: scene_alles_aus
+  name: "Alles Aus"
+  icon: mdi:power-off
+  entities:
+    light.wohnzimmer_deckenlampe:
+      state: "off"
+    switch.steckdose_wohnzimmer:
+      state: "off"
+    switch.steckdose_kueche:
+      state: "off"

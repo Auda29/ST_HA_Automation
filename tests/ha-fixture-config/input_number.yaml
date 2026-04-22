@@ -1,0 +1,24 @@
+# Test Input Numbers
+target_temperature:
+  name: Ziel-Temperatur
+  min: 16
+  max: 28
+  step: 0.5
+  unit_of_measurement: "°C"
+  icon: mdi:thermometer
+
+brightness_level:
+  name: Helligkeitsstufe
+  min: 0
+  max: 100
+  step: 1
+  unit_of_measurement: "%"
+  icon: mdi:brightness-percent
+
+volume_level:
+  name: Lautstärke
+  min: 0
+  max: 100
+  step: 5
+  unit_of_measurement: "%"
+  icon: mdi:volume-high

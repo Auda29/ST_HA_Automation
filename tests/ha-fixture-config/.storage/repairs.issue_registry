@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "minor_version": 2,
+  "key": "repairs.issue_registry",
+  "data": {
+    "issues": [
+      {
+        "created": "2026-01-21T13:05:01.952457+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_light_wohnzimmer_deckenlampe_697c42a598b2b6e984da8918e7dbd4fb"
+      },
+      {
+        "created": "2026-01-21T13:05:01.952977+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_switch_steckdose_wohnzimmer_1612f5d5d231a50c3532524697a72233"
+      },
+      {
+        "created": "2026-01-21T13:05:01.953073+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_switch_steckdose_kueche_1612f5d5d231a50c3532524697a72233"
+      },
+      {
+        "created": "2026-01-21T13:19:33.413903+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_sensor_wohnzimmer_temperatur_6c8fa7d5b657ba1809ea58ec4f973bf3"
+      },
+      {
+        "created": "2026-01-21T13:19:33.413995+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_sensor_wohnzimmer_luftfeuchtigkeit_6c8fa7d5b657ba1809ea58ec4f973bf3"
+      },
+      {
+        "created": "2026-01-21T13:19:33.414057+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_sensor_aussentemperatur_6c8fa7d5b657ba1809ea58ec4f973bf3"
+      },
+      {
+        "created": "2026-01-21T13:19:33.414102+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_sensor_stromverbrauch_aktuell_6c8fa7d5b657ba1809ea58ec4f973bf3"
+      },
+      {
+        "created": "2026-01-21T13:19:33.414143+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_sensor_stromverbrauch_heute_6c8fa7d5b657ba1809ea58ec4f973bf3"
+      },
+      {
+        "created": "2026-01-21T13:19:33.414853+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_binary_sensor_bewegungsmelder_flur_4247b24841726003ba435ce71778fe91"
+      },
+      {
+        "created": "2026-01-21T13:19:33.414912+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_binary_sensor_tuersensor_eingang_4247b24841726003ba435ce71778fe91"
+      },
+      {
+        "created": "2026-01-21T13:19:33.414954+00:00",
+        "dismissed_version": null,
+        "domain": "template",
+        "is_persistent": false,
+        "issue_id": "deprecate_legacy_templates_binary_sensor_fenstersensor_wohnzimmer_4247b24841726003ba435ce71778fe91"
+      }
+    ]
+  }
+}

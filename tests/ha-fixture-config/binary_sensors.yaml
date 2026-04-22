@@ -1,0 +1,17 @@
+# Test Binary Sensors (Template-based)
+- platform: template
+  sensors:
+    bewegungsmelder_flur:
+      friendly_name: "Bewegungsmelder Flur"
+      value_template: "{{ ['on', 'off'] | random }}"
+      device_class: motion
+
+    tuersensor_eingang:
+      friendly_name: "Türsensor Eingang"
+      value_template: "{{ ['on', 'off'] | random }}"
+      device_class: door
+
+    fenstersensor_wohnzimmer:
+      friendly_name: "Fenstersensor Wohnzimmer"
+      value_template: "{{ ['on', 'off'] | random }}"
+      device_class: window

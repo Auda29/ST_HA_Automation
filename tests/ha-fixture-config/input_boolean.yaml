@@ -1,0 +1,20 @@
+# Test Input Booleans
+test_switch_1:
+  name: Test Schalter 1
+  icon: mdi:toggle-switch
+
+test_switch_2:
+  name: Test Schalter 2
+  icon: mdi:toggle-switch-off
+
+vacation_mode:
+  name: Urlaubsmodus
+  icon: mdi:airplane
+
+guest_mode:
+  name: Gastmodus
+  icon: mdi:account-group
+
+night_mode:
+  name: Nachtmodus
+  icon: mdi:weather-night

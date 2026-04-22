@@ -1,0 +1,104 @@
+# Modern Template Configuration
+# Migriert von legacy platform: template Syntax
+
+# Template Lights
+- light:
+    - name: "Wohnzimmer Deckenlampe"
+      unique_id: wohnzimmer_deckenlampe
+      state: "{{ states('input_number.brightness_level') | float > 0 }}"
+      level: "{{ states('input_number.brightness_level') | float | round(0) | int }}"
+      turn_on:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.brightness_level
+          data:
+            value: 100
+      turn_off:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.brightness_level
+          data:
+            value: 0
+      set_level:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.brightness_level
+          data:
+            value: "{{ brightness / 2.55 }}"
+
+# Template Switches
+- switch:
+    - name: "Steckdose Wohnzimmer"
+      unique_id: steckdose_wohnzimmer
+      state: "{{ is_state('input_boolean.test_switch_1', 'on') }}"
+      turn_on:
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.test_switch_1
+      turn_off:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.test_switch_1
+      icon: mdi:power-socket-de
+
+    - name: "Steckdose Küche"
+      unique_id: steckdose_kueche
+      state: "{{ is_state('input_boolean.test_switch_2', 'on') }}"
+      turn_on:
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.test_switch_2
+      turn_off:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.test_switch_2
+      icon: mdi:power-socket-de
+
+# Template Sensors
+- sensor:
+    - name: "Wohnzimmer Temperatur"
+      unique_id: wohnzimmer_temperatur
+      unit_of_measurement: "°C"
+      state: "{{ (range(180, 240) | random / 10) | round(1) }}"
+      device_class: temperature
+
+    - name: "Wohnzimmer Luftfeuchtigkeit"
+      unique_id: wohnzimmer_luftfeuchtigkeit
+      unit_of_measurement: "%"
+      state: "{{ range(40, 65) | random }}"
+      device_class: humidity
+
+    - name: "Außentemperatur"
+      unique_id: aussentemperatur
+      unit_of_measurement: "°C"
+      state: "{{ (range(-50, 350) | random / 10) | round(1) }}"
+      device_class: temperature
+
+    - name: "Stromverbrauch Aktuell"
+      unique_id: stromverbrauch_aktuell
+      unit_of_measurement: "W"
+      state: "{{ range(200, 2500) | random }}"
+      device_class: power
+
+    - name: "Stromverbrauch Heute"
+      unique_id: stromverbrauch_heute
+      unit_of_measurement: "kWh"
+      state: "{{ (range(50, 250) | random / 10) | round(2) }}"
+      device_class: energy
+
+# Template Binary Sensors
+- binary_sensor:
+    - name: "Bewegungsmelder Flur"
+      unique_id: bewegungsmelder_flur
+      state: "{{ ['on', 'off'] | random }}"
+      device_class: motion
+
+    - name: "Türsensor Eingang"
+      unique_id: tuersensor_eingang
+      state: "{{ ['on', 'off'] | random }}"
+      device_class: door
+
+    - name: "Fenstersensor Wohnzimmer"
+      unique_id: fenstersensor_wohnzimmer
+      state: "{{ ['on', 'off'] | random }}"
+      device_class: window

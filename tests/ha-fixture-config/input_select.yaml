@@ -1,0 +1,29 @@
+# Test Input Selects
+house_mode:
+  name: Hausmodus
+  options:
+    - Zuhause
+    - Abwesend
+    - Urlaub
+    - Nacht
+    - Gäste
+  icon: mdi:home
+
+hvac_mode:
+  name: Klimamodus
+  options:
+    - auto
+    - heat
+    - cool
+    - "off"
+  icon: mdi:thermostat
+
+light_scene:
+  name: Lichtszene
+  options:
+    - Normal
+    - Gemütlich
+    - Kino
+    - Party
+    - Konzentration
+  icon: mdi:lightbulb-group

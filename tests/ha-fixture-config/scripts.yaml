@@ -1,0 +1,61 @@
+# Test Scripts
+good_morning:
+  alias: "Guten Morgen"
+  description: "Morgenroutine - Licht an, Nachtmodus aus"
+  sequence:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.night_mode
+    - service: light.turn_on
+      target:
+        entity_id: light.wohnzimmer_deckenlampe
+      data:
+        brightness_pct: 80
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Zuhause"
+  mode: single
+  icon: mdi:weather-sunny
+
+good_night:
+  alias: "Gute Nacht"
+  description: "Abendroutine - alles aus, Nachtmodus an"
+  sequence:
+    - service: light.turn_off
+      target:
+        entity_id: light.wohnzimmer_deckenlampe
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.steckdose_wohnzimmer
+          - switch.steckdose_kueche
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.night_mode
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Nacht"
+  mode: single
+  icon: mdi:weather-night
+
+leave_home:
+  alias: "Haus verlassen"
+  description: "Alles ausschalten beim Verlassen"
+  sequence:
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: switch.turn_off
+      target:
+        entity_id: all
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Abwesend"
+  mode: single
+  icon: mdi:home-export-outline

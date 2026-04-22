@@ -1,0 +1,25 @@
+# Test Lights (Template-based)
+- platform: template
+  lights:
+    wohnzimmer_deckenlampe:
+      friendly_name: "Wohnzimmer Deckenlampe"
+      value_template: "{{ states('input_number.brightness_level') | float > 0 }}"
+      level_template: "{{ states('input_number.brightness_level') | float | round(0) | int }}"
+      turn_on:
+        service: input_number.set_value
+        target:
+          entity_id: input_number.brightness_level
+        data:
+          value: 100
+      turn_off:
+        service: input_number.set_value
+        target:
+          entity_id: input_number.brightness_level
+        data:
+          value: 0
+      set_level:
+        service: input_number.set_value
+        target:
+          entity_id: input_number.brightness_level
+        data:
+          value: "{{ brightness / 2.55 }}"

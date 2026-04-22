@@ -1,0 +1,48 @@
+# Home Assistant Test Configuration
+# Für lokale Entwicklung und Tests
+
+homeassistant:
+  name: HA Test Instance
+  unit_system: metric
+  currency: EUR
+  country: DE
+  time_zone: Europe/Berlin
+
+# HTTP-Konfiguration für lokalen Zugriff
+http:
+  cors_allowed_origins:
+    - http://localhost:3000
+    - http://localhost:5173
+    - http://127.0.0.1:3000
+    - http://127.0.0.1:5173
+
+# API aktivieren
+api:
+
+# WebSocket API aktivieren (für unsere App)
+websocket_api:
+
+# Frontend aktivieren
+frontend:
+
+# Recorder für minimale DB (schnellerer Start)
+recorder:
+  purge_keep_days: 1
+  commit_interval: 5
+
+# Logger für Debugging
+logger:
+  default: info
+  logs:
+    homeassistant.components.websocket_api: debug
+
+# Test-Entities einbinden
+input_boolean: !include input_boolean.yaml
+input_number: !include input_number.yaml
+input_select: !include input_select.yaml
+input_text: !include input_text.yaml
+# Alle Template-Entities (sensor, binary_sensor, light, switch) sind in templates.yaml
+template: !include templates.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml

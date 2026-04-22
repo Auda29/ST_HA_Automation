@@ -3,7 +3,7 @@ services:
     image: homeassistant/home-assistant:stable
     container_name: ha-test
     volumes:
-      - ./ha-test-config:/config
+      - ./tests/ha-fixture-config:/config
       - ./custom_components:/config/custom_components
     ports:
       - "8123:8123"

@@ -1,0 +1,45 @@
+# Test Automations
+- id: test_automation_1
+  alias: "Test Automation - Nachtmodus aktivieren"
+  description: "Aktiviert den Nachtmodus um 22:00"
+  trigger:
+    - platform: time
+      at: "22:00:00"
+  condition: []
+  action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.night_mode
+  mode: single
+
+- id: test_automation_2
+  alias: "Test Automation - Nachtmodus deaktivieren"
+  description: "Deaktiviert den Nachtmodus um 07:00"
+  trigger:
+    - platform: time
+      at: "07:00:00"
+  condition: []
+  action:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.night_mode
+  mode: single
+
+- id: test_automation_3
+  alias: "Test Automation - Bewegungsmelder Licht"
+  description: "Schaltet Licht bei Bewegung ein"
+  trigger:
+    - platform: state
+      entity_id: sensor.bewegungsmelder_flur
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: input_boolean.night_mode
+      state: "on"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id: light.wohnzimmer_deckenlampe
+      data:
+        brightness_pct: 30
+  mode: single

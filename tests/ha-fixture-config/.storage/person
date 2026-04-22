@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "minor_version": 1,
+  "key": "person",
+  "data": {
+    "items": [
+      {
+        "id": "test_admin",
+        "name": "Test Admin",
+        "user_id": "3c3368f401334d3a8afeb88eacd9aa17",
+        "device_trackers": []
+      }
+    ]
+  }
+}

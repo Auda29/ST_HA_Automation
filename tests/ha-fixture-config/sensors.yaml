@@ -1,0 +1,33 @@
+# Test Template Sensors
+- platform: template
+  sensors:
+    wohnzimmer_temperatur:
+      friendly_name: "Wohnzimmer Temperatur"
+      unit_of_measurement: "°C"
+      value_template: "{{ (range(180, 240) | random / 10) | round(1) }}"
+      device_class: temperature
+
+    wohnzimmer_luftfeuchtigkeit:
+      friendly_name: "Wohnzimmer Luftfeuchtigkeit"
+      unit_of_measurement: "%"
+      value_template: "{{ range(40, 65) | random }}"
+      device_class: humidity
+
+    aussentemperatur:
+      friendly_name: "Außentemperatur"
+      unit_of_measurement: "°C"
+      value_template: "{{ (range(-50, 350) | random / 10) | round(1) }}"
+      device_class: temperature
+
+    stromverbrauch_aktuell:
+      friendly_name: "Stromverbrauch Aktuell"
+      unit_of_measurement: "W"
+      value_template: "{{ range(200, 2500) | random }}"
+      device_class: power
+
+    stromverbrauch_heute:
+      friendly_name: "Stromverbrauch Heute"
+      unit_of_measurement: "kWh"
+      value_template: "{{ (range(50, 250) | random / 10) | round(2) }}"
+      device_class: energy
+# Binary Sensors wurden nach binary_sensors.yaml verschoben

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "minor_version": 5,
+  "key": "core.config_entries",
+  "data": {
+    "entries": [
+      {"created_at":"2026-01-21T13:05:01.995596+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"backup","entry_id":"01KFGAH41BZ3Q5M81DFVSQY046","minor_version":1,"modified_at":"2026-01-21T13:05:01.995598+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"system","subentries":[],"title":"Backup","unique_id":null,"version":1},
+      {"created_at":"2026-01-21T13:14:45.919415+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"shopping_list","entry_id":"01KFGB2Y8ZEF4GFRVVR9XZ8G5R","minor_version":1,"modified_at":"2026-01-21T13:14:45.919417+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","subentries":[],"title":"Shopping list","unique_id":"shopping_list","version":1},
+      {"created_at":"2026-01-21T13:14:46.003459+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"radio_browser","entry_id":"01KFGB2YBK7CKREH0XK2WFNYV1","minor_version":1,"modified_at":"2026-01-21T13:14:46.003461+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","subentries":[],"title":"Radio Browser","unique_id":null,"version":1},
+      {"created_at":"2026-01-21T13:14:46.005834+00:00","data":{"language":"en","tld":"com"},"disabled_by":null,"discovery_keys":{},"domain":"google_translate","entry_id":"01KFGB2YBNFRSJCYS391Q5JMTA","minor_version":1,"modified_at":"2026-01-21T13:14:46.005836+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","subentries":[],"title":"Google Translate text-to-speech","unique_id":null,"version":1},
+      {"created_at":"2026-01-21T13:14:14.384971+00:00","data":{"track_home":true},"disabled_by":null,"discovery_keys":{},"domain":"met","entry_id":"01KFGB1ZFGH5CF6B6CT5Y21AY2","minor_version":1,"modified_at":"2026-01-21T13:14:14.384974+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"onboarding","subentries":[],"title":"Home","unique_id":null,"version":1},
+      {"created_at":"2026-01-21T13:25:53.686565+00:00","data":{},"disabled_by":null,"discovery_keys":{},"domain":"st_hass","entry_id":"01KFGBQACPK1HXGB71FDHP14FD","minor_version":1,"modified_at":"2026-01-21T13:25:53.686566+00:00","options":{},"pref_disable_new_entities":false,"pref_disable_polling":false,"source":"user","subentries":[],"title":"ST for Home Assistant","unique_id":null,"version":1}
+    ]
+  }
+}

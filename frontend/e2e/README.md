@@ -51,6 +51,8 @@ Tests use a real Home Assistant Docker container for authentic E2E testing. The 
 2. **Test Execution**: Tests run against the real HA instance
 3. **Global Teardown** (`teardown.ts`): Optional cleanup (container kept running by default for faster re-runs)
 
+The Docker setup uses the tracked fixture config in `tests/ha-fixture-config`, so local runs and GitHub Actions boot the same prepared Home Assistant instance.
+
 ## Test Fixtures
 
 The `fixtures.ts` file provides:

@@ -1,0 +1,12 @@
+# Test Input Text
+notification_message:
+  name: Benachrichtigung
+  initial: ""
+  max: 255
+  icon: mdi:message-text
+
+user_note:
+  name: Benutzer Notiz
+  initial: ""
+  max: 255
+  icon: mdi:note-text
