@@ -5,6 +5,15 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-04-22
+
+### Fixed
+- File deletion from the project explorer now reaches the panel state correctly, so trash-button and `Delete` key flows work again in multi-file projects
+- Deploy now creates the logic script under the entity ID actually referenced by the generated automation
+- Timer follow-up automations returned by the transpiler are now included in deployment operations
+- `{throttle: ...}` now creates the required `input_datetime` helper instead of referencing a missing entity at runtime
+- GitHub E2E runs now boot against a tracked prepared Home Assistant fixture instead of an ignored local-only config, making CI reproducible and green
+
 ## [2.1.0] - 2026-04-22
 
 ### Changed
@@ -133,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.1.1]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.1
 [2.1.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.0
 [2.0.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.3
 [2.0.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.0.0

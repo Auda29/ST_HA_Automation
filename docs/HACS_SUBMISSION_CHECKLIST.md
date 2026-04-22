@@ -26,8 +26,8 @@ This document tracks the requirements for submitting ST for Home Assistant to th
   - HACS Action: configured in `.github/workflows/ci.yml`
   - Hassfest: configured in `.github/workflows/ci.yml`
 - [ ] **Create GitHub Release**: Create a full release (not just a tag) after actions pass
-  - Current version: 2.1.0
-  - Tag: `v2.1.0`
+  - Current version: 2.1.1
+  - Tag: `v2.1.1`
 - [ ] **Repository Settings** (verify on GitHub):
   - [ ] Repository has a description
   - [ ] Issues are enabled
@@ -58,8 +58,8 @@ This document tracks the requirements for submitting ST for Home Assistant to th
 
 2. **Create GitHub Release**:
    - Go to GitHub repository -> Releases -> Create new release
-   - Tag: `v2.1.0`
-   - Title: "Release 2.1.0"
+   - Tag: `v2.1.1`
+   - Title: "Release 2.1.1"
    - Description: Copy from `CHANGELOG.md`
    - Mark as "Latest release"
 
