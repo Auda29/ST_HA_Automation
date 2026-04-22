@@ -329,15 +329,9 @@ export class ActionGenerator {
     const countExpr = `{{ (((${toExpr}) - (${fromExpr})) / (${byExpr})) | int + 1 }}`;
 
     // Generate loop body with index variable
-    const loopVarInit: HAVariablesAction = {
+    const loopVarAssign: HAVariablesAction = {
       variables: {
-        [stmt.variable]: `{{ ${fromExpr} }}`,
-      },
-    };
-
-    const loopVarIncrement: HAVariablesAction = {
-      variables: {
-        [stmt.variable]: `{{ ${stmt.variable} + ${byExpr} }}`,
+        [stmt.variable]: `{{ (${fromExpr}) + ((repeat.index | default(1) | int - 1) * (${byExpr})) }}`,
       },
     };
 
@@ -345,9 +339,8 @@ export class ActionGenerator {
       repeat: {
         count: countExpr,
         sequence: [
-          loopVarInit,
+          loopVarAssign,
           ...this.generateActions(stmt.body),
-          loopVarIncrement,
         ],
       },
     };
@@ -359,31 +352,16 @@ export class ActionGenerator {
       this.sourceMap.recordNode(stmt, 'WHILE statement');
     }
 
-    // Add safety counter to prevent infinite loops
-    const safetyVar = `_while_safety_${this.context.safetyCounters++}`;
-
-    const safetyInit: HAVariablesAction = {
-      variables: { [safetyVar]: 0 },
-    };
-
-    const safetyIncrement: HAVariablesAction = {
-      variables: { [safetyVar]: `{{ ${safetyVar} + 1 }}` },
-    };
-
     const condition = this.generateCondition(stmt.condition);
     const safetyCondition: HATemplateCondition = {
       condition: 'template',
-      value_template: `{{ ${safetyVar} < ${MAX_LOOP_ITERATIONS} }}`,
+      value_template: `{{ (repeat.index | default(1) | int) <= ${MAX_LOOP_ITERATIONS} }}`,
     };
 
     return {
       repeat: {
         while: [condition, safetyCondition],
-        sequence: [
-          safetyInit,
-          safetyIncrement,
-          ...this.generateActions(stmt.body),
-        ],
+        sequence: this.generateActions(stmt.body),
       },
     };
   }
@@ -394,21 +372,10 @@ export class ActionGenerator {
       this.sourceMap.recordNode(stmt, 'REPEAT statement');
     }
 
-    // Add safety counter
-    const safetyVar = `_repeat_safety_${this.context.safetyCounters++}`;
-
-    const safetyInit: HAVariablesAction = {
-      variables: { [safetyVar]: 0 },
-    };
-
-    const safetyIncrement: HAVariablesAction = {
-      variables: { [safetyVar]: `{{ ${safetyVar} + 1 }}` },
-    };
-
     const condition = this.generateCondition(stmt.condition);
     const safetyCondition: HATemplateCondition = {
       condition: 'template',
-      value_template: `{{ ${safetyVar} < ${MAX_LOOP_ITERATIONS} }}`,
+      value_template: `{{ (repeat.index | default(1) | int) <= ${MAX_LOOP_ITERATIONS} }}`,
     };
 
     // REPEAT...UNTIL = do-while, so we use until (condition becomes true to stop)
@@ -418,11 +385,7 @@ export class ActionGenerator {
         until: [
           { condition: 'or', conditions: [condition, { condition: 'not', conditions: [safetyCondition] }] },
         ],
-        sequence: [
-          safetyInit,
-          safetyIncrement,
-          ...this.generateActions(stmt.body),
-        ],
+        sequence: this.generateActions(stmt.body),
       },
     };
   }

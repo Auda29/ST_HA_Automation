@@ -302,7 +302,7 @@ function k(p, e) {
   {{ (now() - (last | as_datetime)).total_seconds() > ${e} }}
 {% endif %}`;
 }
-const v = 1e3;
+const T = 1e3;
 class w {
   constructor(e, t, a) {
     c(this, "context");
@@ -466,11 +466,7 @@ class w {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "FOR statement");
     const t = this.jinja.generateExpression(e.from), a = this.jinja.generateExpression(e.to), i = e.by ? this.jinja.generateExpression(e.by) : "1", n = `{{ (((${a}) - (${t})) / (${i})) | int + 1 }}`, r = {
       variables: {
-        [e.variable]: `{{ ${t} }}`
-      }
-    }, s = {
-      variables: {
-        [e.variable]: `{{ ${e.variable} + ${i} }}`
+        [e.variable]: `{{ (${t}) + ((repeat.index | default(1) | int - 1) * (${i})) }}`
       }
     };
     return {
@@ -478,53 +474,36 @@ class w {
         count: n,
         sequence: [
           r,
-          ...this.generateActions(e.body),
-          s
+          ...this.generateActions(e.body)
         ]
       }
     };
   }
   generateWhile(e) {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "WHILE statement");
-    const t = `_while_safety_${this.context.safetyCounters++}`, a = {
-      variables: { [t]: 0 }
-    }, i = {
-      variables: { [t]: `{{ ${t} + 1 }}` }
-    }, n = this.generateCondition(e.condition), r = {
+    const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ ${t} < ${v} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
     };
     return {
       repeat: {
-        while: [n, r],
-        sequence: [
-          a,
-          i,
-          ...this.generateActions(e.body)
-        ]
+        while: [t, a],
+        sequence: this.generateActions(e.body)
       }
     };
   }
   generateRepeat(e) {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "REPEAT statement");
-    const t = `_repeat_safety_${this.context.safetyCounters++}`, a = {
-      variables: { [t]: 0 }
-    }, i = {
-      variables: { [t]: `{{ ${t} + 1 }}` }
-    }, n = this.generateCondition(e.condition), r = {
+    const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ ${t} < ${v} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
     };
     return {
       repeat: {
         until: [
-          { condition: "or", conditions: [n, { condition: "not", conditions: [r] }] }
+          { condition: "or", conditions: [t, { condition: "not", conditions: [a] }] }
         ],
-        sequence: [
-          a,
-          i,
-          ...this.generateActions(e.body)
-        ]
+        sequence: this.generateActions(e.body)
       }
     };
   }
@@ -1789,7 +1768,7 @@ class b {
       }
   }
 }
-const h = "st_hass_backups", T = 10;
+const h = "st_hass_backups", v = 10;
 class $ {
   constructor(e) {
     c(this, "api");
@@ -1863,10 +1842,10 @@ class $ {
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, T);
+    const a = t.slice(0, v);
     window.localStorage.setItem(h, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = T) {
+  async cleanupOldBackups(e = v) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
@@ -2325,4 +2304,4 @@ export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-CHX7k1ve.js.map
+//# sourceMappingURL=transpiler-deploy-DONwic53.js.map

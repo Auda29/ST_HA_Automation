@@ -260,6 +260,8 @@ describe('Transpiler', () => {
       const repeat = result.script.sequence[0] as any;
       expect(repeat.repeat).toBeDefined();
       expect(repeat.repeat.count).toBeDefined();
+      expect(repeat.repeat.sequence[0]?.variables?.i).toContain('repeat.index');
+      expect(repeat.repeat.sequence[0]?.variables?.i).toContain('(1)');
     });
 
     it('transpiles WHILE loop', () => {
@@ -282,6 +284,33 @@ describe('Transpiler', () => {
       const repeat = result.script.sequence[0] as any;
       expect(repeat.repeat).toBeDefined();
       expect(repeat.repeat.while).toBeDefined();
+      expect(repeat.repeat.while[1].value_template).toContain('repeat.index');
+      expect(repeat.repeat.sequence.some((action: any) => 'variables' in action)).toBe(false);
+    });
+
+    it('transpiles REPEAT loop without resetting the safety guard each pass', () => {
+      const code = `
+        PROGRAM Test
+        VAR
+          x : INT := 0;
+        END_VAR
+          REPEAT
+            x := x + 1;
+          UNTIL x > 10
+          END_REPEAT
+        END_PROGRAM
+      `;
+
+      const parseResult = parse(code);
+      expect(parseResult.success).toBe(true);
+
+      const result = transpile(parseResult.ast!);
+
+      const repeat = result.script.sequence[0] as any;
+      expect(repeat.repeat.until).toBeDefined();
+      const safetyBranch = repeat.repeat.until[0].conditions[1];
+      expect(safetyBranch.conditions[0].value_template).toContain('repeat.index');
+      expect(repeat.repeat.sequence.some((action: any) => 'variables' in action)).toBe(false);
     });
   });
 
