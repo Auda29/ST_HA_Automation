@@ -1037,9 +1037,10 @@ END_PROGRAM`;
     this._switchToFile(fileId);
   }
 
-  private _handleFileSelected(_e: CustomEvent): void {
-    // Just update selection, don't switch yet
-    // Could be used for preview or other features
+  private _handleFileSelected(e: CustomEvent): void {
+    const { fileId } = e.detail;
+    if (!fileId) return;
+    this._switchToFile(fileId);
   }
 
   private _handleFileRename(e: CustomEvent): void {

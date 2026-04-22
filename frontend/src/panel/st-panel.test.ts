@@ -52,5 +52,59 @@ describe("STPanel", () => {
     expect(toolbar).toBeTruthy();
     expect(toolbar.state.status).toBe("disconnected");
   });
+
+  it("switches files on file-selected and preserves edited content", async () => {
+    const panel = document.createElement("st-panel") as any;
+    panel._project = {
+      id: "project_1",
+      name: "My ST Project",
+      files: [
+        {
+          id: "file_1",
+          name: "Main.st",
+          path: "Main.st",
+          content: "PROGRAM Main\nEND_PROGRAM",
+          lastModified: Date.now(),
+          isOpen: true,
+          hasUnsavedChanges: false,
+        },
+        {
+          id: "file_2",
+          name: "NewFile.st",
+          path: "NewFile.st",
+          content: "PROGRAM NewFile\nEND_PROGRAM",
+          lastModified: Date.now(),
+          isOpen: true,
+          hasUnsavedChanges: false,
+        },
+      ],
+      activeFileId: "file_1",
+      createdAt: Date.now(),
+      lastModified: Date.now(),
+    };
+    document.body.appendChild(panel);
+
+    await panel.updateComplete;
+
+    const editor = panel.shadowRoot?.querySelector("st-editor") as any;
+    expect(editor).toBeTruthy();
+
+    editor.setCode("PROGRAM Main\nVAR\n  x : INT := 1;\nEND_VAR\nEND_PROGRAM");
+    await editor.updateComplete;
+
+    panel._handleFileSelected(
+      new CustomEvent("file-selected", {
+        detail: { fileId: "file_2" },
+      }),
+    );
+    await panel.updateComplete;
+    await editor.updateComplete;
+
+    expect(panel._project.activeFileId).toBe("file_2");
+    expect(panel._project.files.find((f: any) => f.id === "file_1").content).toContain(
+      "x : INT := 1;",
+    );
+    expect(editor.getCode()).toBe("PROGRAM NewFile\nEND_PROGRAM");
+  });
 });
 

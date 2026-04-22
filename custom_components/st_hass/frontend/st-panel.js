@@ -7,7 +7,7 @@ import { i as z, n as _, a as Y, b as u, t as W, r as v } from "./lit-C178dhqO.j
 import { s as ke } from "./ha-websocket-DcUbagYv.js";
 import { c as o, L as T, C as Me } from "./chevrotain-cBR36crC.js";
 import { a as H } from "./analyzer-DbAWr__X.js";
-const Be = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-semibold: 600;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 6px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 20px;--radius-pill: 999px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-focus-ring: 0 0 0 3px rgba(24, 183, 230, .32);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .16s ease;--transition-medium: all .24s ease;--transition-slow: all .32s ease;--focus-ring: 2px solid rgba(91, 212, 255, .7);--focus-ring-offset: 2px}@media (prefers-reduced-motion: reduce){:root{--transition-fast: none;--transition-medium: none;--transition-slow: none}}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', Q = [
+const Ie = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-semibold: 600;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 6px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 20px;--radius-pill: 999px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-focus-ring: 0 0 0 3px rgba(24, 183, 230, .32);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .16s ease;--transition-medium: all .24s ease;--transition-slow: all .32s ease;--focus-ring: 2px solid rgba(91, 212, 255, .7);--focus-ring-offset: 2px}@media (prefers-reduced-motion: reduce){:root{--transition-fast: none;--transition-medium: none;--transition-slow: none}}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', Q = [
   "PROGRAM",
   "END_PROGRAM",
   "FUNCTION",
@@ -115,7 +115,7 @@ const Be = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #
   "CTU",
   "CTD",
   "CTUD"
-], Ie = [
+], Be = [
   "trigger",
   "no_trigger",
   "persistent",
@@ -182,7 +182,7 @@ const Be = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #
   ...Z.map((a) => ({ label: a, type: "type" })),
   ...J.map((a) => ({ label: a, type: "function" })),
   ...tt.map((a) => ({ label: a, type: "class" })),
-  ...Ie.map((a) => ({
+  ...Be.map((a) => ({
     label: `{${a}}`,
     type: "keyword",
     detail: "pragma"
@@ -1333,7 +1333,7 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
 }), ft = o({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), mt = h("Program", "PROGRAM"), oi = h("Function", "FUNCTION"), bt = h("Var", "VAR"), li = h("Constant", "CONSTANT"), vt = h("If", "IF"), M = h("Then", "THEN"), yt = h("Elsif", "ELSIF"), B = h("Else", "ELSE"), Et = h("Case", "CASE"), St = h("Of", "OF"), _t = h("For", "FOR"), xt = h("To", "TO"), Lt = h("By", "BY"), I = h("Do", "DO"), Ct = h("While", "WHILE"), Ot = h("Repeat", "REPEAT"), Ut = h("Until", "UNTIL"), Nt = h("Return", "RETURN"), wt = h("Exit", "EXIT"), ci = h("Continue", "CONTINUE"), D = h("At", "AT"), Tt = h("And", "AND"), Rt = h("Or", "OR"), di = h("Xor", "XOR"), At = h("Not", "NOT"), kt = h("Mod", "MOD"), Mt = h("True", "TRUE"), Bt = h("False", "FALSE"), It = h("TypeBool", "BOOL"), Dt = o({
+}), mt = h("Program", "PROGRAM"), oi = h("Function", "FUNCTION"), bt = h("Var", "VAR"), li = h("Constant", "CONSTANT"), vt = h("If", "IF"), M = h("Then", "THEN"), yt = h("Elsif", "ELSIF"), I = h("Else", "ELSE"), Et = h("Case", "CASE"), St = h("Of", "OF"), _t = h("For", "FOR"), xt = h("To", "TO"), Lt = h("By", "BY"), B = h("Do", "DO"), Ct = h("While", "WHILE"), Ot = h("Repeat", "REPEAT"), Ut = h("Until", "UNTIL"), Nt = h("Return", "RETURN"), wt = h("Exit", "EXIT"), ci = h("Continue", "CONTINUE"), D = h("At", "AT"), Tt = h("And", "AND"), Rt = h("Or", "OR"), di = h("Xor", "XOR"), At = h("Not", "NOT"), kt = h("Mod", "MOD"), Mt = h("True", "TRUE"), It = h("False", "FALSE"), Bt = h("TypeBool", "BOOL"), Dt = o({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
 }), Pt = o({
@@ -1408,13 +1408,13 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
   vt,
   M,
   yt,
-  B,
+  I,
   Et,
   St,
   _t,
   xt,
   Lt,
-  I,
+  B,
   Ct,
   Ot,
   Ut,
@@ -1429,9 +1429,9 @@ const h = (a, t) => o({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ei =
   At,
   kt,
   Mt,
-  Bt,
-  // Types
   It,
+  // Types
+  Bt,
   Dt,
   Pt,
   Ft,
@@ -1520,7 +1520,7 @@ class Ei extends Me {
     }));
     l(this, "typeSpec", this.RULE("typeSpec", () => {
       this.OR([
-        { ALT: () => this.CONSUME(It) },
+        { ALT: () => this.CONSUME(Bt) },
         { ALT: () => this.CONSUME(Dt) },
         { ALT: () => this.CONSUME(Pt) },
         { ALT: () => this.CONSUME(Ft) },
@@ -1552,14 +1552,14 @@ class Ei extends Me {
           () => this.SUBRULE1(this.statement, { LABEL: "elsifStatements" })
         );
       }), this.OPTION(() => {
-        this.CONSUME(B), this.MANY3(
+        this.CONSUME(I), this.MANY3(
           () => this.SUBRULE2(this.statement, { LABEL: "elseStatements" })
         );
       }), this.CONSUME(ht);
     }));
     l(this, "caseStatement", this.RULE("caseStatement", () => {
       this.CONSUME(Et), this.SUBRULE(this.expression, { LABEL: "selector" }), this.CONSUME(St), this.MANY(() => this.SUBRULE(this.caseClause)), this.OPTION(() => {
-        this.CONSUME(B), this.MANY1(() => this.SUBRULE(this.statement));
+        this.CONSUME(I), this.MANY1(() => this.SUBRULE(this.statement));
       }), this.CONSUME(pt);
     }));
     l(this, "caseClause", this.RULE("caseClause", () => {
@@ -1578,10 +1578,10 @@ class Ei extends Me {
     l(this, "forStatement", this.RULE("forStatement", () => {
       this.CONSUME(_t), this.CONSUME(y, { LABEL: "controlVar" }), this.CONSUME(L), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(xt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
         this.CONSUME(Lt), this.SUBRULE2(this.expression, { LABEL: "step" });
-      }), this.CONSUME(I), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(ut);
+      }), this.CONSUME(B), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(ut);
     }));
     l(this, "whileStatement", this.RULE("whileStatement", () => {
-      this.CONSUME(Ct), this.SUBRULE(this.expression), this.CONSUME(I), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(gt);
+      this.CONSUME(Ct), this.SUBRULE(this.expression), this.CONSUME(B), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(gt);
     }));
     l(this, "repeatStatement", this.RULE("repeatStatement", () => {
       this.CONSUME(Ot), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(Ut), this.SUBRULE(this.expression), this.CONSUME(ft);
@@ -1677,7 +1677,7 @@ class Ei extends Me {
     l(this, "literal", this.RULE("literal", () => {
       this.OR([
         { ALT: () => this.CONSUME(Mt) },
-        { ALT: () => this.CONSUME(Bt) },
+        { ALT: () => this.CONSUME(It) },
         { ALT: () => this.CONSUME(zt) },
         { ALT: () => this.CONSUME(Vt) },
         { ALT: () => this.CONSUME(Yt) },
@@ -2460,6 +2460,8 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     this._switchToFile(e);
   }
   _handleFileSelected(t) {
+    const { fileId: e } = t.detail;
+    e && this._switchToFile(e);
   }
   _handleFileRename(t) {
     const { fileId: e, newName: s } = t.detail;
@@ -3203,7 +3205,7 @@ g = b([
 const Ui = document.getElementById("st-ha-design-system");
 if (!Ui) {
   const a = document.createElement("style");
-  a.id = "st-ha-design-system", a.textContent = Be, document.head.appendChild(a);
+  a.id = "st-ha-design-system", a.textContent = Ie, document.head.appendChild(a);
 }
 console.log("ST for Home Assistant loaded");
 export {
@@ -3211,7 +3213,7 @@ export {
   J as ST_BUILTINS,
   tt as ST_FUNCTION_BLOCKS,
   Q as ST_KEYWORDS,
-  Ie as ST_PRAGMAS,
+  Be as ST_PRAGMAS,
   Z as ST_TYPES,
   Fe as stEditorTheme,
   $e as stHighlightStyle,
