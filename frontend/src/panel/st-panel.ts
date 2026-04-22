@@ -906,7 +906,12 @@ END_PROGRAM`;
                     >
                       <ha-icon icon="mdi:close"></ha-icon>
                     </button>
-                    <st-entity-browser .hass=${this.hass}></st-entity-browser>
+                    <st-entity-browser
+                      .hass=${this.hass}
+                      .currentCode=${this._getCurrentCode()}
+                      @insert-binding=${this._handleInsertBinding}
+                      @remove-binding=${this._handleRemoveBinding}
+                    ></st-entity-browser>
                   </div>
                 `
               : ""}
@@ -1573,5 +1578,27 @@ END_PROGRAM`;
       this._entityBrowserLoaded = true;
     }
     this._showEntityBrowser = !this._showEntityBrowser;
+  }
+
+  private _handleInsertBinding(
+    e: CustomEvent<{ bindingSyntax: string }>,
+  ): void {
+    e.stopPropagation();
+    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    const bindingSyntax = e.detail?.bindingSyntax;
+    if (!editor || !bindingSyntax) return;
+
+    editor.insertBinding(bindingSyntax);
+  }
+
+  private _handleRemoveBinding(
+    e: CustomEvent<{ entityId: string }>,
+  ): void {
+    e.stopPropagation();
+    const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
+    const entityId = e.detail?.entityId;
+    if (!editor || !entityId) return;
+
+    editor.removeBinding(entityId);
   }
 }

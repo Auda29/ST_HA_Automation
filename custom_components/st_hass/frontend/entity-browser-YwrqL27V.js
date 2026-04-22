@@ -1,33 +1,65 @@
 var I = Object.defineProperty;
-var D = (a, t, e) => t in a ? I(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
-var c = (a, t, e) => D(a, typeof t != "symbol" ? t + "" : t, e);
-import { i as g, n as l, a as b, b as o, t as y, r as k } from "./lit-C178dhqO.js";
-import { s as O } from "./ha-websocket-DcUbagYv.js";
-var x = Object.defineProperty, C = Object.getOwnPropertyDescriptor, T = (a, t, e) => t in a ? x(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, f = (a, t, e, n) => {
-  for (var i = n > 1 ? void 0 : n ? C(t, e) : t, s = a.length - 1, r; s >= 0; s--)
-    (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
-  return n && i && x(t, e, i), i;
-}, z = (a, t, e) => T(a, t + "", e);
-let d = class extends b {
-  _handleDragStart(a) {
-    if (!a.dataTransfer || !this.entity) return;
-    const t = a.shiftKey ? "output" : "input", e = t === "input" ? "%I*" : "%Q*", i = `${this._entityIdToVarName(this.entity.entityId)} AT ${e} : ${this.inferredType} := '${this.entity.entityId}';`, s = {
+var C = (n, t, e) => t in n ? I(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e;
+var c = (n, t, e) => C(n, typeof t != "symbol" ? t + "" : t, e);
+import { i as g, n as d, a as b, b as o, t as y, r as k } from "./lit-C178dhqO.js";
+import { s as D } from "./ha-websocket-DcUbagYv.js";
+var v = Object.defineProperty, O = Object.getOwnPropertyDescriptor, E = (n, t, e) => t in n ? v(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, h = (n, t, e, r) => {
+  for (var i = r > 1 ? void 0 : r ? O(t, e) : t, a = n.length - 1, s; a >= 0; a--)
+    (s = n[a]) && (i = (r ? s(t, e, i) : s(i)) || i);
+  return r && i && v(t, e, i), i;
+}, S = (n, t, e) => E(n, t + "", e);
+let l = class extends b {
+  constructor() {
+    super(), this.currentCode = "";
+  }
+  _handleDragStart(n) {
+    if (!n.dataTransfer || !this.entity) return;
+    const t = n.shiftKey ? "output" : "input", e = this._buildBindingSyntax(t), r = {
       entityId: this.entity.entityId,
       dataType: this.inferredType,
       direction: t,
-      bindingSyntax: i
+      bindingSyntax: e
     };
-    a.dataTransfer.effectAllowed = "copy", a.dataTransfer.setData("text/plain", i), a.dataTransfer.setData("application/json", JSON.stringify(s)), this.classList.add("dragging");
+    n.dataTransfer.effectAllowed = "copy", n.dataTransfer.setData("text/plain", e), n.dataTransfer.setData("application/json", JSON.stringify(r)), this.classList.add("dragging");
   }
   _handleDragEnd() {
     this.classList.remove("dragging");
   }
-  _entityIdToVarName(a) {
-    const t = a.split(".");
-    return t.length < 2 ? a : t[1].split("_").map((n, i) => i === 0 ? n : n.charAt(0).toUpperCase() + n.slice(1)).join("");
+  _buildBindingSyntax(n) {
+    const t = n === "input" ? "%I*" : "%Q*";
+    return `${this._entityIdToVarName(this.entity.entityId)} AT ${t} : ${this.inferredType} := '${this.entity.entityId}';`;
   }
-  _getStateClass(a) {
-    const t = a.toLowerCase();
+  _dispatchInsertBinding(n, t) {
+    t.preventDefault(), t.stopPropagation(), this.dispatchEvent(
+      new CustomEvent("insert-binding", {
+        detail: {
+          entityId: this.entity.entityId,
+          direction: n,
+          bindingSyntax: this._buildBindingSyntax(n)
+        },
+        bubbles: !0,
+        composed: !0
+      })
+    );
+  }
+  _dispatchRemoveBinding(n) {
+    n.preventDefault(), n.stopPropagation(), this.dispatchEvent(
+      new CustomEvent("remove-binding", {
+        detail: { entityId: this.entity.entityId },
+        bubbles: !0,
+        composed: !0
+      })
+    );
+  }
+  _hasBinding() {
+    return !!this.currentCode && this.currentCode.includes(`'${this.entity.entityId}'`);
+  }
+  _entityIdToVarName(n) {
+    const t = n.split(".");
+    return t.length < 2 ? n : t[1].split("_").map((r, i) => i === 0 ? r : r.charAt(0).toUpperCase() + r.slice(1)).join("");
+  }
+  _getStateClass(n) {
+    const t = n.toLowerCase();
     return t === "on" || t === "open" || t === "active" ? "on" : t === "off" || t === "closed" || t === "inactive" ? "off" : t === "unavailable" || t === "unknown" ? "unavailable" : "";
   }
   _getEntityIcon() {
@@ -48,14 +80,14 @@ let d = class extends b {
   }
   render() {
     if (!this.entity) return o``;
-    const a = this._getStateClass(this.entity.state), t = this._getEntityIcon(), e = this.entity.friendlyName || this.entity.entityId;
+    const n = this._getStateClass(this.entity.state), t = this._getEntityIcon(), e = this.entity.friendlyName || this.entity.entityId, r = this._hasBinding();
     return o`
       <div
         class="entity-item"
         draggable="true"
         tabindex="0"
         role="button"
-        aria-label="${e} — ${this.entity.entityId} — drag to editor to bind"
+        aria-label="${e} - ${this.entity.entityId} - drag to editor to bind"
         @dragstart=${this._handleDragStart}
         @dragend=${this._handleDragEnd}
         title="Drag to editor. Hold Shift while dragging for an output binding."
@@ -71,12 +103,40 @@ let d = class extends b {
           <div class="entity-name">${e}</div>
           <div class="entity-id">${this.entity.entityId}</div>
         </div>
-        <div class="entity-state ${a}">${this.entity.state}</div>
+        <div class="entity-state ${n}">${this.entity.state}</div>
+        <div class="entity-actions">
+          <button
+            class="entity-action"
+            @click=${(i) => this._dispatchInsertBinding("input", i)}
+            title="Insert input binding"
+            aria-label="Insert input binding for ${e}"
+          >
+            + Input
+          </button>
+          <button
+            class="entity-action output"
+            @click=${(i) => this._dispatchInsertBinding("output", i)}
+            title="Insert output binding"
+            aria-label="Insert output binding for ${e}"
+          >
+            + Output
+          </button>
+          ${r ? o`
+                <button
+                  class="entity-action remove"
+                  @click=${(i) => this._dispatchRemoveBinding(i)}
+                  title="Remove binding from code"
+                  aria-label="Remove binding for ${e}"
+                >
+                  Remove
+                </button>
+              ` : ""}
+        </div>
       </div>
     `;
   }
 };
-z(d, "styles", g`
+S(l, "styles", g`
     :host {
       display: block;
     }
@@ -201,27 +261,69 @@ z(d, "styles", g`
       background: rgba(255, 107, 107, 0.16);
       color: #ffb2b2;
     }
+
+    .entity-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .entity-action {
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: var(--radius-pill, 999px);
+      border: 1px solid rgba(88, 127, 146, 0.24);
+      background: rgba(24, 35, 43, 0.94);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-size: var(--font-size-xs, 11px);
+      font-weight: var(--font-weight-semibold, 600);
+      cursor: pointer;
+      transition:
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease),
+        transform var(--transition-fast, 160ms ease);
+    }
+
+    .entity-action:hover {
+      background: rgba(34, 48, 58, 0.96);
+      border-color: rgba(120, 173, 199, 0.44);
+      transform: translateY(-1px);
+    }
+
+    .entity-action.output {
+      color: #ffdb97;
+      border-color: rgba(255, 206, 115, 0.28);
+    }
+
+    .entity-action.remove {
+      color: #ffb2b2;
+      border-color: rgba(255, 107, 107, 0.24);
+    }
   `);
-f([
-  l({ type: Object })
-], d.prototype, "entity", 2);
-f([
-  l({ type: String })
-], d.prototype, "inferredType", 2);
-f([
-  l({ type: Boolean })
-], d.prototype, "isInput", 2);
-f([
-  l({ type: Boolean })
-], d.prototype, "isOutput", 2);
-d = f([
+h([
+  d({ type: Object })
+], l.prototype, "entity", 2);
+h([
+  d({ type: String })
+], l.prototype, "inferredType", 2);
+h([
+  d({ type: Boolean })
+], l.prototype, "isInput", 2);
+h([
+  d({ type: Boolean })
+], l.prototype, "isOutput", 2);
+h([
+  d({ type: String })
+], l.prototype, "currentCode", 2);
+l = h([
   y("st-entity-item")
-], d);
-var v = Object.defineProperty, E = Object.getOwnPropertyDescriptor, N = (a, t, e) => t in a ? v(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, m = (a, t, e, n) => {
-  for (var i = n > 1 ? void 0 : n ? E(t, e) : t, s = a.length - 1, r; s >= 0; s--)
-    (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
-  return n && i && v(t, e, i), i;
-}, S = (a, t, e) => N(a, t + "", e);
+], l);
+var _ = Object.defineProperty, z = Object.getOwnPropertyDescriptor, T = (n, t, e) => t in n ? _(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, m = (n, t, e, r) => {
+  for (var i = r > 1 ? void 0 : r ? z(t, e) : t, a = n.length - 1, s; a >= 0; a--)
+    (s = n[a]) && (i = (r ? s(t, e, i) : s(i)) || i);
+  return r && i && _(t, e, i), i;
+}, N = (n, t, e) => T(n, t + "", e);
 let p = class extends b {
   constructor() {
     super();
@@ -231,7 +333,7 @@ let p = class extends b {
       selectedDomain: null,
       showInputsOnly: !1,
       showOutputsOnly: !1
-    };
+    }, this.currentCode = "";
   }
   _getDomainIcon(t) {
     return {
@@ -279,8 +381,8 @@ let p = class extends b {
   _filterEntities(t) {
     return t.filter((e) => {
       if (this.filter.searchQuery) {
-        const n = this.filter.searchQuery.toLowerCase();
-        if (!(e.entityId.toLowerCase().includes(n) || e.friendlyName && e.friendlyName.toLowerCase().includes(n))) return !1;
+        const r = this.filter.searchQuery.toLowerCase();
+        if (!(e.entityId.toLowerCase().includes(r) || e.friendlyName && e.friendlyName.toLowerCase().includes(r))) return !1;
       }
       return !(this.filter.selectedDomain && e.domain !== this.filter.selectedDomain || this.filter.showInputsOnly && !this._isInputEntity(e) || this.filter.showOutputsOnly && !this._isOutputEntity(e));
     });
@@ -289,19 +391,19 @@ let p = class extends b {
     const e = /* @__PURE__ */ new Map();
     for (const i of t)
       e.has(i.domain) || e.set(i.domain, []), e.get(i.domain).push(i);
-    const n = [];
-    for (const [i, s] of e.entries())
-      n.push({
+    const r = [];
+    for (const [i, a] of e.entries())
+      r.push({
         domain: i,
-        entities: s.sort(
-          (r, u) => (r.friendlyName || r.entityId).localeCompare(
-            u.friendlyName || u.entityId
+        entities: a.sort(
+          (s, f) => (s.friendlyName || s.entityId).localeCompare(
+            f.friendlyName || f.entityId
           )
         ),
         icon: this._getDomainIcon(i),
         expanded: this._expandedDomains.has(i)
       });
-    return n.sort((i, s) => i.domain.localeCompare(s.domain));
+    return r.sort((i, a) => i.domain.localeCompare(a.domain));
   }
   _toggleDomain(t) {
     this._expandedDomains.has(t) ? this._expandedDomains.delete(t) : this._expandedDomains.add(t), this._expandedDomains = new Set(this._expandedDomains), this.requestUpdate();
@@ -314,30 +416,31 @@ let p = class extends b {
         </div>
       ` : o`
       ${e.map(
-      (n) => o`
+      (r) => o`
           <div class="domain-group">
             <div
               class="domain-header"
-              @click=${() => this._toggleDomain(n.domain)}
+              @click=${() => this._toggleDomain(r.domain)}
             >
               <div class="domain-icon">
-                <ha-icon .icon=${n.icon}></ha-icon>
+                <ha-icon .icon=${r.icon}></ha-icon>
               </div>
-              <div class="domain-name">${n.domain}</div>
-              <div class="domain-count">${n.entities.length}</div>
-              <div class="domain-toggle ${n.expanded ? "expanded" : ""}">
+              <div class="domain-name">${r.domain}</div>
+              <div class="domain-count">${r.entities.length}</div>
+              <div class="domain-toggle ${r.expanded ? "expanded" : ""}">
                 <ha-icon icon="mdi:chevron-right"></ha-icon>
               </div>
             </div>
-            ${n.expanded ? o`
+            ${r.expanded ? o`
                   <div class="domain-entities">
-                    ${n.entities.map(
+                    ${r.entities.map(
         (i) => o`
                         <st-entity-item
                           .entity=${i}
-                          .inferredType=${j(i).dataType}
+                          .inferredType=${L(i).dataType}
                           .isInput=${this._isInputEntity(i)}
                           .isOutput=${this._isOutputEntity(i)}
+                          .currentCode=${this.currentCode}
                         ></st-entity-item>
                       `
       )}
@@ -349,7 +452,7 @@ let p = class extends b {
     `;
   }
 };
-S(p, "styles", g`
+N(p, "styles", g`
     :host {
       display: block;
       height: 100%;
@@ -443,25 +546,28 @@ S(p, "styles", g`
     }
   `);
 m([
-  l({ type: Array })
+  d({ type: Array })
 ], p.prototype, "entities", 2);
 m([
-  l({ type: Object })
+  d({ type: Object })
 ], p.prototype, "filter", 2);
+m([
+  d({ type: String })
+], p.prototype, "currentCode", 2);
 m([
   k()
 ], p.prototype, "_expandedDomains", 2);
 p = m([
   y("st-entity-list")
 ], p);
-var _ = Object.defineProperty, A = Object.getOwnPropertyDescriptor, P = (a, t, e) => t in a ? _(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, w = (a, t, e, n) => {
-  for (var i = n > 1 ? void 0 : n ? A(t, e) : t, s = a.length - 1, r; s >= 0; s--)
-    (r = a[s]) && (i = (n ? r(t, e, i) : r(i)) || i);
-  return n && i && _(t, e, i), i;
-}, L = (a, t, e) => P(a, t + "", e);
-let h = class extends b {
+var w = Object.defineProperty, B = Object.getOwnPropertyDescriptor, P = (n, t, e) => t in n ? w(n, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : n[t] = e, x = (n, t, e, r) => {
+  for (var i = r > 1 ? void 0 : r ? B(t, e) : t, a = n.length - 1, s; a >= 0; a--)
+    (s = n[a]) && (i = (r ? s(t, e, i) : s(i)) || i);
+  return r && i && w(t, e, i), i;
+}, A = (n, t, e) => P(n, t + "", e);
+let u = class extends b {
   constructor() {
-    super(...arguments);
+    super();
     c(this, "_entities", /* @__PURE__ */ new Map());
     c(this, "_filter", {
       searchQuery: "",
@@ -473,6 +579,7 @@ let h = class extends b {
     c(this, "_isConnected", !1);
     c(this, "_error", null);
     c(this, "_unsubscribe", null);
+    this.currentCode = "";
   }
   connectedCallback() {
     var t;
@@ -484,8 +591,8 @@ let h = class extends b {
   updated(t) {
     var e;
     if (super.updated(t), t.has("hass")) {
-      const n = t.get("hass"), i = n == null ? void 0 : n.connection, s = (e = this.hass) == null ? void 0 : e.connection;
-      i && i !== s && this._disconnect(), s && !this._unsubscribe && this._connect();
+      const r = t.get("hass"), i = r == null ? void 0 : r.connection, a = (e = this.hass) == null ? void 0 : e.connection;
+      i && i !== a && this._disconnect(), a && !this._unsubscribe && this._connect();
     }
   }
   async _connect() {
@@ -495,11 +602,11 @@ let h = class extends b {
       return;
     }
     try {
-      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this.hass.states && this._handleEntityUpdate(this.hass.states), this._unsubscribe = O(this.hass.connection, (n) => {
-        this._handleEntityUpdate(n);
+      this._error = null, this._isConnected = !1, !this.hass.connection.haVersion && ((e = this.hass.config) != null && e.version) && (this.hass.connection.haVersion = this.hass.config.version), this.hass.states && this._handleEntityUpdate(this.hass.states), this._unsubscribe = D(this.hass.connection, (r) => {
+        this._handleEntityUpdate(r);
       }), this._isConnected = !0;
-    } catch (n) {
-      this._error = n instanceof Error ? n.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", n);
+    } catch (r) {
+      this._error = r instanceof Error ? r.message : "Connection failed", this._isConnected = !1, console.error("Failed to subscribe to entities", r);
     }
   }
   _disconnect() {
@@ -507,23 +614,23 @@ let h = class extends b {
   }
   _handleEntityUpdate(t) {
     var i;
-    const e = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Set();
-    for (const [s, r] of Object.entries(t)) {
-      const u = s.split(".")[0];
-      n.add(u);
+    const e = /* @__PURE__ */ new Map(), r = /* @__PURE__ */ new Set();
+    for (const [a, s] of Object.entries(t)) {
+      const f = a.split(".")[0];
+      r.add(f);
       const $ = {
-        entityId: s,
-        state: r.state,
-        attributes: r.attributes || {},
-        domain: u,
-        friendlyName: this._getFriendlyName(r),
-        deviceClass: (i = r.attributes) == null ? void 0 : i.device_class,
-        icon: this._getEntityIcon(r),
-        lastChanged: r.lastChanged
+        entityId: a,
+        state: s.state,
+        attributes: s.attributes || {},
+        domain: f,
+        friendlyName: this._getFriendlyName(s),
+        deviceClass: (i = s.attributes) == null ? void 0 : i.device_class,
+        icon: this._getEntityIcon(s),
+        lastChanged: s.lastChanged
       };
-      e.set(s, $);
+      e.set(a, $);
     }
-    this._entities = e, this._domains = Array.from(n).sort(), this.requestUpdate();
+    this._entities = e, this._domains = Array.from(r).sort(), this.requestUpdate();
   }
   _getFriendlyName(t) {
     var e;
@@ -556,9 +663,9 @@ let h = class extends b {
         reason: "Climate entities often expose temperature setpoints"
       };
     if (e === "sensor") {
-      const n = Number(t.state);
-      if (!Number.isNaN(n)) {
-        const i = Number.isInteger(n) && !t.state.includes(".");
+      const r = Number(t.state);
+      if (!Number.isNaN(r)) {
+        const i = Number.isInteger(r) && !t.state.includes(".");
         return {
           dataType: i ? "INT" : "REAL",
           confidence: "medium",
@@ -606,7 +713,7 @@ let h = class extends b {
     }, this.requestUpdate();
   }
   render() {
-    const t = this._getFilteredEntities(), e = this._error ? "status-error" : this._isConnected ? "status-connected" : "status-connecting", n = this._error ? this._error : this._isConnected ? "Connected to Home Assistant" : "Connecting to Home Assistant";
+    const t = this._getFilteredEntities(), e = this._error ? "status-error" : this._isConnected ? "status-connected" : "status-connecting", r = this._error ? this._error : this._isConnected ? "Connected to Home Assistant" : "Connecting to Home Assistant";
     return o`
       <div class="header">
         <div class="eyebrow">Entity Linker</div>
@@ -672,8 +779,8 @@ let h = class extends b {
         <div class="drag-hint">
           <ha-icon icon="mdi:drag-variant"></ha-icon>
           <span>
-            Drag an entity onto the editor. Hold <kbd>Shift</kbd> for an output
-            binding.
+            Drag is optional. Use <strong>+ Input</strong>, <strong>+ Output</strong>,
+            or <strong>Remove</strong> to edit bindings without covering the editor.
           </span>
         </div>
       </div>
@@ -681,7 +788,7 @@ let h = class extends b {
       <div class="status-bar">
         <span class="status-indicator ${e}">
           <span class="status-dot"></span>
-          ${n}
+          ${r}
         </span>
         <span class="status-count">${t.length} entities</span>
       </div>
@@ -695,6 +802,7 @@ let h = class extends b {
               <st-entity-list
                 .entities=${t}
                 .filter=${this._filter}
+                .currentCode=${this.currentCode}
               ></st-entity-list>
             `}
       </div>
@@ -704,7 +812,7 @@ let h = class extends b {
     this._filter = { ...this._filter, searchQuery: "" }, this.requestUpdate();
   }
 };
-L(h, "styles", g`
+A(u, "styles", g`
     :host {
       display: flex;
       flex-direction: column;
@@ -938,17 +1046,20 @@ L(h, "styles", g`
       color: var(--ui-text-secondary, #b6c4cf);
     }
   `);
-w([
-  l({ attribute: !1 })
-], h.prototype, "hass", 2);
-h = w([
+x([
+  d({ attribute: !1 })
+], u.prototype, "hass", 2);
+x([
+  d({ type: String })
+], u.prototype, "currentCode", 2);
+u = x([
   y("st-entity-browser")
-], h);
-const j = h.inferDataType;
+], u);
+const L = u.inferDataType;
 export {
-  h as STEntityBrowser,
-  d as STEntityItem,
+  u as STEntityBrowser,
+  l as STEntityItem,
   p as STEntityList,
-  j as inferDataType
+  L as inferDataType
 };
-//# sourceMappingURL=entity-browser-BAvmIZm8.js.map
+//# sourceMappingURL=entity-browser-YwrqL27V.js.map

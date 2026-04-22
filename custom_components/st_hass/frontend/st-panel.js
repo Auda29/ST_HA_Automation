@@ -1,14 +1,14 @@
 var ae = Object.defineProperty;
 var ne = (a, t, e) => t in a ? ae(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e;
 var l = (a, t, e) => ne(a, typeof t != "symbol" ? t + "" : t, e);
-import { S as oe, c as re, L as le, E as U, H as ce, s as de, a as Q, b as he, D as M, W as pe, C as ue, d as L, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as Se, m as _e, n as xe, o as Le, p as Ce, q as Oe, r as Ue, t as we, u as Ne, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
+import { S as oe, c as re, L as le, E as U, H as ce, s as de, a as Q, b as he, D as B, W as pe, C as ue, d as C, l as ge, h as fe, e as me, f as be, g as ve, i as ye, j as Ee, k as _e, m as Se, n as xe, o as Ce, p as Le, q as Oe, r as Ue, t as we, u as Ne, v as Te, w as Re, x as ke, y as Ae } from "./codemirror-C8x9REUs.js";
 import { W as m } from "./vendor-BhPS5zVw.js";
 import { i as Y, n as x, a as W, b as g, t as G, r as v } from "./lit-C178dhqO.js";
-import { s as Me } from "./ha-websocket-DcUbagYv.js";
+import { s as Be } from "./ha-websocket-DcUbagYv.js";
 import "./project-DwWQHIot.js";
-import { c as r, L as R, C as Ie } from "./chevrotain-cBR36crC.js";
+import { c as r, L as R, C as Me } from "./chevrotain-cBR36crC.js";
 import { a as q } from "./analyzer-DbAWr__X.js";
-const Be = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-semibold: 600;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 6px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 20px;--radius-pill: 999px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-focus-ring: 0 0 0 3px rgba(24, 183, 230, .32);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .16s ease;--transition-medium: all .24s ease;--transition-slow: all .32s ease;--focus-ring: 2px solid rgba(91, 212, 255, .7);--focus-ring-offset: 2px}@media (prefers-reduced-motion: reduce){:root{--transition-fast: none;--transition-medium: none;--transition-slow: none}}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', Z = [
+const Ie = ':root{--editor-bg: #1e1e1e;--editor-bg-light: #252526;--editor-fg: #d4d4d4;--editor-fg-dim: #808080;--editor-keyword: #569cd6;--editor-type: #4ec9b0;--editor-function: #dcdcaa;--editor-variable: #9cdcfe;--editor-string: #ce9178;--editor-number: #b5cea8;--editor-comment: #6a9955;--editor-pragma: #c586c0;--editor-operator: #d4d4d4;--editor-invalid: #ff0000;--editor-selection: #264f78;--editor-selection-bg: rgba(38, 79, 120, .5);--editor-line-highlight: #2a2d2e;--editor-gutter-bg: #1e1e1e;--editor-gutter-fg: #858585;--editor-border: #404040;--editor-cursor: #aeafad;--editor-tooltip-bg: #252526;--ui-primary: var(--primary-color, #18b7e6);--ui-primary-strong: #0d7fa6;--ui-primary-soft: rgba(24, 183, 230, .14);--ui-bg: #091119;--ui-bg-secondary: #0e1822;--ui-bg-card: #101c27;--ui-bg-card-strong: #132331;--ui-bg-header: #0c1a24;--ui-bg-inset: #0a141d;--ui-bg-elevated: #162633;--ui-text-primary: #edf6ff;--ui-text-secondary: #8ea6bd;--ui-text-muted: #668097;--ui-text-header: #f4fbff;--ui-text-on-primary: #07141d;--ui-divider: rgba(140, 169, 193, .18);--ui-divider-strong: rgba(140, 169, 193, .32);--ui-success: #4fd39e;--ui-error: #ff7272;--ui-warning: #ffbf47;--ui-info: #6bc9ff;--ui-disabled: #6c8194;--status-online: #4fd39e;--status-paused: #ffbf47;--status-connecting: #6bc9ff;--status-disconnected: #7e8f9f;--status-error: #ff7272;--font-mono: "Fira Code", "Consolas", "Courier New", monospace;--font-ui: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;--font-size-xs: 11px;--font-size-sm: 12px;--font-size-base: 13px;--font-size-md: 14px;--font-size-lg: 16px;--font-size-xl: 18px;--font-size-2xl: 20px;--font-size-3xl: 26px;--font-size-editor: 14px;--font-size-diagnostics: 12px;--font-weight-normal: 400;--font-weight-medium: 500;--font-weight-semibold: 600;--font-weight-bold: 700;--space-1: 4px;--space-2: 8px;--space-3: 12px;--space-4: 16px;--space-5: 20px;--space-6: 24px;--space-8: 32px;--radius-sm: 6px;--radius-md: 10px;--radius-lg: 16px;--radius-xl: 20px;--radius-pill: 999px;--shadow-soft: 0 12px 30px rgba(0, 0, 0, .22);--shadow-popover: 0 16px 32px rgba(0, 0, 0, .28);--shadow-focus-ring: 0 0 0 3px rgba(24, 183, 230, .32);--shadow-header: inset 0 -1px 0 rgba(255, 255, 255, .04);--sidebar-width-min: 240px;--sidebar-width-default: 320px;--sidebar-width-max: 400px;--transition-fast: all .16s ease;--transition-medium: all .24s ease;--transition-slow: all .32s ease;--focus-ring: 2px solid rgba(91, 212, 255, .7);--focus-ring-offset: 2px}@media (prefers-reduced-motion: reduce){:root{--transition-fast: none;--transition-medium: none;--transition-slow: none}}.st-h1{margin:0;font-family:var(--font-ui);font-size:var(--font-size-3xl);font-weight:700;letter-spacing:-.03em;color:var(--ui-text-header)}.st-h2{margin:0;font-family:var(--font-ui);font-size:var(--font-size-xl);font-weight:600;color:var(--ui-text-primary)}.st-body{font-family:var(--font-ui);font-size:var(--font-size-md);color:var(--ui-text-primary)}.st-body-sm{font-family:var(--font-ui);font-size:var(--font-size-sm);color:var(--ui-text-secondary)}.st-mono{font-family:var(--font-mono);font-size:var(--font-size-diagnostics);color:var(--ui-text-primary)}.st-btn-primary,.st-btn-secondary,.st-btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);border-radius:var(--radius-md);cursor:pointer;font-family:var(--font-ui);font-size:var(--font-size-md);font-weight:600;transition:var(--transition-medium)}.st-btn-primary{padding:10px 16px;border:1px solid transparent;background:linear-gradient(135deg,var(--ui-primary),#4ad7ff);color:var(--ui-text-on-primary);box-shadow:0 10px 20px #18b7e62e}.st-btn-secondary{padding:9px 14px;border:1px solid var(--ui-divider-strong);background:#ffffff0a;color:var(--ui-text-primary)}.st-btn-ghost{padding:8px 12px;border:1px solid transparent;background:transparent;color:var(--ui-text-secondary)}.st-btn-primary:hover,.st-btn-secondary:hover,.st-btn-ghost:hover{transform:translateY(-1px)}.st-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--ui-divider);border-radius:999px;background:#ffffff0a;color:var(--ui-text-secondary);font-family:var(--font-ui);font-size:var(--font-size-sm);line-height:1}.st-status-ok{color:var(--ui-success)}.st-status-error{color:var(--ui-error)}.st-status-warning{color:var(--ui-warning)}.st-status-info{color:var(--ui-info)}', Z = [
   "PROGRAM",
   "END_PROGRAM",
   "FUNCTION",
@@ -337,7 +337,7 @@ class Ve {
     for (const e of t)
       this.bindings.set(e.variableName, e);
     try {
-      this.unsubscribe = Me(
+      this.unsubscribe = Be(
         this.connection,
         (e) => {
           this.handleHassEntityUpdate(e);
@@ -554,7 +554,7 @@ Last update: ${new Date(this.value.lastUpdate).toLocaleTimeString()}`, t.appendC
 }
 const We = he.define({
   create() {
-    return M.none;
+    return B.none;
   },
   update(a, t) {
     for (const e of t.effects)
@@ -572,7 +572,7 @@ function Ge(a, t) {
     const o = s[n], c = i + o.length;
     for (const [, d] of t)
       if (d.binding.line === n + 1) {
-        const p = M.widget({
+        const p = B.widget({
           widget: new Ye(d, !0),
           side: 1
         });
@@ -584,7 +584,7 @@ function Ge(a, t) {
       }
     i = c + 1;
   }
-  return e.sort((n, o) => n.from - o.from), M.set(
+  return e.sort((n, o) => n.from - o.from), B.set(
     e.map((n) => n.decoration.range(n.from, n.to))
   );
 }
@@ -650,7 +650,7 @@ var st = Object.defineProperty, Xe = Object.getOwnPropertyDescriptor, Qe = (a, t
     (o = a[n]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && st(t, e, i), i;
 }, Ze = (a, t, e) => Qe(a, t + "", e);
-let _ = class extends W {
+let S = class extends W {
   constructor() {
     super();
     l(this, "_editor", null);
@@ -665,7 +665,7 @@ let _ = class extends W {
   updated(t) {
     if (t.has("readOnly") && this._editor && this._editor.dispatch({
       effects: this._readOnlyCompartment.reconfigure(
-        L.readOnly.of(this.readOnly)
+        C.readOnly.of(this.readOnly)
       )
     }), t.has("code") && this._editor) {
       const e = this._editor.state.doc.toString();
@@ -729,13 +729,13 @@ let _ = class extends W {
       be(),
       ve(),
       ye(),
-      L.allowMultipleSelections.of(!0),
+      C.allowMultipleSelections.of(!0),
       Ee(),
-      Se(),
       _e(),
+      Se(),
       xe(),
-      Le(),
       Ce(),
+      Le(),
       Oe.of([
         ...Ue,
         ...we,
@@ -752,11 +752,11 @@ let _ = class extends W {
         dragover: (i) => (i.preventDefault(), i.stopPropagation(), i.dataTransfer && (i.dataTransfer.dropEffect = "copy"), !0),
         drop: (i) => (i.preventDefault(), i.stopPropagation(), this._handleDrop(i), !0)
       }),
-      this._readOnlyCompartment.of(L.readOnly.of(this.readOnly)),
-      L.tabSize.of(4)
+      this._readOnlyCompartment.of(C.readOnly.of(this.readOnly)),
+      C.tabSize.of(4)
     ];
     this._editor = new U({
-      state: L.create({ doc: this.code, extensions: e }),
+      state: C.create({ doc: this.code, extensions: e }),
       parent: t,
       dispatch: (i) => {
         this._editor.update([i]), i.docChanged && this.dispatchEvent(
@@ -801,6 +801,27 @@ let _ = class extends W {
       });
     this._editor.focus();
   }
+  insertBinding(t) {
+    if (!this._editor || !t) return;
+    const e = this._editor.state.selection.main, s = e.empty ? e.head : e.from, i = s > 0 && this.getCode()[s - 1] !== `
+` ? `
+` : "", n = t.endsWith(`
+`) ? "" : `
+`, o = `${i}${t}${n}`;
+    this._editor.dispatch({
+      changes: { from: s, insert: o },
+      selection: { anchor: s + o.length }
+    }), this._editor.focus();
+  }
+  removeBinding(t) {
+    if (!this._editor || !t) return;
+    const e = this.getCode(), s = e.split(`
+`), i = s.filter((n) => !n.includes(`'${t}'`));
+    i.length !== s.length && (this._editor.dispatch({
+      changes: { from: 0, to: e.length, insert: i.join(`
+`) }
+    }), this._editor.focus());
+  }
   getCode() {
     var t;
     return ((t = this._editor) == null ? void 0 : t.state.doc.toString()) ?? this.code;
@@ -816,7 +837,7 @@ let _ = class extends W {
     return g`<div id="editor-container"></div>`;
   }
 };
-Ze(_, "styles", Y`
+Ze(S, "styles", Y`
     :host {
       display: block;
       width: 100%;
@@ -854,16 +875,16 @@ Ze(_, "styles", Y`
   `);
 k([
   x({ type: String })
-], _.prototype, "code", 2);
+], S.prototype, "code", 2);
 k([
   x({ type: Boolean, attribute: "read-only" })
-], _.prototype, "readOnly", 2);
+], S.prototype, "readOnly", 2);
 k([
   x({ attribute: !1 })
-], _.prototype, "hass", 2);
-_ = k([
+], S.prototype, "hass", 2);
+S = k([
   G("st-editor")
-], _);
+], S);
 var at = Object.defineProperty, Je = Object.getOwnPropertyDescriptor, ti = (a, t, e) => t in a ? at(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, H = (a, t, e, s) => {
   for (var i = s > 1 ? void 0 : s ? Je(t, e) : t, n = a.length - 1, o; n >= 0; n--)
     (o = a[n]) && (i = (s ? o(t, e, i) : o(i)) || i);
@@ -1346,7 +1367,7 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), mt = r({
   name: "EndRepeat",
   pattern: /END_REPEAT/i
-}), bt = h("Program", "PROGRAM"), li = h("Function", "FUNCTION"), vt = h("Var", "VAR"), ci = h("Constant", "CONSTANT"), yt = h("If", "IF"), I = h("Then", "THEN"), Et = h("Elsif", "ELSIF"), B = h("Else", "ELSE"), St = h("Case", "CASE"), _t = h("Of", "OF"), xt = h("For", "FOR"), Lt = h("To", "TO"), Ct = h("By", "BY"), D = h("Do", "DO"), Ot = h("While", "WHILE"), Ut = h("Repeat", "REPEAT"), wt = h("Until", "UNTIL"), Nt = h("Return", "RETURN"), Tt = h("Exit", "EXIT"), di = h("Continue", "CONTINUE"), F = h("At", "AT"), Rt = h("And", "AND"), kt = h("Or", "OR"), hi = h("Xor", "XOR"), At = h("Not", "NOT"), Mt = h("Mod", "MOD"), It = h("True", "TRUE"), Bt = h("False", "FALSE"), Dt = h("TypeBool", "BOOL"), Ft = r({
+}), bt = h("Program", "PROGRAM"), li = h("Function", "FUNCTION"), vt = h("Var", "VAR"), ci = h("Constant", "CONSTANT"), yt = h("If", "IF"), M = h("Then", "THEN"), Et = h("Elsif", "ELSIF"), I = h("Else", "ELSE"), _t = h("Case", "CASE"), St = h("Of", "OF"), xt = h("For", "FOR"), Ct = h("To", "TO"), Lt = h("By", "BY"), D = h("Do", "DO"), Ot = h("While", "WHILE"), Ut = h("Repeat", "REPEAT"), wt = h("Until", "UNTIL"), Nt = h("Return", "RETURN"), Tt = h("Exit", "EXIT"), di = h("Continue", "CONTINUE"), F = h("At", "AT"), Rt = h("And", "AND"), kt = h("Or", "OR"), hi = h("Xor", "XOR"), At = h("Not", "NOT"), Bt = h("Mod", "MOD"), Mt = h("True", "TRUE"), It = h("False", "FALSE"), Dt = h("TypeBool", "BOOL"), Ft = r({
   name: "TypeInt",
   pattern: /\b(DINT|LINT|SINT|USINT|UINT|UDINT|ULINT|INT)\b/i
 }), Pt = r({
@@ -1385,10 +1406,10 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
 }), P = r({
   name: "IoAddress",
   pattern: /%[IQM][XBWDLxbwdl]?(?:[\d.]+|\*)/i
-}), C = r({ name: "Assign", pattern: /:=/ }), mi = r({ name: "Output", pattern: /=>/ }), Gt = r({ name: "LessEqual", pattern: /<=/ }), Ht = r({
+}), L = r({ name: "Assign", pattern: /:=/ }), mi = r({ name: "Output", pattern: /=>/ }), Gt = r({ name: "LessEqual", pattern: /<=/ }), Ht = r({
   name: "GreaterEqual",
   pattern: />=/
-}), qt = r({ name: "NotEqual", pattern: /<>/ }), Kt = r({ name: "Less", pattern: /</ }), Xt = r({ name: "Greater", pattern: />/ }), Qt = r({ name: "Equal", pattern: /=/ }), Zt = r({ name: "Plus", pattern: /\+/ }), $ = r({ name: "Minus", pattern: /-/ }), Jt = r({ name: "Star", pattern: /\*/ }), te = r({ name: "Slash", pattern: /\// }), N = r({ name: "LParen", pattern: /\(/ }), T = r({ name: "RParen", pattern: /\)/ }), bi = r({ name: "LBracket", pattern: /\[/ }), vi = r({ name: "RBracket", pattern: /\]/ }), z = r({ name: "Colon", pattern: /:/ }), S = r({ name: "Semicolon", pattern: /;/ }), j = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), ee = r({ name: "Range", pattern: /\.\./ }), y = r({
+}), qt = r({ name: "NotEqual", pattern: /<>/ }), Kt = r({ name: "Less", pattern: /</ }), Xt = r({ name: "Greater", pattern: />/ }), Qt = r({ name: "Equal", pattern: /=/ }), Zt = r({ name: "Plus", pattern: /\+/ }), $ = r({ name: "Minus", pattern: /-/ }), Jt = r({ name: "Star", pattern: /\*/ }), te = r({ name: "Slash", pattern: /\// }), N = r({ name: "LParen", pattern: /\(/ }), T = r({ name: "RParen", pattern: /\)/ }), bi = r({ name: "LBracket", pattern: /\[/ }), vi = r({ name: "RBracket", pattern: /\]/ }), z = r({ name: "Colon", pattern: /:/ }), _ = r({ name: "Semicolon", pattern: /;/ }), j = r({ name: "Comma", pattern: /,/ }), V = r({ name: "Dot", pattern: /\./ }), ee = r({ name: "Range", pattern: /\.\./ }), y = r({
   name: "Identifier",
   pattern: /[a-zA-Z_][a-zA-Z0-9_]*/
 }), ie = [
@@ -1419,14 +1440,14 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   vt,
   ci,
   yt,
-  I,
+  M,
   Et,
-  B,
-  St,
+  I,
   _t,
+  St,
   xt,
-  Lt,
   Ct,
+  Lt,
   D,
   Ot,
   Ut,
@@ -1440,9 +1461,9 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   kt,
   hi,
   At,
+  Bt,
   Mt,
   It,
-  Bt,
   // Types
   Dt,
   Ft,
@@ -1461,7 +1482,7 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   // I/O
   P,
   // Multi-char operators
-  C,
+  L,
   mi,
   ee,
   Gt,
@@ -1480,7 +1501,7 @@ const h = (a, t) => r({ name: a, pattern: new RegExp(`\\b${t}\\b`, "i") }), ii =
   bi,
   vi,
   z,
-  S,
+  _,
   j,
   V,
   // Identifier last
@@ -1497,7 +1518,7 @@ function Ei(a) {
     errors: t.errors
   };
 }
-class Si extends Ie {
+class _i extends Me {
   constructor() {
     super(ie, {
       recoveryEnabled: !0,
@@ -1523,10 +1544,10 @@ class Si extends Ie {
       }), this.OPTION1(() => {
         this.CONSUME(z), this.SUBRULE(this.typeSpec);
       }), this.OPTION2(() => {
-        this.CONSUME(C), this.SUBRULE(this.expression);
+        this.CONSUME(L), this.SUBRULE(this.expression);
       }), this.OPTION3(() => {
         this.CONSUME1(F), this.CONSUME1(P);
-      }), this.CONSUME(S);
+      }), this.CONSUME(_);
     }));
     l(this, "pragma", this.RULE("pragma", () => {
       this.CONSUME(nt);
@@ -1557,22 +1578,22 @@ class Si extends Ie {
       ]);
     }));
     l(this, "assignmentStatement", this.RULE("assignmentStatement", () => {
-      this.SUBRULE(this.variableReference), this.CONSUME(C), this.SUBRULE(this.expression), this.CONSUME(S);
+      this.SUBRULE(this.variableReference), this.CONSUME(L), this.SUBRULE(this.expression), this.CONSUME(_);
     }));
     l(this, "ifStatement", this.RULE("ifStatement", () => {
-      this.CONSUME(yt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(I), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
-        this.CONSUME(Et), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(I), this.MANY2(
+      this.CONSUME(yt), this.SUBRULE(this.expression, { LABEL: "condition" }), this.CONSUME(M), this.MANY(() => this.SUBRULE(this.statement, { LABEL: "thenStatements" })), this.MANY1(() => {
+        this.CONSUME(Et), this.SUBRULE1(this.expression, { LABEL: "elsifCondition" }), this.CONSUME1(M), this.MANY2(
           () => this.SUBRULE1(this.statement, { LABEL: "elsifStatements" })
         );
       }), this.OPTION(() => {
-        this.CONSUME(B), this.MANY3(
+        this.CONSUME(I), this.MANY3(
           () => this.SUBRULE2(this.statement, { LABEL: "elseStatements" })
         );
       }), this.CONSUME(pt);
     }));
     l(this, "caseStatement", this.RULE("caseStatement", () => {
-      this.CONSUME(St), this.SUBRULE(this.expression, { LABEL: "selector" }), this.CONSUME(_t), this.MANY(() => this.SUBRULE(this.caseClause)), this.OPTION(() => {
-        this.CONSUME(B), this.MANY1(() => this.SUBRULE(this.statement));
+      this.CONSUME(_t), this.SUBRULE(this.expression, { LABEL: "selector" }), this.CONSUME(St), this.MANY(() => this.SUBRULE(this.caseClause)), this.OPTION(() => {
+        this.CONSUME(I), this.MANY1(() => this.SUBRULE(this.statement));
       }), this.CONSUME(ut);
     }));
     l(this, "caseClause", this.RULE("caseClause", () => {
@@ -1589,8 +1610,8 @@ class Si extends Ie {
       });
     }));
     l(this, "forStatement", this.RULE("forStatement", () => {
-      this.CONSUME(xt), this.CONSUME(y, { LABEL: "controlVar" }), this.CONSUME(C), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(Lt), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
-        this.CONSUME(Ct), this.SUBRULE2(this.expression, { LABEL: "step" });
+      this.CONSUME(xt), this.CONSUME(y, { LABEL: "controlVar" }), this.CONSUME(L), this.SUBRULE(this.expression, { LABEL: "start" }), this.CONSUME(Ct), this.SUBRULE1(this.expression, { LABEL: "end" }), this.OPTION(() => {
+        this.CONSUME(Lt), this.SUBRULE2(this.expression, { LABEL: "step" });
       }), this.CONSUME(D), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(gt);
     }));
     l(this, "whileStatement", this.RULE("whileStatement", () => {
@@ -1600,13 +1621,13 @@ class Si extends Ie {
       this.CONSUME(Ut), this.MANY(() => this.SUBRULE(this.statement)), this.CONSUME(wt), this.SUBRULE(this.expression), this.CONSUME(mt);
     }));
     l(this, "returnStatement", this.RULE("returnStatement", () => {
-      this.CONSUME(Nt), this.CONSUME(S);
+      this.CONSUME(Nt), this.CONSUME(_);
     }));
     l(this, "exitStatement", this.RULE("exitStatement", () => {
-      this.CONSUME(Tt), this.CONSUME(S);
+      this.CONSUME(Tt), this.CONSUME(_);
     }));
     l(this, "functionCallStatement", this.RULE("functionCallStatement", () => {
-      this.SUBRULE(this.functionCall), this.CONSUME(S);
+      this.SUBRULE(this.functionCall), this.CONSUME(_);
     }));
     // Expressions with operator precedence
     l(this, "expression", this.RULE("expression", () => {
@@ -1649,7 +1670,7 @@ class Si extends Ie {
           this.OR([
             { ALT: () => this.CONSUME(Jt) },
             { ALT: () => this.CONSUME(te) },
-            { ALT: () => this.CONSUME(Mt) }
+            { ALT: () => this.CONSUME(Bt) }
           ]), this.SUBRULE1(this.unaryExpression, { LABEL: "rhs" });
         });
       }
@@ -1689,8 +1710,8 @@ class Si extends Ie {
     }));
     l(this, "literal", this.RULE("literal", () => {
       this.OR([
+        { ALT: () => this.CONSUME(Mt) },
         { ALT: () => this.CONSUME(It) },
-        { ALT: () => this.CONSUME(Bt) },
         { ALT: () => this.CONSUME(Yt) },
         { ALT: () => this.CONSUME(Vt) },
         { ALT: () => this.CONSUME(Wt) },
@@ -1720,14 +1741,14 @@ class Si extends Ie {
      */
     l(this, "argument", this.RULE("argument", () => {
       this.OPTION(() => {
-        this.CONSUME(y, { LABEL: "argName" }), this.CONSUME(C);
+        this.CONSUME(y, { LABEL: "argName" }), this.CONSUME(L);
       }), this.SUBRULE(this.expression, { LABEL: "argValue" });
     }));
     this.performSelfAnalysis();
   }
 }
-const O = new Si(), _i = O.getBaseCstVisitorConstructor();
-class xi extends _i {
+const O = new _i(), Si = O.getBaseCstVisitorConstructor();
+class xi extends Si {
   constructor() {
     super(), this.validateVisitor();
   }
@@ -2071,7 +2092,7 @@ class xi extends _i {
     return e.sort((s, i) => s.startOffset - i.startOffset);
   }
 }
-const Li = new xi();
+const Ci = new xi();
 function A(a) {
   const t = [], e = Ei(a);
   if (e.errors.length > 0 && e.errors.forEach((i) => {
@@ -2103,7 +2124,7 @@ function A(a) {
   try {
     return {
       success: !0,
-      ast: Li.visit(s),
+      ast: Ci.visit(s),
       errors: []
     };
   } catch (i) {
@@ -2115,8 +2136,8 @@ function A(a) {
     };
   }
 }
-var se = Object.defineProperty, Ci = Object.getOwnPropertyDescriptor, Oi = (a, t, e) => t in a ? se(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, b = (a, t, e, s) => {
-  for (var i = s > 1 ? void 0 : s ? Ci(t, e) : t, n = a.length - 1, o; n >= 0; n--)
+var se = Object.defineProperty, Li = Object.getOwnPropertyDescriptor, Oi = (a, t, e) => t in a ? se(a, t, { enumerable: !0, configurable: !0, writable: !0, value: e }) : a[t] = e, b = (a, t, e, s) => {
+  for (var i = s > 1 ? void 0 : s ? Li(t, e) : t, n = a.length - 1, o; n >= 0; n--)
     (o = a[n]) && (i = (s ? o(t, e, i) : o(i)) || i);
   return s && i && se(t, e, i), i;
 }, Ui = (a, t, e) => Oi(a, t + "", e);
@@ -2326,7 +2347,12 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
                     >
                       <ha-icon icon="mdi:close"></ha-icon>
                     </button>
-                    <st-entity-browser .hass=${this.hass}></st-entity-browser>
+                    <st-entity-browser
+                      .hass=${this.hass}
+                      .currentCode=${this._getCurrentCode()}
+                      @insert-binding=${this._handleInsertBinding}
+                      @remove-binding=${this._handleRemoveBinding}
+                    ></st-entity-browser>
                   </div>
                 ` : ""}
           </div>
@@ -2768,7 +2794,19 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     }), n && (this._onlineState = n.getOnlineState() ?? this._onlineState);
   }
   async _toggleEntityBrowser() {
-    !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-BAvmIZm8.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
+    !this._entityBrowserLoaded && !this._showEntityBrowser && (await import("./entity-browser-YwrqL27V.js"), this._entityBrowserLoaded = !0), this._showEntityBrowser = !this._showEntityBrowser;
+  }
+  _handleInsertBinding(t) {
+    var i, n;
+    t.stopPropagation();
+    const e = (i = this.shadowRoot) == null ? void 0 : i.querySelector("st-editor"), s = (n = t.detail) == null ? void 0 : n.bindingSyntax;
+    !e || !s || e.insertBinding(s);
+  }
+  _handleRemoveBinding(t) {
+    var i, n;
+    t.stopPropagation();
+    const e = (i = this.shadowRoot) == null ? void 0 : i.querySelector("st-editor"), s = (n = t.detail) == null ? void 0 : n.entityId;
+    !e || !s || e.removeBinding(s);
   }
 };
 Ui(f, "styles", Y`
@@ -3399,11 +3437,11 @@ f = b([
 const wi = document.getElementById("st-ha-design-system");
 if (!wi) {
   const a = document.createElement("style");
-  a.id = "st-ha-design-system", a.textContent = Be, document.head.appendChild(a);
+  a.id = "st-ha-design-system", a.textContent = Ie, document.head.appendChild(a);
 }
 console.log("ST for Home Assistant loaded");
 export {
-  _ as STEditor,
+  S as STEditor,
   tt as ST_BUILTINS,
   et as ST_FUNCTION_BLOCKS,
   Z as ST_KEYWORDS,

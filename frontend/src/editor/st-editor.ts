@@ -329,6 +329,39 @@ export class STEditor extends LitElement {
     this._editor.focus();
   }
 
+  insertBinding(bindingSyntax: string): void {
+    if (!this._editor || !bindingSyntax) return;
+
+    const selection = this._editor.state.selection.main;
+    const insertPos = selection.empty ? selection.head : selection.from;
+    const prefix = insertPos > 0 && this.getCode()[insertPos - 1] !== "\n" ? "\n" : "";
+    const suffix = bindingSyntax.endsWith("\n") ? "" : "\n";
+    const content = `${prefix}${bindingSyntax}${suffix}`;
+
+    this._editor.dispatch({
+      changes: { from: insertPos, insert: content },
+      selection: { anchor: insertPos + content.length },
+    });
+    this._editor.focus();
+  }
+
+  removeBinding(entityId: string): void {
+    if (!this._editor || !entityId) return;
+
+    const doc = this.getCode();
+    const lines = doc.split("\n");
+    const nextLines = lines.filter((line) => !line.includes(`'${entityId}'`));
+
+    if (nextLines.length === lines.length) {
+      return;
+    }
+
+    this._editor.dispatch({
+      changes: { from: 0, to: doc.length, insert: nextLines.join("\n") },
+    });
+    this._editor.focus();
+  }
+
   getCode(): string {
     return this._editor?.state.doc.toString() ?? this.code;
   }

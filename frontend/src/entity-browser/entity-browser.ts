@@ -15,6 +15,7 @@ import type { EntityState } from "../online/types";
 @customElement("st-entity-browser")
 export class STEntityBrowser extends LitElement {
   @property({ attribute: false }) declare hass?: any;
+  @property({ type: String }) declare currentCode: string;
 
   private _entities: Map<string, EntityInfo> = new Map();
   private _filter: EntityFilter = {
@@ -263,6 +264,11 @@ export class STEntityBrowser extends LitElement {
       color: var(--ui-text-secondary, #b6c4cf);
     }
   `;
+
+  constructor() {
+    super();
+    this.currentCode = "";
+  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -547,8 +553,8 @@ export class STEntityBrowser extends LitElement {
         <div class="drag-hint">
           <ha-icon icon="mdi:drag-variant"></ha-icon>
           <span>
-            Drag an entity onto the editor. Hold <kbd>Shift</kbd> for an output
-            binding.
+            Drag is optional. Use <strong>+ Input</strong>, <strong>+ Output</strong>,
+            or <strong>Remove</strong> to edit bindings without covering the editor.
           </span>
         </div>
       </div>
@@ -574,6 +580,7 @@ export class STEntityBrowser extends LitElement {
               <st-entity-list
                 .entities=${entities}
                 .filter=${this._filter}
+                .currentCode=${this.currentCode}
               ></st-entity-list>
             `}
       </div>

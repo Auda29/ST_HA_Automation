@@ -15,6 +15,7 @@ export class STEntityItem extends LitElement {
   @property({ type: String }) declare inferredType: InferredDataType;
   @property({ type: Boolean }) declare isInput: boolean;
   @property({ type: Boolean }) declare isOutput: boolean;
+  @property({ type: String }) declare currentCode: string;
 
   static styles = css`
     :host {
@@ -141,15 +142,57 @@ export class STEntityItem extends LitElement {
       background: rgba(255, 107, 107, 0.16);
       color: #ffb2b2;
     }
+
+    .entity-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .entity-action {
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: var(--radius-pill, 999px);
+      border: 1px solid rgba(88, 127, 146, 0.24);
+      background: rgba(24, 35, 43, 0.94);
+      color: var(--ui-text-primary, #f3f7fb);
+      font-size: var(--font-size-xs, 11px);
+      font-weight: var(--font-weight-semibold, 600);
+      cursor: pointer;
+      transition:
+        background var(--transition-fast, 160ms ease),
+        border-color var(--transition-fast, 160ms ease),
+        transform var(--transition-fast, 160ms ease);
+    }
+
+    .entity-action:hover {
+      background: rgba(34, 48, 58, 0.96);
+      border-color: rgba(120, 173, 199, 0.44);
+      transform: translateY(-1px);
+    }
+
+    .entity-action.output {
+      color: #ffdb97;
+      border-color: rgba(255, 206, 115, 0.28);
+    }
+
+    .entity-action.remove {
+      color: #ffb2b2;
+      border-color: rgba(255, 107, 107, 0.24);
+    }
   `;
+
+  constructor() {
+    super();
+    this.currentCode = "";
+  }
 
   private _handleDragStart(e: DragEvent): void {
     if (!e.dataTransfer || !this.entity) return;
 
     const direction = e.shiftKey ? "output" : "input";
-    const binding = direction === "input" ? "%I*" : "%Q*";
-    const varName = this._entityIdToVarName(this.entity.entityId);
-    const bindingSyntax = `${varName} AT ${binding} : ${this.inferredType} := '${this.entity.entityId}';`;
+    const bindingSyntax = this._buildBindingSyntax(direction);
 
     const dragData: DragEntityData = {
       entityId: this.entity.entityId,
@@ -167,6 +210,47 @@ export class STEntityItem extends LitElement {
 
   private _handleDragEnd(): void {
     this.classList.remove("dragging");
+  }
+
+  private _buildBindingSyntax(direction: "input" | "output"): string {
+    const binding = direction === "input" ? "%I*" : "%Q*";
+    const varName = this._entityIdToVarName(this.entity.entityId);
+    return `${varName} AT ${binding} : ${this.inferredType} := '${this.entity.entityId}';`;
+  }
+
+  private _dispatchInsertBinding(
+    direction: "input" | "output",
+    event: Event,
+  ): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(
+      new CustomEvent("insert-binding", {
+        detail: {
+          entityId: this.entity.entityId,
+          direction,
+          bindingSyntax: this._buildBindingSyntax(direction),
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private _dispatchRemoveBinding(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(
+      new CustomEvent("remove-binding", {
+        detail: { entityId: this.entity.entityId },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private _hasBinding(): boolean {
+    return !!this.currentCode && this.currentCode.includes(`'${this.entity.entityId}'`);
   }
 
   private _entityIdToVarName(entityId: string): string {
@@ -229,6 +313,7 @@ export class STEntityItem extends LitElement {
     const stateClass = this._getStateClass(this.entity.state);
     const icon = this._getEntityIcon();
     const displayName = this.entity.friendlyName || this.entity.entityId;
+    const hasBinding = this._hasBinding();
 
     return html`
       <div
@@ -236,7 +321,7 @@ export class STEntityItem extends LitElement {
         draggable="true"
         tabindex="0"
         role="button"
-        aria-label="${displayName} — ${this.entity.entityId} — drag to editor to bind"
+        aria-label="${displayName} - ${this.entity.entityId} - drag to editor to bind"
         @dragstart=${this._handleDragStart}
         @dragend=${this._handleDragEnd}
         title="Drag to editor. Hold Shift while dragging for an output binding."
@@ -255,6 +340,36 @@ export class STEntityItem extends LitElement {
           <div class="entity-id">${this.entity.entityId}</div>
         </div>
         <div class="entity-state ${stateClass}">${this.entity.state}</div>
+        <div class="entity-actions">
+          <button
+            class="entity-action"
+            @click=${(e: Event) => this._dispatchInsertBinding("input", e)}
+            title="Insert input binding"
+            aria-label="Insert input binding for ${displayName}"
+          >
+            + Input
+          </button>
+          <button
+            class="entity-action output"
+            @click=${(e: Event) => this._dispatchInsertBinding("output", e)}
+            title="Insert output binding"
+            aria-label="Insert output binding for ${displayName}"
+          >
+            + Output
+          </button>
+          ${hasBinding
+            ? html`
+                <button
+                  class="entity-action remove"
+                  @click=${(e: Event) => this._dispatchRemoveBinding(e)}
+                  title="Remove binding from code"
+                  aria-label="Remove binding for ${displayName}"
+                >
+                  Remove
+                </button>
+              `
+            : ""}
+        </div>
       </div>
     `;
   }

@@ -326,5 +326,41 @@ describe("STPanel", () => {
     });
     expect(panel._onlineState.updateRate).toBe(250);
   });
+
+  it("forwards insert-binding events from the entity browser to the editor", async () => {
+    const panel = document.createElement("st-panel") as any;
+    document.body.appendChild(panel);
+    await panel.updateComplete;
+
+    const editor = panel.shadowRoot?.querySelector("st-editor") as any;
+    editor.insertBinding = vi.fn();
+
+    panel._handleInsertBinding(
+      new CustomEvent("insert-binding", {
+        detail: { bindingSyntax: "motion AT %I* : BOOL := 'binary_sensor.motion';" },
+      }),
+    );
+
+    expect(editor.insertBinding).toHaveBeenCalledWith(
+      "motion AT %I* : BOOL := 'binary_sensor.motion';",
+    );
+  });
+
+  it("forwards remove-binding events from the entity browser to the editor", async () => {
+    const panel = document.createElement("st-panel") as any;
+    document.body.appendChild(panel);
+    await panel.updateComplete;
+
+    const editor = panel.shadowRoot?.querySelector("st-editor") as any;
+    editor.removeBinding = vi.fn();
+
+    panel._handleRemoveBinding(
+      new CustomEvent("remove-binding", {
+        detail: { entityId: "binary_sensor.motion" },
+      }),
+    );
+
+    expect(editor.removeBinding).toHaveBeenCalledWith("binary_sensor.motion");
+  });
 });
 

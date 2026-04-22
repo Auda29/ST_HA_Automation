@@ -14,6 +14,7 @@ import { inferDataType } from "./entity-browser";
 export class STEntityList extends LitElement {
   @property({ type: Array }) declare entities: EntityInfo[];
   @property({ type: Object }) declare filter: EntityFilter;
+  @property({ type: String }) declare currentCode: string;
 
   constructor() {
     super();
@@ -24,6 +25,7 @@ export class STEntityList extends LitElement {
       showInputsOnly: false,
       showOutputsOnly: false,
     };
+    this.currentCode = "";
   }
 
   @state() private _expandedDomains: Set<string> = new Set();
@@ -278,6 +280,7 @@ export class STEntityList extends LitElement {
                           .inferredType=${inferDataType(entity).dataType}
                           .isInput=${this._isInputEntity(entity)}
                           .isOutput=${this._isOutputEntity(entity)}
+                          .currentCode=${this.currentCode}
                         ></st-entity-item>
                       `,
                     )}
