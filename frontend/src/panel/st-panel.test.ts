@@ -106,5 +106,40 @@ describe("STPanel", () => {
     );
     expect(editor.getCode()).toBe("PROGRAM NewFile\nEND_PROGRAM");
   });
+
+  it("shows an empty state instead of legacy example code when all files are closed", async () => {
+    const panel = document.createElement("st-panel") as any;
+    panel._project = {
+      id: "project_1",
+      name: "My ST Project",
+      files: [
+        {
+          id: "file_1",
+          name: "Main.st",
+          path: "Main.st",
+          content: "PROGRAM Main\nEND_PROGRAM",
+          lastModified: Date.now(),
+          isOpen: true,
+          hasUnsavedChanges: false,
+        },
+      ],
+      activeFileId: "file_1",
+      createdAt: Date.now(),
+      lastModified: Date.now(),
+    };
+    document.body.appendChild(panel);
+
+    await panel.updateComplete;
+
+    panel._closeFile("file_1");
+    await panel.updateComplete;
+
+    expect(panel._project.activeFileId).toBeNull();
+    expect(panel._getCurrentCode()).toBe("");
+    expect(panel.shadowRoot?.querySelector("st-editor")).toBeNull();
+    expect(panel.shadowRoot?.querySelector(".empty-editor")?.textContent).toContain(
+      "All files are closed",
+    );
+  });
 });
 

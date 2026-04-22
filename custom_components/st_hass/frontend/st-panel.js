@@ -2291,11 +2291,17 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
                   </div>
                 ` : ""}
             <div class="editor-container">
-              <st-editor
-                .code=${this._getCurrentCode()}
-                .hass=${this.hass}
-                @code-change=${this._handleCodeChange}
-              ></st-editor>
+              ${this._project && !this._project.activeFileId ? u`
+                    <div class="empty-editor">
+                      All files are closed. Open a file from the project explorer or create a new one.
+                    </div>
+                  ` : u`
+                    <st-editor
+                      .code=${this._getCurrentCode()}
+                      .hass=${this.hass}
+                      @code-change=${this._handleCodeChange}
+                    ></st-editor>
+                  `}
             </div>
           </div>
         </div>
@@ -2400,7 +2406,9 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
     this._analyzeCode();
   }
   _getCurrentCode() {
-    if (this._project && this._project.activeFileId) {
+    if (this._project) {
+      if (!this._project.activeFileId)
+        return "";
       const t = this._project.files.find(
         (e) => e.id === this._project.activeFileId
       );
@@ -2452,7 +2460,7 @@ END_PROGRAM`, this._syntaxOk = !0, this._triggers = [], this._diagnostics = [], 
         );
         this._project.activeFileId = s.length > 0 ? s[0].id : null;
       }
-      this._project.lastModified = Date.now(), this._saveProject(), this.requestUpdate();
+      this._project.lastModified = Date.now(), this._saveProject(), this._analyzeCode(), this.requestUpdate();
     }
   }
   _handleFileOpen(t) {

@@ -795,11 +795,19 @@ END_PROGRAM`;
                 `
               : ""}
             <div class="editor-container">
-              <st-editor
-                .code=${this._getCurrentCode()}
-                .hass=${this.hass}
-                @code-change=${this._handleCodeChange}
-              ></st-editor>
+              ${this._project && !this._project.activeFileId
+                ? html`
+                    <div class="empty-editor">
+                      All files are closed. Open a file from the project explorer or create a new one.
+                    </div>
+                  `
+                : html`
+                    <st-editor
+                      .code=${this._getCurrentCode()}
+                      .hass=${this.hass}
+                      @code-change=${this._handleCodeChange}
+                    ></st-editor>
+                  `}
             </div>
           </div>
         </div>
@@ -936,7 +944,11 @@ END_PROGRAM`;
   }
 
   private _getCurrentCode(): string {
-    if (this._project && this._project.activeFileId) {
+    if (this._project) {
+      if (!this._project.activeFileId) {
+        return "";
+      }
+
       const activeFile = this._project.files.find(
         (f) => f.id === this._project!.activeFileId,
       );
@@ -1029,6 +1041,7 @@ END_PROGRAM`;
 
     this._project.lastModified = Date.now();
     this._saveProject();
+    this._analyzeCode();
     this.requestUpdate();
   }
 
