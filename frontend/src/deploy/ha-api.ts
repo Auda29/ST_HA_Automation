@@ -142,6 +142,62 @@ export class HAApiClient {
     });
   }
 
+  async createInputBoolean(config: {
+    name: string;
+    initial?: boolean;
+  }): Promise<void> {
+    await this.connection.sendMessagePromise({
+      type: "input_boolean/create",
+      name: config.name,
+      initial: config.initial ?? false,
+    });
+  }
+
+  async createInputNumber(config: {
+    name: string;
+    initial?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    mode?: "box" | "slider";
+  }): Promise<void> {
+    await this.connection.sendMessagePromise({
+      type: "input_number/create",
+      name: config.name,
+      initial: config.initial ?? 0,
+      min: config.min ?? 0,
+      max: config.max ?? 100,
+      step: config.step ?? 1,
+      mode: config.mode ?? "box",
+    });
+  }
+
+  async createInputText(config: {
+    name: string;
+    initial?: string;
+    pattern?: string;
+  }): Promise<void> {
+    await this.connection.sendMessagePromise({
+      type: "input_text/create",
+      name: config.name,
+      initial: config.initial ?? "",
+      pattern: config.pattern,
+    });
+  }
+
+  async createInputDateTime(config: {
+    name: string;
+    initial?: string;
+  }): Promise<void> {
+    await this.connection.sendMessagePromise({
+      type: "input_datetime/create",
+      name: config.name,
+      has_date: true,
+      has_time: true,
+      initial: config.initial ?? "",
+    });
+  }
+
   async setHelperValue(entityId: string, value: unknown): Promise<void> {
     const [domain] = entityId.split(".");
 

@@ -67,4 +67,30 @@ describe("HelperManager", () => {
     expect(sync.toUpdate).toEqual([]);
     expect(sync.toDelete).toEqual(["input_number.st_old_helper"]);
   });
+
+  it("creates new input_number helpers via the create API instead of set_value", async () => {
+    const conn = new FakeConnection();
+    const api = new HAApiClient(conn);
+    const manager = new HelperManager(api, "st_");
+
+    await manager.createHelper(requiredHelpers[0]);
+
+    expect(conn.wsMessages).toContainEqual({
+      type: "input_number/create",
+      name: "Threshold",
+      initial: 10,
+      min: 0,
+      max: 100,
+      step: 1,
+      mode: "box",
+    });
+    expect(
+      conn.wsMessages.some(
+        (message) =>
+          message.type === "call_service" &&
+          message.domain === "input_number" &&
+          message.service === "set_value",
+      ),
+    ).toBe(false);
+  });
 });

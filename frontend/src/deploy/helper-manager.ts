@@ -102,19 +102,36 @@ export class HelperManager {
 
     switch (config.type) {
       case 'input_boolean':
-        await this.api.setHelperValue(config.id, config.initial ?? false);
+        await this.api.createInputBoolean({
+          name,
+          initial: Boolean(config.initial ?? false),
+        });
         break;
 
       case 'input_number':
-        await this.api.setHelperValue(config.id, config.initial ?? config.min ?? 0);
+        await this.api.createInputNumber({
+          name,
+          initial: Number(config.initial ?? config.min ?? 0),
+          min: config.min,
+          max: config.max,
+          step: config.step,
+          mode: config.mode,
+        });
         break;
 
       case 'input_text':
-        await this.api.setHelperValue(config.id, config.initial ?? '');
+        await this.api.createInputText({
+          name,
+          initial: String(config.initial ?? ''),
+          pattern: config.pattern,
+        });
         break;
 
       case 'input_datetime':
-        await this.api.setHelperValue(config.id, config.initial ?? '');
+        await this.api.createInputDateTime({
+          name,
+          initial: String(config.initial ?? ''),
+        });
         break;
 
       default:

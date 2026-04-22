@@ -1,7 +1,7 @@
 var w = Object.defineProperty;
 var S = (u, e, t) => e in u ? w(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
 var c = (u, e, t) => S(u, typeof e != "symbol" ? e + "" : e, t);
-import { a as A, b as N, w as E, p as g } from "./analyzer-DbAWr__X.js";
+import { a as N, b as A, w as E, p as g } from "./analyzer-DbAWr__X.js";
 class f {
   constructor(e, t) {
     c(this, "context");
@@ -262,7 +262,7 @@ class f {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function C(u, e) {
+function M(u, e) {
   const t = `states('${u}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
@@ -277,7 +277,7 @@ function C(u, e) {
       return `{{ ${t} }}`;
   }
 }
-function M(u, e) {
+function C(u, e) {
   return `{% set last = states('${u}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
@@ -286,7 +286,7 @@ function M(u, e) {
 {% endif %}`;
 }
 const _ = 1e3;
-class T {
+class b {
   constructor(e, t, a) {
     c(this, "context");
     c(this, "jinja");
@@ -431,10 +431,10 @@ class T {
     const t = this.jinja.generateExpression(e.selector), a = [];
     for (const n of e.cases) {
       const s = n.values.map((o) => {
-        const l = this.jinja.generateExpression(o);
+        const p = this.jinja.generateExpression(o);
         return {
           condition: "template",
-          value_template: `{{ ${t} == ${l} }}`
+          value_template: `{{ ${t} == ${p} }}`
         };
       }), r = s.length === 1 ? s[0] : { condition: "or", conditions: s };
       a.push({
@@ -1029,7 +1029,7 @@ class k {
     return t.toString(16);
   }
 }
-class b {
+class v {
   constructor(e, t = "default", a) {
     c(this, "ast");
     c(this, "projectName");
@@ -1055,7 +1055,7 @@ class b {
    * Transpile AST to HA automation and script
    */
   transpile() {
-    this.depAnalysis = A(this.ast), this.storageAnalysis = N(this.ast, this.projectName), this.diagnostics.push(
+    this.depAnalysis = N(this.ast), this.storageAnalysis = A(this.ast, this.projectName), this.diagnostics.push(
       ...this.depAnalysis.diagnostics.map((n) => {
         var s;
         return {
@@ -1099,7 +1099,7 @@ class b {
     var a, i, n;
     const e = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
     for (const s of this.ast.variables) {
-      const r = this.storageAnalysis.variables.find((p) => p.name === s.name), o = this.depAnalysis.dependencies.find((p) => p.variableName === s.name), l = {
+      const r = this.storageAnalysis.variables.find((l) => l.name === s.name), o = this.depAnalysis.dependencies.find((l) => l.variableName === s.name), p = {
         name: s.name,
         dataType: s.dataType.name,
         isInput: ((a = s.binding) == null ? void 0 : a.direction) === "INPUT" || s.section === "VAR_INPUT",
@@ -1108,7 +1108,7 @@ class b {
         helperId: r == null ? void 0 : r.storage.helperId,
         entityId: (o == null ? void 0 : o.entityId) || ((n = s.binding) == null ? void 0 : n.entityId)
       };
-      e.set(s.name, l), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(s.name, {
+      e.set(s.name, p), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(s.name, {
         entityId: o.entityId,
         variableName: s.name,
         direction: o.direction,
@@ -1279,7 +1279,7 @@ class b {
   // ==========================================================================
   generateScript() {
     var r;
-    const t = ((r = g(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : r.value) || "restart", a = new T(this.context, this.timerResolver, this.sourceMapBuilder), i = {
+    const t = ((r = g(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : r.value) || "restart", a = new b(this.context, this.timerResolver, this.sourceMapBuilder), i = {
       alias: `[ST] ${this.ast.name} Logic`,
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
@@ -1313,19 +1313,19 @@ class b {
     return e;
   }
 }
-function R(u, e, t) {
-  return new b(u, e, t).transpile();
+function x(u, e, t) {
+  return new v(u, e, t).transpile();
 }
 const D = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  ActionGenerator: T,
+  ActionGenerator: b,
   JinjaGenerator: f,
-  Transpiler: b,
-  generateEntityStateRead: C,
-  generateThrottleCondition: M,
-  transpile: R
+  Transpiler: v,
+  generateEntityStateRead: M,
+  generateThrottleCondition: C,
+  transpile: x
 }, Symbol.toStringTag, { value: "Module" }));
-class H {
+class R {
   constructor(e) {
     c(this, "connection");
     this.connection = e;
@@ -1429,6 +1429,41 @@ class H {
       [`${t}_id`]: a
     });
   }
+  async createInputBoolean(e) {
+    await this.connection.sendMessagePromise({
+      type: "input_boolean/create",
+      name: e.name,
+      initial: e.initial ?? !1
+    });
+  }
+  async createInputNumber(e) {
+    await this.connection.sendMessagePromise({
+      type: "input_number/create",
+      name: e.name,
+      initial: e.initial ?? 0,
+      min: e.min ?? 0,
+      max: e.max ?? 100,
+      step: e.step ?? 1,
+      mode: e.mode ?? "box"
+    });
+  }
+  async createInputText(e) {
+    await this.connection.sendMessagePromise({
+      type: "input_text/create",
+      name: e.name,
+      initial: e.initial ?? "",
+      pattern: e.pattern
+    });
+  }
+  async createInputDateTime(e) {
+    await this.connection.sendMessagePromise({
+      type: "input_datetime/create",
+      name: e.name,
+      has_date: !0,
+      has_time: !0,
+      initial: e.initial ?? ""
+    });
+  }
   async setHelperValue(e, t) {
     const [a] = e.split(".");
     switch (a) {
@@ -1530,16 +1565,33 @@ class y {
     const t = e.name || this.extractName(e.id);
     switch (e.type) {
       case "input_boolean":
-        await this.api.setHelperValue(e.id, e.initial ?? !1);
+        await this.api.createInputBoolean({
+          name: t,
+          initial: !!(e.initial ?? !1)
+        });
         break;
       case "input_number":
-        await this.api.setHelperValue(e.id, e.initial ?? e.min ?? 0);
+        await this.api.createInputNumber({
+          name: t,
+          initial: Number(e.initial ?? e.min ?? 0),
+          min: e.min,
+          max: e.max,
+          step: e.step,
+          mode: e.mode
+        });
         break;
       case "input_text":
-        await this.api.setHelperValue(e.id, e.initial ?? "");
+        await this.api.createInputText({
+          name: t,
+          initial: String(e.initial ?? ""),
+          pattern: e.pattern
+        });
         break;
       case "input_datetime":
-        await this.api.setHelperValue(e.id, e.initial ?? "");
+        await this.api.createInputDateTime({
+          name: t,
+          initial: String(e.initial ?? "")
+        });
         break;
       default:
         throw new Error(`Unknown helper type: ${e.type} (${t})`);
@@ -1579,8 +1631,8 @@ class y {
       }
   }
 }
-const h = "st_hass_backups", v = 10;
-class $ {
+const h = "st_hass_backups", T = 10;
+class I {
   constructor(e) {
     c(this, "api");
     c(this, "helperManager");
@@ -1592,7 +1644,7 @@ class $ {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       type: d.type,
       name: d.attributes.friendly_name || d.entityId
-    })), o = r.map((d) => d.id), l = await this.helperManager.getHelperStates(o), p = {
+    })), o = r.map((d) => d.id), p = await this.helperManager.getHelperStates(o), l = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1603,10 +1655,10 @@ class $ {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         script: n,
         helpers: r,
-        helperStates: l
+        helperStates: p
       }
     };
-    return await this.saveBackup(p), p;
+    return await this.saveBackup(l), l;
   }
   async restoreBackup(e) {
     const t = await this.loadBackup(e);
@@ -1653,10 +1705,10 @@ class $ {
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, v);
+    const a = t.slice(0, T);
     window.localStorage.setItem(h, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = v) {
+  async cleanupOldBackups(e = T) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
@@ -1667,7 +1719,7 @@ class $ {
   }
 }
 const m = "st_hass_schemas";
-class x {
+class P {
   save(e, t) {
     const a = this.loadAll();
     a[e] = t, localStorage.setItem(m, JSON.stringify(a));
@@ -1692,7 +1744,7 @@ class x {
     localStorage.removeItem(m);
   }
 }
-class P {
+class H {
   /**
    * Detect migration issues between old and new schema
    */
@@ -1712,8 +1764,8 @@ class P {
       if (!o)
         a.push(this.createAddedIssue(r));
       else {
-        const l = this.detectChanges(o, r);
-        a.push(...l);
+        const p = this.detectChanges(o, r);
+        a.push(...p);
       }
     }
     return {
@@ -1829,14 +1881,14 @@ class P {
     }[e]) == null ? void 0 : i.includes(t)) ?? !1;
   }
 }
-class I {
+class $ {
   constructor(e) {
     c(this, "api");
     c(this, "helperManager");
     c(this, "backupManager");
     c(this, "schemaStorage");
     c(this, "migrationDetector");
-    this.api = e, this.helperManager = new y(e), this.backupManager = new $(e), this.schemaStorage = new x(), this.migrationDetector = new P();
+    this.api = e, this.helperManager = new y(e), this.backupManager = new I(e), this.schemaStorage = new P(), this.migrationDetector = new H();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -2087,13 +2139,13 @@ class I {
   }
 }
 async function L(u, e, t) {
-  return new I(u).deploy(e, t);
+  return new $(u).deploy(e, t);
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  BackupManager: $,
-  DeployManager: I,
-  HAApiClient: H,
+  BackupManager: I,
+  DeployManager: $,
+  HAApiClient: R,
   HelperManager: y,
   deploy: L
 }, Symbol.toStringTag, { value: "Module" }));
@@ -2101,4 +2153,4 @@ export {
   F as a,
   D as i
 };
-//# sourceMappingURL=transpiler-deploy-BnZAKzmo.js.map
+//# sourceMappingURL=transpiler-deploy-BeaFUkm9.js.map
