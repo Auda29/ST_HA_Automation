@@ -302,8 +302,8 @@ function k(p, e) {
   {{ (now() - (last | as_datetime)).total_seconds() > ${e} }}
 {% endif %}`;
 }
-const T = 1e3;
-class w {
+const w = 1e3;
+class v {
   constructor(e, t, a) {
     c(this, "context");
     c(this, "jinja");
@@ -483,7 +483,7 @@ class w {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "WHILE statement");
     const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${w} }}`
     };
     return {
       repeat: {
@@ -496,7 +496,7 @@ class w {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "REPEAT statement");
     const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${w} }}`
     };
     return {
       repeat: {
@@ -545,7 +545,7 @@ class w {
     };
   }
 }
-class j {
+class H {
   constructor(e) {
     c(this, "jinja");
     this.jinja = new _(e);
@@ -881,7 +881,7 @@ class j {
     return this.jinja.generateExpression(e);
   }
 }
-class H {
+class j {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -1089,7 +1089,7 @@ class I {
           stLine: (r = n.location) == null ? void 0 : r.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new j(this.context), this.timerResolver = new H(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new H(this.context), this.timerResolver = new j(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1311,7 +1311,7 @@ class I {
   // ==========================================================================
   generateScript() {
     var s;
-    const t = ((s = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : s.value) || "restart", a = new w(this.context, this.timerResolver, this.sourceMapBuilder), i = {
+    const t = ((s = f(this.ast.pragmas).find((o) => o.name === "mode")) == null ? void 0 : s.value) || "restart", a = new v(this.context, this.timerResolver, this.sourceMapBuilder), i = {
       alias: `[ST] ${this.ast.name} Logic`,
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
@@ -1350,13 +1350,13 @@ function R(p, e, t) {
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  ActionGenerator: w,
+  ActionGenerator: v,
   JinjaGenerator: _,
   Transpiler: I,
   generateEntityStateRead: O,
   generateThrottleCondition: k,
   transpile: R
-}, Symbol.toStringTag, { value: "Module" })), g = class g {
+}, Symbol.toStringTag, { value: "Module" })), m = class m {
   constructor(e) {
     c(this, "connection");
     this.connection = e;
@@ -1448,7 +1448,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   async getSTHelpers(e = "st_") {
     return (await this.getStates()).filter((a) => {
       const [i, n] = a.entity_id.split(".");
-      return !!n && g.HELPER_DOMAINS.has(i) && n.startsWith(e);
+      return !!n && m.HELPER_DOMAINS.has(i) && n.startsWith(e);
     });
   }
   async deleteHelper(e) {
@@ -1548,7 +1548,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     }
   }
 };
-c(g, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
+c(m, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "input_boolean",
   "input_number",
   "input_text",
@@ -1557,7 +1557,7 @@ c(g, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "counter",
   "timer"
 ]));
-let y = g;
+let y = m;
 class b {
   constructor(e, t = "st_") {
     c(this, "api");
@@ -1768,7 +1768,7 @@ class b {
       }
   }
 }
-const h = "st_hass_backups", v = 10;
+const d = "st_hass_backups", T = 10;
 class $ {
   constructor(e) {
     c(this, "api");
@@ -1776,12 +1776,9 @@ class $ {
     this.api = e, this.helperManager = new b(e);
   }
   async createBackup(e, t) {
-    const a = await this.api.getAutomation(e), i = this.getScriptId(e), n = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map((d) => ({
-      id: d.entityId,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      type: d.type,
-      name: d.attributes.friendly_name || d.entityId
-    })), o = s.map((d) => d.id), u = await this.helperManager.getHelperStates(o), l = {
+    const a = await this.api.getAutomation(e), i = this.getScriptId(e), n = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map(
+      (g) => this.helperManager.toHelperConfig(g)
+    ), o = s.map((g) => g.id), u = await this.helperManager.getHelperStates(o), l = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1821,7 +1818,7 @@ class $ {
     await this.helperManager.restoreHelperStates(t.data.helperStates), await this.api.reloadAutomations(), await this.api.reloadScripts();
   }
   async listBackups() {
-    const e = window.localStorage.getItem(h);
+    const e = window.localStorage.getItem(d);
     if (!e) return [];
     try {
       return JSON.parse(e).map((a) => ({
@@ -1837,19 +1834,19 @@ class $ {
   }
   async deleteBackup(e) {
     const a = (await this.listBackups()).filter((i) => i.id !== e);
-    window.localStorage.setItem(h, JSON.stringify(a));
+    window.localStorage.setItem(d, JSON.stringify(a));
   }
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, v);
-    window.localStorage.setItem(h, JSON.stringify(a));
+    const a = t.slice(0, T);
+    window.localStorage.setItem(d, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = v) {
+  async cleanupOldBackups(e = T) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
-    return window.localStorage.setItem(h, JSON.stringify(i)), a.length;
+    return window.localStorage.setItem(d, JSON.stringify(i)), a.length;
   }
   generateId() {
     return `backup_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
@@ -1858,17 +1855,17 @@ class $ {
     return `${e}_logic`;
   }
 }
-const m = "st_hass_schemas";
+const h = "st_hass_schemas";
 class P {
   save(e, t) {
     const a = this.loadAll();
-    a[e] = t, localStorage.setItem(m, JSON.stringify(a));
+    a[e] = t, localStorage.setItem(h, JSON.stringify(a));
   }
   load(e) {
     return this.loadAll()[e] || null;
   }
   loadAll() {
-    const e = localStorage.getItem(m);
+    const e = localStorage.getItem(h);
     if (!e) return {};
     try {
       return JSON.parse(e);
@@ -1878,10 +1875,10 @@ class P {
   }
   delete(e) {
     const t = this.loadAll();
-    delete t[e], localStorage.setItem(m, JSON.stringify(t));
+    delete t[e], localStorage.setItem(h, JSON.stringify(t));
   }
   clear() {
-    localStorage.removeItem(m);
+    localStorage.removeItem(h);
   }
 }
 class U {
@@ -2255,7 +2252,7 @@ class S {
         e.type === "delete" ? await this.api.deleteScript(e.entityId) : await this.api.saveScript(e.entityId, e.newState);
         break;
       case "helper":
-        e.type === "delete" ? await this.api.deleteHelper(e.entityId) : await this.helperManager.createHelper(e.newState);
+        e.type === "delete" ? await this.api.deleteHelper(e.entityId) : e.type === "update" ? (await this.api.deleteHelper(e.entityId), await this.helperManager.createHelper(e.newState)) : await this.helperManager.createHelper(e.newState);
         break;
     }
   }
@@ -2304,4 +2301,4 @@ export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-DONwic53.js.map
+//# sourceMappingURL=transpiler-deploy-_m0iaSYB.js.map

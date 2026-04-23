@@ -104,4 +104,24 @@ describe("BackupManager", () => {
     expect(conn.scripts.has("st_default_prog_logic")).toBe(true);
     expect(conn.scripts.get("st_default_prog_logic")?.alias).toBe("Prog Logic");
   });
+
+  it("restores helper configuration instead of recreating helpers with defaults", async () => {
+    const api = new HAApiClient(conn);
+    const manager = new BackupManager(api);
+
+    const backup = await manager.createBackup("st_default_prog", "Prog");
+    conn.wsMessages = [];
+
+    await manager.restoreBackup(backup.id);
+
+    expect(conn.wsMessages).toContainEqual({
+      type: "input_number/create",
+      name: "Counter",
+      initial: 1,
+      min: 0,
+      max: 100,
+      step: 1,
+      mode: "box",
+    });
+  });
 });

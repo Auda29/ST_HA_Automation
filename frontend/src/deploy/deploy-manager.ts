@@ -369,6 +369,9 @@ export class DeployManager {
       case 'helper':
         if (op.type === 'delete') {
           await this.api.deleteHelper(op.entityId);
+        } else if (op.type === 'update') {
+          await this.api.deleteHelper(op.entityId);
+          await this.helperManager.createHelper(op.newState as HelperConfig);
         } else {
           await this.helperManager.createHelper(op.newState as HelperConfig);
         }

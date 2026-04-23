@@ -249,4 +249,54 @@ describe("DeployManager", () => {
       initial: true,
     });
   });
+
+  it("recreates helper updates only after deleting the existing helper", async () => {
+    const conn = new FakeConnection();
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+
+    await (manager as unknown as {
+      applyOperation: (op: {
+        type: "update";
+        entityType: "helper";
+        entityId: string;
+        newState: {
+          id: string;
+          type: "input_number";
+          name: string;
+          initial: number;
+          min: number;
+          max: number;
+          step: number;
+        };
+      }) => Promise<void>;
+    }).applyOperation({
+      type: "update",
+      entityType: "helper",
+      entityId: "input_number.st_existing_helper",
+      newState: {
+        id: "input_number.st_existing_helper",
+        type: "input_number",
+        name: "Existing Helper",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+      },
+    });
+
+    expect(conn.wsMessages[0]).toEqual({
+      type: "input_number/delete",
+      input_number_id: "st_existing_helper",
+    });
+    expect(conn.wsMessages[1]).toEqual({
+      type: "input_number/create",
+      name: "Existing Helper",
+      initial: 7,
+      min: 0,
+      max: 20,
+      step: 1,
+      mode: "box",
+    });
+  });
 });

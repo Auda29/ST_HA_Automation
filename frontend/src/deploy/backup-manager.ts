@@ -26,12 +26,9 @@ export class BackupManager {
     const script = await this.api.getScript(scriptId);
 
     const helpers = await this.helperManager.getExistingHelpers();
-    const helperConfigs: HelperConfig[] = helpers.map((h) => ({
-      id: h.entityId,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      type: h.type as any,
-      name: (h.attributes.friendly_name as string) || h.entityId,
-    }));
+    const helperConfigs: HelperConfig[] = helpers.map((h) =>
+      this.helperManager.toHelperConfig(h),
+    );
 
     const helperIds = helperConfigs.map((h) => h.id);
     const helperStates = await this.helperManager.getHelperStates(helperIds);
