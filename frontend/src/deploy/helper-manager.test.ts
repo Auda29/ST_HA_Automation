@@ -1,12 +1,30 @@
 import { describe, it, expect } from "vitest";
-import type { HAConnection, HAWSMessage, HAState } from "./types";
+import type {
+  HAApiMethod,
+  HAClient,
+  HAConnection,
+  HAWSMessage,
+  HAState,
+} from "./types";
 import { HAApiClient } from "./ha-api";
 import { HelperManager } from "./helper-manager";
 import type { HelperConfig } from "../analyzer/types";
 
-class FakeConnection implements HAConnection {
+class FakeConnection implements HAClient, HAConnection {
   public wsMessages: HAWSMessage[] = [];
+  public restCalls: { method: HAApiMethod; path: string }[] = [];
   public states: HAState[] = [];
+
+  get connection(): HAConnection {
+    return this;
+  }
+
+  // Helper sync must never touch the REST API - only automation and script
+  // configs live there.
+  async callApi<T>(method: HAApiMethod, path: string): Promise<T> {
+    this.restCalls.push({ method, path });
+    throw new Error(`Unexpected REST call in helper tests: ${method} ${path}`);
+  }
 
   async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);

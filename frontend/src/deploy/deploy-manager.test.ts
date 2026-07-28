@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type {
+  HAApiMethod,
+  HAClient,
   HAConnection,
   HAWSMessage,
   HAState,
@@ -10,57 +12,84 @@ import { HAApiClient } from "./ha-api";
 import { DeployManager } from "./deploy-manager";
 import type { TranspilerResult } from "../transpiler/types";
 
-class FakeConnection implements HAConnection {
+const AUTOMATION_PATH = /^config\/automation\/config\/(.+)$/;
+const SCRIPT_PATH = /^config\/script\/config\/(.+)$/;
+
+class FakeConnection implements HAClient, HAConnection {
   public wsMessages: HAWSMessage[] = [];
+  public restCalls: { method: HAApiMethod; path: string }[] = [];
   public states: HAState[] = [];
   public automations = new Map<string, HAAutomationConfig>();
   public scripts = new Map<string, HAScriptConfig>();
   public failScriptSave = false;
   public failScriptSaveWithObject = false;
 
+  get connection(): HAConnection {
+    return this;
+  }
+
+  /**
+   * Automation and script configs are REST-only in Home Assistant. Routing them
+   * through the WebSocket connection is what this fake used to allow, which hid
+   * the fact that the real API rejects those messages with `unknown_command`.
+   */
+  async callApi<T>(
+    method: HAApiMethod,
+    path: string,
+    parameters?: unknown,
+  ): Promise<T> {
+    this.restCalls.push({ method, path });
+
+    const automationId = AUTOMATION_PATH.exec(path)?.[1];
+    if (automationId) {
+      const id = decodeURIComponent(automationId);
+      if (method === "POST") {
+        this.automations.set(id, parameters as HAAutomationConfig);
+        return undefined as unknown as T;
+      }
+      if (method === "DELETE") {
+        this.automations.delete(id);
+        return undefined as unknown as T;
+      }
+      const existing = this.automations.get(id);
+      if (!existing) throw new Error("automation not found");
+      return existing as unknown as T;
+    }
+
+    const scriptId = SCRIPT_PATH.exec(path)?.[1];
+    if (scriptId) {
+      const id = decodeURIComponent(scriptId);
+      if (method === "POST") {
+        if (this.failScriptSaveWithObject) {
+          throw {
+            body: {
+              message: "Script save rejected by Home Assistant",
+            },
+          };
+        }
+        if (this.failScriptSave) {
+          throw new Error("script save failed");
+        }
+        this.scripts.set(id, parameters as HAScriptConfig);
+        return undefined as unknown as T;
+      }
+      if (method === "DELETE") {
+        this.scripts.delete(id);
+        return undefined as unknown as T;
+      }
+      const existing = this.scripts.get(id);
+      if (!existing) throw new Error("script not found");
+      return existing as unknown as T;
+    }
+
+    throw new Error(`Unexpected REST call: ${method} ${path}`);
+  }
+
   async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);
     switch (message.type) {
       case "get_states":
         return this.states as unknown as T;
-      case "config/automation/config": {
-        if ("config" in message) {
-          const cfg = message.config as HAAutomationConfig;
-          this.automations.set(message.automation_id as string, cfg);
-          return cfg as unknown as T;
-        }
-        const existing = this.automations.get(message.automation_id as string);
-        if (!existing) throw new Error("automation not found");
-        return existing as unknown as T;
-      }
-      case "config/automation/delete": {
-        this.automations.delete(message.automation_id as string);
-        return undefined as unknown as T;
-      }
-      case "config/script/config": {
-        if ("config" in message) {
-          if (this.failScriptSaveWithObject) {
-            throw {
-              body: {
-                message: "Script save rejected by Home Assistant",
-              },
-            };
-          }
-          if (this.failScriptSave) {
-            throw new Error("script save failed");
-          }
-          const cfg = message.config as HAScriptConfig;
-          this.scripts.set(message.script_id as string, cfg);
-          return cfg as unknown as T;
-        }
-        const existing = this.scripts.get(message.script_id as string);
-        if (!existing) throw new Error("script not found");
-        return existing as unknown as T;
-      }
-      case "config/script/delete": {
-        this.scripts.delete(message.script_id as string);
-        return undefined as unknown as T;
-      }
       default:
         return undefined as unknown as T;
     }
@@ -118,6 +147,33 @@ describe("DeployManager", () => {
     expect(conn.automations.has("st_default_prog")).toBe(true);
     const scriptId = "st_default_prog_logic";
     expect(conn.scripts.has(scriptId)).toBe(true);
+  });
+
+  it("writes automation and script configs over REST, never over WebSocket", async () => {
+    const conn = new FakeConnection();
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+
+    const deployResult = await manager.deploy(makeTranspilerResult(), {
+      dryRun: false,
+    });
+
+    expect(deployResult.success).toBe(true);
+    expect(conn.restCalls).toContainEqual({
+      method: "POST",
+      path: "config/automation/config/st_default_prog",
+    });
+    expect(conn.restCalls).toContainEqual({
+      method: "POST",
+      path: "config/script/config/st_default_prog_logic",
+    });
+
+    // Home Assistant has no `config/*` WebSocket commands; sending one there
+    // fails with `unknown_command`, which is the bug this guards against.
+    const configOverWs = conn.wsMessages.filter((m) =>
+      m.type.startsWith("config/"),
+    );
+    expect(configOverWs).toEqual([]);
   });
 
   it("deploys additional automations generated by the transpiler", async () => {
