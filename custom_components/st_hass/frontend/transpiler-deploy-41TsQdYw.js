@@ -1,7 +1,7 @@
 var N = Object.defineProperty;
-var A = (p, e, t) => e in p ? N(p, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : p[e] = t;
-var c = (p, e, t) => A(p, typeof e != "symbol" ? e + "" : e, t);
-import { a as E, b as C, w as M, p as f } from "./analyzer-DbAWr__X.js";
+var E = (l, e, t) => e in l ? N(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t;
+var c = (l, e, t) => E(l, typeof e != "symbol" ? e + "" : e, t);
+import { a as A, b as C, w as O, p as f } from "./analyzer-DbAWr__X.js";
 class _ {
   constructor(e, t) {
     c(this, "context");
@@ -59,10 +59,10 @@ class _ {
   convertTimeToSeconds(e) {
     if (!/^T#/i.test(e)) return "0";
     const t = e.slice(2), a = /(\d+)(ms|h|m|s)/gi;
-    let i = 0, n = "";
-    for (const r of t.matchAll(a)) {
-      const s = parseInt(r[1], 10), o = r[2].toLowerCase();
-      switch (n += r[0], o) {
+    let i = 0, r = "";
+    for (const n of t.matchAll(a)) {
+      const s = parseInt(n[1], 10), o = n[2].toLowerCase();
+      switch (r += n[0], o) {
         case "h":
           i += s * 3600;
           break;
@@ -77,7 +77,7 @@ class _ {
           break;
       }
     }
-    return n.toLowerCase() === t.toLowerCase() ? String(i) : "0";
+    return r.toLowerCase() === t.toLowerCase() ? String(i) : "0";
   }
   // ==========================================================================
   // Variable Reference Generation
@@ -244,8 +244,8 @@ class _ {
       throw new Error("MUX requires at least 2 arguments");
     const t = e[0], a = e.slice(1);
     let i = a[a.length - 1];
-    for (let n = a.length - 2; n >= 0; n--)
-      i = `(${a[n]} if ${t} == ${n} else ${i})`;
+    for (let r = a.length - 2; r >= 0; r--)
+      i = `(${a[r]} if ${t} == ${r} else ${i})`;
     return i;
   }
   generateLIMIT(e) {
@@ -279,8 +279,8 @@ class _ {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function O(p, e) {
-  const t = `states('${p}')`, a = "['unavailable', 'unknown', 'none', '']";
+function M(l, e) {
+  const t = `states('${l}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
       return `{{ ${t} in ['on', 'true', 'True', '1'] }}`;
@@ -294,15 +294,15 @@ function O(p, e) {
       return `{{ ${t} }}`;
   }
 }
-function k(p, e) {
-  return `{% set last = states('${p}') %}
+function H(l, e) {
+  return `{% set last = states('${l}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
   {{ (as_timestamp(now()) - as_timestamp(last, 0)) > ${e} }}
 {% endif %}`;
 }
-const T = 1e3;
+const w = 1e3;
 class v {
   constructor(e, t, a) {
     c(this, "context");
@@ -317,8 +317,8 @@ class v {
     const t = [];
     return e.forEach((a, i) => {
       this.sourceMap && this.sourceMap.pushPath(String(i));
-      const n = this.generateAction(a);
-      t.push(...n), this.sourceMap && this.sourceMap.popPath();
+      const r = this.generateAction(a);
+      t.push(...r), this.sourceMap && this.sourceMap.popPath();
     }), t;
   }
   /**
@@ -372,54 +372,54 @@ class v {
     };
   }
   generateEntityWrite(e, t, a) {
-    const i = e.split(".")[0], n = this.jinja.generateExpression(t);
+    const i = e.split(".")[0], r = this.jinja.generateExpression(t);
     return a.toUpperCase() === "BOOL" ? [{
-      service: `{{ '${i}.turn_on' if ${n} else '${i}.turn_off' }}`,
+      service: `{{ '${i}.turn_on' if ${r} else '${i}.turn_off' }}`,
       target: { entity_id: e }
     }] : i === "input_number" || i === "number" ? [{
       service: `${i}.set_value`,
       target: { entity_id: e },
-      data: { value: `{{ ${n} }}` }
+      data: { value: `{{ ${r} }}` }
     }] : i === "input_text" ? [{
       service: "input_text.set_value",
       target: { entity_id: e },
-      data: { value: `{{ ${n} }}` }
+      data: { value: `{{ ${r} }}` }
     }] : [{
       service: `${i}.turn_on`,
       target: { entity_id: e }
     }];
   }
   generateHelperWrite(e, t, a) {
-    const i = e.split(".")[0], n = this.jinja.generateExpression(t);
+    const i = e.split(".")[0], r = this.jinja.generateExpression(t);
     switch (i) {
       case "input_boolean":
         return [{
-          service: `{{ 'input_boolean.turn_on' if ${n} else 'input_boolean.turn_off' }}`,
+          service: `{{ 'input_boolean.turn_on' if ${r} else 'input_boolean.turn_off' }}`,
           target: { entity_id: e }
         }];
       case "input_number":
         return [{
           service: "input_number.set_value",
           target: { entity_id: e },
-          data: { value: `{{ ${n} }}` }
+          data: { value: `{{ ${r} }}` }
         }];
       case "input_text":
         return [{
           service: "input_text.set_value",
           target: { entity_id: e },
-          data: { value: `{{ ${n} }}` }
+          data: { value: `{{ ${r} }}` }
         }];
       case "input_datetime":
         return [{
           service: "input_datetime.set_datetime",
           target: { entity_id: e },
-          data: { datetime: `{{ ${n} }}` }
+          data: { datetime: `{{ ${r} }}` }
         }];
       case "counter":
         return [{
           service: "counter.set_value",
           target: { entity_id: e },
-          data: { value: `{{ ${n} }}` }
+          data: { value: `{{ ${r} }}` }
         }];
       default:
         throw new Error(`Unknown helper type: ${i}`);
@@ -446,17 +446,17 @@ class v {
   generateCase(e) {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "CASE statement");
     const t = this.jinja.generateExpression(e.selector), a = [];
-    for (const n of e.cases) {
-      const r = n.values.map((o) => {
-        const u = this.jinja.generateExpression(o);
+    for (const r of e.cases) {
+      const n = r.values.map((o) => {
+        const p = this.jinja.generateExpression(o);
         return {
           condition: "template",
-          value_template: `{{ ${t} == ${u} }}`
+          value_template: `{{ ${t} == ${p} }}`
         };
-      }), s = r.length === 1 ? r[0] : { condition: "or", conditions: r };
+      }), s = n.length === 1 ? n[0] : { condition: "or", conditions: n };
       a.push({
         conditions: [s],
-        sequence: this.generateActions(n.body)
+        sequence: this.generateActions(r.body)
       });
     }
     const i = { choose: a };
@@ -464,16 +464,16 @@ class v {
   }
   generateFor(e) {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "FOR statement");
-    const t = this.jinja.generateExpression(e.from), a = this.jinja.generateExpression(e.to), i = e.by ? this.jinja.generateExpression(e.by) : "1", n = `{{ (((${a}) - (${t})) / (${i})) | int + 1 }}`, r = {
+    const t = this.jinja.generateExpression(e.from), a = this.jinja.generateExpression(e.to), i = e.by ? this.jinja.generateExpression(e.by) : "1", r = `{{ (((${a}) - (${t})) / (${i})) | int + 1 }}`, n = {
       variables: {
         [e.variable]: `{{ (${t}) + ((repeat.index | default(1) | int - 1) * (${i})) }}`
       }
     };
     return {
       repeat: {
-        count: n,
+        count: r,
         sequence: [
-          r,
+          n,
           ...this.generateActions(e.body)
         ]
       }
@@ -483,7 +483,7 @@ class v {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "WHILE statement");
     const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${w} }}`
     };
     return {
       repeat: {
@@ -496,7 +496,7 @@ class v {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "REPEAT statement");
     const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${w} }}`
     };
     return {
       repeat: {
@@ -545,7 +545,7 @@ class v {
     };
   }
 }
-class H {
+class k {
   constructor(e) {
     c(this, "jinja");
     this.jinja = new _(e);
@@ -566,20 +566,20 @@ class H {
    * leaves the instance/type resolution to the caller.
    */
   parseTimerCall(e, t) {
-    var n;
+    var r;
     const a = t.name.toUpperCase(), i = {};
-    for (const r of t.arguments) {
-      const s = (n = r.name) == null ? void 0 : n.toUpperCase();
+    for (const n of t.arguments) {
+      const s = (r = n.name) == null ? void 0 : r.toUpperCase();
       if (s)
         switch (s) {
           case "IN":
-            i.IN = this.jinja.generateExpression(r.value);
+            i.IN = this.jinja.generateExpression(n.value);
             break;
           case "PT":
-            i.PT = this.parseTimeToSeconds(r.value);
+            i.PT = this.parseTimeToSeconds(n.value);
             break;
           case "R":
-            i.R = this.jinja.generateExpression(r.value);
+            i.R = this.jinja.generateExpression(n.value);
             break;
         }
     }
@@ -609,7 +609,7 @@ class H {
   // TON - On-Delay Timer
   // ==========================================================================
   transpileTON(e, t, a, i) {
-    const n = [
+    const r = [
       {
         // High-level choose block for TON behavior
         // Case 1: IN = TRUE and timer idle -> start timer
@@ -631,7 +631,7 @@ class H {
           }
         ]
       }
-    ], r = this.generateFinishedAutomation(
+    ], n = this.generateFinishedAutomation(
       e,
       a,
       t.IN,
@@ -643,8 +643,8 @@ class H {
     return {
       entities: a,
       helpers: i,
-      mainActions: n,
-      finishedAutomation: r,
+      mainActions: r,
+      finishedAutomation: n,
       outputMappings: s
     };
   }
@@ -652,7 +652,7 @@ class H {
   // TOF - Off-Delay Timer
   // ==========================================================================
   transpileTOF(e, t, a, i) {
-    const n = [
+    const r = [
       {
         choose: [
           // Case 1: IN = TRUE -> cancel timer and set Q immediately
@@ -674,7 +674,7 @@ class H {
           }
         ]
       }
-    ], r = this.generateFinishedAutomation(
+    ], n = this.generateFinishedAutomation(
       e,
       a,
       `not (${t.IN})`,
@@ -685,8 +685,8 @@ class H {
     return {
       entities: a,
       helpers: i,
-      mainActions: n,
-      finishedAutomation: r,
+      mainActions: r,
+      finishedAutomation: n,
       outputMappings: s
     };
   }
@@ -694,27 +694,27 @@ class H {
   // TP - Pulse Timer
   // ==========================================================================
   transpileTP(e, t, a, i) {
-    const n = `input_boolean.${this.sanitize(
+    const r = `input_boolean.${this.sanitize(
       e.projectName
     )}_${this.sanitize(e.programName)}_${this.sanitize(e.name)}_triggered`;
     i.push({
-      id: n,
+      id: r,
       type: "input_boolean",
       name: `ST ${e.programName} ${e.name} Triggered`,
       initial: !1
     });
-    const r = [
+    const n = [
       {
         choose: [
           // Case 1: Rising edge (IN TRUE and not triggered) -> start pulse
           {
             conditions: [
               this.templateCondition(t.IN),
-              this.stateCondition(n, "off"),
+              this.stateCondition(r, "off"),
               this.stateCondition(a.timerId, "idle")
             ],
             sequence: [
-              this.booleanTurnOn(n),
+              this.booleanTurnOn(r),
               this.booleanTurnOn(a.outputHelperId),
               this.timerStart(a.timerId, t.PT)
             ]
@@ -725,7 +725,7 @@ class H {
               this.templateCondition(`not (${t.IN})`),
               this.stateCondition(a.timerId, "idle")
             ],
-            sequence: [this.booleanTurnOff(n)]
+            sequence: [this.booleanTurnOff(r)]
           }
         ]
       }
@@ -741,7 +741,7 @@ class H {
     return {
       entities: a,
       helpers: i,
-      mainActions: r,
+      mainActions: n,
       finishedAutomation: s,
       outputMappings: o
     };
@@ -856,32 +856,32 @@ class H {
       const t = e.raw;
       if (/^T#/i.test(t)) {
         const a = t.slice(2), i = /(\d+)(ms|h|m|s)/gi;
-        let n = 0, r = "";
+        let r = 0, n = "";
         for (const s of a.matchAll(i)) {
-          const o = parseInt(s[1], 10), u = s[2].toLowerCase();
-          switch (r += s[0], u) {
+          const o = parseInt(s[1], 10), p = s[2].toLowerCase();
+          switch (n += s[0], p) {
             case "h":
-              n += o * 3600;
+              r += o * 3600;
               break;
             case "m":
-              n += o * 60;
+              r += o * 60;
               break;
             case "s":
-              n += o;
+              r += o;
               break;
             case "ms":
-              n += o / 1e3;
+              r += o / 1e3;
               break;
           }
         }
-        if (r.toLowerCase() === a.toLowerCase())
-          return String(n);
+        if (n.toLowerCase() === a.toLowerCase())
+          return String(r);
       }
     }
     return this.jinja.generateExpression(e);
   }
 }
-class L {
+class j {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -909,7 +909,7 @@ class L {
     return a === "Q" || a === "ET";
   }
 }
-class R {
+class L {
   constructor(e) {
     c(this, "mappings", /* @__PURE__ */ new Map());
     c(this, "currentPath", []);
@@ -1058,7 +1058,7 @@ class I {
     c(this, "timerHelpers", []);
     c(this, "additionalAutomations", []);
     c(this, "timerMainActions", []);
-    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new R({
+    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new L({
       project: t,
       program: e.name,
       sourceFile: `${e.name}.st`,
@@ -1070,26 +1070,26 @@ class I {
    * Transpile AST to HA automation and script
    */
   transpile() {
-    this.depAnalysis = E(this.ast), this.storageAnalysis = C(this.ast, this.projectName), this.diagnostics.push(
-      ...this.depAnalysis.diagnostics.map((n) => {
-        var r;
+    this.depAnalysis = A(this.ast), this.storageAnalysis = C(this.ast, this.projectName), this.diagnostics.push(
+      ...this.depAnalysis.diagnostics.map((r) => {
+        var n;
         return {
-          severity: n.severity,
-          code: n.code,
-          message: n.message,
-          stLine: (r = n.location) == null ? void 0 : r.line
+          severity: r.severity,
+          code: r.code,
+          message: r.message,
+          stLine: (n = r.location) == null ? void 0 : n.line
         };
       }),
-      ...this.storageAnalysis.diagnostics.map((n) => {
-        var r;
+      ...this.storageAnalysis.diagnostics.map((r) => {
+        var n;
         return {
-          severity: n.severity,
-          code: n.code,
-          message: n.message,
-          stLine: (r = n.location) == null ? void 0 : r.line
+          severity: r.severity,
+          code: r.code,
+          message: r.message,
+          stLine: (n = r.location) == null ? void 0 : n.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new H(this.context), this.timerResolver = new L(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new k(this.context), this.timerResolver = new j(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1111,23 +1111,23 @@ class I {
   // Context Building
   // ==========================================================================
   buildContext() {
-    var a, i, n;
+    var a, i, r;
     const e = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
-    for (const r of this.ast.variables) {
-      const s = this.storageAnalysis.variables.find((l) => l.name === r.name), o = this.depAnalysis.dependencies.find((l) => l.variableName === r.name), u = {
-        name: r.name,
-        dataType: r.dataType.name,
-        isInput: ((a = r.binding) == null ? void 0 : a.direction) === "INPUT" || r.section === "VAR_INPUT",
-        isOutput: ((i = r.binding) == null ? void 0 : i.direction) === "OUTPUT" || r.section === "VAR_OUTPUT",
+    for (const n of this.ast.variables) {
+      const s = this.storageAnalysis.variables.find((u) => u.name === n.name), o = this.depAnalysis.dependencies.find((u) => u.variableName === n.name), p = {
+        name: n.name,
+        dataType: n.dataType.name,
+        isInput: ((a = n.binding) == null ? void 0 : a.direction) === "INPUT" || n.section === "VAR_INPUT",
+        isOutput: ((i = n.binding) == null ? void 0 : i.direction) === "OUTPUT" || n.section === "VAR_OUTPUT",
         isPersistent: (s == null ? void 0 : s.storage.type) === "PERSISTENT",
         helperId: s == null ? void 0 : s.storage.helperId,
-        entityId: (o == null ? void 0 : o.entityId) || ((n = r.binding) == null ? void 0 : n.entityId)
+        entityId: (o == null ? void 0 : o.entityId) || ((r = n.binding) == null ? void 0 : r.entityId)
       };
-      e.set(r.name, u), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(r.name, {
+      e.set(n.name, p), o && o.entityId && (o.direction === "INPUT" || o.direction === "OUTPUT") && t.set(n.name, {
         entityId: o.entityId,
-        variableName: r.name,
+        variableName: n.name,
         direction: o.direction,
-        dataType: r.dataType.name
+        dataType: n.dataType.name
       });
     }
     this.context = {
@@ -1151,7 +1151,7 @@ class I {
       const a = t.dataType.name.toUpperCase();
       (a === "TON" || a === "TOF" || a === "TP") && e.set(t.name, a);
     }
-    e.size !== 0 && M(this.ast, {
+    e.size !== 0 && O(this.ast, {
       onFunctionCall: (t) => {
         const a = e.get(t.name);
         if (!a)
@@ -1161,10 +1161,10 @@ class I {
           type: a,
           programName: this.ast.name,
           projectName: this.projectName
-        }, n = this.timerTranspiler.parseTimerCall(t.name, t), r = {
-          IN: n.inputs.IN ?? "true",
-          PT: n.inputs.PT ?? "0"
-        }, s = this.timerTranspiler.transpileTimer(i, r);
+        }, r = this.timerTranspiler.parseTimerCall(t.name, t), n = {
+          IN: r.inputs.IN ?? "true",
+          PT: r.inputs.PT ?? "0"
+        }, s = this.timerTranspiler.transpileTimer(i, n);
         this.timerHelpers.push(...s.helpers), this.additionalAutomations.push(s.finishedAutomation), this.timerMainActions.push(...s.mainActions), this.timerResolver.registerTimer(i.name, s.outputMappings);
       }
     });
@@ -1173,8 +1173,8 @@ class I {
   // Automation Generation
   // ==========================================================================
   generateAutomation() {
-    var n, r;
-    const e = f(this.ast.pragmas), t = (n = e.find((s) => s.name === "throttle")) == null ? void 0 : n.value, a = (r = e.find((s) => s.name === "debounce")) == null ? void 0 : r.value, i = {
+    var r, n;
+    const e = f(this.ast.pragmas), t = (r = e.find((s) => s.name === "throttle")) == null ? void 0 : r.value, a = (n = e.find((s) => s.name === "debounce")) == null ? void 0 : n.value, i = {
       id: `st_${this.projectName}_${this.ast.name}`.toLowerCase().replace(/[^a-z0-9_]/g, "_"),
       alias: `[ST] ${this.ast.name}`,
       description: `Generated from ST program: ${this.ast.name}`,
@@ -1247,10 +1247,10 @@ class I {
   parseTimeToSeconds(e) {
     if (!/^T#/i.test(e)) return 0;
     const t = e.slice(2), a = /(\d+)(ms|h|m|s)/gi;
-    let i = 0, n = "";
-    for (const r of t.matchAll(a)) {
-      const s = parseInt(r[1], 10), o = r[2].toLowerCase();
-      switch (n += r[0], o) {
+    let i = 0, r = "";
+    for (const n of t.matchAll(a)) {
+      const s = parseInt(n[1], 10), o = n[2].toLowerCase();
+      switch (r += n[0], o) {
         case "h":
           i += s * 3600;
           break;
@@ -1265,7 +1265,7 @@ class I {
           break;
       }
     }
-    return n.toLowerCase() === t.toLowerCase() ? i : 0;
+    return r.toLowerCase() === t.toLowerCase() ? i : 0;
   }
   // ==========================================================================
   // Trigger Mapping
@@ -1325,10 +1325,10 @@ class I {
       description: `Logic script for ST program: ${this.ast.name}`,
       mode: t,
       sequence: []
-    }, n = this.generateVariableInitializers();
-    Object.keys(n).length > 0 && (i.variables = n), this.sourceMapBuilder && this.sourceMapBuilder.pushPath("sequence");
-    const r = a.generateActions(this.ast.body);
-    if (this.sourceMapBuilder && this.sourceMapBuilder.popPath(), i.sequence = [...this.timerMainActions, ...r], this.sourceMapBuilder) {
+    }, r = this.generateVariableInitializers();
+    Object.keys(r).length > 0 && (i.variables = r), this.sourceMapBuilder && this.sourceMapBuilder.pushPath("sequence");
+    const n = a.generateActions(this.ast.body);
+    if (this.sourceMapBuilder && this.sourceMapBuilder.popPath(), i.sequence = [...this.timerMainActions, ...n], this.sourceMapBuilder) {
       const o = this.sourceMapBuilder.buildEmbedded();
       i.variables ? i.variables = {
         ...i.variables,
@@ -1354,18 +1354,18 @@ class I {
     return e;
   }
 }
-function j(p, e, t) {
-  return new I(p, e, t).transpile();
+function R(l, e, t) {
+  return new I(l, e, t).transpile();
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   ActionGenerator: v,
   JinjaGenerator: _,
   Transpiler: I,
-  generateEntityStateRead: O,
-  generateThrottleCondition: k,
-  transpile: j
-}, Symbol.toStringTag, { value: "Module" })), d = class d {
+  generateEntityStateRead: M,
+  generateThrottleCondition: H,
+  transpile: R
+}, Symbol.toStringTag, { value: "Module" })), h = class h {
   constructor(e) {
     c(this, "client");
     c(this, "connection");
@@ -1381,7 +1381,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     try {
       return await this.client.callApi(
         "GET",
-        d.automationPath(e)
+        h.automationPath(e)
       );
     } catch {
       return null;
@@ -1390,14 +1390,14 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   async saveAutomation(e, t) {
     await this.client.callApi(
       "POST",
-      d.automationPath(e),
+      h.automationPath(e),
       t
     );
   }
   async deleteAutomation(e) {
     await this.client.callApi(
       "DELETE",
-      d.automationPath(e)
+      h.automationPath(e)
     );
   }
   async reloadAutomations() {
@@ -1417,7 +1417,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     try {
       return await this.client.callApi(
         "GET",
-        d.scriptPath(e)
+        h.scriptPath(e)
       );
     } catch {
       return null;
@@ -1426,12 +1426,12 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   async saveScript(e, t) {
     await this.client.callApi(
       "POST",
-      d.scriptPath(e),
+      h.scriptPath(e),
       t
     );
   }
   async deleteScript(e) {
-    await this.client.callApi("DELETE", d.scriptPath(e));
+    await this.client.callApi("DELETE", h.scriptPath(e));
   }
   async reloadScripts() {
     await this.connection.sendMessagePromise({
@@ -1450,8 +1450,8 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   }
   async getSTHelpers(e = "st_") {
     return (await this.getStates()).filter((a) => {
-      const [i, n] = a.entity_id.split(".");
-      return !!n && d.HELPER_DOMAINS.has(i) && n.startsWith(e);
+      const [i, r] = a.entity_id.split(".");
+      return !!r && h.HELPER_DOMAINS.has(i) && r.startsWith(e);
     });
   }
   async deleteHelper(e) {
@@ -1463,16 +1463,61 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
       [`${t}_id`]: a
     });
   }
+  /**
+   * HA derives a storage helper's immutable id from its name on create. Create
+   * with the requested object id first, verify what HA allocated, then restore
+   * the human-readable name through the update command (which keeps the id).
+   */
+  async createHelperWithExactId(e, t, a) {
+    if (!t) {
+      await this.connection.sendMessagePromise({
+        type: `${e}/create`,
+        ...a
+      });
+      return;
+    }
+    const [i, r, ...n] = t.split(".");
+    if (i !== e || !r || n.length > 0)
+      throw new Error(
+        `Invalid ${e} entity id '${t}' for helper creation`
+      );
+    const { name: s, ...o } = a, p = await this.connection.sendMessagePromise({
+      type: `${e}/create`,
+      name: r,
+      ...o
+    }), u = p == null ? void 0 : p.id;
+    if (typeof u != "string")
+      throw new Error(
+        `Home Assistant did not return an id while creating ${t}`
+      );
+    if (u !== r)
+      throw await this.deleteHelper(`${e}.${u}`), new Error(
+        `Home Assistant created ${e}.${u} instead of ${t}`
+      );
+    if (s !== r)
+      try {
+        await this.connection.sendMessagePromise({
+          type: `${e}/update`,
+          [`${e}_id`]: r,
+          name: s,
+          ...o
+        });
+      } catch (d) {
+        try {
+          await this.deleteHelper(t);
+        } catch {
+        }
+        throw d;
+      }
+  }
   async createInputBoolean(e) {
-    await this.connection.sendMessagePromise({
-      type: "input_boolean/create",
+    await this.createHelperWithExactId("input_boolean", e.id, {
       name: e.name,
       initial: e.initial ?? !1
     });
   }
   async createInputNumber(e) {
-    await this.connection.sendMessagePromise({
-      type: "input_number/create",
+    await this.createHelperWithExactId("input_number", e.id, {
       name: e.name,
       initial: e.initial ?? 0,
       min: e.min ?? 0,
@@ -1482,16 +1527,14 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     });
   }
   async createInputText(e) {
-    await this.connection.sendMessagePromise({
-      type: "input_text/create",
+    await this.createHelperWithExactId("input_text", e.id, {
       name: e.name,
       initial: e.initial ?? "",
       pattern: e.pattern
     });
   }
   async createInputDateTime(e) {
-    await this.connection.sendMessagePromise({
-      type: "input_datetime/create",
+    await this.createHelperWithExactId("input_datetime", e.id, {
       name: e.name,
       has_date: !0,
       has_time: !0,
@@ -1499,8 +1542,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     });
   }
   async createTimer(e) {
-    await this.connection.sendMessagePromise({
-      type: "timer/create",
+    await this.createHelperWithExactId("timer", e.id, {
       name: e.name,
       duration: e.duration ?? "00:00:00"
     });
@@ -1551,7 +1593,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     }
   }
 };
-c(d, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
+c(h, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "input_boolean",
   "input_number",
   "input_text",
@@ -1560,37 +1602,39 @@ c(d, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "counter",
   "timer"
 ]));
-let y = d;
+let y = h;
 class b {
   constructor(e, t = "st_") {
     c(this, "api");
     c(this, "projectPrefix");
     this.api = e, this.projectPrefix = t;
   }
-  async calculateSync(e, t) {
-    const a = t ?? await this.getExistingHelpers(), i = new Set(a.map((s) => s.entityId)), n = new Set(e.map((s) => s.id)), r = {
+  async calculateSync(e, t, a) {
+    const r = (a ?? await this.getExistingHelpers(t)).filter(
+      (p) => this.isInScope(p.entityId, t)
+    ), n = new Set(r.map((p) => p.entityId)), s = new Set(e.map((p) => p.id)), o = {
       toCreate: [],
       toUpdate: [],
       toDelete: [],
       unchanged: []
     };
-    for (const s of e)
-      if (!i.has(s.id))
-        r.toCreate.push(s);
+    for (const p of e)
+      if (!n.has(p.id))
+        o.toCreate.push(p);
       else {
-        const o = a.find((u) => u.entityId === s.id);
-        o && this.needsUpdate(s, o) ? r.toUpdate.push(s) : r.unchanged.push(s.id);
+        const u = r.find((d) => d.entityId === p.id);
+        u && this.needsUpdate(p, u) ? o.toUpdate.push(p) : o.unchanged.push(p.id);
       }
-    for (const s of a)
-      n.has(s.entityId) || r.toDelete.push(s.entityId);
-    return r;
+    for (const p of r)
+      s.has(p.entityId) || o.toDelete.push(p.entityId);
+    return o;
   }
-  async getExistingHelpers() {
-    return (await this.api.getSTHelpers(this.projectPrefix)).map((t) => ({
-      entityId: t.entity_id,
-      type: t.entity_id.split(".")[0],
-      state: t.state,
-      attributes: t.attributes
+  async getExistingHelpers(e = this.projectPrefix) {
+    return (await this.api.getSTHelpers(e)).map((a) => ({
+      entityId: a.entity_id,
+      type: a.entity_id.split(".")[0],
+      state: a.state,
+      attributes: a.attributes
     }));
   }
   toHelperConfig(e) {
@@ -1669,8 +1713,8 @@ class b {
     if (e.type !== t.type)
       return !0;
     if (e.type === "input_number") {
-      const a = t.attributes, i = a.min, n = a.max;
-      if (e.min !== i || e.max !== n)
+      const a = t.attributes, i = a.min, r = a.max;
+      if (e.min !== i || e.max !== r)
         return !0;
     }
     return !1;
@@ -1689,12 +1733,14 @@ class b {
     switch (e.type) {
       case "input_boolean":
         await this.api.createInputBoolean({
+          id: e.id,
           name: t,
           initial: !!(e.initial ?? !1)
         });
         break;
       case "input_number":
         await this.api.createInputNumber({
+          id: e.id,
           name: t,
           initial: Number(e.initial ?? e.min ?? 0),
           min: e.min,
@@ -1705,6 +1751,7 @@ class b {
         break;
       case "input_text":
         await this.api.createInputText({
+          id: e.id,
           name: t,
           initial: String(e.initial ?? ""),
           pattern: e.pattern
@@ -1712,12 +1759,14 @@ class b {
         break;
       case "input_datetime":
         await this.api.createInputDateTime({
+          id: e.id,
           name: t,
           initial: String(e.initial ?? "")
         });
         break;
       case "timer":
         await this.api.createTimer({
+          id: e.id,
           name: t,
           duration: String(e.initial ?? "00:00:00")
         });
@@ -1725,6 +1774,10 @@ class b {
       default:
         throw new Error(`Unknown helper type: ${e.type} (${t})`);
     }
+  }
+  isInScope(e, t) {
+    const a = e.split(".")[1];
+    return !!a && a.startsWith(t);
   }
   extractName(e) {
     const t = e.split(".");
@@ -1744,8 +1797,8 @@ class b {
   async getHelperStates(e) {
     const t = await this.api.getStates(), a = {};
     for (const i of e) {
-      const n = t.find((r) => r.entity_id === i);
-      n && (a[i] = this.parseHelperValue(n));
+      const r = t.find((n) => n.entity_id === i);
+      r && (a[i] = this.parseHelperValue(r));
     }
     return a;
   }
@@ -1771,7 +1824,7 @@ class b {
       }
   }
 }
-const h = "st_hass_backups", w = 10;
+const m = "st_hass_backups", T = 10;
 class $ {
   constructor(e) {
     c(this, "api");
@@ -1779,9 +1832,9 @@ class $ {
     this.api = e, this.helperManager = new b(e);
   }
   async createBackup(e, t) {
-    const a = await this.api.getAutomation(e), i = this.getScriptId(e), n = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map(
-      (g) => this.helperManager.toHelperConfig(g)
-    ), o = s.map((g) => g.id), u = await this.helperManager.getHelperStates(o), l = {
+    const a = await this.api.getAutomation(e), i = this.getScriptId(e), r = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map(
+      (d) => this.helperManager.toHelperConfig(d)
+    ), o = s.map((d) => d.id), p = await this.helperManager.getHelperStates(o), u = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1790,12 +1843,12 @@ class $ {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         automation: a,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        script: n,
+        script: r,
         helpers: s,
-        helperStates: u
+        helperStates: p
       }
     };
-    return await this.saveBackup(l), l;
+    return await this.saveBackup(u), u;
   }
   async restoreBackup(e) {
     const t = await this.loadBackup(e);
@@ -1821,7 +1874,7 @@ class $ {
     await this.helperManager.restoreHelperStates(t.data.helperStates), await this.api.reloadAutomations(), await this.api.reloadScripts();
   }
   async listBackups() {
-    const e = window.localStorage.getItem(h);
+    const e = window.localStorage.getItem(m);
     if (!e) return [];
     try {
       return JSON.parse(e).map((a) => ({
@@ -1837,19 +1890,19 @@ class $ {
   }
   async deleteBackup(e) {
     const a = (await this.listBackups()).filter((i) => i.id !== e);
-    window.localStorage.setItem(h, JSON.stringify(a));
+    window.localStorage.setItem(m, JSON.stringify(a));
   }
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, w);
-    window.localStorage.setItem(h, JSON.stringify(a));
+    const a = t.slice(0, T);
+    window.localStorage.setItem(m, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = w) {
+  async cleanupOldBackups(e = T) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
-    return window.localStorage.setItem(h, JSON.stringify(i)), a.length;
+    return window.localStorage.setItem(m, JSON.stringify(i)), a.length;
   }
   generateId() {
     return `backup_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
@@ -1858,17 +1911,17 @@ class $ {
     return `${e}_logic`;
   }
 }
-const m = "st_hass_schemas";
+const g = "st_hass_schemas";
 class P {
   save(e, t) {
     const a = this.loadAll();
-    a[e] = t, localStorage.setItem(m, JSON.stringify(a));
+    a[e] = t, localStorage.setItem(g, JSON.stringify(a));
   }
   load(e) {
     return this.loadAll()[e] || null;
   }
   loadAll() {
-    const e = localStorage.getItem(m);
+    const e = localStorage.getItem(g);
     if (!e) return {};
     try {
       return JSON.parse(e);
@@ -1878,13 +1931,13 @@ class P {
   }
   delete(e) {
     const t = this.loadAll();
-    delete t[e], localStorage.setItem(m, JSON.stringify(t));
+    delete t[e], localStorage.setItem(g, JSON.stringify(t));
   }
   clear() {
-    localStorage.removeItem(m);
+    localStorage.removeItem(g);
   }
 }
-class U {
+class x {
   /**
    * Detect migration issues between old and new schema
    */
@@ -1896,25 +1949,25 @@ class U {
         hasDestructiveChanges: !1,
         requiresUserInput: !1
       };
-    const i = new Map(e.variables.map((r) => [r.name, r])), n = new Map(t.variables.map((r) => [r.name, r]));
-    for (const [r, s] of i)
-      n.has(r) || a.push(this.createRemovedIssue(s));
-    for (const [r, s] of n) {
-      const o = i.get(r);
+    const i = new Map(e.variables.map((n) => [n.name, n])), r = new Map(t.variables.map((n) => [n.name, n]));
+    for (const [n, s] of i)
+      r.has(n) || a.push(this.createRemovedIssue(s));
+    for (const [n, s] of r) {
+      const o = i.get(n);
       if (!o)
         a.push(this.createAddedIssue(s));
       else {
-        const u = this.detectChanges(o, s);
-        a.push(...u);
+        const p = this.detectChanges(o, s);
+        a.push(...p);
       }
     }
     return {
       issues: a,
       hasDestructiveChanges: a.some(
-        (r) => r.options.some((s) => s.isDestructive)
+        (n) => n.options.some((s) => s.isDestructive)
       ),
       requiresUserInput: a.some(
-        (r) => r.type === "removed" || r.type === "type_changed"
+        (n) => n.type === "removed" || n.type === "type_changed"
       )
     };
   }
@@ -2028,7 +2081,7 @@ class S {
     c(this, "backupManager");
     c(this, "schemaStorage");
     c(this, "migrationDetector");
-    this.api = e, this.helperManager = new b(e), this.backupManager = new $(e), this.schemaStorage = new P(), this.migrationDetector = new U();
+    this.api = e, this.helperManager = new b(e), this.backupManager = new $(e), this.schemaStorage = new P(), this.migrationDetector = new x();
   }
   async deploy(e, t = {}) {
     const a = this.createTransaction(e);
@@ -2043,18 +2096,18 @@ class S {
           errors: []
         };
       a.status = "in_progress";
-      for (const r of i)
+      for (const n of i)
         try {
-          await this.applyOperation(r), r.status = "applied";
+          await this.applyOperation(n), n.status = "applied";
         } catch (s) {
-          return r.status = "failed", r.error = this.formatError(s), await this.rollback(a), {
+          return n.status = "failed", n.error = this.formatError(s), await this.rollback(a), {
             success: !1,
             transactionId: a.id,
             operations: i,
             errors: [
               {
-                operation: r,
-                message: r.error ?? "Unknown deploy error",
+                operation: n,
+                message: n.error ?? "Unknown deploy error",
                 code: "DEPLOY_FAILED"
               }
             ]
@@ -2078,7 +2131,7 @@ class S {
       });
     } catch (i) {
       a.status = "failed";
-      const n = {
+      const r = {
         message: this.formatError(i),
         code: "DEPLOY_ERROR"
       };
@@ -2086,7 +2139,7 @@ class S {
         success: !1,
         transactionId: a.id,
         operations: a.operations,
-        errors: [n]
+        errors: [r]
       };
     }
   }
@@ -2120,34 +2173,35 @@ class S {
   async calculateOperations(e) {
     const t = [], a = [e.automation, ...e.additionalAutomations ?? []];
     for (const u of a) {
-      const l = await this.api.getAutomation(u.id);
+      const d = await this.api.getAutomation(u.id);
       t.push({
         id: this.generateId(),
-        type: l ? "update" : "create",
+        type: d ? "update" : "create",
         entityType: "automation",
         entityId: u.id,
-        previousState: l ?? void 0,
+        previousState: d ?? void 0,
         newState: u,
         status: "pending"
       });
     }
-    const i = this.getScriptId(e), n = await this.api.getScript(i);
+    const i = this.getScriptId(e), r = await this.api.getScript(i);
     t.push({
       id: this.generateId(),
-      type: n ? "update" : "create",
+      type: r ? "update" : "create",
       entityType: "script",
       entityId: i,
-      previousState: n ?? void 0,
+      previousState: r ?? void 0,
       newState: e.script,
       status: "pending"
     });
-    const r = await this.helperManager.getExistingHelpers(), s = new Map(
-      r.map((u) => [u.entityId, u])
-    ), o = await this.helperManager.calculateSync(
+    const n = `${e.automation.id}_`, s = await this.helperManager.getExistingHelpers(n), o = new Map(
+      s.map((u) => [u.entityId, u])
+    ), p = await this.helperManager.calculateSync(
       e.helpers,
-      r
+      n,
+      s
     );
-    for (const u of o.toCreate)
+    for (const u of p.toCreate)
       t.push({
         id: this.generateId(),
         type: "create",
@@ -2156,26 +2210,26 @@ class S {
         newState: u,
         status: "pending"
       });
-    for (const u of o.toUpdate) {
-      const l = s.get(u.id);
+    for (const u of p.toUpdate) {
+      const d = o.get(u.id);
       t.push({
         id: this.generateId(),
         type: "update",
         entityType: "helper",
         entityId: u.id,
-        previousState: l ? this.helperManager.toHelperConfig(l) : void 0,
+        previousState: d ? this.helperManager.toHelperConfig(d) : void 0,
         newState: u,
         status: "pending"
       });
     }
-    for (const u of o.toDelete) {
-      const l = s.get(u);
+    for (const u of p.toDelete) {
+      const d = o.get(u);
       t.push({
         id: this.generateId(),
         type: "delete",
         entityType: "helper",
         entityId: u,
-        previousState: l ? this.helperManager.toHelperConfig(l) : void 0,
+        previousState: d ? this.helperManager.toHelperConfig(d) : void 0,
         status: "pending"
       });
     }
@@ -2187,17 +2241,17 @@ class S {
    * to drive migration flows.
    */
   buildProgramSchema(e) {
-    const t = e.automation.alias.replace("[ST] ", ""), a = "default", i = e.helpers.map((n) => ({
-      name: n.id,
-      dataType: n.type,
-      helperId: n.id,
-      helperType: n.type === "counter" ? "input_number" : n.type,
-      initialValue: n.initial,
+    const t = e.automation.alias.replace("[ST] ", ""), a = "default", i = e.helpers.map((r) => ({
+      name: r.id,
+      dataType: r.type,
+      helperId: r.id,
+      helperType: r.type === "counter" ? "input_number" : r.type,
+      initialValue: r.initial,
       restorePolicy: 0,
       // restore policy is assigned at analysis time; not wired here yet
-      min: n.min,
-      max: n.max,
-      step: n.step
+      min: r.min,
+      max: r.max,
+      step: r.step
     }));
     return {
       programName: t,
@@ -2212,8 +2266,8 @@ class S {
    * Intended to be called by higher-level UI logic before executing a deploy.
    */
   createMigrationPlan(e) {
-    const t = this.buildProgramSchema(e), a = e.automation.id, i = this.schemaStorage.load(a), n = this.migrationDetector.detectIssues(i, t);
-    return this.schemaStorage.save(a, t), n;
+    const t = this.buildProgramSchema(e), a = e.automation.id, i = this.schemaStorage.load(a), r = this.migrationDetector.detectIssues(i, t);
+    return this.schemaStorage.save(a, t), r;
   }
   generateId() {
     return `op_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
@@ -2279,18 +2333,18 @@ class S {
   }
   async verifyDeployment(e) {
     const t = [e.automation, ...e.additionalAutomations ?? []];
-    for (const r of t)
-      if (!await this.api.getAutomation(r.id)) return !1;
+    for (const n of t)
+      if (!await this.api.getAutomation(n.id)) return !1;
     const a = this.getScriptId(e);
     if (!await this.api.getScript(a)) return !1;
-    const n = await this.api.getStates();
-    for (const r of e.helpers)
-      if (!n.some((o) => o.entity_id === r.id)) return !1;
+    const r = await this.api.getStates();
+    for (const n of e.helpers)
+      if (!r.some((o) => o.entity_id === n.id)) return !1;
     return !0;
   }
 }
-async function x(p, e, t) {
-  return new S(p).deploy(e, t);
+async function U(l, e, t) {
+  return new S(l).deploy(e, t);
 }
 const z = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
@@ -2298,10 +2352,10 @@ const z = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   DeployManager: S,
   HAApiClient: y,
   HelperManager: b,
-  deploy: x
+  deploy: U
 }, Symbol.toStringTag, { value: "Module" }));
 export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-st5GVH6E.js.map
+//# sourceMappingURL=transpiler-deploy-41TsQdYw.js.map
