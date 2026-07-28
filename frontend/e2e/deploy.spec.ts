@@ -62,7 +62,13 @@ END_PROGRAM
     const automation = await getAutomationConfig(page, AUTOMATION_ID, authToken);
     expect(automation, `automation ${AUTOMATION_ID} was not created`).not.toBeNull();
     expect(automation.alias).toBe("[ST] TestProgram");
-    expect(automation.trigger.length).toBeGreaterThan(0);
+
+    // Home Assistant modernises the schema on save: the `trigger` / `action`
+    // keys we post come back as `triggers` / `actions` (and `service:` inside an
+    // action as `action:`). Both spellings are accepted on write, so the test
+    // tolerates either rather than pinning one HA version.
+    const triggers = automation.triggers ?? automation.trigger;
+    expect(triggers?.length ?? 0).toBeGreaterThan(0);
 
     const script = await getScriptConfig(page, SCRIPT_ID, authToken);
     expect(script, `script ${SCRIPT_ID} was not created`).not.toBeNull();
