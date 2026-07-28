@@ -125,6 +125,19 @@ describe('Transpiler', () => {
           type: 'input_datetime',
         }),
       );
+
+      const template = (result.automation.condition![0] as {
+        value_template: string;
+      }).value_template;
+
+      // Fallback for the uninitialised helper must stay in place.
+      expect(template).toContain("{% if last in ['unknown', 'unavailable', 'none', ''] %}");
+
+      // An input_datetime state is naive, now() is timezone-aware. Subtracting
+      // them raises "can't subtract offset-naive and offset-aware datetimes",
+      // so the comparison has to go through as_timestamp().
+      expect(template).toContain('as_timestamp(now()) - as_timestamp(last, 0)');
+      expect(template).not.toContain('as_datetime');
     });
 
     it('generates debounce delay', () => {

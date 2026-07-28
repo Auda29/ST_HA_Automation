@@ -310,12 +310,21 @@ export class Transpiler {
     return `${domain}.${objectId}`.toLowerCase().replace(/[^a-z0-9_.]/g, '_');
   }
 
+  /**
+   * Build the throttle condition (MUST-DO #10).
+   *
+   * `now()` is timezone-aware while an input_datetime state is naive
+   * ("2026-07-28 13:00:00"), so subtracting the two datetimes raises
+   * "can't subtract offset-naive and offset-aware datetimes". as_timestamp()
+   * reads the naive helper state as local time and takes a default for the
+   * uninitialised case, which keeps the first-run fallback intact.
+   */
   private generateThrottleCondition(helperId: string, seconds: number): string {
     return `{% set last = states('${helperId}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
-  {{ (now() - (last | as_datetime)).total_seconds() > ${seconds} }}
+  {{ (as_timestamp(now()) - as_timestamp(last, 0)) > ${seconds} }}
 {% endif %}`;
   }
 

@@ -431,10 +431,11 @@ export function generateEntityStateRead(entityId: string, dataType: string): str
  * Generate a throttle condition template with fallback for uninitialized helper
  */
 export function generateThrottleCondition(lastRunHelper: string, throttleSeconds: number): string {
+  // Timezone-safe comparison - see Transpiler.generateThrottleCondition.
   return `{% set last = states('${lastRunHelper}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
-  {{ (now() - (last | as_datetime)).total_seconds() > ${throttleSeconds} }}
+  {{ (as_timestamp(now()) - as_timestamp(last, 0)) > ${throttleSeconds} }}
 {% endif %}`;
 }
