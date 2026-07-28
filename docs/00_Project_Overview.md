@@ -188,9 +188,10 @@ CORRECT: Use HA services
 ```
 
 **MUST:** Deployment exclusively via HA APIs
-- `automation.reload` after changes
-- `input_number.set_value` for helpers
-- WebSocket API for entity creation
+- **REST API** (`hass.callApi`) for automation and script configs
+- **WebSocket API** for helper entity creation (`input_*/create`, `timer/create`)
+- `automation.reload` / `script.reload` after changes
+- `input_number.set_value` for helper values
 
 **WHY:** 
 - File manipulation is fragile (formatting, comments, merges)
@@ -198,8 +199,29 @@ CORRECT: Use HA services
 - No rollback possible with direct file changes
 - User edits get overwritten
 
+**Which transport for what?** Automation and script configs are *not* available over
+the WebSocket API. In HA Core they are served by HTTP views
+(`EditIdBasedConfigView` in `homeassistant/components/config/`), so they must be
+written via REST. Helper creation and service calls *are* WebSocket commands.
+
 ```typescript
-// CORRECT - Via HA Storage API
+// ✅ CORRECT - automation/script config via REST
+await hass.callApi(
+  'POST',
+  `config/automation/config/${automationId}`,
+  generatedAutomation
+);
+await hass.callApi('POST', `config/script/config/${scriptId}`, generatedScript);
+
+// ✅ CORRECT - helper creation via WebSocket
+await hass.connection.sendMessagePromise({
+  type: 'input_number/create',
+  name: 'ST Kitchen activationCount',
+});
+```
+
+```typescript
+// ❌ WRONG - there is no such WebSocket command; HA answers `unknown_command`
 await hass.callWS({
   type: 'config/automation/config',
   automation_id: 'st_kitchen',
@@ -218,12 +240,24 @@ First run: input_datetime is empty/unavailable
 {# WRONG - crashes with empty helper #}
 {{ (now() - states('input_datetime.st_last_run') | as_datetime).total_seconds() > 1 }}
 
-{# CORRECT - with fallback for first run #}
+{# WRONG - `now()` is timezone-aware, but an input_datetime state is naive
+   ("2026-07-28 13:00:00"). Subtracting them raises:
+   TypeError: can't subtract offset-naive and offset-aware datetimes #}
 {% set last = states('input_datetime.st_last_run') %}
 {% if last in ['unknown', 'unavailable', ''] %}
   true
 {% else %}
   {{ (now() - (last | as_datetime)).total_seconds() > 1 }}
+{% endif %}
+
+{# CORRECT - fallback for first run AND timezone-safe comparison.
+   as_timestamp() reads a naive helper state as local time and takes a
+   default for the uninitialised case. #}
+{% set last = states('input_datetime.st_last_run') %}
+{% if last in ['unknown', 'unavailable', 'none', ''] %}
+  true
+{% else %}
+  {{ (as_timestamp(now()) - as_timestamp(last, 0)) > 1 }}
 {% endif %}
 ```
 
