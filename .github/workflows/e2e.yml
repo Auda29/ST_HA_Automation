@@ -50,6 +50,19 @@ jobs:
       - name: Build frontend bundle
         run: npm run build
 
+      # HACS ships the committed bundle as-is, so a stale commit means users run
+      # a different panel than the source describes. The build is content-hashed
+      # and reproducible, so a fresh build must leave the working tree clean.
+      - name: Verify committed bundle is up to date
+        run: |
+          changes=$(git status --porcelain -- ../custom_components/st_hass/frontend)
+          if [ -n "$changes" ]; then
+            echo "::error::Committed frontend bundle is out of date. Run 'npm run build' in frontend/ and commit the result."
+            echo "$changes"
+            exit 1
+          fi
+          echo "Committed bundle matches the current source."
+
       - name: Start Home Assistant container
         run: |
           docker compose -f ../docker-compose.test.yml up -d
