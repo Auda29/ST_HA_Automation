@@ -31,7 +31,9 @@ class FakeConnection implements HAClient, HAConnection {
     if (message.type === "get_states") {
       return this.states as unknown as T;
     }
-    // For helper tests we only care about delete helpers; no response needed.
+    if (message.type.endsWith("/create")) {
+      return { id: message.name } as T;
+    }
     return undefined as unknown as T;
   }
 
@@ -119,22 +121,34 @@ describe("HelperManager", () => {
     expect(sync.toDelete).toEqual(["input_boolean.st_real_helper"]);
   });
 
-  it("creates new input_number helpers via the create API instead of set_value", async () => {
+  it("creates input_number helpers with the requested entity id and friendly name", async () => {
     const conn = new FakeConnection();
     const api = new HAApiClient(conn);
     const manager = new HelperManager(api, "st_");
 
     await manager.createHelper(requiredHelpers[0]);
 
-    expect(conn.wsMessages).toContainEqual({
-      type: "input_number/create",
-      name: "Threshold",
-      initial: 10,
-      min: 0,
-      max: 100,
-      step: 1,
-      mode: "box",
-    });
+    expect(conn.wsMessages).toEqual([
+      {
+        type: "input_number/create",
+        name: "st_project_prog_threshold",
+        initial: 10,
+        min: 0,
+        max: 100,
+        step: 1,
+        mode: "box",
+      },
+      {
+        type: "input_number/update",
+        input_number_id: "st_project_prog_threshold",
+        name: "Threshold",
+        initial: 10,
+        min: 0,
+        max: 100,
+        step: 1,
+        mode: "box",
+      },
+    ]);
     expect(
       conn.wsMessages.some(
         (message) =>
@@ -156,10 +170,18 @@ describe("HelperManager", () => {
       name: "Delay Timer",
     });
 
-    expect(conn.wsMessages).toContainEqual({
-      type: "timer/create",
-      name: "Delay Timer",
-      duration: "00:00:00",
-    });
+    expect(conn.wsMessages).toEqual([
+      {
+        type: "timer/create",
+        name: "st_project_prog_delay",
+        duration: "00:00:00",
+      },
+      {
+        type: "timer/update",
+        timer_id: "st_project_prog_delay",
+        name: "Delay Timer",
+        duration: "00:00:00",
+      },
+    ]);
   });
 });
