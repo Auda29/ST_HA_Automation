@@ -90,6 +90,8 @@ class FakeConnection implements HAClient, HAConnection {
     switch (message.type) {
       case "get_states":
         return this.states as unknown as T;
+      case "input_number/create":
+        return { id: message.name } as T;
       default:
         return undefined as unknown as T;
     }
@@ -233,11 +235,45 @@ describe("DeployManager", () => {
     );
   });
 
+  it("deletes obsolete helpers only for the program being deployed", async () => {
+    const conn = new FakeConnection();
+    conn.states = [
+      {
+        entity_id: "input_number.st_default_prog_obsolete",
+        state: "0",
+        attributes: { min: 0, max: 100 },
+        last_changed: "",
+        last_updated: "",
+      },
+      {
+        entity_id: "input_number.st_default_other_counter",
+        state: "42",
+        attributes: { min: 0, max: 100 },
+        last_changed: "",
+        last_updated: "",
+      },
+    ];
+
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+    const deployResult = await manager.deploy(makeTranspilerResult());
+
+    expect(deployResult.success).toBe(true);
+    expect(conn.wsMessages).toContainEqual({
+      type: "input_number/delete",
+      input_number_id: "st_default_prog_obsolete",
+    });
+    expect(conn.wsMessages).not.toContainEqual({
+      type: "input_number/delete",
+      input_number_id: "st_default_other_counter",
+    });
+  });
+
   it("captures previous helper config for helper update and delete rollback", async () => {
     const conn = new FakeConnection();
     conn.states = [
       {
-        entity_id: "input_number.st_existing_helper",
+        entity_id: "input_number.st_default_prog_existing",
         state: "7",
         attributes: {
           friendly_name: "Existing Helper",
@@ -250,7 +286,7 @@ describe("DeployManager", () => {
         last_updated: "",
       },
       {
-        entity_id: "input_boolean.st_removed_helper",
+        entity_id: "input_boolean.st_default_prog_removed",
         state: "on",
         attributes: {
           friendly_name: "Removed Helper",
@@ -265,7 +301,7 @@ describe("DeployManager", () => {
     const result = makeTranspilerResult();
     result.helpers = [
       {
-        id: "input_number.st_existing_helper",
+        id: "input_number.st_default_prog_existing",
         type: "input_number",
         name: "Existing Helper",
         initial: 7,
@@ -285,11 +321,11 @@ describe("DeployManager", () => {
       (op) =>
         op.entityType === "helper" &&
         op.type === "delete" &&
-        op.entityId === "input_boolean.st_removed_helper",
+        op.entityId === "input_boolean.st_default_prog_removed",
     );
 
     expect(helperUpdate?.previousState).toEqual({
-      id: "input_number.st_existing_helper",
+      id: "input_number.st_default_prog_existing",
       type: "input_number",
       name: "Existing Helper",
       initial: 7,
@@ -299,7 +335,7 @@ describe("DeployManager", () => {
       mode: "box",
     });
     expect(helperDelete?.previousState).toEqual({
-      id: "input_boolean.st_removed_helper",
+      id: "input_boolean.st_default_prog_removed",
       type: "input_boolean",
       name: "Removed Helper",
       initial: true,
@@ -341,18 +377,30 @@ describe("DeployManager", () => {
       },
     });
 
-    expect(conn.wsMessages[0]).toEqual({
-      type: "input_number/delete",
-      input_number_id: "st_existing_helper",
-    });
-    expect(conn.wsMessages[1]).toEqual({
-      type: "input_number/create",
-      name: "Existing Helper",
-      initial: 7,
-      min: 0,
-      max: 20,
-      step: 1,
-      mode: "box",
-    });
+    expect(conn.wsMessages).toEqual([
+      {
+        type: "input_number/delete",
+        input_number_id: "st_existing_helper",
+      },
+      {
+        type: "input_number/create",
+        name: "st_existing_helper",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box",
+      },
+      {
+        type: "input_number/update",
+        input_number_id: "st_existing_helper",
+        name: "Existing Helper",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box",
+      },
+    ]);
   });
 });

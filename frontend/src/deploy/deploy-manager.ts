@@ -200,12 +200,15 @@ export class DeployManager {
       status: 'pending',
     });
 
-    const existingHelpers = await this.helperManager.getExistingHelpers();
+    const helperScopePrefix = `${result.automation.id}_`;
+    const existingHelpers =
+      await this.helperManager.getExistingHelpers(helperScopePrefix);
     const existingHelperById = new Map(
       existingHelpers.map((helper) => [helper.entityId, helper] as const),
     );
     const helperSync = await this.helperManager.calculateSync(
       result.helpers,
+      helperScopePrefix,
       existingHelpers,
     );
 

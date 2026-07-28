@@ -64,6 +64,8 @@ class FakeConnection implements HAClient, HAConnection {
     switch (message.type) {
       case "get_states":
         return this.states as unknown as T;
+      case "input_number/create":
+        return { id: message.name } as T;
       default:
         return undefined as unknown as T;
     }
@@ -140,6 +142,16 @@ describe("BackupManager", () => {
 
     expect(conn.wsMessages).toContainEqual({
       type: "input_number/create",
+      name: "st_default_prog_counter",
+      initial: 1,
+      min: 0,
+      max: 100,
+      step: 1,
+      mode: "box",
+    });
+    expect(conn.wsMessages).toContainEqual({
+      type: "input_number/update",
+      input_number_id: "st_default_prog_counter",
       name: "Counter",
       initial: 1,
       min: 0,

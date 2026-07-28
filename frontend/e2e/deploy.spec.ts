@@ -9,6 +9,7 @@ import { test, expect } from "@playwright/test";
 import {
   authenticateHA,
   getAutomationConfig,
+  getEntityState,
   getScriptConfig,
   navigateToSTPanel,
   replaceEditorCode,
@@ -18,6 +19,10 @@ import {
 // st_home_<program> and st_home_<program>_logic.
 const AUTOMATION_ID = "st_home_testprogram";
 const SCRIPT_ID = "st_home_testprogram_logic";
+const PERSISTENT_HELPER_ID =
+  "input_number.st_home_persistentprogram_counter";
+const FOREIGN_HELPER_ID =
+  "input_number.st_home_foreignprogram_counter";
 
 test.describe("Deploy Workflow", () => {
   test("should parse, analyze, transpile, and deploy a simple ST program", async ({
@@ -73,6 +78,48 @@ END_PROGRAM
     const script = await getScriptConfig(page, SCRIPT_ID, authToken);
     expect(script, `script ${SCRIPT_ID} was not created`).not.toBeNull();
     expect(script.sequence.length).toBeGreaterThan(0);
+  });
+
+  test("should deploy a persistent helper without touching another program", async ({
+    page,
+  }) => {
+    const authToken = await authenticateHA(page);
+    await navigateToSTPanel(page);
+
+    const stCode = `
+PROGRAM PersistentProgram
+VAR
+    trigger_var AT %I* : BOOL := 'input_boolean.test_schalter_1';
+    {persistent}
+    counter : INT := 0;
+END_VAR
+
+IF trigger_var THEN
+    counter := counter + 1;
+END_IF
+END_PROGRAM
+    `.trim();
+
+    await replaceEditorCode(page, stCode);
+    await page.locator('button:has-text("Deploy")').first().click();
+
+    await expect(page.locator("text=/Deploy successful/i").first()).toBeVisible({
+      timeout: 30000,
+    });
+
+    const helper = await getEntityState(page, PERSISTENT_HELPER_ID, authToken);
+    expect(helper.entity_id).toBe(PERSISTENT_HELPER_ID);
+    expect(helper.attributes.friendly_name).toBe(
+      "ST PersistentProgram - counter",
+    );
+
+    const foreignHelper = await getEntityState(
+      page,
+      FOREIGN_HELPER_ID,
+      authToken,
+    );
+    expect(foreignHelper.entity_id).toBe(FOREIGN_HELPER_ID);
+    expect(foreignHelper.state).toBe("42.0");
   });
 
   test("should show syntax status in editor", async ({ page }) => {

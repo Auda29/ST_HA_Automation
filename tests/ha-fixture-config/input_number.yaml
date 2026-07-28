@@ -22,3 +22,12 @@ volume_level:
   step: 5
   unit_of_measurement: "%"
   icon: mdi:volume-high
+
+# Represents a helper owned by a different deployed ST program. Deploying
+# PersistentProgram must never include this entity in its cleanup scope.
+st_home_foreignprogram_counter:
+  name: Foreign Program Counter
+  initial: 42
+  min: 0
+  max: 100
+  step: 1

@@ -17,9 +17,14 @@ export class HelperManager {
 
   async calculateSync(
     required: HelperConfig[],
+    scopePrefix: string,
     existing?: ExistingHelper[],
   ): Promise<HelperSyncResult> {
-    const currentHelpers = existing ?? (await this.getExistingHelpers());
+    const discoveredHelpers =
+      existing ?? (await this.getExistingHelpers(scopePrefix));
+    const currentHelpers = discoveredHelpers.filter((helper) =>
+      this.isInScope(helper.entityId, scopePrefix),
+    );
     const existingIds = new Set(currentHelpers.map((h) => h.entityId));
     const requiredIds = new Set(required.map((h) => h.id));
 
@@ -52,8 +57,10 @@ export class HelperManager {
     return result;
   }
 
-  async getExistingHelpers(): Promise<ExistingHelper[]> {
-    const states = await this.api.getSTHelpers(this.projectPrefix);
+  async getExistingHelpers(
+    scopePrefix: string = this.projectPrefix,
+  ): Promise<ExistingHelper[]> {
+    const states = await this.api.getSTHelpers(scopePrefix);
 
     return states.map((s) => ({
       entityId: s.entity_id,
@@ -202,6 +209,7 @@ export class HelperManager {
     switch (config.type) {
       case 'input_boolean':
         await this.api.createInputBoolean({
+          id: config.id,
           name,
           initial: Boolean(config.initial ?? false),
         });
@@ -209,6 +217,7 @@ export class HelperManager {
 
       case 'input_number':
         await this.api.createInputNumber({
+          id: config.id,
           name,
           initial: Number(config.initial ?? config.min ?? 0),
           min: config.min,
@@ -220,6 +229,7 @@ export class HelperManager {
 
       case 'input_text':
         await this.api.createInputText({
+          id: config.id,
           name,
           initial: String(config.initial ?? ''),
           pattern: config.pattern,
@@ -228,6 +238,7 @@ export class HelperManager {
 
       case 'input_datetime':
         await this.api.createInputDateTime({
+          id: config.id,
           name,
           initial: String(config.initial ?? ''),
         });
@@ -235,6 +246,7 @@ export class HelperManager {
 
       case 'timer':
         await this.api.createTimer({
+          id: config.id,
           name,
           duration: String(config.initial ?? '00:00:00'),
         });
@@ -243,6 +255,11 @@ export class HelperManager {
       default:
         throw new Error(`Unknown helper type: ${config.type} (${name})`);
     }
+  }
+
+  private isInScope(entityId: string, scopePrefix: string): boolean {
+    const objectId = entityId.split('.')[1];
+    return !!objectId && objectId.startsWith(scopePrefix);
   }
 
   private extractName(entityId: string): string {
