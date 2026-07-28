@@ -162,6 +162,46 @@ export async function setEntityState(
 }
 
 /**
+ * Read an automation config back from Home Assistant.
+ *
+ * This is the REST endpoint the deploy system writes to. Reading it is the only
+ * way to prove a deploy actually landed - a green panel message is not enough.
+ * Returns null when HA has no config stored under that id.
+ */
+export async function getAutomationConfig(
+  page: Page,
+  automationId: string,
+  authToken: string,
+): Promise<any | null> {
+  const response = await page.request.get(
+    `${HA_URL}/api/config/automation/config/${automationId}`,
+    { headers: { Authorization: `Bearer ${authToken}` } },
+  );
+  if (!response.ok()) {
+    return null;
+  }
+  return response.json();
+}
+
+/**
+ * Read a script config back from Home Assistant.
+ */
+export async function getScriptConfig(
+  page: Page,
+  scriptId: string,
+  authToken: string,
+): Promise<any | null> {
+  const response = await page.request.get(
+    `${HA_URL}/api/config/script/config/${scriptId}`,
+    { headers: { Authorization: `Bearer ${authToken}` } },
+  );
+  if (!response.ok()) {
+    return null;
+  }
+  return response.json();
+}
+
+/**
  * Wait for entity state to change
  */
 export async function waitForEntityState(

@@ -6,12 +6,25 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { navigateToSTPanel, replaceEditorCode } from "./fixtures";
+import {
+  authenticateHA,
+  getAutomationConfig,
+  getScriptConfig,
+  navigateToSTPanel,
+  replaceEditorCode,
+} from "./fixtures";
+
+// The panel transpiles with project name "home", so the generated ids are
+// st_home_<program> and st_home_<program>_logic.
+const AUTOMATION_ID = "st_home_testprogram";
+const SCRIPT_ID = "st_home_testprogram_logic";
 
 test.describe("Deploy Workflow", () => {
   test("should parse, analyze, transpile, and deploy a simple ST program", async ({
     page,
   }) => {
+    const authToken = await authenticateHA(page);
+
     // Navigate to ST panel (handles login automatically)
     await navigateToSTPanel(page);
 
@@ -36,26 +49,24 @@ END_PROGRAM
     const triggersSection = page.locator("text=/Trigger/i");
     await expect(triggersSection.first()).toBeVisible({ timeout: 5000 });
 
-    // Click deploy button
-    const deployButton = page.locator('button:has-text("Deploy")');
-    if ((await deployButton.count()) > 0) {
-      await deployButton.first().click();
+    await page.locator('button:has-text("Deploy")').first().click();
 
-      // Check for success message or status (may be in a toast or status bar)
-      const successIndicator = page.locator(
-        "text=/success|deployed|complete/i",
-      );
-      // This assertion is soft - deployment might require additional HA setup
-      const isVisible = await successIndicator
-        .first()
-        .isVisible()
-        .catch(() => false);
-      if (!isVisible) {
-        console.log(
-          "Deploy button clicked but success indicator not found - may need HA configuration",
-        );
-      }
-    }
+    // The panel must report success - not merely "not crash".
+    await expect(page.locator("text=/Deploy successful/i").first()).toBeVisible({
+      timeout: 30000,
+    });
+
+    // And Home Assistant must actually hold the generated config afterwards.
+    // Asserting this via REST is the point of the test: a deploy that silently
+    // rolls back still leaves a rendered panel behind, but leaves HA empty.
+    const automation = await getAutomationConfig(page, AUTOMATION_ID, authToken);
+    expect(automation, `automation ${AUTOMATION_ID} was not created`).not.toBeNull();
+    expect(automation.alias).toBe("[ST] TestProgram");
+    expect(automation.trigger.length).toBeGreaterThan(0);
+
+    const script = await getScriptConfig(page, SCRIPT_ID, authToken);
+    expect(script, `script ${SCRIPT_ID} was not created`).not.toBeNull();
+    expect(script.sequence.length).toBeGreaterThan(0);
   });
 
   test("should show syntax status in editor", async ({ page }) => {
