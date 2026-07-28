@@ -17,9 +17,14 @@ export class HelperManager {
 
   async calculateSync(
     required: HelperConfig[],
+    scopePrefix: string,
     existing?: ExistingHelper[],
   ): Promise<HelperSyncResult> {
-    const currentHelpers = existing ?? (await this.getExistingHelpers());
+    const discoveredHelpers =
+      existing ?? (await this.getExistingHelpers(scopePrefix));
+    const currentHelpers = discoveredHelpers.filter((helper) =>
+      this.isInScope(helper.entityId, scopePrefix),
+    );
     const existingIds = new Set(currentHelpers.map((h) => h.entityId));
     const requiredIds = new Set(required.map((h) => h.id));
 
@@ -52,8 +57,10 @@ export class HelperManager {
     return result;
   }
 
-  async getExistingHelpers(): Promise<ExistingHelper[]> {
-    const states = await this.api.getSTHelpers(this.projectPrefix);
+  async getExistingHelpers(
+    scopePrefix: string = this.projectPrefix,
+  ): Promise<ExistingHelper[]> {
+    const states = await this.api.getSTHelpers(scopePrefix);
 
     return states.map((s) => ({
       entityId: s.entity_id,
@@ -248,6 +255,11 @@ export class HelperManager {
       default:
         throw new Error(`Unknown helper type: ${config.type} (${name})`);
     }
+  }
+
+  private isInScope(entityId: string, scopePrefix: string): boolean {
+    const objectId = entityId.split('.')[1];
+    return !!objectId && objectId.startsWith(scopePrefix);
   }
 
   private extractName(entityId: string): string {

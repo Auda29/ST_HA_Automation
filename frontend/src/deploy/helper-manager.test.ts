@@ -60,7 +60,7 @@ describe("HelperManager", () => {
     const api = new HAApiClient(conn);
     const manager = new HelperManager(api, "st_");
 
-    const sync = await manager.calculateSync(requiredHelpers);
+    const sync = await manager.calculateSync(requiredHelpers, "st_project_prog_");
 
     expect(sync.toCreate.map((h) => h.id)).toEqual([requiredHelpers[0].id]);
     expect(sync.toDelete).toEqual([]);
@@ -81,7 +81,7 @@ describe("HelperManager", () => {
     const api = new HAApiClient(conn);
     const manager = new HelperManager(api, "st_");
 
-    const sync = await manager.calculateSync([]);
+    const sync = await manager.calculateSync([], "st_");
 
     expect(sync.toCreate).toEqual([]);
     expect(sync.toUpdate).toEqual([]);
@@ -116,7 +116,7 @@ describe("HelperManager", () => {
     const api = new HAApiClient(conn);
     const manager = new HelperManager(api, "st_");
 
-    const sync = await manager.calculateSync([]);
+    const sync = await manager.calculateSync([], "st_");
 
     expect(sync.toDelete).toEqual(["input_boolean.st_real_helper"]);
   });
