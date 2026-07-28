@@ -309,10 +309,23 @@ export async function navigateToSTPanel(page: Page): Promise<void> {
  * Replace the current editor content with a new ST program and wait for analysis.
  */
 export async function replaceEditorCode(page: Page, code: string): Promise<void> {
-  const panel = page.locator("st-panel");
-  await panel.click({ position: { x: 160, y: 160 } });
-  await page.keyboard.press("Control+A");
+  // Target the CodeMirror surface directly. The previous version clicked the
+  // panel at a fixed offset (160/160), which lands on the project sidebar rather
+  // than the editor - the keystrokes went nowhere, the editor kept the built-in
+  // Kitchen_Light example, and the "Syntax OK" check below still passed because
+  // that default program is valid. Every test that "writes an ST program" was in
+  // fact exercising the default one.
+  const editor = page.locator(".cm-content").first();
+  await editor.waitFor({ state: "visible", timeout: 20000 });
+  await editor.click();
+  await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.insertText(code);
+
+  // Prove the replacement actually landed before anything relies on it.
+  const programName = /PROGRAM\s+([A-Za-z_]\w*)/.exec(code)?.[1];
+  if (programName) {
+    await expect(editor).toContainText(programName, { timeout: 15000 });
+  }
 
   // Wait for the panel to show that parsing/analysis settled on the new code.
   await expect(page.locator("text=/Syntax OK/i").first()).toBeVisible({
