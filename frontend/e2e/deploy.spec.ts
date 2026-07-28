@@ -8,6 +8,8 @@
 import { test, expect } from "@playwright/test";
 import {
   authenticateHA,
+  deleteAutomationConfig,
+  deleteScriptConfig,
   getAutomationConfig,
   getEntityState,
   getScriptConfig,
@@ -89,7 +91,7 @@ END_PROGRAM
     const stCode = `
 PROGRAM PersistentProgram
 VAR
-    trigger_var AT %I* : BOOL := 'input_boolean.test_schalter_1';
+    trigger_var AT %I* : BOOL := 'input_boolean.test_switch_2';
     {persistent}
     counter : INT := 0;
 END_VAR
@@ -136,5 +138,52 @@ END_PROGRAM
     // Verify the editor shows some code analysis info (triggers, entities, etc.)
     const analysisInfo = page.locator("text=/Trigger|Entit|Mode/i");
     await expect(analysisInfo.first()).toBeVisible({ timeout: 5000 });
+  });
+
+  test("should roll back an automation when a later deploy step fails", async ({
+    page,
+  }) => {
+    const authToken = await authenticateHA(page);
+    const automationId = "st_home_rollbackprobe";
+    const scriptId = `${automationId}_logic`;
+
+    await deleteAutomationConfig(page, automationId, authToken);
+    await deleteScriptConfig(page, scriptId, authToken);
+    await navigateToSTPanel(page);
+
+    const stCode = `
+PROGRAM RollbackProbe
+VAR
+    trigger_var AT %I* : BOOL := 'input_boolean.test_switch_2';
+    output_var AT %Q* : BOOL := 'switch.steckdose_wohnzimmer';
+END_VAR
+
+output_var := trigger_var;
+END_PROGRAM
+    `.trim();
+
+    await replaceEditorCode(page, stCode);
+
+    await page.route(`**/api/config/script/config/${scriptId}`, async (route) => {
+      if (route.request().method() === "POST") {
+        await route.fulfill({
+          status: 500,
+          contentType: "application/json",
+          body: JSON.stringify({ message: "forced script failure" }),
+        });
+        return;
+      }
+      await route.continue();
+    });
+
+    await page.locator('button:has-text("Deploy")').first().click();
+    await expect(page.locator("text=/forced script failure/i").first()).toBeVisible({
+      timeout: 30000,
+    });
+
+    expect(
+      await getAutomationConfig(page, automationId, authToken),
+      "automation created before the forced script failure must be removed",
+    ).toBeNull();
   });
 });

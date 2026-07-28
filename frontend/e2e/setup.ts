@@ -7,7 +7,7 @@
 import { execSync } from "child_process";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { dirname, join, resolve } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,6 +39,10 @@ async function waitForHA(maxAttempts = 60, delayMs = 2000): Promise<void> {
 
 async function startHAContainer(): Promise<void> {
   const composeFile = join(__dirname, "../../docker-compose.test.yml");
+  const expectedConfigPath = resolve(
+    __dirname,
+    "../../tests/ha-fixture-config",
+  ).toLowerCase();
   if (!existsSync(composeFile)) {
     console.warn(
       "docker-compose.test.yml not found, assuming HA is already running",
@@ -47,16 +51,43 @@ async function startHAContainer(): Promise<void> {
   }
 
   try {
-    const isRunning = execSync(
-      'docker ps --filter name=ha-test --format "{{.Names}}"',
-      { encoding: "utf-8" },
-    )
-      .trim()
-      .includes("ha-test");
+    const hasContainer =
+      execSync(
+        'docker ps -a --filter name=^/ha-test$ --format "{{.Names}}"',
+        { encoding: "utf-8" },
+      ).trim() === "ha-test";
 
-    if (isRunning) {
-      console.log("HA container is already running");
-      return;
+    if (hasContainer) {
+      const isRunning =
+        execSync(
+          'docker ps --filter name=^/ha-test$ --format "{{.Names}}"',
+          { encoding: "utf-8" },
+        ).trim() === "ha-test";
+      const inspected = JSON.parse(
+        execSync("docker inspect ha-test", { encoding: "utf-8" }),
+      ) as Array<{
+        Mounts?: Array<{ Source?: string; Destination?: string }>;
+      }>;
+      const mountedConfigPath = inspected[0]?.Mounts?.find(
+        (mount) => mount.Destination === "/config",
+      )?.Source;
+
+      if (
+        mountedConfigPath &&
+        resolve(mountedConfigPath).toLowerCase() === expectedConfigPath
+      ) {
+        if (isRunning) {
+          console.log(
+            "HA test container is already running with current fixtures",
+          );
+          return;
+        }
+      } else {
+        console.log(
+          `Replacing incompatible ha-test container (mounted /config from ${mountedConfigPath ?? "unknown"})`,
+        );
+        execSync("docker rm -f ha-test", { stdio: "inherit" });
+      }
     }
 
     console.log("Starting HA container...");

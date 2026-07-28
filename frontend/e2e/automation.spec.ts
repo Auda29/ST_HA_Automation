@@ -6,15 +6,31 @@
  */
 
 import { test, expect } from "@playwright/test";
-import { navigateToSTPanel, replaceEditorCode, TEST_ENTITIES } from "./fixtures";
+import {
+  authenticateHA,
+  callService,
+  getEntityState,
+  navigateToSTPanel,
+  replaceEditorCode,
+  TEST_ENTITIES,
+  waitForEntityState,
+} from "./fixtures";
+
+async function deployCurrentProgram(page: import("@playwright/test").Page): Promise<void> {
+  await page.locator('button:has-text("Deploy")').first().click();
+  await expect(page.locator("text=/Deploy successful/i").first()).toBeVisible({
+    timeout: 30000,
+  });
+}
 
 test.describe("Automation Execution", () => {
   test("should trigger automation on entity state change", async ({ page }) => {
-    // Navigate to ST panel (handles login automatically)
+    const authToken = await authenticateHA(page);
     await navigateToSTPanel(page);
 
-    // Use test entities for the automation
-    const inputEntity = TEST_ENTITIES.inputBoolean.testSchalter1;
+    // Keep trigger and output independent: the template switch is backed by
+    // test_switch_1, so test_switch_2 drives the generated automation.
+    const inputEntity = TEST_ENTITIES.inputBoolean.testSchalter2;
     const outputEntity = TEST_ENTITIES.switch.steckdoseWohnzimmer;
 
     const stCode = `
@@ -30,29 +46,59 @@ END_PROGRAM
     `.trim();
 
     await replaceEditorCode(page, stCode);
+    await deployCurrentProgram(page);
 
-    // Verify syntax is OK
-    const syntaxOk = page.locator("text=/Syntax OK/i");
-    await expect(syntaxOk.first()).toBeVisible({ timeout: 5000 });
+    await callService(
+      page,
+      "input_boolean",
+      "turn_off",
+      { entity_id: inputEntity },
+      authToken,
+    );
+    await callService(
+      page,
+      "switch",
+      "turn_off",
+      { entity_id: outputEntity },
+      authToken,
+    );
+    await waitForEntityState(page, outputEntity, "off", authToken);
 
-    // Verify triggers are detected
-    const triggersSection = page.locator("text=/Trigger/i");
-    await expect(triggersSection.first()).toBeVisible({ timeout: 5000 });
+    await callService(
+      page,
+      "input_boolean",
+      "turn_on",
+      { entity_id: inputEntity },
+      authToken,
+    );
+    await waitForEntityState(page, outputEntity, "on", authToken);
+
+    await callService(
+      page,
+      "input_boolean",
+      "turn_off",
+      { entity_id: inputEntity },
+      authToken,
+    );
+    await waitForEntityState(page, outputEntity, "off", authToken);
   });
 
   test("should maintain persistent variable across automation reruns", async ({
     page,
   }) => {
-    // Navigate to ST panel (handles login automatically)
+    const authToken = await authenticateHA(page);
     await navigateToSTPanel(page);
+
+    const triggerEntity = TEST_ENTITIES.inputBoolean.testSchalter2;
+    const helperEntity = "input_number.st_home_counter_count";
 
     const stCode = `
 PROGRAM Counter
 VAR
     {trigger}
-    trigger_var AT %I* : BOOL := 'input_boolean.test_schalter_1';
+    trigger_var AT %I* : BOOL := '${triggerEntity}';
     {persistent}
-    count AT %M* : INT;
+    count : INT := 0;
 END_VAR
 
 IF trigger_var THEN
@@ -62,34 +108,113 @@ END_PROGRAM
     `.trim();
 
     await replaceEditorCode(page, stCode);
+    await deployCurrentProgram(page);
 
-    // Check that persistent variable is identified
-    const persistentIndicator = page.locator("text=/Persistent/i");
-    await expect(persistentIndicator.first()).toBeVisible({ timeout: 5000 });
+    await callService(
+      page,
+      "input_number",
+      "set_value",
+      { entity_id: helperEntity, value: 0 },
+      authToken,
+    );
+    await callService(
+      page,
+      "input_boolean",
+      "turn_off",
+      { entity_id: triggerEntity },
+      authToken,
+    );
+
+    for (const expectedValue of [1, 2]) {
+      await callService(
+        page,
+        "input_boolean",
+        "turn_on",
+        { entity_id: triggerEntity },
+        authToken,
+      );
+      await expect
+        .poll(
+          async () =>
+            Number((await getEntityState(page, helperEntity, authToken)).state),
+          { timeout: 15000 },
+        )
+        .toBe(expectedValue);
+      await callService(
+        page,
+        "input_boolean",
+        "turn_off",
+        { entity_id: triggerEntity },
+        authToken,
+      );
+    }
   });
 
   test("should generate timer FB with correct duration", async ({ page }) => {
-    // Navigate to ST panel (handles login automatically)
+    const authToken = await authenticateHA(page);
     await navigateToSTPanel(page);
+
+    const triggerEntity = TEST_ENTITIES.inputBoolean.testSchalter2;
+    const timerEntity = "timer.st_home_timertest_timer1";
+    const outputHelperEntity = "input_boolean.st_home_timertest_timer1_q";
 
     const stCode = `
 PROGRAM TimerTest
 VAR
     {trigger}
-    start AT %I* : BOOL := 'input_boolean.test_schalter_1';
+    start AT %I* : BOOL := '${triggerEntity}';
     output AT %Q* : BOOL := 'switch.steckdose_wohnzimmer';
     timer1 : TON;
 END_VAR
 
-timer1(IN := start, PT := T#5s);
+timer1(IN := start, PT := T#2s);
 output := timer1.Q;
 END_PROGRAM
     `.trim();
 
     await replaceEditorCode(page, stCode);
+    await deployCurrentProgram(page);
 
-    // Check that syntax is OK (timer FB is recognized)
-    const syntaxOk = page.locator("text=/Syntax OK/i");
-    await expect(syntaxOk.first()).toBeVisible({ timeout: 5000 });
+    await callService(
+      page,
+      "input_boolean",
+      "turn_off",
+      { entity_id: triggerEntity },
+      authToken,
+    );
+    await callService(
+      page,
+      "input_boolean",
+      "turn_off",
+      { entity_id: outputHelperEntity },
+      authToken,
+    );
+    await callService(
+      page,
+      "timer",
+      "cancel",
+      { entity_id: timerEntity },
+      authToken,
+    );
+
+    await callService(
+      page,
+      "input_boolean",
+      "turn_on",
+      { entity_id: triggerEntity },
+      authToken,
+    );
+
+    await waitForEntityState(page, timerEntity, "active", authToken);
+    expect((await getEntityState(page, outputHelperEntity, authToken)).state).toBe(
+      "off",
+    );
+    await waitForEntityState(
+      page,
+      outputHelperEntity,
+      "on",
+      authToken,
+      15000,
+    );
   });
 });

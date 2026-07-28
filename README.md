@@ -21,7 +21,7 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 
 ## Project Status
 
-**Current Version**: 2.1.5  
+**Current Version**: 2.1.6
 **Status**: Stable, Ready for Production Use
 
 ### Test Coverage
@@ -31,13 +31,14 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 | Parser | 25 | ✅ Passing |
 | Dependency Analyzer | 16 | ✅ Passing |
 | Storage Analyzer | 23 | ✅ Passing |
-| Transpiler | 27 | ✅ Passing |
-| Deploy/Helper Manager | 10 | ✅ Passing |
+| Transpiler / Timer | 26 | ✅ Passing |
+| Deploy / Helper / Backup | 19 | ✅ Passing |
 | Restore/Migration | 20 | ✅ Passing |
-| Online Mode | 10 | ✅ Passing |
+| Online Mode | 11 | ✅ Passing |
 | Error Mapping | 10 | ✅ Passing |
 | Source Maps | 11 | ✅ Passing |
-| **Total** | **222** | **✅ 100% Passing** |
+| Project / UI / Editor | 68 | ✅ Passing |
+| **Total** | **229** | **✅ 100% Passing** |
 
 ### Build Status
 

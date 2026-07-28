@@ -236,10 +236,11 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-026: End-to-End Integration Tests
 
-**Status**: WIP  
+**Status**: COMPLETED
 **Assigned**: Testing  
 **Priority**: High  
 **Created**: 2026-01-14  
+**Completed**: 2026-07-28
 **Dependencies**: T-021, T-022  
 
 > **⚠️ Reopened (2026-07-28):** This task was marked COMPLETED with "All 7 E2E
@@ -252,6 +253,13 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 > claimed rollback test does not exist. The deploy test now asserts success and
 > reads the generated config back from HA over REST; the remaining criteria are
 > unchecked again until real assertions exist.
+
+> **Resolved (2026-07-28):** The three runtime tests now deploy their programs
+> into a real Home Assistant container and assert entity output, persistent
+> helper values across two executions, and timer completion. A forced script
+> write failure verifies that the preceding automation write is rolled back.
+> Local setup also rejects an unrelated container that happens to share the
+> `ha-test` name but mounts a different fixture directory.
 
 **Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a real Home Assistant Docker environment.
 
@@ -266,29 +274,22 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
   - [x] Authentication handling for test account - **Implemented in fixtures.ts with browser login**
   - [x] WebSocket connection setup for real-time entity updates - **Ready for use in tests**
 - [x] Test: Write ST program → Parse → Analyze → Transpile → Deploy - **deploy.spec.ts - asserts success banner and reads automation + script back via REST**
-- [ ] Test: Deployed automation triggers correctly on entity state change - **automation.spec.ts only checks editor UI text; needs deploy + entity toggle + output assertion**
-- [ ] Test: Persistent variable survives automation reruns - **automation.spec.ts only checks that "Persistent" is rendered; needs helper value assertion across two runs**
-- [ ] Test: Timer FB fires after specified duration - **automation.spec.ts only checks "Syntax OK"; needs timer entity assertion**
-- [ ] Test: Rollback on deploy failure - **no such test exists**
+- [x] Test: Deployed automation triggers correctly on entity state change - **deploys, toggles an independent input helper, and asserts the output switch turns on and off**
+- [x] Test: Persistent variable survives automation reruns - **resets the helper, triggers two executions, and asserts values 1 and 2 in HA**
+- [x] Test: Timer FB fires after specified duration - **asserts the timer becomes active and its Q helper turns on after completion**
+- [x] Test: Rollback on deploy failure - **forces the script REST write to fail and asserts the previously created automation is removed**
 - [x] Test: Online mode shows live values - **online-mode.spec.ts - PASSING**
 - [x] CI integration for E2E tests (may run in separate workflow)
   - [x] Docker container starts in CI environment - **.github/workflows/e2e.yml created**
   - [x] Tests wait for HA to be ready before execution - **Setup script with health checks**
   - [x] Container cleanup after test completion - **Teardown script configured**
 
-**Test Results (2026-01-26, superseded)**:
-- ⚠️ "All 7 E2E tests passing" was accurate but not meaningful: the deploy
-  assertion was soft, so the suite was green while deploy was broken end to end
-- ✅ Authentication working via HA auth flow API
-- ✅ Browser-based login and navigation to ST panel
-- ✅ Docker HA container integration verified
-
-**Open work**:
-- Give the three automation-execution tests real assertions (deploy, toggle the
-  input entity, assert the output entity / helper / timer)
-- Add the missing rollback test
-- Guard against soft assertions in review: a test that only checks editor text
-  must not be labelled as verifying runtime behaviour
+**Test Results (2026-07-28)**:
+- ✅ 9/9 Playwright tests pass against Home Assistant 2026.4.3 in Docker
+- ✅ Deploy assertions read automation, script, helper, and timer state from HA
+- ✅ Runtime assertions exercise output changes and persistent state
+- ✅ Forced partial deploy failure is rolled back and verified through REST
+- ✅ Local setup validates the `/config` fixture mount before reusing `ha-test`
 
 **Technical Notes**:
 - Use local Docker Home Assistant instance for real HA environment (see docs/test_environment.md)

@@ -25,7 +25,9 @@ export class BackupManager {
     const scriptId = this.getScriptId(automationId);
     const script = await this.api.getScript(scriptId);
 
-    const helpers = await this.helperManager.getExistingHelpers();
+    const helpers = await this.helperManager.getExistingHelpers(
+      `${automationId}_`,
+    );
     const helperConfigs: HelperConfig[] = helpers.map((h) =>
       this.helperManager.toHelperConfig(h),
     );

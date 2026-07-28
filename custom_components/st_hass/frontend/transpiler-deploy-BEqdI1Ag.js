@@ -1,6 +1,6 @@
 var N = Object.defineProperty;
-var E = (l, e, t) => e in l ? N(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t;
-var c = (l, e, t) => E(l, typeof e != "symbol" ? e + "" : e, t);
+var E = (u, e, t) => e in u ? N(u, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : u[e] = t;
+var c = (u, e, t) => E(u, typeof e != "symbol" ? e + "" : e, t);
 import { a as A, b as C, w as O, p as f } from "./analyzer-DbAWr__X.js";
 class _ {
   constructor(e, t) {
@@ -279,8 +279,8 @@ class _ {
     return `${this.generateExpression(e.object)}.${e.member}`;
   }
 }
-function M(l, e) {
-  const t = `states('${l}')`, a = "['unavailable', 'unknown', 'none', '']";
+function M(u, e) {
+  const t = `states('${u}')`, a = "['unavailable', 'unknown', 'none', '']";
   switch (e.toUpperCase()) {
     case "BOOL":
       return `{{ ${t} in ['on', 'true', 'True', '1'] }}`;
@@ -294,8 +294,8 @@ function M(l, e) {
       return `{{ ${t} }}`;
   }
 }
-function H(l, e) {
-  return `{% set last = states('${l}') %}
+function H(u, e) {
+  return `{% set last = states('${u}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
@@ -1114,7 +1114,7 @@ class I {
     var a, i, r;
     const e = /* @__PURE__ */ new Map(), t = /* @__PURE__ */ new Map();
     for (const n of this.ast.variables) {
-      const s = this.storageAnalysis.variables.find((u) => u.name === n.name), o = this.depAnalysis.dependencies.find((u) => u.variableName === n.name), p = {
+      const s = this.storageAnalysis.variables.find((l) => l.name === n.name), o = this.depAnalysis.dependencies.find((l) => l.variableName === n.name), p = {
         name: n.name,
         dataType: n.dataType.name,
         isInput: ((a = n.binding) == null ? void 0 : a.direction) === "INPUT" || n.section === "VAR_INPUT",
@@ -1354,8 +1354,8 @@ class I {
     return e;
   }
 }
-function R(l, e, t) {
-  return new I(l, e, t).transpile();
+function R(u, e, t) {
+  return new I(u, e, t).transpile();
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
@@ -1485,14 +1485,14 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
       type: `${e}/create`,
       name: r,
       ...o
-    }), u = p == null ? void 0 : p.id;
-    if (typeof u != "string")
+    }), l = p == null ? void 0 : p.id;
+    if (typeof l != "string")
       throw new Error(
         `Home Assistant did not return an id while creating ${t}`
       );
-    if (u !== r)
-      throw await this.deleteHelper(`${e}.${u}`), new Error(
-        `Home Assistant created ${e}.${u} instead of ${t}`
+    if (l !== r)
+      throw await this.deleteHelper(`${e}.${l}`), new Error(
+        `Home Assistant created ${e}.${l} instead of ${t}`
       );
     if (s !== r)
       try {
@@ -1622,8 +1622,8 @@ class b {
       if (!n.has(p.id))
         o.toCreate.push(p);
       else {
-        const u = r.find((d) => d.entityId === p.id);
-        u && this.needsUpdate(p, u) ? o.toUpdate.push(p) : o.unchanged.push(p.id);
+        const l = r.find((d) => d.entityId === p.id);
+        l && this.needsUpdate(p, l) ? o.toUpdate.push(p) : o.unchanged.push(p.id);
       }
     for (const p of r)
       s.has(p.entityId) || o.toDelete.push(p.entityId);
@@ -1832,9 +1832,11 @@ class $ {
     this.api = e, this.helperManager = new b(e);
   }
   async createBackup(e, t) {
-    const a = await this.api.getAutomation(e), i = this.getScriptId(e), r = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers()).map(
+    const a = await this.api.getAutomation(e), i = this.getScriptId(e), r = await this.api.getScript(i), s = (await this.helperManager.getExistingHelpers(
+      `${e}_`
+    )).map(
       (d) => this.helperManager.toHelperConfig(d)
-    ), o = s.map((d) => d.id), p = await this.helperManager.getHelperStates(o), u = {
+    ), o = s.map((d) => d.id), p = await this.helperManager.getHelperStates(o), l = {
       id: this.generateId(),
       timestamp: /* @__PURE__ */ new Date(),
       projectName: "default",
@@ -1848,7 +1850,7 @@ class $ {
         helperStates: p
       }
     };
-    return await this.saveBackup(u), u;
+    return await this.saveBackup(l), l;
   }
   async restoreBackup(e) {
     const t = await this.loadBackup(e);
@@ -2130,7 +2132,7 @@ class S {
         ]
       });
     } catch (i) {
-      a.status = "failed";
+      a.status = "failed", a.operations.some((n) => n.status === "applied") && await this.rollback(a);
       const r = {
         message: this.formatError(i),
         code: "DEPLOY_ERROR"
@@ -2151,6 +2153,11 @@ class S {
       } catch (i) {
         console.error(`Failed to revert operation ${a.id}:`, i);
       }
+    try {
+      await this.reloadAll();
+    } catch (a) {
+      console.error("Failed to reload Home Assistant after rollback:", a);
+    }
     e.status = "rolled_back";
   }
   createTransaction(e) {
@@ -2172,15 +2179,15 @@ class S {
   }
   async calculateOperations(e) {
     const t = [], a = [e.automation, ...e.additionalAutomations ?? []];
-    for (const u of a) {
-      const d = await this.api.getAutomation(u.id);
+    for (const l of a) {
+      const d = await this.api.getAutomation(l.id);
       t.push({
         id: this.generateId(),
         type: d ? "update" : "create",
         entityType: "automation",
-        entityId: u.id,
+        entityId: l.id,
         previousState: d ?? void 0,
-        newState: u,
+        newState: l,
         status: "pending"
       });
     }
@@ -2195,40 +2202,40 @@ class S {
       status: "pending"
     });
     const n = `${e.automation.id}_`, s = await this.helperManager.getExistingHelpers(n), o = new Map(
-      s.map((u) => [u.entityId, u])
+      s.map((l) => [l.entityId, l])
     ), p = await this.helperManager.calculateSync(
       e.helpers,
       n,
       s
     );
-    for (const u of p.toCreate)
+    for (const l of p.toCreate)
       t.push({
         id: this.generateId(),
         type: "create",
         entityType: "helper",
-        entityId: u.id,
-        newState: u,
+        entityId: l.id,
+        newState: l,
         status: "pending"
       });
-    for (const u of p.toUpdate) {
-      const d = o.get(u.id);
+    for (const l of p.toUpdate) {
+      const d = o.get(l.id);
       t.push({
         id: this.generateId(),
         type: "update",
         entityType: "helper",
-        entityId: u.id,
+        entityId: l.id,
         previousState: d ? this.helperManager.toHelperConfig(d) : void 0,
-        newState: u,
+        newState: l,
         status: "pending"
       });
     }
-    for (const u of p.toDelete) {
-      const d = o.get(u);
+    for (const l of p.toDelete) {
+      const d = o.get(l);
       t.push({
         id: this.generateId(),
         type: "delete",
         entityType: "helper",
-        entityId: u,
+        entityId: l,
         previousState: d ? this.helperManager.toHelperConfig(d) : void 0,
         status: "pending"
       });
@@ -2309,7 +2316,27 @@ class S {
         e.type === "delete" ? await this.api.deleteScript(e.entityId) : await this.api.saveScript(e.entityId, e.newState);
         break;
       case "helper":
-        e.type === "delete" ? await this.api.deleteHelper(e.entityId) : e.type === "update" ? (await this.api.deleteHelper(e.entityId), await this.helperManager.createHelper(e.newState)) : await this.helperManager.createHelper(e.newState);
+        if (e.type === "delete")
+          await this.api.deleteHelper(e.entityId);
+        else if (e.type === "update") {
+          await this.api.deleteHelper(e.entityId);
+          try {
+            await this.helperManager.createHelper(e.newState);
+          } catch (t) {
+            if (e.previousState)
+              try {
+                await this.helperManager.createHelper(
+                  e.previousState
+                );
+              } catch (a) {
+                throw new Error(
+                  `Helper update failed (${this.formatError(t)}) and the previous helper could not be restored (${this.formatError(a)})`
+                );
+              }
+            throw t;
+          }
+        } else
+          await this.helperManager.createHelper(e.newState);
         break;
     }
   }
@@ -2343,8 +2370,8 @@ class S {
     return !0;
   }
 }
-async function U(l, e, t) {
-  return new S(l).deploy(e, t);
+async function U(u, e, t) {
+  return new S(u).deploy(e, t);
 }
 const z = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
@@ -2358,4 +2385,4 @@ export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-41TsQdYw.js.map
+//# sourceMappingURL=transpiler-deploy-BEqdI1Ag.js.map

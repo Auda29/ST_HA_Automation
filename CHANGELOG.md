@@ -5,6 +5,22 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.6] - 2026-07-28
+
+### Fixed
+- Automation and script configs now use Home Assistant's REST endpoints instead of nonexistent WebSocket commands
+- Throttle templates compare timestamps safely across timezone-aware and timezone-naive values
+- Storage helpers are created with their deterministic generated entity IDs
+- Helper cleanup and deployment backups are scoped to the current ST program
+- Failed helper updates restore the previous helper configuration and value after a recreate error
+- Reload failures after deployment now roll back all already-applied operations and reload the restored configuration where possible
+- Home Assistant E2E fixtures now reference the entity IDs actually defined by the test configuration
+
+### Changed
+- E2E deploy tests now verify stored automation, script, and helper configuration in Home Assistant
+- Runtime E2E tests now exercise entity-triggered output changes, persistent values across executions, timer completion, and rollback after a forced deploy failure
+- CI rebuilds the committed HACS frontend bundle and rejects stale JavaScript artifacts
+
 ## [2.1.5] - 2026-04-22
 
 ### Fixed
@@ -172,6 +188,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.1.6]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.6
+[2.1.5]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.5
 [2.1.4]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.4
 [2.1.2]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.2
 [2.1.3]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.3

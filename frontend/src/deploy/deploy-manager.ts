@@ -119,6 +119,10 @@ export class DeployManager {
     } catch (error) {
       transaction.status = 'failed';
 
+      if (transaction.operations.some((op) => op.status === 'applied')) {
+        await this.rollback(transaction);
+      }
+
       const deployError: DeployError = {
         message: this.formatError(error),
         code: 'DEPLOY_ERROR',
@@ -144,6 +148,15 @@ export class DeployManager {
         // eslint-disable-next-line no-console
         console.error(`Failed to revert operation ${op.id}:`, error);
       }
+    }
+
+    try {
+      await this.reloadAll();
+    } catch (error) {
+      // The stored configs have still been reverted. Keep rollback best-effort
+      // when HA's reload service is the component that is unavailable.
+      // eslint-disable-next-line no-console
+      console.error('Failed to reload Home Assistant after rollback:', error);
     }
 
     transaction.status = 'rolled_back';
@@ -374,7 +387,22 @@ export class DeployManager {
           await this.api.deleteHelper(op.entityId);
         } else if (op.type === 'update') {
           await this.api.deleteHelper(op.entityId);
-          await this.helperManager.createHelper(op.newState as HelperConfig);
+          try {
+            await this.helperManager.createHelper(op.newState as HelperConfig);
+          } catch (error) {
+            if (op.previousState) {
+              try {
+                await this.helperManager.createHelper(
+                  op.previousState as HelperConfig,
+                );
+              } catch (restoreError) {
+                throw new Error(
+                  `Helper update failed (${this.formatError(error)}) and the previous helper could not be restored (${this.formatError(restoreError)})`,
+                );
+              }
+            }
+            throw error;
+          }
         } else {
           await this.helperManager.createHelper(op.newState as HelperConfig);
         }

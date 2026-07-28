@@ -540,7 +540,8 @@ await hass.callApi(
 );
 
 // Create helper
-await hass.callService('input_number', 'create', {
+await hass.connection.sendMessagePromise({
+  type: 'input_number/create',
   name: 'ST Kitchen Counter',
   min: 0,
   max: 1000000,

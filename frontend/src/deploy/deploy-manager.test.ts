@@ -23,6 +23,8 @@ class FakeConnection implements HAClient, HAConnection {
   public scripts = new Map<string, HAScriptConfig>();
   public failScriptSave = false;
   public failScriptSaveWithObject = false;
+  public failNextHelperCreate = false;
+  public failNextAutomationReload = false;
 
   get connection(): HAConnection {
     return this;
@@ -91,7 +93,21 @@ class FakeConnection implements HAClient, HAConnection {
       case "get_states":
         return this.states as unknown as T;
       case "input_number/create":
+        if (this.failNextHelperCreate) {
+          this.failNextHelperCreate = false;
+          throw new Error("helper create failed");
+        }
         return { id: message.name } as T;
+      case "call_service":
+        if (
+          message.domain === "automation" &&
+          message.service === "reload" &&
+          this.failNextAutomationReload
+        ) {
+          this.failNextAutomationReload = false;
+          throw new Error("automation reload failed");
+        }
+        return undefined as unknown as T;
       default:
         return undefined as unknown as T;
     }
@@ -218,6 +234,23 @@ describe("DeployManager", () => {
     expect(deployResult.success).toBe(false);
     // Automation should not remain after rollback
     expect(conn.automations.has("st_default_prog")).toBe(false);
+  });
+
+  it("rolls back all applied operations when Home Assistant reload fails", async () => {
+    const conn = new FakeConnection();
+    conn.failNextAutomationReload = true;
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+
+    const deployResult = await manager.deploy(makeTranspilerResult());
+
+    expect(deployResult.success).toBe(false);
+    expect(deployResult.errors[0]?.message).toContain("automation reload failed");
+    expect(conn.automations.has("st_default_prog")).toBe(false);
+    expect(conn.scripts.has("st_default_prog_logic")).toBe(false);
+    expect(
+      deployResult.operations.every((op) => op.status === "reverted"),
+    ).toBe(true);
   });
 
   it("formats object-shaped deploy errors into readable messages", async () => {
@@ -398,6 +431,82 @@ describe("DeployManager", () => {
         initial: 7,
         min: 0,
         max: 20,
+        step: 1,
+        mode: "box",
+      },
+    ]);
+  });
+
+  it("restores the previous helper when an update fails after deletion", async () => {
+    const conn = new FakeConnection();
+    conn.failNextHelperCreate = true;
+    const api = new HAApiClient(conn);
+    const manager = new DeployManager(api);
+
+    const operation = {
+      id: "op_helper_update",
+      type: "update" as const,
+      entityType: "helper" as const,
+      entityId: "input_number.st_default_prog_counter",
+      previousState: {
+        id: "input_number.st_default_prog_counter",
+        type: "input_number" as const,
+        name: "Counter",
+        initial: 7,
+        min: 0,
+        max: 10,
+        step: 1,
+        mode: "box" as const,
+      },
+      newState: {
+        id: "input_number.st_default_prog_counter",
+        type: "input_number" as const,
+        name: "Counter",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box" as const,
+      },
+      status: "pending" as const,
+    };
+
+    await expect(
+      (manager as unknown as {
+        applyOperation: (op: typeof operation) => Promise<void>;
+      }).applyOperation(operation),
+    ).rejects.toThrow("helper create failed");
+
+    expect(conn.wsMessages).toEqual([
+      {
+        type: "input_number/delete",
+        input_number_id: "st_default_prog_counter",
+      },
+      {
+        type: "input_number/create",
+        name: "st_default_prog_counter",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box",
+      },
+      {
+        type: "input_number/create",
+        name: "st_default_prog_counter",
+        initial: 7,
+        min: 0,
+        max: 10,
+        step: 1,
+        mode: "box",
+      },
+      {
+        type: "input_number/update",
+        input_number_id: "st_default_prog_counter",
+        name: "Counter",
+        initial: 7,
+        min: 0,
+        max: 10,
         step: 1,
         mode: "box",
       },

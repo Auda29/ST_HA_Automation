@@ -17,25 +17,25 @@ export const ST_PANEL_URL = "/st-hass";
 export const TEST_ENTITIES = {
   // Helpers
   inputBoolean: {
-    testSchalter1: "input_boolean.test_schalter_1",
-    testSchalter2: "input_boolean.test_schalter_2",
-    gastmodus: "input_boolean.gastmodus",
-    nachtmodus: "input_boolean.nachtmodus",
-    urlaubsmodus: "input_boolean.urlaubsmodus",
+    testSchalter1: "input_boolean.test_switch_1",
+    testSchalter2: "input_boolean.test_switch_2",
+    gastmodus: "input_boolean.guest_mode",
+    nachtmodus: "input_boolean.night_mode",
+    urlaubsmodus: "input_boolean.vacation_mode",
   },
   inputNumber: {
-    helligkeitsstufe: "input_number.helligkeitsstufe",
-    lautstaerke: "input_number.lautstaerke",
-    zielTemperatur: "input_number.ziel_temperatur",
+    helligkeitsstufe: "input_number.brightness_level",
+    lautstaerke: "input_number.volume_level",
+    zielTemperatur: "input_number.target_temperature",
   },
   inputText: {
-    benachrichtigung: "input_text.benachrichtigung",
-    benutzerNotiz: "input_text.benutzer_notiz",
+    benachrichtigung: "input_text.notification_message",
+    benutzerNotiz: "input_text.user_note",
   },
   inputSelect: {
-    hausmodus: "input_select.hausmodus",
-    klimamodus: "input_select.klimamodus",
-    lichtszene: "input_select.lichtszene",
+    hausmodus: "input_select.house_mode",
+    klimamodus: "input_select.hvac_mode",
+    lichtszene: "input_select.light_scene",
   },
   // Lights
   light: {
@@ -158,6 +158,55 @@ export async function setEntityState(
       state,
       attributes,
     },
+  });
+}
+
+/**
+ * Call a Home Assistant service through its REST API.
+ */
+export async function callService(
+  page: Page,
+  domain: string,
+  service: string,
+  data: Record<string, unknown>,
+  authToken: string,
+): Promise<void> {
+  const response = await page.request.post(
+    `${HA_URL}/api/services/${domain}/${service}`,
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+      data,
+    },
+  );
+
+  if (!response.ok()) {
+    throw new Error(
+      `Service ${domain}.${service} failed: ${response.status()} ${await response.text()}`,
+    );
+  }
+}
+
+export async function deleteAutomationConfig(
+  page: Page,
+  automationId: string,
+  authToken: string,
+): Promise<void> {
+  await page.request.delete(
+    `${HA_URL}/api/config/automation/config/${automationId}`,
+    { headers: { Authorization: `Bearer ${authToken}` } },
+  );
+}
+
+export async function deleteScriptConfig(
+  page: Page,
+  scriptId: string,
+  authToken: string,
+): Promise<void> {
+  await page.request.delete(`${HA_URL}/api/config/script/config/${scriptId}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
   });
 }
 

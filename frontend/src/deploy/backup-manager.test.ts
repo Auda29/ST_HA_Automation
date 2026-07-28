@@ -101,6 +101,13 @@ describe("BackupManager", () => {
         last_changed: "",
         last_updated: "",
       },
+      {
+        entity_id: "input_number.st_default_other_counter",
+        state: "42",
+        attributes: { friendly_name: "Other Counter", min: 0, max: 100 },
+        last_changed: "",
+        last_updated: "",
+      },
     ];
     window.localStorage.clear();
   });
@@ -158,6 +165,20 @@ describe("BackupManager", () => {
       max: 100,
       step: 1,
       mode: "box",
+    });
+  });
+
+  it("backs up helpers only for the requested program", async () => {
+    const api = new HAApiClient(conn);
+    const manager = new BackupManager(api);
+
+    const backup = await manager.createBackup("st_default_prog", "Prog");
+
+    expect(backup.data.helpers.map((helper) => helper.id)).toEqual([
+      "input_number.st_default_prog_counter",
+    ]);
+    expect(backup.data.helperStates).toEqual({
+      "input_number.st_default_prog_counter": 1,
     });
   });
 });
