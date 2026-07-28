@@ -415,6 +415,7 @@ export class MigrationExecutor {
     switch (schema.helperType) {
       case "input_boolean":
         await this.haApi.createInputBoolean?.({
+          id: schema.helperId,
           name: this.extractHelperName(schema.helperId),
           initial: Boolean(initialValue),
         });
@@ -422,6 +423,7 @@ export class MigrationExecutor {
 
       case "input_number":
         await this.haApi.createInputNumber?.({
+          id: schema.helperId,
           name: this.extractHelperName(schema.helperId),
           initial: Number(initialValue),
           min: schema.min,
@@ -433,6 +435,7 @@ export class MigrationExecutor {
 
       case "input_text":
         await this.haApi.createInputText?.({
+          id: schema.helperId,
           name: this.extractHelperName(schema.helperId),
           initial: String(initialValue),
         });
@@ -440,6 +443,7 @@ export class MigrationExecutor {
 
       case "input_datetime":
         await this.haApi.createInputDateTime?.({
+          id: schema.helperId,
           name: this.extractHelperName(schema.helperId),
           initial: String(initialValue),
         });

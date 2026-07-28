@@ -154,18 +154,86 @@ export class HAApiClient {
     });
   }
 
+  /**
+   * HA derives a storage helper's immutable id from its name on create. Create
+   * with the requested object id first, verify what HA allocated, then restore
+   * the human-readable name through the update command (which keeps the id).
+   */
+  private async createHelperWithExactId(
+    domain: string,
+    entityId: string | undefined,
+    config: Record<string, unknown> & { name: string },
+  ): Promise<void> {
+    if (!entityId) {
+      await this.connection.sendMessagePromise({
+        type: `${domain}/create`,
+        ...config,
+      });
+      return;
+    }
+
+    const [entityDomain, objectId, ...extraParts] = entityId.split(".");
+    if (entityDomain !== domain || !objectId || extraParts.length > 0) {
+      throw new Error(
+        `Invalid ${domain} entity id '${entityId}' for helper creation`,
+      );
+    }
+
+    const { name: friendlyName, ...settings } = config;
+    const created = await this.connection.sendMessagePromise<{ id?: unknown }>({
+      type: `${domain}/create`,
+      name: objectId,
+      ...settings,
+    });
+    const createdObjectId = created?.id;
+
+    if (typeof createdObjectId !== "string") {
+      throw new Error(
+        `Home Assistant did not return an id while creating ${entityId}`,
+      );
+    }
+
+    if (createdObjectId !== objectId) {
+      await this.deleteHelper(`${domain}.${createdObjectId}`);
+      throw new Error(
+        `Home Assistant created ${domain}.${createdObjectId} instead of ${entityId}`,
+      );
+    }
+
+    if (friendlyName === objectId) {
+      return;
+    }
+
+    try {
+      await this.connection.sendMessagePromise({
+        type: `${domain}/update`,
+        [`${domain}_id`]: objectId,
+        name: friendlyName,
+        ...settings,
+      });
+    } catch (error) {
+      try {
+        await this.deleteHelper(entityId);
+      } catch {
+        // Preserve the original update error if cleanup also fails.
+      }
+      throw error;
+    }
+  }
+
   async createInputBoolean(config: {
+    id?: string;
     name: string;
     initial?: boolean;
   }): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "input_boolean/create",
+    await this.createHelperWithExactId("input_boolean", config.id, {
       name: config.name,
       initial: config.initial ?? false,
     });
   }
 
   async createInputNumber(config: {
+    id?: string;
     name: string;
     initial?: number;
     min?: number;
@@ -173,8 +241,7 @@ export class HAApiClient {
     step?: number;
     mode?: "box" | "slider";
   }): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "input_number/create",
+    await this.createHelperWithExactId("input_number", config.id, {
       name: config.name,
       initial: config.initial ?? 0,
       min: config.min ?? 0,
@@ -185,12 +252,12 @@ export class HAApiClient {
   }
 
   async createInputText(config: {
+    id?: string;
     name: string;
     initial?: string;
     pattern?: string;
   }): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "input_text/create",
+    await this.createHelperWithExactId("input_text", config.id, {
       name: config.name,
       initial: config.initial ?? "",
       pattern: config.pattern,
@@ -198,11 +265,11 @@ export class HAApiClient {
   }
 
   async createInputDateTime(config: {
+    id?: string;
     name: string;
     initial?: string;
   }): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "input_datetime/create",
+    await this.createHelperWithExactId("input_datetime", config.id, {
       name: config.name,
       has_date: true,
       has_time: true,
@@ -211,11 +278,11 @@ export class HAApiClient {
   }
 
   async createTimer(config: {
+    id?: string;
     name: string;
     duration?: string;
   }): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "timer/create",
+    await this.createHelperWithExactId("timer", config.id, {
       name: config.name,
       duration: config.duration ?? "00:00:00",
     });

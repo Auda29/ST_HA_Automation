@@ -202,6 +202,7 @@ export class HelperManager {
     switch (config.type) {
       case 'input_boolean':
         await this.api.createInputBoolean({
+          id: config.id,
           name,
           initial: Boolean(config.initial ?? false),
         });
@@ -209,6 +210,7 @@ export class HelperManager {
 
       case 'input_number':
         await this.api.createInputNumber({
+          id: config.id,
           name,
           initial: Number(config.initial ?? config.min ?? 0),
           min: config.min,
@@ -220,6 +222,7 @@ export class HelperManager {
 
       case 'input_text':
         await this.api.createInputText({
+          id: config.id,
           name,
           initial: String(config.initial ?? ''),
           pattern: config.pattern,
@@ -228,6 +231,7 @@ export class HelperManager {
 
       case 'input_datetime':
         await this.api.createInputDateTime({
+          id: config.id,
           name,
           initial: String(config.initial ?? ''),
         });
@@ -235,6 +239,7 @@ export class HelperManager {
 
       case 'timer':
         await this.api.createTimer({
+          id: config.id,
           name,
           duration: String(config.initial ?? '00:00:00'),
         });

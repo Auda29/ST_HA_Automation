@@ -90,6 +90,8 @@ class FakeConnection implements HAClient, HAConnection {
     switch (message.type) {
       case "get_states":
         return this.states as unknown as T;
+      case "input_number/create":
+        return { id: message.name } as T;
       default:
         return undefined as unknown as T;
     }
@@ -375,18 +377,30 @@ describe("DeployManager", () => {
       },
     });
 
-    expect(conn.wsMessages[0]).toEqual({
-      type: "input_number/delete",
-      input_number_id: "st_existing_helper",
-    });
-    expect(conn.wsMessages[1]).toEqual({
-      type: "input_number/create",
-      name: "Existing Helper",
-      initial: 7,
-      min: 0,
-      max: 20,
-      step: 1,
-      mode: "box",
-    });
+    expect(conn.wsMessages).toEqual([
+      {
+        type: "input_number/delete",
+        input_number_id: "st_existing_helper",
+      },
+      {
+        type: "input_number/create",
+        name: "st_existing_helper",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box",
+      },
+      {
+        type: "input_number/update",
+        input_number_id: "st_existing_helper",
+        name: "Existing Helper",
+        initial: 7,
+        min: 0,
+        max: 20,
+        step: 1,
+        mode: "box",
+      },
+    ]);
   });
 });
