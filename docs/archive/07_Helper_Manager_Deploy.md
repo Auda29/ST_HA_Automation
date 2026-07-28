@@ -22,13 +22,16 @@ with open('/config/automations.yaml', 'w') as f:
 
 **Stattdessen:**
 ```typescript
-// ✅ RICHTIG - HA WebSocket API
-await hass.callWS({
-  type: 'config/automation/config',
-  automation_id: 'st_kitchen',
-  config: { ... }
-});
+// ✅ RICHTIG - Automation-/Script-Configs über die HA REST API
+await hass.callApi('POST', `config/automation/config/${automationId}`, { ... });
 ```
+
+> **⚠️ Korrektur (nachträglich):** Dieses Archiv-Dokument beschrieb ursprünglich
+> `hass.callWS({ type: 'config/automation/config', ... })`. Dieses WebSocket-Kommando
+> existiert in Home Assistant nicht — Automation- und Script-Configs werden über
+> HTTP-Views (`EditIdBasedConfigView`) bereitgestellt und müssen per REST geschrieben
+> werden. Nur Helper-Erstellung (`input_*/create`, `timer/create`) und `call_service`
+> laufen über WebSocket. Maßgeblich ist MUST-DO #9 in `docs/00_Project_Overview.md`.
 
 ---
 
@@ -180,9 +183,15 @@ export interface HAScriptConfig {
 
 ## frontend/src/deploy/ha-api.ts
 
+> **⚠️ Korrektur (nachträglich):** Der Entwurf unten routet Automation- und
+> Script-Configs über `connection.callWS(...)`. Das ist falsch — siehe Korrekturhinweis
+> am Anfang dieses Dokuments. Die Implementierung nutzt dafür `hass.callApi(...)`;
+> nur `get_states`, `call_service` und die Helper-`create`-Kommandos laufen über
+> WebSocket.
+
 ```typescript
 /**
- * Home Assistant WebSocket API Wrapper
+ * Home Assistant API Wrapper (REST for configs, WebSocket for helpers/services)
  */
 
 import type {

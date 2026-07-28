@@ -236,12 +236,22 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
 
 ### T-026: End-to-End Integration Tests
 
-**Status**: COMPLETED  
+**Status**: WIP  
 **Assigned**: Testing  
-**Priority**: Medium  
+**Priority**: High  
 **Created**: 2026-01-14  
-**Completed**: 2026-01-26  
 **Dependencies**: T-021, T-022  
+
+> **⚠️ Reopened (2026-07-28):** This task was marked COMPLETED with "All 7 E2E
+> tests passing", but the suite did not verify deployment. `deploy.spec.ts`
+> clicked Deploy only `if (count > 0)` and then checked the result with
+> `.catch(() => false)` and a `console.log` — no assertion, so the test stayed
+> green while every deploy failed and rolled back. The three "Automation
+> Execution" tests never deployed anything; they assert that the strings
+> "Syntax OK", "Trigger" and "Persistent" are visible in the editor. The
+> claimed rollback test does not exist. The deploy test now asserts success and
+> reads the generated config back from HA over REST; the remaining criteria are
+> unchecked again until real assertions exist.
 
 **Description**: Add full-stack E2E tests that verify the complete workflow from ST code through deployment and execution in a real Home Assistant Docker environment.
 
@@ -255,22 +265,30 @@ Phase 2 focuses on **UI/UX enhancements**, **advanced features**, and **producti
   - [x] Framework configured to connect to Docker HA instance - **Playwright configured**
   - [x] Authentication handling for test account - **Implemented in fixtures.ts with browser login**
   - [x] WebSocket connection setup for real-time entity updates - **Ready for use in tests**
-- [x] Test: Write ST program → Parse → Analyze → Transpile → Deploy - **deploy.spec.ts - PASSING**
-- [x] Test: Deployed automation triggers correctly on entity state change - **automation.spec.ts - PASSING**
-- [x] Test: Persistent variable survives automation reruns - **automation.spec.ts - PASSING**
-- [x] Test: Timer FB fires after specified duration - **automation.spec.ts - PASSING**
-- [x] Test: Rollback on deploy failure - **deploy.spec.ts - PASSING**
+- [x] Test: Write ST program → Parse → Analyze → Transpile → Deploy - **deploy.spec.ts - asserts success banner and reads automation + script back via REST**
+- [ ] Test: Deployed automation triggers correctly on entity state change - **automation.spec.ts only checks editor UI text; needs deploy + entity toggle + output assertion**
+- [ ] Test: Persistent variable survives automation reruns - **automation.spec.ts only checks that "Persistent" is rendered; needs helper value assertion across two runs**
+- [ ] Test: Timer FB fires after specified duration - **automation.spec.ts only checks "Syntax OK"; needs timer entity assertion**
+- [ ] Test: Rollback on deploy failure - **no such test exists**
 - [x] Test: Online mode shows live values - **online-mode.spec.ts - PASSING**
 - [x] CI integration for E2E tests (may run in separate workflow)
   - [x] Docker container starts in CI environment - **.github/workflows/e2e.yml created**
   - [x] Tests wait for HA to be ready before execution - **Setup script with health checks**
   - [x] Container cleanup after test completion - **Teardown script configured**
 
-**Test Results (2026-01-26)**:
-- ✅ All 7 E2E tests passing (45.3s total)
+**Test Results (2026-01-26, superseded)**:
+- ⚠️ "All 7 E2E tests passing" was accurate but not meaningful: the deploy
+  assertion was soft, so the suite was green while deploy was broken end to end
 - ✅ Authentication working via HA auth flow API
 - ✅ Browser-based login and navigation to ST panel
 - ✅ Docker HA container integration verified
+
+**Open work**:
+- Give the three automation-execution tests real assertions (deploy, toggle the
+  input entity, assert the output entity / helper / timer)
+- Add the missing rollback test
+- Guard against soft assertions in review: a test that only checks editor text
+  must not be labelled as verifying runtime behaviour
 
 **Technical Notes**:
 - Use local Docker Home Assistant instance for real HA environment (see docs/test_environment.md)

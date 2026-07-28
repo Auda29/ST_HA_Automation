@@ -517,22 +517,27 @@ shutil.copy(generated_yaml, '/config/automations.yaml')
 - Race conditions with HA Core
 - Security risk
 
-**✅ CORRECT: HA Storage API / WebSocket Services**
+**✅ CORRECT: HA REST API (configs) + WebSocket Services (helpers)**
+
+Automation and script configs are served by HTTP views in HA Core
+(`homeassistant/components/config/`), not by the WebSocket API. Writing them
+over WebSocket fails with `unknown_command`. Helper creation, by contrast, *is*
+a WebSocket command. See MUST-DO #9 in `00_Project_Overview.md`.
 
 ```typescript
 // Create/update automation
-await hass.callWS({
-  type: 'config/automation/config',
-  automation_id: 'st_kitchen',
-  config: generatedAutomation
-});
+await hass.callApi(
+  'POST',
+  `config/automation/config/${automationId}`,
+  generatedAutomation
+);
 
-// Create/update script  
-await hass.callWS({
-  type: 'config/script/config',
-  script_id: 'st_kitchen_logic',
-  config: generatedScript
-});
+// Create/update script
+await hass.callApi(
+  'POST',
+  `config/script/config/${scriptId}`,
+  generatedScript
+);
 
 // Create helper
 await hass.callService('input_number', 'create', {

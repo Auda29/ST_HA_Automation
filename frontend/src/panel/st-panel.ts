@@ -1386,7 +1386,9 @@ END_PROGRAM`;
       return;
     }
 
-    if (!this.hass?.connection) {
+    // Deploy needs both transports: REST (callApi) for automation/script configs
+    // and the WebSocket connection for helpers and service calls.
+    if (!this.hass?.connection || typeof this.hass?.callApi !== "function") {
       this._setDeployFeedback(
         "error",
         "Cannot deploy because the Home Assistant connection is not available.",
@@ -1426,7 +1428,7 @@ END_PROGRAM`;
         return;
       }
 
-      const api = new HAApiClient(this.hass.connection);
+      const api = new HAApiClient(this.hass);
       const deployResult = await deploy(api, transpilerResult, {
         createBackup: true,
       });

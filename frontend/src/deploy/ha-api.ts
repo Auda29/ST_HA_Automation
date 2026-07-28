@@ -1,8 +1,12 @@
 /**
- * Home Assistant WebSocket API Wrapper
+ * Home Assistant API Wrapper
+ *
+ * Automation and script configs go over REST (`hass.callApi`), everything else
+ * over the WebSocket connection. See `HAClient` in ./types for why.
  */
 
 import type {
+  HAClient,
   HAConnection,
   HAState,
   HAAutomationConfig,
@@ -14,6 +18,7 @@ import type {
 // ============================================================================
 
 export class HAApiClient {
+  private readonly client: HAClient;
   private readonly connection: HAConnection;
   private static readonly HELPER_DOMAINS = new Set([
     "input_boolean",
@@ -25,28 +30,27 @@ export class HAApiClient {
     "timer",
   ]);
 
-  constructor(connection: HAConnection) {
-    this.connection = connection;
+  constructor(client: HAClient) {
+    this.client = client;
+    this.connection = client.connection;
   }
 
   // ==========================================================================
-  // Automation API
+  // Automation API (REST)
   // ==========================================================================
 
-  async getAutomations(): Promise<HAAutomationConfig[]> {
-    return this.connection.sendMessagePromise({
-      type: "config/automation/list",
-    });
+  private static automationPath(automationId: string): string {
+    return `config/automation/config/${encodeURIComponent(automationId)}`;
   }
 
   async getAutomation(
     automationId: string,
   ): Promise<HAAutomationConfig | null> {
     try {
-      return await this.connection.sendMessagePromise({
-        type: "config/automation/config",
-        automation_id: automationId,
-      });
+      return await this.client.callApi<HAAutomationConfig>(
+        "GET",
+        HAApiClient.automationPath(automationId),
+      );
     } catch {
       return null;
     }
@@ -56,18 +60,18 @@ export class HAApiClient {
     automationId: string,
     config: HAAutomationConfig,
   ): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "config/automation/config",
-      automation_id: automationId,
+    await this.client.callApi<void>(
+      "POST",
+      HAApiClient.automationPath(automationId),
       config,
-    });
+    );
   }
 
   async deleteAutomation(automationId: string): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "config/automation/delete",
-      automation_id: automationId,
-    });
+    await this.client.callApi<void>(
+      "DELETE",
+      HAApiClient.automationPath(automationId),
+    );
   }
 
   async reloadAutomations(): Promise<void> {
@@ -79,39 +83,34 @@ export class HAApiClient {
   }
 
   // ==========================================================================
-  // Script API
+  // Script API (REST)
   // ==========================================================================
 
-  async getScripts(): Promise<Record<string, HAScriptConfig>> {
-    return this.connection.sendMessagePromise({
-      type: "config/script/list",
-    });
+  private static scriptPath(scriptId: string): string {
+    return `config/script/config/${encodeURIComponent(scriptId)}`;
   }
 
   async getScript(scriptId: string): Promise<HAScriptConfig | null> {
     try {
-      return await this.connection.sendMessagePromise({
-        type: "config/script/config",
-        script_id: scriptId,
-      });
+      return await this.client.callApi<HAScriptConfig>(
+        "GET",
+        HAApiClient.scriptPath(scriptId),
+      );
     } catch {
       return null;
     }
   }
 
   async saveScript(scriptId: string, config: HAScriptConfig): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "config/script/config",
-      script_id: scriptId,
+    await this.client.callApi<void>(
+      "POST",
+      HAApiClient.scriptPath(scriptId),
       config,
-    });
+    );
   }
 
   async deleteScript(scriptId: string): Promise<void> {
-    await this.connection.sendMessagePromise({
-      type: "config/script/delete",
-      script_id: scriptId,
-    });
+    await this.client.callApi<void>("DELETE", HAApiClient.scriptPath(scriptId));
   }
 
   async reloadScripts(): Promise<void> {

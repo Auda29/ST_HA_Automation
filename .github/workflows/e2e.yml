@@ -42,6 +42,33 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      # Home Assistant serves the panel from custom_components/st_hass/frontend,
+      # which is a committed build artifact (HACS installs it as-is, without a
+      # build step). Without rebuilding here the E2E suite runs against whatever
+      # bundle happens to be committed instead of the source under review - which
+      # is how a broken deploy path stayed green in CI.
+      - name: Build frontend bundle
+        run: npm run build
+
+      # HACS ships the committed bundle as-is, so a stale commit means users run
+      # a different panel than the source describes. The emitted JavaScript is
+      # reproducible, so a fresh build must leave those files unchanged.
+      #
+      # .js.map files are excluded: they embed sourcesContent, so a build on a
+      # Windows checkout (core.autocrlf=true -> CRLF sources) produces different
+      # bytes than one on Linux (LF) even though the emitted code is identical.
+      # Adding a .gitattributes with `eol=lf` would remove that difference and
+      # let the maps be checked too.
+      - name: Verify committed bundle is up to date
+        run: |
+          changes=$(git status --porcelain -- ../custom_components/st_hass/frontend | grep -v '\.map$' || true)
+          if [ -n "$changes" ]; then
+            echo "::error::Committed frontend bundle is out of date. Run 'npm run build' in frontend/ and commit the result."
+            echo "$changes"
+            exit 1
+          fi
+          echo "Committed bundle matches the current source."
+
       - name: Start Home Assistant container
         run: |
           docker compose -f ../docker-compose.test.yml up -d

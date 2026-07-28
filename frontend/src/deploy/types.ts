@@ -91,6 +91,27 @@ export interface HAConnection {
   sendMessage(message: HAWSMessage): void;
 }
 
+export type HAApiMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+/**
+ * The subset of the Home Assistant frontend `hass` object the deploy system needs.
+ *
+ * Two transports are required, and they are not interchangeable:
+ * - `callApi` (REST) for automation and script configs. These are served by HTTP
+ *   views in HA Core (`homeassistant/components/config/`); there is no equivalent
+ *   WebSocket command and sending one yields `unknown_command`.
+ * - `connection` (WebSocket) for `get_states`, `call_service` and the helper
+ *   storage-collection commands such as `input_boolean/create` or `timer/create`.
+ */
+export interface HAClient {
+  connection: HAConnection;
+  callApi<T>(
+    method: HAApiMethod,
+    path: string,
+    parameters?: unknown,
+  ): Promise<T>;
+}
+
 export interface HAWSMessage {
   type: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

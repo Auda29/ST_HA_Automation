@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import type {
+  HAApiMethod,
+  HAClient,
   HAConnection,
   HAWSMessage,
   HAState,
@@ -9,37 +11,59 @@ import type {
 import { HAApiClient } from "./ha-api";
 import { BackupManager } from "./backup-manager";
 
-class FakeConnection implements HAConnection {
+const AUTOMATION_PATH = /^config\/automation\/config\/(.+)$/;
+const SCRIPT_PATH = /^config\/script\/config\/(.+)$/;
+
+class FakeConnection implements HAClient, HAConnection {
   public wsMessages: HAWSMessage[] = [];
+  public restCalls: { method: HAApiMethod; path: string }[] = [];
   public states: HAState[] = [];
   public automations = new Map<string, HAAutomationConfig>();
   public scripts = new Map<string, HAScriptConfig>();
+
+  get connection(): HAConnection {
+    return this;
+  }
+
+  async callApi<T>(
+    method: HAApiMethod,
+    path: string,
+    parameters?: unknown,
+  ): Promise<T> {
+    this.restCalls.push({ method, path });
+
+    const automationId = AUTOMATION_PATH.exec(path)?.[1];
+    if (automationId) {
+      const id = decodeURIComponent(automationId);
+      if (method === "POST") {
+        this.automations.set(id, parameters as HAAutomationConfig);
+        return undefined as unknown as T;
+      }
+      const existing = this.automations.get(id);
+      if (!existing) throw new Error("automation not found");
+      return existing as unknown as T;
+    }
+
+    const scriptId = SCRIPT_PATH.exec(path)?.[1];
+    if (scriptId) {
+      const id = decodeURIComponent(scriptId);
+      if (method === "POST") {
+        this.scripts.set(id, parameters as HAScriptConfig);
+        return undefined as unknown as T;
+      }
+      const existing = this.scripts.get(id);
+      if (!existing) throw new Error("script not found");
+      return existing as unknown as T;
+    }
+
+    throw new Error(`Unexpected REST call: ${method} ${path}`);
+  }
 
   async sendMessagePromise<T>(message: HAWSMessage): Promise<T> {
     this.wsMessages.push(message);
     switch (message.type) {
       case "get_states":
         return this.states as unknown as T;
-      case "config/automation/config": {
-        if ("config" in message) {
-          const cfg = message.config as HAAutomationConfig;
-          this.automations.set(message.automation_id as string, cfg);
-          return cfg as unknown as T;
-        }
-        const existing = this.automations.get(message.automation_id as string);
-        if (!existing) throw new Error("automation not found");
-        return existing as unknown as T;
-      }
-      case "config/script/config": {
-        if ("config" in message) {
-          const cfg = message.config as HAScriptConfig;
-          this.scripts.set(message.script_id as string, cfg);
-          return cfg as unknown as T;
-        }
-        const existing = this.scripts.get(message.script_id as string);
-        if (!existing) throw new Error("script not found");
-        return existing as unknown as T;
-      }
       default:
         return undefined as unknown as T;
     }

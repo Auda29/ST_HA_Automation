@@ -554,14 +554,15 @@ git commit -m "Initial repository setup"
 
 **NIEMALS** direkt YAML-Dateien editieren (`automations.yaml`, `scripts.yaml`).
 
+> **⚠️ Korrektur (nachträglich):** Der ursprüngliche Entwurf unten nutzte
+> `hass.callWS({ type: 'config/automation/config', ... })`. Dieses WebSocket-Kommando
+> existiert in Home Assistant nicht; Automation-/Script-Configs laufen über REST.
+> Maßgeblich ist MUST-DO #9 in `docs/00_Project_Overview.md`.
+
 **Stattdessen:**
 ```typescript
-// Automation über HA Storage API
-await hass.callWS({
-  type: 'config/automation/config',
-  automation_id: 'st_kitchen',
-  config: { ... }
-});
+// Automation über die HA REST API
+await hass.callApi('POST', `config/automation/config/${automationId}`, { ... });
 
 // Helper über Services
 await hass.callService('input_number', 'create', { ... });
