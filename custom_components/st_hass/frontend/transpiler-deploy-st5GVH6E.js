@@ -1,7 +1,7 @@
 var N = Object.defineProperty;
 var A = (p, e, t) => e in p ? N(p, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : p[e] = t;
 var c = (p, e, t) => A(p, typeof e != "symbol" ? e + "" : e, t);
-import { a as E, b as M, w as C, p as f } from "./analyzer-DbAWr__X.js";
+import { a as E, b as C, w as M, p as f } from "./analyzer-DbAWr__X.js";
 class _ {
   constructor(e, t) {
     c(this, "context");
@@ -299,10 +299,10 @@ function k(p, e) {
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
-  {{ (now() - (last | as_datetime)).total_seconds() > ${e} }}
+  {{ (as_timestamp(now()) - as_timestamp(last, 0)) > ${e} }}
 {% endif %}`;
 }
-const w = 1e3;
+const T = 1e3;
 class v {
   constructor(e, t, a) {
     c(this, "context");
@@ -483,7 +483,7 @@ class v {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "WHILE statement");
     const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ (repeat.index | default(1) | int) <= ${w} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
     };
     return {
       repeat: {
@@ -496,7 +496,7 @@ class v {
     this.sourceMap && e.location && this.sourceMap.recordNode(e, "REPEAT statement");
     const t = this.generateCondition(e.condition), a = {
       condition: "template",
-      value_template: `{{ (repeat.index | default(1) | int) <= ${w} }}`
+      value_template: `{{ (repeat.index | default(1) | int) <= ${T} }}`
     };
     return {
       repeat: {
@@ -881,7 +881,7 @@ class H {
     return this.jinja.generateExpression(e);
   }
 }
-class j {
+class L {
   constructor() {
     c(this, "timerMappings", /* @__PURE__ */ new Map());
   }
@@ -909,7 +909,7 @@ class j {
     return a === "Q" || a === "ET";
   }
 }
-class L {
+class R {
   constructor(e) {
     c(this, "mappings", /* @__PURE__ */ new Map());
     c(this, "currentPath", []);
@@ -1058,7 +1058,7 @@ class I {
     c(this, "timerHelpers", []);
     c(this, "additionalAutomations", []);
     c(this, "timerMainActions", []);
-    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new L({
+    this.ast = e, this.projectName = t, a && (this.sourceMapBuilder = new R({
       project: t,
       program: e.name,
       sourceFile: `${e.name}.st`,
@@ -1070,7 +1070,7 @@ class I {
    * Transpile AST to HA automation and script
    */
   transpile() {
-    this.depAnalysis = E(this.ast), this.storageAnalysis = M(this.ast, this.projectName), this.diagnostics.push(
+    this.depAnalysis = E(this.ast), this.storageAnalysis = C(this.ast, this.projectName), this.diagnostics.push(
       ...this.depAnalysis.diagnostics.map((n) => {
         var r;
         return {
@@ -1089,7 +1089,7 @@ class I {
           stLine: (r = n.location) == null ? void 0 : r.line
         };
       })
-    ), this.buildContext(), this.timerTranspiler = new H(this.context), this.timerResolver = new j(), this.processTimerFBs();
+    ), this.buildContext(), this.timerTranspiler = new H(this.context), this.timerResolver = new L(), this.processTimerFBs();
     const e = this.generateAutomation(), t = this.generateScript(), a = this.collectHelpers(), i = this.sourceMapBuilder ? this.sourceMapBuilder.build(e.id, t.alias.replace(/\[ST\]\s*/, "").toLowerCase().replace(/[^a-z0-9_]/g, "_")) : {
       version: 1,
       project: this.projectName,
@@ -1151,7 +1151,7 @@ class I {
       const a = t.dataType.name.toUpperCase();
       (a === "TON" || a === "TOF" || a === "TP") && e.set(t.name, a);
     }
-    e.size !== 0 && C(this.ast, {
+    e.size !== 0 && M(this.ast, {
       onFunctionCall: (t) => {
         const a = e.get(t.name);
         if (!a)
@@ -1227,12 +1227,21 @@ class I {
   buildEntityId(e, t) {
     return `${e}.${t}`.toLowerCase().replace(/[^a-z0-9_.]/g, "_");
   }
+  /**
+   * Build the throttle condition (MUST-DO #10).
+   *
+   * `now()` is timezone-aware while an input_datetime state is naive
+   * ("2026-07-28 13:00:00"), so subtracting the two datetimes raises
+   * "can't subtract offset-naive and offset-aware datetimes". as_timestamp()
+   * reads the naive helper state as local time and takes a default for the
+   * uninitialised case, which keeps the first-run fallback intact.
+   */
   generateThrottleCondition(e, t) {
     return `{% set last = states('${e}') %}
 {% if last in ['unknown', 'unavailable', 'none', ''] %}
   true
 {% else %}
-  {{ (now() - (last | as_datetime)).total_seconds() > ${t} }}
+  {{ (as_timestamp(now()) - as_timestamp(last, 0)) > ${t} }}
 {% endif %}`;
   }
   parseTimeToSeconds(e) {
@@ -1345,7 +1354,7 @@ class I {
     return e;
   }
 }
-function R(p, e, t) {
+function j(p, e, t) {
   return new I(p, e, t).transpile();
 }
 const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
@@ -1355,42 +1364,41 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   Transpiler: I,
   generateEntityStateRead: O,
   generateThrottleCondition: k,
-  transpile: R
-}, Symbol.toStringTag, { value: "Module" })), m = class m {
+  transpile: j
+}, Symbol.toStringTag, { value: "Module" })), d = class d {
   constructor(e) {
+    c(this, "client");
     c(this, "connection");
-    this.connection = e;
+    this.client = e, this.connection = e.connection;
   }
   // ==========================================================================
-  // Automation API
+  // Automation API (REST)
   // ==========================================================================
-  async getAutomations() {
-    return this.connection.sendMessagePromise({
-      type: "config/automation/list"
-    });
+  static automationPath(e) {
+    return `config/automation/config/${encodeURIComponent(e)}`;
   }
   async getAutomation(e) {
     try {
-      return await this.connection.sendMessagePromise({
-        type: "config/automation/config",
-        automation_id: e
-      });
+      return await this.client.callApi(
+        "GET",
+        d.automationPath(e)
+      );
     } catch {
       return null;
     }
   }
   async saveAutomation(e, t) {
-    await this.connection.sendMessagePromise({
-      type: "config/automation/config",
-      automation_id: e,
-      config: t
-    });
+    await this.client.callApi(
+      "POST",
+      d.automationPath(e),
+      t
+    );
   }
   async deleteAutomation(e) {
-    await this.connection.sendMessagePromise({
-      type: "config/automation/delete",
-      automation_id: e
-    });
+    await this.client.callApi(
+      "DELETE",
+      d.automationPath(e)
+    );
   }
   async reloadAutomations() {
     await this.connection.sendMessagePromise({
@@ -1400,35 +1408,30 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     });
   }
   // ==========================================================================
-  // Script API
+  // Script API (REST)
   // ==========================================================================
-  async getScripts() {
-    return this.connection.sendMessagePromise({
-      type: "config/script/list"
-    });
+  static scriptPath(e) {
+    return `config/script/config/${encodeURIComponent(e)}`;
   }
   async getScript(e) {
     try {
-      return await this.connection.sendMessagePromise({
-        type: "config/script/config",
-        script_id: e
-      });
+      return await this.client.callApi(
+        "GET",
+        d.scriptPath(e)
+      );
     } catch {
       return null;
     }
   }
   async saveScript(e, t) {
-    await this.connection.sendMessagePromise({
-      type: "config/script/config",
-      script_id: e,
-      config: t
-    });
+    await this.client.callApi(
+      "POST",
+      d.scriptPath(e),
+      t
+    );
   }
   async deleteScript(e) {
-    await this.connection.sendMessagePromise({
-      type: "config/script/delete",
-      script_id: e
-    });
+    await this.client.callApi("DELETE", d.scriptPath(e));
   }
   async reloadScripts() {
     await this.connection.sendMessagePromise({
@@ -1448,7 +1451,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   async getSTHelpers(e = "st_") {
     return (await this.getStates()).filter((a) => {
       const [i, n] = a.entity_id.split(".");
-      return !!n && m.HELPER_DOMAINS.has(i) && n.startsWith(e);
+      return !!n && d.HELPER_DOMAINS.has(i) && n.startsWith(e);
     });
   }
   async deleteHelper(e) {
@@ -1548,7 +1551,7 @@ const F = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     }
   }
 };
-c(m, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
+c(d, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "input_boolean",
   "input_number",
   "input_text",
@@ -1557,7 +1560,7 @@ c(m, "HELPER_DOMAINS", /* @__PURE__ */ new Set([
   "counter",
   "timer"
 ]));
-let y = m;
+let y = d;
 class b {
   constructor(e, t = "st_") {
     c(this, "api");
@@ -1768,7 +1771,7 @@ class b {
       }
   }
 }
-const d = "st_hass_backups", T = 10;
+const h = "st_hass_backups", w = 10;
 class $ {
   constructor(e) {
     c(this, "api");
@@ -1818,7 +1821,7 @@ class $ {
     await this.helperManager.restoreHelperStates(t.data.helperStates), await this.api.reloadAutomations(), await this.api.reloadScripts();
   }
   async listBackups() {
-    const e = window.localStorage.getItem(d);
+    const e = window.localStorage.getItem(h);
     if (!e) return [];
     try {
       return JSON.parse(e).map((a) => ({
@@ -1834,19 +1837,19 @@ class $ {
   }
   async deleteBackup(e) {
     const a = (await this.listBackups()).filter((i) => i.id !== e);
-    window.localStorage.setItem(d, JSON.stringify(a));
+    window.localStorage.setItem(h, JSON.stringify(a));
   }
   async saveBackup(e) {
     const t = await this.listBackups();
     t.unshift(e);
-    const a = t.slice(0, T);
-    window.localStorage.setItem(d, JSON.stringify(a));
+    const a = t.slice(0, w);
+    window.localStorage.setItem(h, JSON.stringify(a));
   }
-  async cleanupOldBackups(e = T) {
+  async cleanupOldBackups(e = w) {
     const t = await this.listBackups();
     if (t.length <= e) return 0;
     const a = t.slice(e), i = t.slice(0, e);
-    return window.localStorage.setItem(d, JSON.stringify(i)), a.length;
+    return window.localStorage.setItem(h, JSON.stringify(i)), a.length;
   }
   generateId() {
     return `backup_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
@@ -1855,17 +1858,17 @@ class $ {
     return `${e}_logic`;
   }
 }
-const h = "st_hass_schemas";
+const m = "st_hass_schemas";
 class P {
   save(e, t) {
     const a = this.loadAll();
-    a[e] = t, localStorage.setItem(h, JSON.stringify(a));
+    a[e] = t, localStorage.setItem(m, JSON.stringify(a));
   }
   load(e) {
     return this.loadAll()[e] || null;
   }
   loadAll() {
-    const e = localStorage.getItem(h);
+    const e = localStorage.getItem(m);
     if (!e) return {};
     try {
       return JSON.parse(e);
@@ -1875,10 +1878,10 @@ class P {
   }
   delete(e) {
     const t = this.loadAll();
-    delete t[e], localStorage.setItem(h, JSON.stringify(t));
+    delete t[e], localStorage.setItem(m, JSON.stringify(t));
   }
   clear() {
-    localStorage.removeItem(h);
+    localStorage.removeItem(m);
   }
 }
 class U {
@@ -2301,4 +2304,4 @@ export {
   z as a,
   F as i
 };
-//# sourceMappingURL=transpiler-deploy-_m0iaSYB.js.map
+//# sourceMappingURL=transpiler-deploy-st5GVH6E.js.map
