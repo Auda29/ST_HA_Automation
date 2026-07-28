@@ -42,6 +42,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      # Home Assistant serves the panel from custom_components/st_hass/frontend,
+      # which is a committed build artifact (HACS installs it as-is, without a
+      # build step). Without rebuilding here the E2E suite runs against whatever
+      # bundle happens to be committed instead of the source under review - which
+      # is how a broken deploy path stayed green in CI.
+      - name: Build frontend bundle
+        run: npm run build
+
       - name: Start Home Assistant container
         run: |
           docker compose -f ../docker-compose.test.yml up -d
