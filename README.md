@@ -1,5 +1,7 @@
 # ST for Home Assistant
 
+[Website (DE)](https://auda29.github.io/ST_HA_Automation/) · [Website (EN)](https://auda29.github.io/ST_HA_Automation/en.html)
+
 A HACS integration that enables programming Home Assistant automations in **Structured Text (IEC 61131-3)** - the language used in industrial PLCs like TwinCAT and Siemens controllers.
 
 ## Overview

@@ -23,6 +23,7 @@ The following documents intentionally contain German prose or examples:
 - `docs/00_Project_Overview.md` – original high‑level project description for the (German‑speaking) team
 - `docs/ST_HomeAssistant_Projektplan_final.md` – project plan in German
 - `docs/archive/*.md` – archived spike documents and analyses in their original language
+- `docs/index.html` – intentionally German project website, paired with the English `docs/en.html`.
 
 These are considered **intentional** and are therefore excluded from the “no German” requirement.
 Any new, non‑historical documentation should be written in English by default.
