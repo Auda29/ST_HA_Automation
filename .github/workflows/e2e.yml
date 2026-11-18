@@ -20,7 +20,8 @@ on:
 jobs:
   e2e:
     name: E2E Tests
-    runs-on: ubuntu-latest
+    # Playwright 1.58 supports Ubuntu 24.04 and cannot install on 26.04.
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: frontend
