@@ -3,9 +3,6 @@ import { customElement, property, state } from "lit/decorators.js";
 import "../colors_and_type.css";
 import "../editor";
 import "../online/online-toolbar";
-import "../project";
-// Entity browser is lazy loaded when shown
-// import "../entity-browser";
 import { parse } from "../parser";
 import { analyzeDependencies } from "../analyzer";
 import type {
@@ -13,13 +10,11 @@ import type {
   AnalysisMetadata,
   EntityDependency,
 } from "../analyzer/types";
-// Transpiler and deploy are lazy loaded when deploy is triggered
-// import { transpile } from "../transpiler";
-// import { deploy, HAApiClient } from "../deploy";
 import type { VariableBinding, OnlineModeState } from "../online/types";
 import type { STEditor } from "../editor/st-editor";
 import type { ProjectStructure, ProjectFile } from "../project/types";
-import type { ProjectStorage } from "../project";
+import { ProjectStorage } from "../project";
+import type { STEntityBrowser } from "../entity-browser/entity-browser";
 
 interface CombinedDiagnostic {
   severity: "Error" | "Warning" | "Info" | "Hint";
@@ -33,6 +28,8 @@ interface DeployFeedback {
   tone: "success" | "error" | "info";
   message: string;
 }
+
+const PROJECT_SAVE_ERROR = "Could not save this project in browser storage. Keep this tab open to retain your edits.";
 
 @customElement("st-panel")
 export class STPanel extends LitElement {
@@ -52,585 +49,105 @@ export class STPanel extends LitElement {
   @state() declare private _isDeploying: boolean;
   @state() declare private _deployFeedback: DeployFeedback | null;
   private _entityBrowserLoaded = false;
+  private _projectInitialization?: Promise<void>;
+  private _onlineAttempt = 0;
 
   static styles = css`
     :host {
       display: block;
       height: 100%;
-      background:
-        radial-gradient(circle at top left, rgba(24, 183, 230, 0.12), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(14, 127, 166, 0.08), transparent 36%),
-        linear-gradient(180deg, #081018, #091119 26%, #070d13 100%);
-      color: var(--ui-text-primary, var(--primary-text-color));
-      font-family: var(--font-ui, var(--paper-font-common-base_-_font-family));
+      height: 100dvh;
+      color: var(--primary-text-color, #212121);
+      background: var(--primary-background-color, #fafafa);
+      font-family: var(--paper-font-common-base_-_font-family, Roboto, sans-serif);
     }
-    .container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    .main-content {
-      position: relative;
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      min-height: 0;
-    }
-    .content-area {
-      position: relative;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-width: 0;
-    }
+    * { box-sizing: border-box; }
+    .container { display: flex; flex-direction: column; height: 100%; min-height: 0; }
     .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-4, 16px);
-      padding: 18px 20px 14px;
-      background:
-        linear-gradient(135deg, rgba(24, 183, 230, 0.16), transparent 28%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
-        var(--ui-bg-header, var(--app-header-background-color));
-      color: var(--ui-text-header, var(--app-header-text-color));
-      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
-      box-shadow: var(--shadow-header);
-      flex-wrap: wrap;
-    }
-    .toolbar-brand {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
-    .toolbar-kicker {
-      font-size: var(--font-size-xs, 11px);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(237, 246, 255, 0.58);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .toolbar-kicker::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #4ad7ff, var(--ui-primary, #18b7e6));
-      box-shadow: 0 0 10px rgba(74, 215, 255, 0.6);
-    }
-    .toolbar h1 {
-      margin: 0;
-      font-size: var(--font-size-3xl, 26px);
-      font-weight: var(--font-weight-bold, 700);
-      letter-spacing: -0.04em;
-      font-family: var(--font-ui, inherit);
-    }
-    .toolbar-subtitle {
-      font-size: var(--font-size-sm, 12px);
-      color: rgba(237, 246, 255, 0.7);
-      max-width: 56ch;
-    }
-    .toolbar-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .toolbar-button {
-      padding: 10px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: var(--radius-md, 10px);
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--ui-text-header, #fff);
-      cursor: pointer;
-      font-size: var(--font-size-md, 14px);
-      font-weight: var(--font-weight-semibold, 600);
-      font-family: var(--font-ui, inherit);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      backdrop-filter: blur(10px);
-      transition: var(--transition-fast, all 160ms ease);
-    }
-    .toolbar-button:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.22);
-      transform: translateY(-1px);
-    }
-    .toolbar-button:active {
-      transform: translateY(0);
-    }
-    .toolbar-button.active {
-      background: linear-gradient(135deg, var(--ui-primary-soft), rgba(24, 183, 230, 0.22));
-      border-color: rgba(91, 212, 255, 0.48);
-      color: #f6fdff;
-      box-shadow: inset 0 0 0 1px rgba(91, 212, 255, 0.2),
-        0 6px 18px rgba(24, 183, 230, 0.12);
-    }
-    .toolbar-button:focus-visible {
-      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
-    .editor-container {
-      flex: 1;
-      overflow: hidden;
-      padding: 18px;
-      background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.03),
-        transparent 24%
-      );
-      min-height: 0;
-    }
-    st-editor {
-      height: 100%;
-      border-radius: var(--radius-lg, 16px);
-      box-shadow: var(--shadow-popover, 0 4px 12px rgba(0, 0, 0, 0.2));
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      overflow: hidden;
-    }
-    .status-bar {
-      display: flex;
-      gap: 10px;
-      padding: 10px 16px 12px;
-      background: rgba(8, 14, 20, 0.88);
-      border-top: 1px solid var(--ui-divider, var(--divider-color));
-      font-size: var(--font-size-sm, 12px);
-      flex-wrap: wrap;
-      align-items: center;
-      font-family: var(--font-ui, inherit);
-    }
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      border-radius: var(--radius-pill, 999px);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      color: var(--ui-text-secondary);
-      line-height: 1;
-      font-weight: var(--font-weight-medium, 500);
-    }
-    .status-pill ha-icon {
-      --mdc-icon-size: 14px;
-      color: var(--ui-text-muted, #8ea1af);
-    }
-    .status-pill.status-accent {
-      border-color: rgba(91, 212, 255, 0.22);
-      background: rgba(24, 183, 230, 0.1);
-      color: var(--ui-text-primary, #f3f7fb);
-    }
-    .status-pill.status-accent ha-icon {
-      color: var(--ui-info, #6bc9ff);
-    }
-    .status-ok {
-      color: var(--ui-success, var(--success-color, #4caf50));
-    }
-    .status-error {
-      color: var(--ui-error, var(--error-color, #f44336));
-    }
-    .status-warning {
-      color: var(--ui-warning, var(--warning-color, #ff9800));
-    }
-    .syntax-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      border-radius: var(--radius-pill, 999px);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      font-weight: var(--font-weight-semibold, 600);
-      line-height: 1;
-    }
-    .syntax-chip::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 10px currentColor;
-      opacity: 0.9;
-    }
-    .syntax-chip.status-ok {
-      background: rgba(79, 211, 158, 0.1);
-      border-color: rgba(79, 211, 158, 0.24);
-    }
-    .syntax-chip.status-error {
-      background: rgba(255, 114, 114, 0.1);
-      border-color: rgba(255, 114, 114, 0.28);
-    }
-    .deploy-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 11px 18px;
-      border: 1px solid transparent;
-      border-radius: var(--radius-md, 10px);
-      background: linear-gradient(135deg, #eafaff, #c9f3ff);
-      color: #08141b;
-      cursor: pointer;
-      font-size: var(--font-size-md, 14px);
-      font-weight: var(--font-weight-bold, 700);
-      font-family: var(--font-ui, inherit);
-      letter-spacing: 0.02em;
-      box-shadow: 0 10px 22px rgba(24, 183, 230, 0.18);
-      transition: var(--transition-fast, all 160ms ease);
-    }
-    .deploy-button ha-icon {
-      --mdc-icon-size: 16px;
-    }
-    .deploy-button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      filter: brightness(1.05);
-      box-shadow: 0 14px 28px rgba(24, 183, 230, 0.28);
-    }
-    .deploy-button:active:not(:disabled) {
-      transform: translateY(0);
-    }
-    .deploy-button:focus-visible {
-      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
-    .deploy-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    .deploy-button.deploying {
-      pointer-events: none;
-    }
-    .deploy-button.deploying .deploy-label::after {
-      content: "…";
-      display: inline-block;
-      animation: deploy-dots 1.2s infinite;
-    }
-    @keyframes deploy-dots {
-      0%, 20% { content: "."; }
-      40% { content: ".."; }
-      60%, 100% { content: "…"; }
-    }
-    .deploy-feedback {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
-      font-size: var(--font-size-sm, 13px);
-      font-weight: var(--font-weight-medium, 500);
-      background: rgba(8, 14, 20, 0.9);
-    }
-    .deploy-feedback ha-icon {
-      --mdc-icon-size: 16px;
-      flex-shrink: 0;
-    }
-    .deploy-feedback.error {
-      color: var(--ui-error, #ff7272);
-      background: rgba(255, 114, 114, 0.08);
-      border-bottom-color: rgba(255, 114, 114, 0.24);
-    }
-    .deploy-feedback.success {
-      color: var(--ui-success, #4fd39e);
-      background: rgba(79, 211, 158, 0.08);
-      border-bottom-color: rgba(79, 211, 158, 0.22);
-    }
-    .deploy-feedback.info {
-      color: var(--ui-info, #6bc9ff);
-      background: rgba(107, 201, 255, 0.08);
-      border-bottom-color: rgba(107, 201, 255, 0.22);
-    }
-    .diagnostics-panel {
-      max-height: 150px;
-      overflow-y: auto;
-      padding: var(--space-2, 8px) 0;
-      background: rgba(8, 14, 20, 0.9);
-      border-top: 1px solid var(--ui-divider, var(--divider-color));
-      font-size: var(--font-size-sm, 12px);
-      font-family: var(--font-mono, "Fira Code", "Consolas", "Courier New", monospace);
-    }
-    .diagnostics-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px var(--space-4, 16px);
-      color: var(--ui-text-muted, #8ea1af);
-      font-family: var(--font-ui, inherit);
-      font-size: var(--font-size-xs, 11px);
-      font-weight: var(--font-weight-semibold, 600);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      border-bottom: 1px solid rgba(140, 169, 193, 0.08);
-    }
-    .diagnostic {
-      display: grid;
-      grid-template-columns: 18px minmax(72px, auto) 1fr;
-      gap: 10px;
-      padding: 6px var(--space-4, 16px);
-      align-items: baseline;
-      border-left: 2px solid transparent;
-    }
-    .diagnostic:hover {
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .diagnostic-icon {
-      --mdc-icon-size: 14px;
-      align-self: center;
-    }
-    .diagnostic-location {
-      color: var(--ui-text-muted, #8ea1af);
-      font-size: var(--font-size-xs, 11px);
-      text-align: right;
-    }
-    .diagnostic-message {
-      color: var(--ui-text-primary, #edf6ff);
-      overflow-wrap: anywhere;
-    }
-    .diagnostic-code {
-      display: inline-block;
-      margin-right: 6px;
-      padding: 1px 6px;
-      border-radius: var(--radius-sm, 6px);
-      background: rgba(140, 169, 193, 0.1);
-      color: var(--ui-text-secondary, #8ea6bd);
-      font-size: var(--font-size-xs, 11px);
-    }
-    .diagnostic-error {
-      border-left-color: var(--ui-error, #ff7272);
-    }
-    .diagnostic-error .diagnostic-icon {
-      color: var(--ui-error, #ff7272);
-    }
-    .diagnostic-warning {
-      border-left-color: var(--ui-warning, #ffbf47);
-    }
-    .diagnostic-warning .diagnostic-icon {
-      color: var(--ui-warning, #ffbf47);
-    }
-    .diagnostic-info {
-      border-left-color: var(--ui-info, #6bc9ff);
-    }
-    .diagnostic-info .diagnostic-icon {
-      color: var(--ui-info, #6bc9ff);
-    }
-    .diagnostic-hint {
-      border-left-color: var(--ui-disabled, #6c8194);
-    }
-    .diagnostic-hint .diagnostic-icon {
-      color: var(--ui-disabled, #6c8194);
-    }
-    .tabs-container {
-      display: flex;
-      gap: 6px;
-      padding: 10px 14px 0;
-      background: rgba(255, 255, 255, 0.02);
-      border-bottom: 1px solid var(--ui-divider, var(--divider-color));
-      overflow-x: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(140, 169, 193, 0.3) transparent;
-    }
-    .tabs-container::-webkit-scrollbar {
-      height: 6px;
-    }
-    .tabs-container::-webkit-scrollbar-thumb {
-      background: rgba(140, 169, 193, 0.22);
-      border-radius: 3px;
-    }
-    .tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--ui-text-secondary, var(--primary-text-color));
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-bottom: none;
-      border-radius: 10px 10px 0 0;
-      font-size: var(--font-size-base, 13px);
-      font-family: var(--font-ui, inherit);
-      white-space: nowrap;
-      transition: var(--transition-fast, all 160ms ease);
-      max-width: 220px;
-    }
-    .tab:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--ui-text-primary);
-    }
-    .tab:focus-visible {
-      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
-      outline-offset: -2px;
-    }
-    .tab.active {
-      background: linear-gradient(180deg, rgba(24, 183, 230, 0.16), rgba(255, 255, 255, 0.02));
-      border-color: rgba(91, 212, 255, 0.28);
-      color: var(--ui-text-primary, var(--primary-text-color));
-      box-shadow: inset 0 2px 0 rgba(91, 212, 255, 0.6);
-    }
-    .tab-label {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-weight: var(--font-weight-medium, 500);
-    }
-    .tab-close {
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-sm, 6px);
-      opacity: 0.55;
-      transition: var(--transition-fast, all 160ms ease);
-    }
-    .tab-close:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--ui-text-primary);
-    }
-    .tab-close ha-icon {
-      --mdc-icon-size: 12px;
-    }
-    .unsaved-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background-color: var(--ui-warning, var(--warning-color, #ff9800));
-      box-shadow: 0 0 6px rgba(255, 191, 71, 0.45);
-      flex-shrink: 0;
-    }
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 12px 16px; background: var(--card-background-color, #fff);
+      border-bottom: 1px solid var(--divider-color, #ddd);
+    }
+    .toolbar-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .menu-button {
+      display: grid; place-items: center; flex: none; width: 36px; height: 38px;
+      padding: 0; border: 0; background: transparent; color: inherit;
+    }
+    .toolbar h1 { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 600; }
+    .toolbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    button, summary { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--primary-color, #03a9f4); outline-offset: 2px;
+    }
+    .toolbar-button, .deploy-button, .entity-overlay-close {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 38px; padding: 0 12px; border: 1px solid var(--divider-color, #ccc);
+      border-radius: 4px; background: var(--card-background-color, #fff);
+      color: var(--primary-text-color, #212121); font-weight: 500;
+    }
+    .toolbar-button:hover, .toolbar-button.active, .entity-overlay-close:hover {
+      background: var(--secondary-background-color, #eee);
+    }
+    .deploy-button { background: var(--primary-color, #03a9f4); color: var(--text-primary-color, #fff); border-color: transparent; }
+    .deploy-button:hover { filter: brightness(.92); }
+    .deploy-button:disabled { opacity: .6; cursor: wait; }
+    .toolbar-icon, .deploy-button ha-icon { --mdc-icon-size: 18px; }
+    .deploy-feedback { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--secondary-background-color, #eee); }
+    .deploy-feedback.error { color: var(--error-color, #b00020); }
+    .deploy-feedback.success { color: var(--success-color, #2e7d32); }
+    .deploy-feedback ha-icon { --mdc-icon-size: 18px; flex: none; }
+    .main-content { display: flex; flex: 1; min-height: 0; overflow: hidden; }
     .project-sidebar {
-      width: 236px;
-      min-width: 212px;
-      max-width: 260px;
-      border-right: 1px solid var(--ui-divider, var(--divider-color));
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%),
-        var(--ui-bg-card, var(--card-background-color));
+      display: flex; flex-direction: column; width: 230px; flex: 0 0 230px; min-height: 0;
+      background: var(--secondary-background-color, #f3f3f3);
+      border-right: 1px solid var(--divider-color, #ddd); overflow: auto;
     }
-    .entity-overlay {
-      position: absolute;
-      top: 18px;
-      left: 18px;
-      bottom: 18px;
-      width: min(420px, calc(100% - 36px));
-      display: flex;
-      flex-direction: column;
-      border: 1px solid rgba(91, 212, 255, 0.18);
-      border-radius: var(--radius-xl, 18px);
-      overflow: hidden;
-      background: rgba(6, 12, 16, 0.86);
-      backdrop-filter: blur(16px);
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.42),
-        0 0 0 1px rgba(255, 255, 255, 0.03) inset;
-      z-index: 3;
-    }
-    .entity-overlay::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(24, 183, 230, 0.14), transparent 36%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%);
-      pointer-events: none;
-    }
-    .entity-overlay st-entity-browser {
-      position: relative;
-      z-index: 1;
-    }
-    .entity-overlay-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 2;
-      width: 32px;
-      height: 32px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 999px;
-      background: rgba(8, 14, 20, 0.82);
-      color: var(--ui-text-primary, #edf6ff);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition-fast, all 160ms ease);
-    }
-    .entity-overlay-close:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .entity-overlay-close ha-icon {
-      --mdc-icon-size: 16px;
-    }
-    .toolbar-icon {
-      width: 18px;
-      height: 18px;
-      --mdc-icon-size: 18px;
-    }
-    .empty-editor {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: var(--space-8, 32px);
-      color: var(--ui-text-muted, #8ea1af);
-      font-size: var(--font-size-md, 14px);
-      text-align: center;
-    }
-    @media (max-width: 900px) {
-      .toolbar {
-        padding: 14px 16px 12px;
-      }
-      .toolbar h1 {
-        font-size: 22px;
-      }
-      .toolbar-subtitle {
-        display: none;
-      }
-      .project-sidebar {
-        width: 220px;
-        min-width: 200px;
-      }
-      .entity-overlay {
-        top: 12px;
-        left: 12px;
-        bottom: 12px;
-        width: min(380px, calc(100% - 24px));
-      }
-      .editor-container {
-        padding: 12px;
-      }
-    }
+    .content-area { position: relative; display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+    .tabs-container { display: flex; flex: none; overflow-x: auto; background: var(--secondary-background-color, #f3f3f3); border-bottom: 1px solid var(--divider-color, #ddd); }
+    .tab-group { display: flex; align-items: center; flex: none; background: var(--card-background-color, #fff); }
+    .tab { display: inline-flex; align-items: center; gap: 8px; flex: none; max-width: 220px; min-height: 40px; padding: 0 12px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--secondary-text-color, #666); }
+    .tab:hover { background: var(--card-background-color, #fff); color: var(--primary-text-color, #212121); }
+    .tab.active { background: var(--card-background-color, #fff); border-bottom-color: var(--primary-color, #03a9f4); color: var(--primary-text-color, #212121); }
+    .tab-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tab-close { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-right: 4px; border: 0; background: transparent; color: var(--secondary-text-color, #666); border-radius: 4px; }
+    .tab-close:hover { background: var(--secondary-background-color, #eee); }
+    .tab-close ha-icon { --mdc-icon-size: 16px; }
+    .unsaved-dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--warning-color, #ff9800); }
+    .editor-container { flex: 1; min-height: 0; overflow: hidden; background: var(--card-background-color, #fff); }
+    st-editor { display: block; height: 100%; overflow: hidden; }
+    .empty-editor { display: flex; align-items: center; justify-content: center; height: 100%; padding: 24px; color: var(--secondary-text-color, #666); text-align: center; }
+    .entity-overlay { position: absolute; inset: 0 0 0 auto; width: min(440px, 100%); display: flex; flex-direction: column; overflow: hidden; z-index: 3; background: var(--card-background-color, #fff); border-left: 1px solid var(--divider-color, #ddd); }
+    .entity-overlay st-entity-browser { flex: 1; min-height: 0; }
+    .entity-overlay-close { position: absolute; right: 8px; top: 8px; z-index: 2; width: 36px; padding: 0; }
+    .entity-overlay-close ha-icon { --mdc-icon-size: 18px; }
+    .diagnostics-panel { flex: none; max-height: 28%; overflow: auto; background: var(--card-background-color, #fff); border-top: 1px solid var(--divider-color, #ddd); }
+    .diagnostics-header { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-weight: 600; cursor: pointer; }
+    .diagnostics-header::before { content: "▸"; }
+    details[open] > .diagnostics-header::before { content: "▾"; }
+    .diagnostics-header ha-icon, .diagnostic-icon { --mdc-icon-size: 18px; }
+    .diagnostic { display: flex; align-items: baseline; gap: 10px; padding: 6px 16px; font-size: 13px; }
+    .diagnostic-icon { flex: none; align-self: center; }
+    .diagnostic-location { flex: none; color: var(--secondary-text-color, #666); }
+    .diagnostic-message { overflow-wrap: anywhere; }
+    .diagnostic-code { margin-right: 6px; color: var(--secondary-text-color, #666); }
+    .diagnostic-error .diagnostic-icon { color: var(--error-color, #b00020); }
+    .diagnostic-warning .diagnostic-icon { color: var(--warning-color, #b26a00); }
+    .diagnostic-info .diagnostic-icon { color: var(--primary-color, #03a9f4); }
+    .status-bar { display: flex; align-items: center; flex: none; flex-wrap: wrap; gap: 4px 16px; padding: 7px 16px; background: var(--secondary-background-color, #f3f3f3); border-top: 1px solid var(--divider-color, #ddd); font-size: 12px; }
+    .status-pill, .syntax-chip { display: inline-flex; align-items: center; gap: 4px; }
+    .status-pill ha-icon { --mdc-icon-size: 15px; }
+    .status-ok { color: var(--success-color, #2e7d32); }
+    .status-error { color: var(--error-color, #b00020); }
+    .status-warning { color: var(--warning-color, #b26a00); }
     @media (max-width: 640px) {
-      .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .toolbar-actions {
-        justify-content: flex-end;
-      }
-      .main-content {
-        flex-direction: column;
-      }
-      .project-sidebar {
-        width: 100%;
-        max-width: none;
-        max-height: 32vh;
-      }
-      .entity-overlay {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        width: auto;
-      }
+      .toolbar { flex-wrap: wrap; gap: 8px; }
+      .toolbar h1 { font-size: 16px; }
+      .toolbar-actions { margin-left: auto; }
+      .main-content { flex-direction: column; overflow: auto; }
+      .project-sidebar { width: 100%; flex: 0 1 auto; max-height: 25vh; border-right: 0; border-bottom: 1px solid var(--divider-color, #ddd); }
+      .content-area { flex: 1 0 300px; }
+      .status-bar { gap: 4px 12px; }
     }
   `;
 
@@ -640,31 +157,7 @@ export class STPanel extends LitElement {
     this._showEntityBrowser = false;
     this._project = null;
     this._storage = null;
-    this._code = `{mode: restart}
-{throttle: T#1s}
-PROGRAM Kitchen_Light
-VAR
-    {trigger}
-    motion AT %I* : BOOL := 'binary_sensor.kitchen_motion';
-
-    {no_trigger}
-    temperature AT %I* : REAL := 'sensor.kitchen_temperature';
-
-    {persistent}
-    activationCount : INT := 0;
-
-    light AT %Q* : BOOL := 'light.kitchen';
-END_VAR
-
-(* Main logic *)
-IF motion THEN
-    light := TRUE;
-    activationCount := activationCount + 1;
-ELSE
-    light := FALSE;
-END_IF
-
-END_PROGRAM`;
+    this._code = "";
     this._syntaxOk = true;
     this._triggers = [];
     this._diagnostics = [];
@@ -673,77 +166,64 @@ END_PROGRAM`;
     this._onlineState = this._createDisconnectedOnlineState();
     this._isDeploying = false;
     this._deployFeedback = null;
+    this.addEventListener("binding-feedback", (event) => {
+      this._showBindingFeedback((event as CustomEvent<string>).detail);
+    });
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this._initializeProject();
-    // Run initial analysis
-    this._analyzeCode();
+    void this._initializeProject();
   }
 
-  updated(changedProperties: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("hass")) {
-      this._initializeStorage().then(() => {
-        if (!this._project) {
-          this._initializeProject();
+  disconnectedCallback(): void {
+    this._handleOnlineDisconnect();
+    super.disconnectedCallback();
+  }
+
+  protected willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.willUpdate(changedProperties);
+    const previousHass = changedProperties.get("hass") as
+      | { connection?: unknown }
+      | undefined;
+    if (previousHass?.connection && previousHass.connection !== this.hass?.connection) {
+      this._handleOnlineDisconnect();
+    }
+  }
+
+  private _initializeProject(): Promise<void> {
+    return this._projectInitialization ??= this._loadProject();
+  }
+
+  private async _loadProject(): Promise<void> {
+    if (this._project) {
+      this._analyzeCode();
+      return;
+    }
+
+    const storage = this._storage ??= new ProjectStorage(
+      this.hass?.connection ?? null,
+      this.hass?.config?.entry_id ?? "default",
+    );
+    try {
+      const project = await storage.loadProject();
+      if (project) {
+        if (project.activeFileId !== null) {
+          const activeFile = project.files.find((file) => file.id === project.activeFileId)
+            ?? project.files[0];
+          project.activeFileId = activeFile?.id ?? null;
+          if (activeFile) activeFile.isOpen = true;
         }
-      });
-    }
-  }
-
-  private async _initializeStorage(): Promise<void> {
-    if (this._storage) return; // Already initialized
-    
-    // Lazy load ProjectStorage module
-    const { ProjectStorage } = await import("../project");
-    
-    if (this.hass?.connection) {
-      const configEntryId = this.hass.config?.entry_id || "default";
-      this._storage = new ProjectStorage(this.hass.connection, configEntryId);
-    } else {
-      this._storage = new ProjectStorage(null, "default");
-    }
-  }
-
-  private async _initializeProject(): Promise<void> {
-    if (!this._storage) {
-      await this._initializeStorage();
-    }
-
-    if (this._storage) {
-      try {
-        const project = await this._storage.loadProject();
-        if (project) {
-          if (project.activeFileId) {
-            project.files = project.files.map((file) => ({
-              ...file,
-              isOpen: file.id === project.activeFileId || file.isOpen,
-            }));
-          }
-          this._project = project;
-          // Open the active file if any
-          if (project.activeFileId) {
-            const activeFile = project.files.find(
-              (f) => f.id === project.activeFileId,
-            );
-            if (activeFile) {
-              this._code = activeFile.content;
-            }
-          }
-          this._analyzeCode();
-        } else {
-          // Migrate from single-file mode
-          this._project = this._storage.migrateFromSingleFile(this._code);
-          await this._storage.saveProject(this._project);
-          this._analyzeCode();
-        }
-      } catch (error) {
-        console.error("Failed to load project", error);
-        // Fall back to single-file mode
+        this._project = project;
+      } else {
+        this._project = storage.createDefaultProject();
+        void this._saveProject();
       }
+    } catch (error) {
+      console.error("Failed to load project", error);
+      this._setDeployFeedback("error", "Could not load the project from browser storage.");
     }
+    this._analyzeCode();
   }
 
   render() {
@@ -765,14 +245,20 @@ END_PROGRAM`;
       <div class="container">
         <div class="toolbar" role="banner">
           <div class="toolbar-brand">
-            <div class="toolbar-kicker">Structured Text Runtime</div>
+            ${this.narrow
+              ? html`<button
+                  class="menu-button"
+                  type="button"
+                  aria-label="Open Home Assistant menu"
+                  @click=${() => this.dispatchEvent(new CustomEvent("hass-toggle-menu", {
+                    bubbles: true,
+                    composed: true,
+                  }))}
+                ><ha-icon icon="mdi:menu"></ha-icon></button>`
+              : ""}
             <h1 class="st-h1">ST for Home Assistant</h1>
-            <div class="toolbar-subtitle">
-              Engineer automations, bind entities, and deploy from one control
-              surface.
-            </div>
           </div>
-          <div class="toolbar-actions" role="toolbar" aria-label="Panel actions">
+          <div class="toolbar-actions" role="group" aria-label="Panel actions">
             <button
               class="toolbar-button ${this._showEntityBrowser ? "active" : ""}"
               @click=${this._toggleEntityBrowser}
@@ -839,6 +325,7 @@ END_PROGRAM`;
                   <div class="tabs-container" role="tablist">
                     ${this._getOpenFiles().map(
                       (file) => html`
+                        <div class="tab-group">
                         <button
                           class="tab ${file.id === this._project!.activeFileId
                             ? "active"
@@ -862,19 +349,20 @@ END_PROGRAM`;
                                 aria-label="Unsaved changes"
                               ></div>`
                             : ""}
-                          <div
+                        </button>
+                          <button
                             class="tab-close"
+                            type="button"
                             @click=${(e: Event) => {
                               e.stopPropagation();
                               this._closeFile(file.id);
                             }}
                             title="Close (middle-click also works)"
-                            role="button"
                             aria-label="Close ${file.name}"
                           >
                             <ha-icon icon="mdi:close"></ha-icon>
-                          </div>
-                        </button>
+                          </button>
+                        </div>
                       `,
                     )}
                   </div>
@@ -897,7 +385,17 @@ END_PROGRAM`;
             </div>
             ${this._showEntityBrowser
               ? html`
-                  <div class="entity-overlay" role="dialog" aria-label="Entity Browser">
+                  <div
+                    class="entity-overlay"
+                    role="dialog"
+                    aria-label="Entity Browser"
+                    @keydown=${(event: KeyboardEvent) => {
+                      if (event.key === "Escape") {
+                        event.stopPropagation();
+                        void this._toggleEntityBrowser();
+                      }
+                    }}
+                  >
                     <button
                       class="entity-overlay-close"
                       @click=${this._toggleEntityBrowser}
@@ -919,16 +417,12 @@ END_PROGRAM`;
         </div>
         ${this._diagnostics.length > 0
           ? html`
-              <div
-                class="diagnostics-panel"
-                role="log"
-                aria-label="Diagnostics"
-                aria-live="polite"
-              >
-                <div class="diagnostics-header">
+              <details class="diagnostics-panel" open>
+                <summary class="diagnostics-header">
                   <ha-icon icon="mdi:message-alert-outline"></ha-icon>
                   <span>Diagnostics (${this._diagnostics.length})</span>
-                </div>
+                </summary>
+                <div role="log" aria-label="Diagnostics" aria-live="polite">
                 ${this._diagnostics.map(
                   (d) => html`
                     <div
@@ -949,7 +443,8 @@ END_PROGRAM`;
                     </div>
                   `,
                 )}
-              </div>
+                </div>
+              </details>
             `
           : ""}
         <div class="status-bar" role="status" aria-live="polite">
@@ -1091,50 +586,35 @@ END_PROGRAM`;
     return name.replace(/\.st$/i, "");
   }
 
-  private _markProjectSaved(): void {
-    if (!this._project) return;
-    this._project.files.forEach((file) => {
-      file.hasUnsavedChanges = false;
-    });
-  }
-
-  private _handleCodeChange(e: CustomEvent<{ code: string }>) {
-    const newCode = e.detail.code;
-
-    if (this._project && this._project.activeFileId) {
-      // Update active file in project
+  private _handleCodeChange(e: CustomEvent<{ code: string }>): void {
+    const { code } = e.detail;
+    if (this._project) {
       const activeFile = this._project.files.find(
-        (f) => f.id === this._project!.activeFileId,
+        (file) => file.id === this._project?.activeFileId,
       );
-      if (activeFile) {
-        activeFile.content = newCode;
-        // Mark as unsaved if content differs from what was last saved
-        // We'll track the "saved" state separately - for now, mark as unsaved if changed
-        activeFile.hasUnsavedChanges = true; // Will be cleared on save
-        activeFile.lastModified = Date.now();
-        this._project.lastModified = Date.now();
-        // Don't auto-save on every keystroke - just update in-memory state
-      }
-    } else {
-      // Legacy single-file mode
-      this._code = newCode;
-    }
+      if (!activeFile || activeFile.content === code) return;
 
-    this._analyzeCode();
+      const editedFile = {
+        ...activeFile,
+        content: code,
+        hasUnsavedChanges: true,
+        lastModified: Date.now(),
+      };
+      this._updateProject(this._project.files.map(
+        (file) => file.id === editedFile.id ? editedFile : file,
+      ));
+    } else {
+      this._code = code;
+      this._handleOnlineDisconnect();
+      this._analyzeCode();
+    }
   }
 
   private _getCurrentCode(): string {
-    if (this._project) {
-      if (!this._project.activeFileId) {
-        return "";
-      }
-
-      const activeFile = this._project.files.find(
-        (f) => f.id === this._project!.activeFileId,
-      );
-      return activeFile?.content || "";
-    }
-    return this._code;
+    if (!this._project) return this._code;
+    return this._project.files.find(
+      (file) => file.id === this._project?.activeFileId,
+    )?.content ?? "";
   }
 
   private _createDisconnectedOnlineState(): OnlineModeState {
@@ -1154,169 +634,126 @@ END_PROGRAM`;
   }
 
   private _switchToFile(fileId: string): void {
-    if (!this._project) return;
+    if (!this._project || fileId === this._project.activeFileId) return;
+    if (!this._project.files.some((file) => file.id === fileId)) return;
 
-    const file = this._project.files.find((f) => f.id === fileId);
-    if (!file) return;
-
-    // Save current file content from editor before switching
-    const editor = this.shadowRoot?.querySelector(
-      "st-editor",
-    ) as STEditor | null;
-    if (editor && this._project.activeFileId) {
-      const currentFile = this._project.files.find(
-        (f) => f.id === this._project!.activeFileId,
-      );
-      if (currentFile) {
-        const editorCode = editor.getCode();
-        // Only update if content actually changed
-        if (editorCode !== currentFile.content) {
-          currentFile.content = editorCode;
-          currentFile.hasUnsavedChanges = true;
-          currentFile.lastModified = Date.now();
-        }
-      }
-    }
-
-    // Switch to new file
-    this._project.activeFileId = fileId;
-    this._project.files.forEach((f) => {
-      f.isOpen = f.id === fileId || f.isOpen;
-    });
-    this._project.lastModified = Date.now();
-
-    // Update editor with new file content
-    if (editor) {
-      editor.setCode(file.content);
-    }
-
-    void this._saveProject();
-    this.requestUpdate();
+    this._updateProject(this._project.files.map(
+      (file) => file.id === fileId ? { ...file, isOpen: true } : file,
+    ), fileId);
   }
 
   private _closeFile(fileId: string): void {
     if (!this._project) return;
+    const file = this._project.files.find((candidate) => candidate.id === fileId);
+    if (!file?.isOpen) return;
 
-    const file = this._project.files.find((f) => f.id === fileId);
-    if (!file) return;
-
-    // Check for unsaved changes
-    if (file.hasUnsavedChanges) {
-      if (!confirm(`File "${file.name}" has unsaved changes. Close anyway?`)) {
-        return;
-      }
-    }
-
-    // Close file
-    file.isOpen = false;
-
-    // If this was the active file, switch to another open file
-    if (this._project.activeFileId === fileId) {
-      const openFiles = this._project.files.filter(
-        (f) => f.isOpen && f.id !== fileId,
-      );
-      this._project.activeFileId =
-        openFiles.length > 0 ? openFiles[0].id : null;
-    }
-
-    this._project.lastModified = Date.now();
-    void this._saveProject();
-    this._analyzeCode();
-    this.requestUpdate();
+    const files = this._project.files.map(
+      (candidate) => candidate.id === fileId ? { ...candidate, isOpen: false } : candidate,
+    );
+    const nextActiveId = fileId === this._project.activeFileId
+      ? files.find((candidate) => candidate.isOpen)?.id ?? null
+      : this._project.activeFileId;
+    this._updateProject(files, nextActiveId);
   }
 
-  private _handleFileOpen(e: CustomEvent): void {
-    const { fileId } = e.detail;
-    this._switchToFile(fileId);
+  private _handleFileOpen(e: CustomEvent<{ fileId: string }>): void {
+    this._switchToFile(e.detail.fileId);
   }
 
-  private _handleFileSelected(e: CustomEvent): void {
-    const { fileId } = e.detail;
-    if (!fileId) return;
-    this._switchToFile(fileId);
+  private _handleFileSelected(e: CustomEvent<{ fileId: string }>): void {
+    this._switchToFile(e.detail.fileId);
   }
 
-  private _handleFileRename(e: CustomEvent): void {
+  private _handleFileRename(e: CustomEvent<{ fileId: string; newName: string }>): void {
+    if (!this._project) return;
     const { fileId, newName } = e.detail;
-    if (!this._project) return;
-
-    const file = this._project.files.find((f) => f.id === fileId);
-    if (file) {
-      file.name = newName;
-      file.path = newName; // Simple: path = name for now
-      file.lastModified = Date.now();
-      this._project.lastModified = Date.now();
-      void this._saveProject();
+    const file = this._project.files.find((candidate) => candidate.id === fileId);
+    const trimmedName = newName.trim();
+    if (!file || !trimmedName || trimmedName === file.name) return;
+    if (trimmedName.includes("/") || trimmedName.includes("\\")) {
+      this._setDeployFeedback("error", "Enter a file name without folder separators.");
+      return;
     }
+
+    const name = /\.st$/i.test(trimmedName) ? trimmedName : `${trimmedName}.st`;
+    const path = file.path.slice(0, file.path.lastIndexOf("/") + 1) + name;
+    if (this._project.files.some(
+      (candidate) => candidate.id !== fileId && candidate.path.toLowerCase() === path.toLowerCase(),
+    )) {
+      this._setDeployFeedback("error", `A file named "${name}" already exists in this folder.`);
+      return;
+    }
+
+    this._updateProject(this._project.files.map(
+      (candidate) => candidate.id === fileId
+        ? { ...candidate, name, path, lastModified: Date.now() }
+        : candidate,
+    ));
   }
 
-  private _handleFileDeleted(e: CustomEvent): void {
-    const { fileId } = e.detail;
+  private _handleFileDeleted(e: CustomEvent<{ fileId: string }>): void {
     if (!this._project) return;
+    const { fileId } = e.detail;
+    const remainingFiles = this._project.files.filter((file) => file.id !== fileId);
+    if (remainingFiles.length === this._project.files.length) return;
 
-    const remainingFiles = this._project.files.filter((f) => f.id !== fileId);
     let nextActiveId = this._project.activeFileId;
     if (nextActiveId === fileId) {
-      const nextOpen = remainingFiles.find((f) => f.isOpen);
-      nextActiveId = nextOpen?.id ?? remainingFiles[0]?.id ?? null;
+      nextActiveId = (remainingFiles.find((file) => file.isOpen) ?? remainingFiles[0])?.id ?? null;
     }
-
-    const normalizedFiles = remainingFiles.map((file) =>
-      file.id === nextActiveId ? { ...file, isOpen: true } : file,
-    );
-
-    this._project = {
-      ...this._project,
-      files: normalizedFiles,
-      activeFileId: nextActiveId,
-      lastModified: Date.now(),
-    };
-
-    const editor = this.shadowRoot?.querySelector(
-      "st-editor",
-    ) as STEditor | null;
-    if (editor && nextActiveId) {
-      const activeFile = this._project.files.find((f) => f.id === nextActiveId);
-      if (activeFile) editor.setCode(activeFile.content);
-    }
-
-    void this._saveProject();
-    this._analyzeCode();
-    this.requestUpdate();
+    this._updateProject(remainingFiles.map(
+      (file) => file.id === nextActiveId ? { ...file, isOpen: true } : file,
+    ), nextActiveId);
   }
 
-  private _handleFileCreated(e: CustomEvent): void {
+  private _handleFileCreated(e: CustomEvent<{ file: ProjectFile }>): void {
+    if (!this._project) return;
     const { file } = e.detail;
-    if (!this._project || !file) return;
+    this._updateProject([...this._project.files, file], file.id);
+  }
 
-    // Add the new file to the project
+  private _updateProject(
+    files: ProjectFile[],
+    activeFileId = this._project?.activeFileId ?? null,
+  ): void {
+    if (!this._project) return;
+    const switchedFiles = activeFileId !== this._project.activeFileId;
+    const previousCode = this._getCurrentCode();
     this._project = {
       ...this._project,
-      files: [...this._project.files, file],
-      activeFileId: file.id,
+      files,
+      activeFileId,
       lastModified: Date.now(),
     };
-
-    // Update editor with new file content
-    const editor = this.shadowRoot?.querySelector(
-      "st-editor",
-    ) as STEditor | null;
-    if (editor) {
-      editor.setCode(file.content);
+    const code = this._getCurrentCode();
+    if (switchedFiles || code !== previousCode) {
+      this._handleOnlineDisconnect();
+      if (switchedFiles && activeFileId) {
+        this.shadowRoot?.querySelector("st-editor")?.setCode(code);
+      }
+      if (switchedFiles) this._showBindingFeedback("");
+      this._analyzeCode();
     }
-
     void this._saveProject();
-    this._analyzeCode();
-    this.requestUpdate();
   }
 
   private async _saveProject(): Promise<void> {
-    if (!this._storage || !this._project) return;
+    const project = this._project;
+    if (!this._storage || !project) return;
     try {
-      await this._storage.saveProject(this._project);
-      this._markProjectSaved();
-      this.requestUpdate();
+      await this._storage.saveProject(project);
+      if (this._project !== project) return;
+      if (project.files.some((file) => file.hasUnsavedChanges)) {
+        this._project = {
+          ...project,
+          files: project.files.map((file) => ({ ...file, hasUnsavedChanges: false })),
+        };
+      }
+      if (this._deployFeedback?.message === PROJECT_SAVE_ERROR) {
+        this._deployFeedback = null;
+      }
     } catch (error) {
+      if (this._project === project) this._setDeployFeedback("error", PROJECT_SAVE_ERROR);
       console.error("Failed to save project", error);
     }
   }
@@ -1327,6 +764,14 @@ END_PROGRAM`;
    */
   private _analyzeCode(): void {
     const diagnostics: CombinedDiagnostic[] = [];
+    if (this._project && !this._project.activeFileId) {
+      this._syntaxOk = true;
+      this._triggers = [];
+      this._metadata = null;
+      this._entityCount = 0;
+      this._diagnostics = diagnostics;
+      return;
+    }
 
     // Step 1: Parse the code (use current code from project or legacy mode)
     const code = this._getCurrentCode();
@@ -1377,6 +822,11 @@ END_PROGRAM`;
   private async _handleDeploy() {
     if (this._isDeploying) return;
 
+    if (this._project && !this._project.activeFileId) {
+      this._setDeployFeedback("error", "Open a file to deploy its program.");
+      return;
+    }
+
     if (!this._syntaxOk) {
       this._setDeployFeedback(
         "error",
@@ -1416,16 +866,33 @@ END_PROGRAM`;
       ]);
 
       const transpilerResult = transpile(parseResult.ast, "home");
-      if (transpilerResult.diagnostics.some((d) => d.severity === "Error")) {
+      const compilerError = transpilerResult.diagnostics.find((d) => d.severity === "Error");
+      if (compilerError) {
+        const location = compilerError.stLine ? `Line ${compilerError.stLine}: ` : "";
         this._setDeployFeedback(
           "error",
-          "Cannot deploy because transpilation reported errors.",
+          `Cannot deploy. ${location}${compilerError.message}`,
         );
         console.error(
           "Cannot deploy: transpiler reported errors",
           transpilerResult.diagnostics,
         );
         return;
+      }
+
+      const states = this.hass.states as Record<string, unknown> | undefined;
+      if (states) {
+        const missing = analyzeDependencies(parseResult.ast).dependencies.find(
+          ({ entityId }) => entityId && !Object.prototype.hasOwnProperty.call(states, entityId),
+        );
+        if (missing) {
+          const location = missing.location ? `Line ${missing.location.line}: ` : "";
+          this._setDeployFeedback(
+            "error",
+            `Cannot deploy. ${location}Entity ${missing.entityId} was not found in Home Assistant.`,
+          );
+          return;
+        }
       }
 
       const api = new HAApiClient(this.hass);
@@ -1485,10 +952,19 @@ END_PROGRAM`;
   }
 
   private async _handleOnlineConnect(): Promise<void> {
-    if (!this._syntaxOk || !this.hass?.connection) {
+    const state = this._onlineState ?? this._createDisconnectedOnlineState();
+    if (state.status !== "disconnected" && state.status !== "error") return;
+    if (!this._syntaxOk) {
+      this._setDeployFeedback("error", "Fix the syntax errors before connecting live values.");
+      return;
+    }
+    if (!this.hass?.connection) {
+      this._setDeployFeedback("error", "Cannot connect live values without a Home Assistant connection.");
       return;
     }
 
+    const editor = this.shadowRoot?.querySelector("st-editor");
+    if (!editor) return;
     const parseResult = parse(this._getCurrentCode());
     if (!parseResult.success || !parseResult.ast) {
       return;
@@ -1496,35 +972,37 @@ END_PROGRAM`;
 
     const analysis = analyzeDependencies(parseResult.ast);
     const bindings = this._extractBindings(analysis.dependencies);
+    if (!bindings.length) {
+      this._setDeployFeedback("info", "Add an entity binding before connecting live values.");
+      return;
+    }
 
-    const editor = this.shadowRoot?.querySelector(
-      "st-editor",
-    ) as STEditor | null;
-    if (editor) {
-      try {
-        await editor.startOnlineMode(bindings);
-        const currentState =
-          this._onlineState ?? this._createDisconnectedOnlineState();
-        editor.setOnlineSettings({
-          updateRate: currentState.updateRate,
-          showConditions: currentState.showConditions,
-          highlightChanges: currentState.highlightChanges,
-        });
-        this._onlineState = editor.getOnlineState();
-      } catch (error) {
-        console.error("Failed to start online mode", error);
-      }
+    this._deployFeedback = null;
+    const attempt = ++this._onlineAttempt;
+    this._onlineState = { ...state, status: "connecting" };
+    try {
+      await editor.startOnlineMode(bindings);
+      if (attempt !== this._onlineAttempt) return;
+      editor.setOnlineSettings(this._onlineState);
+      this._onlineState = editor.getOnlineState();
+    } catch (error) {
+      if (attempt !== this._onlineAttempt) return;
+      editor.stopOnlineMode();
+      this._onlineState = { ...(this._onlineState ?? state), status: "error" };
+      console.error("Failed to start online mode", error);
     }
   }
 
   private _handleOnlineDisconnect(): void {
-    const editor = this.shadowRoot?.querySelector(
-      "st-editor",
-    ) as STEditor | null;
-    if (editor) {
-      editor.stopOnlineMode();
-      this._onlineState = this._createDisconnectedOnlineState();
-    }
+    if (!this._onlineState || this._onlineState.status === "disconnected") return;
+    this._onlineAttempt++;
+    this.shadowRoot?.querySelector("st-editor")?.stopOnlineMode();
+    this._onlineState = {
+      ...this._onlineState,
+      status: "disconnected",
+      bindings: [],
+      liveValues: new Map(),
+    };
   }
 
   private _handleOnlineTogglePause(): void {
@@ -1568,18 +1046,30 @@ END_PROGRAM`;
           : undefined,
     });
 
-    if (editor) {
+    if (editor && currentState.status !== "connecting") {
       this._onlineState = editor.getOnlineState() ?? this._onlineState;
     }
   }
 
   private async _toggleEntityBrowser(): Promise<void> {
-    if (!this._entityBrowserLoaded && !this._showEntityBrowser) {
-      // Lazy load entity browser module when first shown
-      await import("../entity-browser");
-      this._entityBrowserLoaded = true;
+    if (this._showEntityBrowser) {
+      this._showEntityBrowser = false;
+      this.shadowRoot?.querySelector<HTMLButtonElement>(".toolbar-button")?.focus();
+      return;
     }
-    this._showEntityBrowser = !this._showEntityBrowser;
+
+    try {
+      if (!this._entityBrowserLoaded) {
+        await import("../entity-browser");
+        this._entityBrowserLoaded = true;
+      }
+      this._showEntityBrowser = true;
+      await this.updateComplete;
+      const browser = this.shadowRoot?.querySelector<STEntityBrowser>("st-entity-browser");
+      await browser?.focusSearch();
+    } catch (error) {
+      this._setDeployFeedback("error", `Could not open the entity browser: ${this._formatDeployError(error)}`);
+    }
   }
 
   private _handleInsertBinding(
@@ -1588,9 +1078,11 @@ END_PROGRAM`;
     e.stopPropagation();
     const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
     const bindingSyntax = e.detail?.bindingSyntax;
-    if (!editor || !bindingSyntax) return;
+    if (!bindingSyntax) return;
 
-    editor.insertBinding(bindingSyntax);
+    this._showBindingFeedback(
+      editor?.insertBinding(bindingSyntax) ?? "Open a file to insert a binding.",
+    );
   }
 
   private _handleRemoveBinding(
@@ -1599,8 +1091,15 @@ END_PROGRAM`;
     e.stopPropagation();
     const editor = this.shadowRoot?.querySelector("st-editor") as STEditor | null;
     const entityId = e.detail?.entityId;
-    if (!editor || !entityId) return;
+    if (!entityId) return;
 
-    editor.removeBinding(entityId);
+    this._showBindingFeedback(
+      editor?.removeBinding(entityId) ?? "Open a file to remove a binding.",
+    );
+  }
+
+  private _showBindingFeedback(message: string): void {
+    const browser = this.shadowRoot?.querySelector<STEntityBrowser>("st-entity-browser");
+    browser?.showBindingFeedback(message);
   }
 }

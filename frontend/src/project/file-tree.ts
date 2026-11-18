@@ -44,7 +44,7 @@ export class STFileTree extends LitElement {
       font-size: var(--font-size-md, 14px);
       font-family: var(--font-ui, inherit);
       background: transparent;
-      color: var(--ui-text-primary, #f3f7fb);
+      color: var(--primary-text-color, #212121);
     }
 
     .file-tree {
@@ -62,17 +62,17 @@ export class STFileTree extends LitElement {
       min-height: 38px;
       padding: 0 var(--space-3, 12px);
       cursor: pointer;
-      border-radius: var(--radius-md, 12px);
+      border-radius: 4px;
       transition:
         transform var(--transition-fast, 160ms ease),
         background var(--transition-fast, 160ms ease),
         border-color var(--transition-fast, 160ms ease);
       border: 1px solid transparent;
-      color: var(--ui-text-secondary, #b6c4cf);
+      color: var(--secondary-text-color, #666);
     }
 
     .tree-item:hover {
-      background: rgba(23, 34, 43, 0.94);
+      background: var(--card-background-color, #fff);
       border-color: rgba(88, 127, 146, 0.18);
       transform: translateX(1px);
     }
@@ -83,15 +83,14 @@ export class STFileTree extends LitElement {
     }
 
     .tree-item.active {
-      background:
-        linear-gradient(180deg, rgba(14, 165, 215, 0.2), rgba(10, 131, 173, 0.2));
-      border-color: rgba(71, 187, 226, 0.42);
-      color: var(--ui-text-primary, #f3f7fb);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      background: var(--card-background-color, #fff);
+      border-color: var(--divider-color, #ddd);
+      border-inline-start-color: var(--primary-color, #03a9f4);
+      color: var(--primary-text-color, #212121);
     }
 
     .tree-item.selected {
-      background: rgba(19, 28, 35, 0.92);
+      background: var(--card-background-color, #fff);
     }
 
     .tree-actions {
@@ -108,6 +107,12 @@ export class STFileTree extends LitElement {
       opacity: 1;
     }
 
+    @media (hover: none), (max-width: 640px) {
+      .tree-actions {
+        opacity: 1;
+      }
+    }
+
     .tree-action-btn {
       width: 24px;
       height: 24px;
@@ -115,7 +120,7 @@ export class STFileTree extends LitElement {
       border: none;
       border-radius: var(--radius-sm, 6px);
       background: transparent;
-      color: var(--ui-text-muted, #8ea1af);
+      color: var(--secondary-text-color, #666);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -125,7 +130,7 @@ export class STFileTree extends LitElement {
 
     .tree-action-btn:hover {
       background: rgba(255, 255, 255, 0.08);
-      color: var(--ui-text-primary, #f3f7fb);
+      color: var(--primary-text-color, #212121);
     }
 
     .tree-action-btn.danger:hover {
@@ -148,7 +153,7 @@ export class STFileTree extends LitElement {
     }
 
     .tree-toggle {
-      color: var(--ui-text-muted, #8ea1af);
+      color: var(--secondary-text-color, #666);
       transition: transform var(--transition-fast, 160ms ease);
     }
 
@@ -157,7 +162,7 @@ export class STFileTree extends LitElement {
     }
 
     .tree-icon {
-      color: rgba(132, 212, 238, 0.95);
+      color: var(--primary-color, #03a9f4);
     }
 
     .tree-icon ha-icon,
@@ -180,7 +185,7 @@ export class STFileTree extends LitElement {
       padding: 6px 8px;
       border: 1px solid rgba(71, 187, 226, 0.48);
       border-radius: var(--radius-sm, 8px);
-      background: rgba(7, 11, 15, 0.95);
+      background: var(--card-background-color, #fff);
     }
 
     .tree-label input {
@@ -188,7 +193,7 @@ export class STFileTree extends LitElement {
       border: none;
       outline: none;
       background: transparent;
-      color: var(--ui-text-primary, #f3f7fb);
+      color: var(--primary-text-color, #212121);
       font-size: var(--font-size-md, 14px);
       font-family: inherit;
     }
@@ -210,7 +215,7 @@ export class STFileTree extends LitElement {
 
     .empty-hint {
       padding: var(--space-5, 20px) var(--space-4, 16px);
-      color: var(--ui-text-muted, #8ea1af);
+      color: var(--secondary-text-color, #666);
       font-size: var(--font-size-sm, 12px);
       text-align: center;
       line-height: 1.5;
@@ -239,9 +244,10 @@ export class STFileTree extends LitElement {
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i];
         const isLast = i === parts.length - 1;
+        const key = isLast ? `file:${file.id}` : `folder:${part}`;
 
-        if (!current.children.has(part)) {
-          current.children.set(part, {
+        if (!current.children.has(key)) {
+          current.children.set(key, {
             name: part,
             path: parts.slice(0, i + 1).join("/"),
             children: new Map(),
@@ -249,7 +255,7 @@ export class STFileTree extends LitElement {
           });
         }
 
-        const node = current.children.get(part)!;
+        const node = current.children.get(key)!;
         if (isLast) {
           node.file = file;
         }
@@ -297,10 +303,19 @@ export class STFileTree extends LitElement {
     e.stopPropagation();
     this._editingFileId = file.id;
     this._editingName = file.name;
+    void this.updateComplete.then(() => {
+      if (this._editingFileId !== file.id) return;
+      const input = this.shadowRoot?.querySelector<HTMLInputElement>(".editing input");
+      input?.focus();
+      input?.select();
+    });
   }
 
   private _finishRename(fileId: string): void {
+    if (this._editingFileId !== fileId) return;
     const nextName = this._editingName.trim();
+    this._editingFileId = null;
+    this._editingName = "";
     if (nextName) {
       this.dispatchEvent(
         new CustomEvent("file-rename", {
@@ -310,8 +325,6 @@ export class STFileTree extends LitElement {
         }),
       );
     }
-    this._editingFileId = null;
-    this._editingName = "";
   }
 
   private _getDisplayName(name: string, isEditing: boolean): string {
@@ -397,19 +410,24 @@ export class STFileTree extends LitElement {
               ? html`
                   <input
                     .value=${this._editingName}
+                    @click=${(e: Event) => e.stopPropagation()}
                     @input=${(e: Event) =>
                       (this._editingName = (
                         e.target as HTMLInputElement
                       ).value)}
                     @blur=${() => this._finishRename(file.id)}
                     @keydown=${(e: KeyboardEvent) => {
-                      if (e.key === "Enter") this._finishRename(file.id);
+                      e.stopPropagation();
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        this._finishRename(file.id);
+                      }
                       if (e.key === "Escape") {
+                        e.preventDefault();
                         this._editingFileId = null;
                         this._editingName = "";
                       }
                     }}
-                    autofocus
                   />
                 `
               : this._getDisplayName(file.name, isEditing)}
@@ -445,6 +463,7 @@ export class STFileTree extends LitElement {
   }
 
   private _handleItemKey(e: KeyboardEvent, file: ProjectFile): void {
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter") {
       e.preventDefault();
       this._handleFileDoubleClick(file, e);

@@ -42,6 +42,10 @@ import {
 } from "../online/live-decorations";
 import { OnlineStateManager } from "../online/state-manager";
 import type { VariableBinding, OnlineModeState } from "../online/types";
+import { parse, tokenize } from "../parser";
+import { EndVar, Identifier, Program, Var, VarInput, VarOutput } from "../parser/tokens";
+
+import { ENTITY_BINDING_MIME_TYPE } from "../entity-binding";
 
 @customElement("st-editor")
 export class STEditor extends LitElement {
@@ -99,42 +103,33 @@ export class STEditor extends LitElement {
     this.readOnly = false;
   }
 
-  protected async firstUpdated(
-    _changedProperties: PropertyValues,
-  ): Promise<void> {
-    console.log("STEditor.firstUpdated called");
-    // Wait for the update to complete, then initialize editor
-    await this.updateComplete;
-    console.log("STEditor: updateComplete resolved");
-    // Additional frame to ensure DOM is painted
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-    console.log("STEditor: requestAnimationFrame resolved");
-    this._initEditor();
+  connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated) this._initEditor();
   }
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("readOnly") && this._editor) {
+    if (!this._editor) {
+      if (this.isConnected) this._initEditor();
+      return;
+    }
+    if (changedProperties.has("readOnly")) {
       this._editor.dispatch({
         effects: this._readOnlyCompartment.reconfigure(
           EditorState.readOnly.of(this.readOnly),
         ),
       });
     }
-    if (changedProperties.has("code") && this._editor) {
-      const currentCode = this._editor.state.doc.toString();
-      if (currentCode !== this.code) {
-        this._editor.dispatch({
-          changes: { from: 0, to: currentCode.length, insert: this.code },
-        });
-      }
+    if (changedProperties.has("code") && this.getCode() !== this.code) {
+      this._editor.setState(this._createEditorState());
     }
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._onlineUnsubscribe?.();
-    this._onlineManager?.stop();
+    this.stopOnlineMode();
     this._editor?.destroy();
+    this._editor = null;
   }
 
   /**
@@ -162,6 +157,9 @@ export class STEditor extends LitElement {
    */
   stopOnlineMode(): void {
     this._onlineManager?.stop();
+    this._onlineUnsubscribe?.();
+    this._onlineManager = null;
+    this._onlineUnsubscribe = null;
   }
 
   /**
@@ -197,16 +195,29 @@ export class STEditor extends LitElement {
   }
 
   private _initEditor(): void {
-    // Query the shadow DOM directly instead of relying on @query decorator
-    const container = this.shadowRoot?.querySelector(
-      "#editor-container",
-    ) as HTMLDivElement | null;
-    console.log("STEditor._initEditor called, container:", container);
-    if (!container) {
-      console.error("STEditor: container not found!");
-      return;
-    }
+    const container = this.shadowRoot?.querySelector<HTMLDivElement>("#editor-container");
+    if (!container) return;
 
+    this._editor = new EditorView({
+      state: this._createEditorState(),
+      parent: container,
+      dispatchTransactions: (transactions, view) => {
+        view.update(transactions);
+        if (transactions.some((transaction) => transaction.docChanged)) {
+          this.code = view.state.doc.toString();
+          this.dispatchEvent(
+            new CustomEvent("code-change", {
+              detail: { code: this.code },
+              bubbles: true,
+              composed: true,
+            }),
+          );
+        }
+      },
+    });
+  }
+
+  private _createEditorState(): EditorState {
     const extensions: Extension[] = [
       lineNumbers(),
       highlightActiveLineGutter(),
@@ -234,18 +245,26 @@ export class STEditor extends LitElement {
       stTheme(),
       liveValuesExtension(),
       EditorView.domEventHandlers({
+        keydown: this._stopKeyPropagation,
+        keyup: this._stopKeyPropagation,
+        keypress: this._stopKeyPropagation,
         dragover: (event: DragEvent) => {
+          if (!event.dataTransfer?.types.includes(ENTITY_BINDING_MIME_TYPE)) return false;
           event.preventDefault();
           event.stopPropagation();
-          if (event.dataTransfer) {
-            event.dataTransfer.dropEffect = "copy";
-          }
+          event.dataTransfer.dropEffect = "copy";
           return true;
         },
         drop: (event: DragEvent) => {
+          const bindingSyntax = event.dataTransfer?.getData(ENTITY_BINDING_MIME_TYPE);
+          if (!bindingSyntax) return false;
           event.preventDefault();
           event.stopPropagation();
-          this._handleDrop(event);
+          this.dispatchEvent(new CustomEvent("binding-feedback", {
+            detail: this.insertBinding(bindingSyntax),
+            bubbles: true,
+            composed: true,
+          }));
           return true;
         },
       }),
@@ -253,198 +272,117 @@ export class STEditor extends LitElement {
       EditorState.tabSize.of(4),
     ];
 
-    this._editor = new EditorView({
-      state: EditorState.create({ doc: this.code, extensions }),
-      parent: container,
-      dispatch: (tr) => {
-        this._editor!.update([tr]);
-        if (tr.docChanged) {
-          this.dispatchEvent(
-            new CustomEvent("code-change", {
-              detail: { code: tr.newDoc.toString() },
-              bubbles: true,
-              composed: true,
-            }),
-          );
-        }
-      },
-    });
-
-    // Stop keyboard events from propagating to Home Assistant's global handlers
-    // HA uses shortcuts like 'a' for assistant, 'm' for menu, etc.
-    container.addEventListener("keydown", (e) => e.stopPropagation());
-    container.addEventListener("keyup", (e) => e.stopPropagation());
-    container.addEventListener("keypress", (e) => e.stopPropagation());
-
+    return EditorState.create({ doc: this.code, extensions });
   }
 
-  /**
-   * Handle drop event from entity browser
-   */
-  private _handleDrop(e: DragEvent): void {
-    if (!this._editor || !e.dataTransfer) return;
-
-    // Try to get the binding syntax from the drag data
-    let bindingSyntax = e.dataTransfer.getData("text/plain");
-    
-    // If no text data, try JSON data
-    if (!bindingSyntax) {
-      try {
-        const jsonData = e.dataTransfer.getData("application/json");
-        if (jsonData) {
-          const dragData = JSON.parse(jsonData);
-          bindingSyntax = dragData.bindingSyntax;
-        }
-      } catch (err) {
-        console.error("Failed to parse drag data", err);
-        return;
-      }
-    }
-
-    if (!bindingSyntax) return;
-
-    // Get cursor position from mouse coordinates
-    const pos = this._editor.posAtCoords({
-      x: e.clientX,
-      y: e.clientY,
-    });
-
-    if (pos === null) {
-      // Fallback to current selection or end of document
-      const selection = this._editor.state.selection.main;
-      const insertPos = selection.empty ? selection.head : selection.from;
-      this._editor.dispatch({
-        changes: { from: insertPos, insert: bindingSyntax },
-        selection: { anchor: insertPos + bindingSyntax.length },
-      });
-    } else {
-      // Insert at the drop position
-      this._editor.dispatch({
-        changes: { from: pos, insert: bindingSyntax },
-        selection: { anchor: pos + bindingSyntax.length },
-      });
-    }
-
-    // Focus the editor after insertion
-    this._editor.focus();
+  private _stopKeyPropagation(event: Event): boolean {
+    // Home Assistant handles single-letter shortcuts outside the editor.
+    event.stopPropagation();
+    return false;
   }
 
-  insertBinding(bindingSyntax: string): void {
-    if (!this._editor || !bindingSyntax) return;
+  insertBinding(bindingSyntax: string): string {
+    if (!this._editor || this.readOnly) return "Open an editable file to insert a binding.";
+
+    const declaration = bindingSyntax.trim().match(/^(\w+)\s+AT\s+(%[IQ]\*)\s*:\s*\w+\s*:=\s*'([^']+)'\s*;$/i);
+    if (!declaration) return "This entity binding could not be inserted.";
 
     const code = this.getCode();
-    if (code.includes(bindingSyntax)) {
-      return;
+    const { ast } = parse(code);
+    if (!ast) return "Fix the Structured Text syntax before inserting a binding.";
+
+    const [, requestedName, address, entityId] = declaration;
+    const direction = address.toUpperCase() === "%I*" ? "INPUT" : "OUTPUT";
+    if (ast.variables.some((variable) =>
+      variable.binding?.entityId === entityId && variable.binding.direction === direction
+    )) {
+      return `${entityId} already has an ${direction.toLowerCase()} binding.`;
     }
 
-    const { insertPos, content } = this._getBindingInsertTarget(code, bindingSyntax);
+    const nameTokens = tokenize(requestedName).tokens;
+    const baseName = nameTokens.length === 1 && nameTokens[0].tokenType === Identifier
+      ? requestedName
+      : `entity_${requestedName}`;
+    const usedNames = new Set(ast.variables.map((variable) => variable.name.toLowerCase()));
+    let name = baseName;
+    for (let suffix = 2; usedNames.has(name.toLowerCase()); suffix++) {
+      name = `${baseName}_${suffix}`;
+    }
+    const syntax = name + declaration[0].slice(requestedName.length);
+    const { insertPos, content } = this._getBindingInsertTarget(code, syntax, direction);
 
     this._editor.dispatch({
       changes: { from: insertPos, insert: content },
       selection: { anchor: insertPos + content.length },
     });
     this._editor.focus();
+    return `Inserted ${direction.toLowerCase()} binding for ${entityId} as ${name}.`;
   }
 
-  removeBinding(entityId: string): void {
-    if (!this._editor || !entityId) return;
+  removeBinding(entityId: string): string {
+    if (!this._editor || this.readOnly) return "Open an editable file to remove a binding.";
 
-    const doc = this.getCode();
-    const lines = doc.split("\n");
-    const nextLines = lines.filter((line) => !line.includes(`'${entityId}'`));
+    const code = this.getCode();
+    const { ast } = parse(code);
+    if (!ast) return "Fix the Structured Text syntax before removing a binding.";
 
-    if (nextLines.length === lines.length) {
-      return;
-    }
+    const changes = ast.variables.flatMap((variable) => {
+      const end = variable.location;
+      const start = variable.pragmas[0]?.location ?? end;
+      if (variable.binding?.entityId !== entityId || !start || !end) return [];
 
-    this._editor.dispatch({
-      changes: { from: 0, to: doc.length, insert: nextLines.join("\n") },
+      const firstLine = this._editor!.state.doc.line(start.startLine);
+      const lastLine = this._editor!.state.doc.line(end.endLine);
+      const from = firstLine.from + start.startColumn - 1;
+      const to = lastLine.from + end.endColumn;
+
+      // Remove the line break when the declaration occupies the whole line.
+      if (!code.slice(firstLine.from, from).trim() && !code.slice(to, lastLine.to).trim()) {
+        return [{ from: firstLine.from, to: Math.min(code.length, lastLine.to + 1) }];
+      }
+      return [{ from, to }];
     });
+
+    if (!changes.length) return `No binding found for ${entityId}.`;
+    this._editor.dispatch({ changes });
     this._editor.focus();
+    return `Removed binding for ${entityId}.`;
   }
 
   private _getBindingInsertTarget(
     code: string,
     bindingSyntax: string,
+    direction: "INPUT" | "OUTPUT",
   ): { insertPos: number; content: string } {
-    const lines = code.split("\n");
-    const lineStarts = this._getLineStarts(lines);
-    const declarationBlock = this._findDeclarationBlock(lines);
-
-    if (declarationBlock) {
-      const indent = this._getDeclarationIndent(
-        lines,
-        declarationBlock.startLine,
-        declarationBlock.endLine,
-      );
-      return {
-        insertPos: lineStarts[declarationBlock.endLine],
-        content: `${indent}${bindingSyntax}\n`,
-      };
-    }
-
-    const headerLine = lines.findIndex((line) =>
-      /^\s*(PROGRAM|FUNCTION_BLOCK|FUNCTION)\b/i.test(line),
+    const { tokens } = tokenize(code);
+    const directionSection = direction === "INPUT" ? VarInput : VarOutput;
+    const section = tokens.findIndex((token) =>
+      token.tokenType === Var || token.tokenType === directionSection
     );
-    if (headerLine !== -1) {
-      const insertAtLine = Math.min(headerLine + 1, lines.length - 1);
-      return {
-        insertPos: lineStarts[insertAtLine],
-        content: `VAR\n    ${bindingSyntax}\nEND_VAR\n`,
-      };
+
+    if (section !== -1) {
+      const end = tokens.slice(section + 1).find((token) => token.tokenType === EndVar)!;
+      const lineStart = code.lastIndexOf("\n", end.startOffset - 1) + 1;
+      const leading = code.slice(lineStart, end.startOffset);
+      const firstDeclaration = tokens[section + 1];
+      const declarationLine = code.lastIndexOf("\n", firstDeclaration.startOffset - 1) + 1;
+      const declarationIndent = code.slice(declarationLine, firstDeclaration.startOffset);
+      const indent = firstDeclaration !== end && !declarationIndent.trim()
+        ? declarationIndent
+        : "    ";
+      return leading.trim()
+        ? { insertPos: end.startOffset, content: `\n${indent}${bindingSyntax}\n` }
+        : { insertPos: lineStart, content: `${indent}${bindingSyntax}\n` };
     }
 
-    const prefix = code.length > 0 && !code.endsWith("\n") ? "\n" : "";
+    const program = tokens.findIndex((token) => token.tokenType === Program);
+    const insertPos = tokens[program + 2].startOffset;
+    const lineStart = code.lastIndexOf("\n", insertPos - 1) + 1;
+    const inline = code.slice(lineStart, insertPos).trim();
     return {
-      insertPos: code.length,
-      content: `${prefix}VAR\n    ${bindingSyntax}\nEND_VAR\n`,
+      insertPos: inline ? insertPos : lineStart,
+      content: `${inline ? "\n" : ""}VAR\n    ${bindingSyntax}\nEND_VAR\n`,
     };
-  }
-
-  private _findDeclarationBlock(
-    lines: string[],
-  ): { startLine: number; endLine: number } | null {
-    let startLine = -1;
-    for (let index = 0; index < lines.length; index += 1) {
-      const trimmed = lines[index].trim().toUpperCase();
-      if (/^VAR(?:_(INPUT|OUTPUT|IN_OUT|GLOBAL|TEMP))?$/.test(trimmed)) {
-        startLine = index;
-        continue;
-      }
-
-      if (trimmed === "END_VAR" && startLine !== -1) {
-        return { startLine, endLine: index };
-      }
-    }
-
-    return null;
-  }
-
-  private _getDeclarationIndent(
-    lines: string[],
-    startLine: number,
-    endLine: number,
-  ): string {
-    for (let index = startLine + 1; index < endLine; index += 1) {
-      const match = lines[index].match(/^(\s*)\S/);
-      if (match) {
-        return match[1];
-      }
-    }
-
-    return "    ";
-  }
-
-  private _getLineStarts(lines: string[]): number[] {
-    const starts: number[] = [];
-    let offset = 0;
-
-    for (const line of lines) {
-      starts.push(offset);
-      offset += line.length + 1;
-    }
-
-    return starts;
   }
 
   getCode(): string {
@@ -453,6 +391,7 @@ export class STEditor extends LitElement {
 
   setCode(code: string): void {
     this.code = code;
+    this._editor?.setState(this._createEditorState());
   }
 
   focus(): void {

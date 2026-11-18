@@ -5,7 +5,7 @@
 import type { Backup } from './types';
 import type { HelperConfig } from '../analyzer/types';
 import { HAApiClient } from './ha-api';
-import { HelperManager } from './helper-manager';
+import { HelperManager, selectProgramHelpers } from './helper-manager';
 
 const BACKUP_STORAGE_KEY = 'st_hass_backups';
 const MAX_BACKUPS = 10;
@@ -19,7 +19,11 @@ export class BackupManager {
     this.helperManager = new HelperManager(api);
   }
 
-  async createBackup(automationId: string, programName: string): Promise<Backup> {
+  async createBackup(
+    automationId: string,
+    programName: string,
+    requiredHelperIds?: ReadonlySet<string>,
+  ): Promise<Backup> {
     const automation = await this.api.getAutomation(automationId);
 
     const scriptId = this.getScriptId(automationId);
@@ -28,9 +32,8 @@ export class BackupManager {
     const helpers = await this.helperManager.getExistingHelpers(
       `${automationId}_`,
     );
-    const helperConfigs: HelperConfig[] = helpers.map((h) =>
-      this.helperManager.toHelperConfig(h),
-    );
+    const helperConfigs: HelperConfig[] = selectProgramHelpers(helpers, programName, requiredHelperIds)
+      .map((helper) => this.helperManager.toHelperConfig(helper));
 
     const helperIds = helperConfigs.map((h) => h.id);
     const helperStates = await this.helperManager.getHelperStates(helperIds);

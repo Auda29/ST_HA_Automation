@@ -25,6 +25,7 @@ class FakeConnection implements HAClient, HAConnection {
   public failScriptSaveWithObject = false;
   public failNextHelperCreate = false;
   public failNextAutomationReload = false;
+  public failConfigRead = false;
 
   get connection(): HAConnection {
     return this;
@@ -41,6 +42,9 @@ class FakeConnection implements HAClient, HAConnection {
     parameters?: unknown,
   ): Promise<T> {
     this.restCalls.push({ method, path });
+    if (method === "GET" && this.failConfigRead) {
+      throw { status_code: 503, body: { message: "Could not read existing configuration" } };
+    }
 
     const automationId = AUTOMATION_PATH.exec(path)?.[1];
     if (automationId) {
@@ -54,7 +58,7 @@ class FakeConnection implements HAClient, HAConnection {
         return undefined as unknown as T;
       }
       const existing = this.automations.get(id);
-      if (!existing) throw new Error("automation not found");
+      if (!existing) throw { status_code: 404 };
       return existing as unknown as T;
     }
 
@@ -80,7 +84,7 @@ class FakeConnection implements HAClient, HAConnection {
         return undefined as unknown as T;
       }
       const existing = this.scripts.get(id);
-      if (!existing) throw new Error("script not found");
+      if (!existing) throw { status_code: 404 };
       return existing as unknown as T;
     }
 
@@ -274,14 +278,14 @@ describe("DeployManager", () => {
       {
         entity_id: "input_number.st_default_prog_obsolete",
         state: "0",
-        attributes: { min: 0, max: 100 },
+        attributes: { friendly_name: "ST Prog - obsolete", min: 0, max: 100 },
         last_changed: "",
         last_updated: "",
       },
       {
-        entity_id: "input_number.st_default_other_counter",
+        entity_id: "input_number.st_default_prog_other_counter",
         state: "42",
-        attributes: { min: 0, max: 100 },
+        attributes: { friendly_name: "ST Prog_Other - counter", min: 0, max: 100 },
         last_changed: "",
         last_updated: "",
       },
@@ -298,8 +302,43 @@ describe("DeployManager", () => {
     });
     expect(conn.wsMessages).not.toContainEqual({
       type: "input_number/delete",
-      input_number_id: "st_default_other_counter",
+      input_number_id: "st_default_prog_other_counter",
     });
+  });
+
+  it("stops before writing if an existing configuration cannot be read", async () => {
+    const conn = new FakeConnection();
+    conn.failConfigRead = true;
+    const manager = new DeployManager(new HAApiClient(conn));
+
+    const result = await manager.deploy(makeTranspilerResult());
+
+    expect(result.success).toBe(false);
+    expect(result.errors[0]?.message).toBe("Could not read existing configuration");
+    expect(conn.restCalls.every(({ method }) => method === "GET")).toBe(true);
+    expect(conn.wsMessages).toHaveLength(0);
+  });
+
+  it("rejects a required id already owned by a program with a longer name", async () => {
+    const conn = new FakeConnection();
+    const id = "input_number.st_default_prog_other_counter";
+    conn.states = [{
+      entity_id: id,
+      state: "42",
+      attributes: { friendly_name: "ST Prog_Other - counter", min: 0, max: 100 },
+      last_changed: "",
+      last_updated: "",
+    }];
+    const compiled = makeTranspilerResult();
+    compiled.helpers = [{ id, type: "input_number", name: "ST Prog - other_counter" }];
+    const manager = new DeployManager(new HAApiClient(conn));
+
+    const result = await manager.deploy(compiled);
+
+    expect(result.success).toBe(false);
+    expect(result.errors[0]?.message).toContain('belongs to "ST Prog_Other - counter"');
+    expect(conn.restCalls.every(({ method }) => method === "GET")).toBe(true);
+    expect(conn.wsMessages.map(({ type }) => type)).toEqual(["get_states"]);
   });
 
   it("captures previous helper config for helper update and delete rollback", async () => {
@@ -322,7 +361,7 @@ describe("DeployManager", () => {
         entity_id: "input_boolean.st_default_prog_removed",
         state: "on",
         attributes: {
-          friendly_name: "Removed Helper",
+          friendly_name: "ST Prog - removed",
         },
         last_changed: "",
         last_updated: "",
@@ -370,7 +409,7 @@ describe("DeployManager", () => {
     expect(helperDelete?.previousState).toEqual({
       id: "input_boolean.st_default_prog_removed",
       type: "input_boolean",
-      name: "Removed Helper",
+      name: "ST Prog - removed",
       initial: true,
     });
   });

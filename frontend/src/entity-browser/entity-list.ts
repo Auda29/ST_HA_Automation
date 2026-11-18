@@ -5,16 +5,36 @@
  */
 
 import { LitElement, html, css } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { EntityInfo, DomainGroup, EntityFilter } from "./types";
 import "./entity-item";
 import { inferDataType } from "./entity-browser";
+import { parse } from "../parser";
 
 @customElement("st-entity-list")
 export class STEntityList extends LitElement {
   @property({ type: Array }) declare entities: EntityInfo[];
   @property({ type: Object }) declare filter: EntityFilter;
   @property({ type: String }) declare currentCode: string;
+  @state() declare private _expandedDomains: Set<string>;
+  private _boundEntityIds = new Set<string>();
+
+  protected willUpdate(changed: PropertyValues): void {
+    if (changed.has("currentCode")) {
+      const { ast } = parse(this.currentCode);
+      this._boundEntityIds = new Set(ast?.variables.flatMap(({ binding }) =>
+        binding?.entityId ? [binding.entityId] : [],
+      ));
+    }
+    const previousFilter = changed.get("filter");
+    if (changed.has("filter") && this.filter.searchQuery &&
+        this.filter.searchQuery !== previousFilter?.searchQuery) {
+      this._expandedDomains = new Set(
+        this._filterEntities(this.entities).map((entity) => entity.domain),
+      );
+    }
+  }
 
   constructor() {
     super();
@@ -26,24 +46,23 @@ export class STEntityList extends LitElement {
       showOutputsOnly: false,
     };
     this.currentCode = "";
+    this._expandedDomains = new Set();
   }
-
-  @state() private _expandedDomains: Set<string> = new Set();
 
   static styles = css`
     :host {
       display: block;
       height: 100%;
       overflow-y: auto;
-      padding: var(--space-3, 12px);
+      padding: 4px 8px;
       box-sizing: border-box;
     }
 
     .domain-group {
-      margin-bottom: var(--space-3, 12px);
+      margin-bottom: 6px;
       border: 1px solid rgba(88, 127, 146, 0.16);
-      border-radius: var(--radius-lg, 16px);
-      background: rgba(14, 20, 26, 0.92);
+      border-radius: 4px;
+      background: var(--card-background-color, #fff);
       overflow: hidden;
     }
 
@@ -51,15 +70,19 @@ export class STEntityList extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--space-2, 8px);
-      padding: var(--space-3, 12px) var(--space-4, 16px);
+      padding: 4px 8px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: left;
       cursor: pointer;
       user-select: none;
-      color: var(--ui-text-primary, #f3f7fb);
+      color: var(--primary-text-color, #212121);
       transition: background var(--transition-fast, 160ms ease);
     }
 
     .domain-header:hover {
-      background: rgba(24, 35, 43, 0.96);
+      background: var(--secondary-background-color, #eee);
     }
 
     .domain-icon {
@@ -69,8 +92,8 @@ export class STEntityList extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(14, 165, 215, 0.14);
-      color: rgba(132, 212, 238, 0.95);
+      background: transparent;
+      color: var(--secondary-text-color, #666);
     }
 
     .domain-icon ha-icon {
@@ -93,8 +116,8 @@ export class STEntityList extends LitElement {
       align-items: center;
       justify-content: center;
       border-radius: var(--radius-pill, 999px);
-      background: rgba(24, 37, 46, 0.92);
-      color: var(--ui-text-secondary, #b6c4cf);
+      background: transparent;
+      color: var(--secondary-text-color, #666);
       font-size: var(--font-size-sm, 12px);
     }
 
@@ -104,7 +127,7 @@ export class STEntityList extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--ui-text-muted, #8ea1af);
+      color: var(--secondary-text-color, #666);
       transition: transform var(--transition-fast, 160ms ease);
     }
 
@@ -119,7 +142,7 @@ export class STEntityList extends LitElement {
     .empty-state {
       padding: var(--space-8, 32px) var(--space-5, 20px);
       text-align: center;
-      color: var(--ui-text-secondary, #b6c4cf);
+      color: var(--secondary-text-color, #666);
       font-size: var(--font-size-md, 14px);
     }
   `;
@@ -257,8 +280,10 @@ export class STEntityList extends LitElement {
       ${groups.map(
         (group) => html`
           <div class="domain-group">
-            <div
+            <button
               class="domain-header"
+              type="button"
+              aria-expanded=${group.expanded}
               @click=${() => this._toggleDomain(group.domain)}
             >
               <div class="domain-icon">
@@ -269,7 +294,7 @@ export class STEntityList extends LitElement {
               <div class="domain-toggle ${group.expanded ? "expanded" : ""}">
                 <ha-icon icon="mdi:chevron-right"></ha-icon>
               </div>
-            </div>
+            </button>
             ${group.expanded
               ? html`
                   <div class="domain-entities">
@@ -280,7 +305,7 @@ export class STEntityList extends LitElement {
                           .inferredType=${inferDataType(entity).dataType}
                           .isInput=${this._isInputEntity(entity)}
                           .isOutput=${this._isOutputEntity(entity)}
-                          .currentCode=${this.currentCode}
+                          .hasBinding=${this._boundEntityIds.has(entity.entityId)}
                         ></st-entity-item>
                       `,
                     )}

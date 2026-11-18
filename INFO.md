@@ -15,8 +15,8 @@ ST for Home Assistant transpiles Structured Text code into native Home Assistant
 ## Key Features
 
 ### Industrial PLC Language
-Write automations using Structured Text (IEC 61131-3) with full support for:
-- All standard data types (BOOL, INT, REAL, STRING, TIME, etc.)
+Write automations using the supported subset of IEC 61131-3 Structured Text:
+- Common types including BOOL, INT, REAL, STRING and TIME
 - Control structures (IF/ELSE, CASE, FOR, WHILE, REPEAT)
 - Function blocks (TON, TOF, TP timers, R_TRIG, F_TRIG edge detection)
 - Built-in functions (MIN, MAX, LIMIT, ABS, SQRT, etc.)
@@ -35,7 +35,7 @@ Write automations using Structured Text (IEC 61131-3) with full support for:
 - **Project Explorer**: Multi-file project support with tabs
 
 ### Deployment
-- **Transactional Deploy**: Atomic deployment with backup and rollback
+- **Deploy**: Writes automations, scripts and helpers with rollback on failure
 - **Source Maps**: Error messages point back to ST source code
 - **Error Translation**: HA errors translated to ST context
 
@@ -74,8 +74,8 @@ This creates an automation that:
 
 1. Install via HACS (this repository)
 2. Restart Home Assistant
-3. Open the "ST Editor" panel from the sidebar
-4. Start writing Structured Text automations!
+3. Add **ST for Home Assistant** under **Settings → Devices & services**
+4. Open **ST Editor** from the sidebar
 
 ## Documentation
 
@@ -85,7 +85,7 @@ This creates an automation that:
 
 ## Requirements
 
-- Home Assistant 2024.1.0 or later
+- Home Assistant 2024.7.0 or later
 - HACS installed (for installation via HACS)
 
 ## Support

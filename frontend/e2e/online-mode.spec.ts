@@ -1,108 +1,58 @@
-/**
- * E2E Test: Online Mode
- *
- * Tests that online mode shows live entity values in the editor.
- */
-
 import { test, expect } from "@playwright/test";
-import { navigateToSTPanel, replaceEditorCode, TEST_ENTITIES } from "./fixtures";
+import {
+  authenticateHA,
+  callService,
+  navigateToSTPanel,
+  replaceEditorCode,
+  TEST_ENTITIES,
+} from "./fixtures";
 
-test.describe("Online Mode", () => {
-  test("should enable online mode and show live values", async ({ page }) => {
-    // Navigate to ST panel (handles login automatically)
-    await navigateToSTPanel(page);
+test("shows an updated live value when a bound entity changes", async ({ page }) => {
+  const authToken = await authenticateHA(page);
+  await navigateToSTPanel(page);
+  const entityId = TEST_ENTITIES.inputBoolean.testSchalter2;
 
-    const stCode = `
+  await replaceEditorCode(page, `
 PROGRAM OnlineTest
 VAR
-    {trigger}
-    motion AT %I* : BOOL := '${TEST_ENTITIES.inputBoolean.testSchalter1}';
-    light AT %Q* : BOOL := '${TEST_ENTITIES.switch.steckdoseWohnzimmer}';
+    signal AT %I* : BOOL := '${entityId}';
 END_VAR
-
-light := motion;
 END_PROGRAM
-    `.trim();
+  `.trim());
 
-    await replaceEditorCode(page, stCode);
+  await callService(page, "input_boolean", "turn_off", { entity_id: entityId }, authToken);
+  const toolbar = page.locator("st-online-toolbar");
+  await toolbar.getByRole("button", { name: "Connect", exact: true }).click();
 
-    // Check syntax is OK first
-    const syntaxOk = page.locator("text=/Syntax OK/i");
-    await expect(syntaxOk.first()).toBeVisible({ timeout: 5000 });
+  const value = page.locator(`.st-live-value[title^="${entityId}"]`);
+  await expect(value).toHaveClass(/st-live-value--bool-false/);
+  await callService(page, "input_boolean", "turn_on", { entity_id: entityId }, authToken);
+  await expect(value).toHaveClass(/st-live-value--bool-true/);
 
-    // Look for Online mode button or toggle
-    const onlineButton = page.locator(
-      'button:has-text("Online"), button[title*="Online"], [class*="online"]',
-    );
+  await toolbar.getByRole("button", { name: "Stop", exact: true }).click();
+  await expect(value).toHaveCount(0);
+  await callService(page, "input_boolean", "turn_off", { entity_id: entityId }, authToken);
+});
 
-    if ((await onlineButton.count()) > 0) {
-      await onlineButton.first().click();
+test("filters real entities and inserts a binding into the active file", async ({ page }) => {
+  await navigateToSTPanel(page);
+  await replaceEditorCode(page, "PROGRAM BindingTest\nVAR\nEND_VAR\nEND_PROGRAM");
+  const entityId = TEST_ENTITIES.inputBoolean.testSchalter2;
+  const toggle = page.getByRole("button", { name: "Toggle entity browser", exact: true });
+  await toggle.click();
 
-      // Check that live values or online mode indicator is displayed
-      // This might be shown as decorations in the editor or in a separate panel
-      const onlineIndicator = page.locator("text=/online|live|connected/i");
-      const isOnline = await onlineIndicator
-        .first()
-        .isVisible()
-        .catch(() => false);
+  const browser = page.locator("st-entity-browser");
+  const search = browser.getByRole("textbox", { name: "Search entities" });
+  await expect(search).toBeFocused();
+  await search.fill(entityId);
+  const row = browser.locator("st-entity-item").filter({ hasText: entityId });
+  await expect(row).toHaveCount(1);
+  await row.getByRole("button", { name: /insert input binding/i }).click();
 
-      if (!isOnline) {
-        console.log(
-          "Online button clicked but indicator not found - feature may need WebSocket connection",
-        );
-      }
-    } else {
-      console.log(
-        "Online mode button not found - feature may not be implemented yet",
-      );
-    }
-  });
-
-  test("should show entity browser with live states", async ({ page }) => {
-    // Navigate to ST panel (handles login automatically)
-    await navigateToSTPanel(page);
-
-    // Look for entity browser button
-    const entityBrowserButton = page.locator(
-      'button:has-text("Entities"), button[title*="Entity"], button:has-text("Entity")',
-    );
-
-    if ((await entityBrowserButton.count()) > 0) {
-      await entityBrowserButton.first().click();
-
-      // Check that entity browser panel is visible
-      const entityPanel = page.locator(
-        'st-entity-browser, [class*="entity-browser"], [class*="entity-list"]',
-      );
-
-      // Entity browser should be visible after clicking the button
-      const isPanelVisible = await entityPanel
-        .first()
-        .isVisible()
-        .catch(() => false);
-
-      if (isPanelVisible) {
-        // Check that some entities are listed
-        const entityItems = page.locator(
-          '[class*="entity-item"], [class*="entity"]',
-        );
-        const entityCount = await entityItems.count();
-        expect(entityCount).toBeGreaterThan(0);
-      } else {
-        // Entity browser might show inline or as overlay
-        const entityList = page.locator(
-          "text=/input_boolean|sensor|light|switch/i",
-        );
-        const hasEntities = await entityList
-          .first()
-          .isVisible()
-          .catch(() => false);
-        expect(hasEntities).toBeTruthy();
-      }
-    } else {
-      // Button might be labeled differently
-      console.log("Entity browser button not found with expected label");
-      // Still pass the test as the feature existence check
-    }
-  });
+  const editor = page.locator(".cm-content");
+  await expect(editor).toContainText(`AT %I* : BOOL := '${entityId}';`);
+  await expect(page.getByText("Syntax OK", { exact: true })).toBeVisible();
+  await search.press("Escape");
+  await expect(browser).toHaveCount(0);
+  await expect(toggle).toBeFocused();
 });

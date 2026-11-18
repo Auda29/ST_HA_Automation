@@ -17,38 +17,17 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 - **Built-in Safety**: Loop guards and defensive Jinja generation
 - **Timer Support**: TON, TOF, TP function blocks using HA timer entities
 - **Live Editor**: CodeMirror 6-based editor with syntax highlighting and autocomplete
-- **Complete Parser**: Full Chevrotain-based parser supporting all IEC 61131-3 ST features
+- **Structured Text parser**: Supports the language subset described below
 - **Online Mode**: Real-time entity value display in the editor
-- **Transactional Deploy**: Atomic deployment with backup and rollback support
+- **Deploy**: Writes Home Assistant automations, scripts and helpers, with rollback on failure
 
 ## Project Status
 
-**Current Version**: 2.1.6
-**Status**: Stable, Ready for Production Use
-
-### Test Coverage
-
-| Component | Tests | Status |
-|-----------|-------|--------|
-| Parser | 25 | ✅ Passing |
-| Dependency Analyzer | 16 | ✅ Passing |
-| Storage Analyzer | 23 | ✅ Passing |
-| Transpiler / Timer | 26 | ✅ Passing |
-| Deploy / Helper / Backup | 19 | ✅ Passing |
-| Restore/Migration | 20 | ✅ Passing |
-| Online Mode | 11 | ✅ Passing |
-| Error Mapping | 10 | ✅ Passing |
-| Source Maps | 11 | ✅ Passing |
-| Project / UI / Editor | 68 | ✅ Passing |
-| **Total** | **229** | **✅ 100% Passing** |
-
-### Build Status
-
-- **TypeScript**: ✅ Passing (strict mode)
-- **ESLint**: ✅ Passing (0 errors, warnings may still exist)
-- **Bundle Size**: 214 KB (gzipped, initial load) with code splitting
+Current release **2.2.0**. The [CI runs](https://github.com/Auda29/ST_HA_Automation/actions) cover the compiler, browser editor, deployment and execution in Home Assistant.
 
 ## Installation
+
+Requires Home Assistant 2024.7.0 or later and an administrator account.
 
 ### HACS (Recommended)
 
@@ -60,16 +39,20 @@ A HACS integration that enables programming Home Assistant automations in **Stru
 6. Select "Integration" as the category
 7. Click "Install" on the ST for Home Assistant card
 8. Restart Home Assistant
+9. Open **Settings → Devices & services → Add integration** and add **ST for Home Assistant**
 
 ### Manual Installation
 
 1. Download the latest release from the [releases page](https://github.com/Auda29/ST_HA_Automation/releases)
 2. Copy the `custom_components/st_hass` folder to your Home Assistant `custom_components` directory
 3. Restart Home Assistant
+4. Add **ST for Home Assistant** under **Settings → Devices & services**
 
 ## Quick Start
 
-After installation, a new "ST Editor" panel will appear in your Home Assistant sidebar.
+Open **ST Editor** from the sidebar. The [first deployment walkthrough](./docs/quickstart.md) uses two Home Assistant toggle helpers so you can verify the result before connecting devices.
+
+ST source files are saved in this browser. Downloading an update through HACS keeps the source at the same Home Assistant URL and in the same browser profile. Home Assistant stores the generated automations, scripts and helpers on the server.
 
 ### Example Program
 
@@ -227,7 +210,7 @@ ST for Home Assistant uses a **compile-time transpilation approach**:
 ## Development
 
 ### Prerequisites
-- Node.js 20+
+- Node.js 20, the version used in CI
 - npm 10+
 - Python 3.12+
 - Home Assistant development environment (optional)
@@ -241,7 +224,7 @@ cd ST_HA_Automation
 
 # Install frontend dependencies
 cd frontend
-npm install
+npm ci
 
 # Build frontend
 npm run build

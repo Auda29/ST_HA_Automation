@@ -9,7 +9,7 @@ These tests verify the complete workflow from writing ST code through deployment
 ## Prerequisites
 
 - Docker and Docker Compose installed
-- Node.js 20+
+- Node.js 20, the version used in CI
 - Home Assistant test container (see `docker-compose.test.yml`)
 
 ## Test Files
@@ -24,7 +24,7 @@ These tests verify the complete workflow from writing ST code through deployment
 
 ```bash
 # Ensure HA container is running
-docker-compose -f ../../docker-compose.test.yml up -d
+docker compose -f ../docker-compose.test.yml up -d
 
 # Run all E2E tests
 npm run test:e2e
@@ -82,7 +82,7 @@ Run `npx playwright install chromium` to install Playwright browsers.
 ### Home Assistant not ready
 
 - Check container is running: `docker ps | grep ha-test`
-- Check logs: `docker-compose -f ../../docker-compose.test.yml logs`
+- Check logs: `docker compose -f ../docker-compose.test.yml logs`
 - Wait longer: Increase timeout in `setup.ts` or wait manually
 
 ### Authentication fails

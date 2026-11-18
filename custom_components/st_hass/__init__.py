@@ -10,7 +10,6 @@ from typing import Any
 from homeassistant.components import frontend
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
@@ -20,15 +19,11 @@ _LOGGER = logging.getLogger(__name__)
 _MANIFEST = json.loads((Path(__file__).parent / "manifest.json").read_text())
 _INTEGRATION_VERSION = _MANIFEST.get("version", "0.0.0")
 
-# Platforms this integration supports
-PLATFORMS: list[Platform] = []
-
-# Configuration schema for YAML setup (optional)
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
-    """Set up the ST for Home Assistant component from YAML."""
+    """Initialize the integration before loading its config entry."""
     hass.data.setdefault(DOMAIN, {})
     return True
 

@@ -52,137 +52,64 @@ export class OnlineToolbar extends LitElement {
     :host {
       display: flex;
       align-items: center;
-      gap: var(--space-3, 12px);
-      padding: var(--space-3, 12px) var(--space-5, 20px);
-      background:
-        linear-gradient(180deg, rgba(14, 28, 35, 0.96), rgba(11, 17, 21, 0.96));
-      border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
-      font-family: var(--font-ui, inherit);
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      padding: 6px 16px;
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color, #212121);
+      border-bottom: 1px solid var(--divider-color, #ddd);
       position: relative;
+      font-size: 13px;
     }
 
-    .status {
-      display: inline-flex;
+    .status,
+    .controls {
+      display: flex;
       align-items: center;
-      gap: var(--space-2, 8px);
-      padding: var(--space-2, 8px) var(--space-3, 12px);
-      border: 1px solid var(--ui-divider, rgba(88, 127, 146, 0.2));
-      border-radius: var(--radius-pill, 999px);
-      background: rgba(19, 26, 32, 0.9);
-      color: var(--ui-text-primary, #f3f7fb);
+      gap: 6px;
     }
 
     .status-dot {
-      width: 9px;
-      height: 9px;
+      width: 7px;
+      height: 7px;
+      flex: none;
       border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
+      background: var(--secondary-text-color, #666);
     }
 
-    .status-dot--online {
-      background: var(--status-online, #42d6a4);
-      box-shadow: 0 0 12px rgba(66, 214, 164, 0.45);
-    }
-
-    .status-dot--paused {
-      background: var(--status-paused, #ffce73);
-    }
-
-    .status-dot--connecting {
-      background: var(--status-connecting, #3aa0ff);
-      animation: pulse 1.1s infinite;
-    }
-
-    .status-dot--disconnected {
-      background: var(--status-disconnected, #6f7c87);
-    }
-
-    .status-dot--error {
-      background: var(--status-error, #ff6b6b);
-      box-shadow: 0 0 12px rgba(255, 107, 107, 0.35);
-    }
-
-    @keyframes pulse {
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 0.52;
-        transform: scale(0.92);
-      }
-    }
-
-    .status-text {
-      font-size: var(--font-size-sm, 12px);
-      font-weight: var(--font-weight-semibold, 600);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .controls {
-      display: flex;
-      gap: var(--space-2, 8px);
-    }
+    .status-dot--online { background: var(--success-color, #2e7d32); }
+    .status-dot--paused { background: var(--warning-color, #b26a00); }
+    .status-dot--connecting { background: var(--primary-color, #03a9f4); }
+    .status-dot--error { background: var(--error-color, #b00020); }
 
     button {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-2, 8px);
-      min-height: 36px;
-      padding: 0 var(--space-4, 16px);
-      border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
-      border-radius: var(--radius-md, 12px);
-      background: rgba(25, 34, 42, 0.92);
-      color: var(--ui-text-primary, #f3f7fb);
+      gap: 4px;
+      min-height: 32px;
+      padding: 0 7px;
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 4px;
+      background: var(--card-background-color, #fff);
+      color: inherit;
+      font: inherit;
       cursor: pointer;
-      font-size: var(--font-size-sm, 12px);
-      font-weight: var(--font-weight-semibold, 600);
-      letter-spacing: 0.02em;
-      transition:
-        transform var(--transition-fast, 160ms ease),
-        background var(--transition-fast, 160ms ease),
-        border-color var(--transition-fast, 160ms ease);
     }
 
-    button:hover {
-      background: rgba(34, 48, 58, 0.96);
-      border-color: rgba(120, 173, 199, 0.44);
-      transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(0);
+    button:hover,
+    button.active,
+    button.settings-toggle.open {
+      background: var(--secondary-background-color, #eee);
     }
 
     button:focus-visible {
-      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
-      outline-offset: var(--focus-ring-offset, 2px);
-    }
-
-    button:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    button.active {
-      background: rgba(255, 206, 115, 0.18);
-      border-color: rgba(255, 206, 115, 0.45);
-      color: #ffdb97;
+      outline: 2px solid var(--primary-color, #03a9f4);
+      outline-offset: 2px;
     }
 
     button.settings-toggle {
-      min-width: 36px;
+      min-width: 32px;
       justify-content: center;
-      padding: 0;
-    }
-
-    button.settings-toggle.open {
-      background: rgba(14, 165, 215, 0.18);
-      border-color: rgba(91, 212, 255, 0.42);
-      color: #dff7ff;
     }
 
     ha-icon {
@@ -193,99 +120,55 @@ export class OnlineToolbar extends LitElement {
       flex: 1;
     }
 
-    .stats {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2, 8px);
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 34px;
-      padding: 0 var(--space-3, 12px);
-      border-radius: var(--radius-pill, 999px);
-      background: rgba(15, 23, 29, 0.88);
-      border: 1px solid rgba(88, 127, 146, 0.18);
-      color: var(--ui-text-secondary, #b6c4cf);
-      font-size: var(--font-size-sm, 12px);
-    }
-
     .settings-shell {
       position: relative;
+      margin-left: auto;
     }
 
     .settings-panel {
       position: absolute;
-      top: calc(100% + 10px);
+      top: calc(100% + 6px);
       right: 0;
-      min-width: 240px;
-      padding: var(--space-4, 16px);
-      border: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.3));
-      border-radius: var(--radius-xl, 18px);
-      background:
-        linear-gradient(180deg, rgba(22, 31, 38, 0.98), rgba(14, 20, 26, 0.98));
-      box-shadow: var(--shadow-popover, 0 18px 42px rgba(0, 0, 0, 0.35));
-      z-index: 100;
-      animation: settings-pop 160ms ease;
-    }
-
-    @keyframes settings-pop {
-      from {
-        opacity: 0;
-        transform: translateY(-4px) scale(0.98);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .settings-panel {
-        animation: none;
-      }
+      min-width: 235px;
+      padding: 12px;
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 4px;
+      background: var(--card-background-color, #fff);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      z-index: 4;
     }
 
     .settings-title {
-      margin: 0 0 var(--space-3, 12px);
-      color: var(--ui-text-primary, #f3f7fb);
-      font-size: var(--font-size-sm, 12px);
-      font-weight: var(--font-weight-bold, 700);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      margin: 0 0 8px;
+      font-weight: 600;
     }
 
     .setting {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: var(--space-3, 12px);
-      margin-bottom: var(--space-3, 12px);
-      color: var(--ui-text-secondary, #b6c4cf);
-      font-size: var(--font-size-sm, 12px);
+      gap: 12px;
+      padding: 4px 0;
     }
 
-    .setting:last-child {
-      margin-bottom: 0;
-    }
-
-    .setting input,
     .setting select {
-      accent-color: var(--ui-primary, #0ea5d7);
-      background: rgba(9, 14, 18, 0.92);
-      color: var(--ui-text-primary, #f3f7fb);
-      border: 1px solid rgba(88, 127, 146, 0.3);
-      border-radius: var(--radius-sm, 8px);
-      padding: 6px 8px;
+      background: var(--card-background-color, #fff);
+      color: inherit;
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 4px;
+      padding: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .stats {
+        display: none;
+      }
     }
   `;
 
   private get statusText(): string {
     const texts: Record<OnlineStatus, string> = {
-      disconnected: "Offline",
+      disconnected: "Live values off",
       connecting: "Connecting",
       online: "Online",
       paused: "Paused",
@@ -340,16 +223,9 @@ export class OnlineToolbar extends LitElement {
 
       <div class="spacer"></div>
 
-      <div class="stats">
-        <div class="stat">
-          <ha-icon icon="mdi:variable"></ha-icon>
-          ${this.state?.liveValues?.size || 0} Variables
-        </div>
-        <div class="stat">
-          <ha-icon icon="mdi:lightning-bolt"></ha-icon>
-          ${this.state?.updateRate || 100}ms
-        </div>
-      </div>
+      ${this.state?.liveValues.size
+        ? html`<span class="stats">${this.state.liveValues.size} live values</span>`
+        : ""}
 
       <div class="settings-shell">
         <button

@@ -3,7 +3,7 @@
  */
 
 import { StreamLanguage } from "@codemirror/language";
-import { completeFromList } from "@codemirror/autocomplete";
+import { completeFromList, snippetCompletion } from "@codemirror/autocomplete";
 
 // ============================================================================
 // Token Definitions
@@ -276,7 +276,8 @@ export const stLanguage = StreamLanguage.define<TokenizerState>({
 // ============================================================================
 
 export const stCompletion = completeFromList([
-  ...ST_KEYWORDS.map((k) => ({ label: k, type: "keyword" })),
+  ...ST_KEYWORDS.filter((k) => k !== "PROGRAM" && k !== "IF")
+    .map((k) => ({ label: k, type: "keyword" })),
   ...ST_TYPES.map((t) => ({ label: t, type: "type" })),
   ...ST_BUILTINS.map((f) => ({ label: f, type: "function" })),
   ...ST_FUNCTION_BLOCKS.map((fb) => ({ label: fb, type: "class" })),
@@ -285,18 +286,16 @@ export const stCompletion = completeFromList([
     type: "keyword",
     detail: "pragma",
   })),
-  {
+  snippetCompletion("PROGRAM ${ProgramName}\nVAR\n\t${}\nEND_VAR\n\n${}\nEND_PROGRAM", {
     label: "PROGRAM",
     type: "keyword",
-    apply: "PROGRAM ${name}\nVAR\n\t\nEND_VAR\n\n\nEND_PROGRAM",
     detail: "template",
-  },
-  {
+  }),
+  snippetCompletion("IF ${TRUE} THEN\n\t${}\nEND_IF", {
     label: "IF",
     type: "keyword",
-    apply: "IF ${cond} THEN\n\t\nEND_IF",
     detail: "template",
-  },
+  }),
 ]);
 
 // ============================================================================

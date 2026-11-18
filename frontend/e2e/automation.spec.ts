@@ -28,10 +28,9 @@ test.describe("Automation Execution", () => {
     const authToken = await authenticateHA(page);
     await navigateToSTPanel(page);
 
-    // Keep trigger and output independent: the template switch is backed by
-    // test_switch_1, so test_switch_2 drives the generated automation.
+    // Exercise the Quickstart flow with two independent Toggle helpers.
     const inputEntity = TEST_ENTITIES.inputBoolean.testSchalter2;
-    const outputEntity = TEST_ENTITIES.switch.steckdoseWohnzimmer;
+    const outputEntity = TEST_ENTITIES.inputBoolean.gastmodus;
 
     const stCode = `
 PROGRAM MotionLight
@@ -57,7 +56,7 @@ END_PROGRAM
     );
     await callService(
       page,
-      "switch",
+      "input_boolean",
       "turn_off",
       { entity_id: outputEntity },
       authToken,
@@ -148,6 +147,33 @@ END_PROGRAM
         authToken,
       );
     }
+
+    await replaceEditorCode(page, stCode.replace("count + 1", "count + 2"));
+    await deployCurrentProgram(page);
+    const valueAfterRedeploy = await getEntityState(page, helperEntity, authToken);
+    expect(Number(valueAfterRedeploy.state)).toBe(2);
+
+    await callService(
+      page,
+      "input_boolean",
+      "turn_on",
+      { entity_id: triggerEntity },
+      authToken,
+    );
+    await expect
+      .poll(
+        async () =>
+          Number((await getEntityState(page, helperEntity, authToken)).state),
+        { timeout: 15000 },
+      )
+      .toBe(4);
+    await callService(
+      page,
+      "input_boolean",
+      "turn_off",
+      { entity_id: triggerEntity },
+      authToken,
+    );
   });
 
   test("should generate timer FB with correct duration", async ({ page }) => {

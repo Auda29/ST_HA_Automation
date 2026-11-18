@@ -28,6 +28,7 @@ export class OnlineStateManager {
   private readonly subscribers: Set<(state: OnlineModeState) => void> =
     new Set();
   private unsubscribe: (() => void) | null = null;
+  private subscriptionVersion = 0;
 
   private status: OnlineStatus = "disconnected";
   private updateRate: number = 100;
@@ -43,27 +44,30 @@ export class OnlineStateManager {
    * Start online mode with given variable bindings
    */
   async start(bindings: VariableBinding[]): Promise<void> {
-    this.status = "connecting";
-    this.notifySubscribers();
+    if (this.unsubscribe || this.status === "connecting") return;
+    const version = ++this.subscriptionVersion;
 
     // Store bindings
     this.bindings.clear();
     for (const binding of bindings) {
       this.bindings.set(binding.variableName, binding);
     }
+    this.status = "connecting";
+    this.notifySubscribers();
 
     try {
       // Subscribe to entity state changes using the imported function
       this.unsubscribe = subscribeEntities(
         this.connection,
         (entities: HassEntities) => {
-          this.handleHassEntityUpdate(entities);
+          if (version === this.subscriptionVersion) this.handleHassEntityUpdate(entities);
         },
       );
 
       this.status = "online";
       this.notifySubscribers();
     } catch (error) {
+      this.subscriptionVersion++;
       this.status = "error";
       this.notifySubscribers();
       throw error;
@@ -74,11 +78,14 @@ export class OnlineStateManager {
    * Stop online mode
    */
   stop(): void {
+    this.subscriptionVersion++;
     if (this.unsubscribe) {
       this.unsubscribe();
       this.unsubscribe = null;
     }
     this.status = "disconnected";
+    this.bindings.clear();
+    this.entityStates.clear();
     this.liveValues.clear();
     this.notifySubscribers();
   }
@@ -87,6 +94,7 @@ export class OnlineStateManager {
    * Pause/resume updates
    */
   setPaused(paused: boolean): void {
+    if (this.status !== "online" && this.status !== "paused") return;
     this.status = paused ? "paused" : "online";
     this.notifySubscribers();
   }

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { subscribeEntities } from "home-assistant-js-websocket";
 import { OnlineStateManager, ValueFormatter } from "../state-manager";
 import type { VariableBinding } from "../types";
 
@@ -13,6 +14,7 @@ describe("OnlineStateManager", () => {
   let mockConnection: any;
 
   beforeEach(() => {
+    vi.mocked(subscribeEntities).mockReset().mockReturnValue(() => {});
     mockConnection = {};
     manager = new OnlineStateManager(mockConnection);
   });
@@ -54,6 +56,27 @@ describe("OnlineStateManager", () => {
 
     expect(manager.getState().status).toBe("disconnected");
     expect(manager.getState().liveValues.size).toBe(0);
+  });
+
+  it("keeps one active subscription and ignores late updates after stopping", async () => {
+    const unsubscribe = vi.fn();
+    const subscribe = vi.mocked(subscribeEntities).mockReturnValue(unsubscribe);
+    const listener = vi.fn();
+    manager.subscribe(listener);
+
+    await manager.start([]);
+    await manager.start([]);
+    expect(subscribe).toHaveBeenCalledTimes(1);
+    const previousCallback = subscribe.mock.calls[0][1];
+    manager.stop();
+    expect(unsubscribe).toHaveBeenCalledTimes(1);
+    listener.mockClear();
+    previousCallback({});
+    expect(listener).not.toHaveBeenCalled();
+
+    await manager.start([]);
+    expect(subscribe).toHaveBeenCalledTimes(2);
+    expect(manager.getState().status).toBe("online");
   });
 
   it("pauses updates", async () => {

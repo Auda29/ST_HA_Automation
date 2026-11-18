@@ -65,7 +65,7 @@ PROGRAM Main
 VAR
 END_VAR
 
-(* Your ST code here *)
+(* Add inputs and outputs using Entities, then write your logic here. *)
 
 END_PROGRAM`,
       lastModified: now,

@@ -8,6 +8,7 @@
 import { test, expect } from "@playwright/test";
 import {
   authenticateHA,
+  callService,
   deleteAutomationConfig,
   deleteScriptConfig,
   getAutomationConfig,
@@ -38,7 +39,7 @@ test.describe("Deploy Workflow", () => {
     const stCode = `
 PROGRAM TestProgram
 VAR
-    light1 AT %I* : BOOL := 'input_boolean.test_schalter_1';
+    light1 AT %I* : BOOL := 'input_boolean.test_switch_1';
     light2 AT %Q* : BOOL := 'switch.steckdose_wohnzimmer';
 END_VAR
 
@@ -82,7 +83,7 @@ END_PROGRAM
     expect(script.sequence.length).toBeGreaterThan(0);
   });
 
-  test("should deploy a persistent helper without touching another program", async ({
+  test("keeps helpers belonging to a different program with an overlapping name", async ({
     page,
   }) => {
     const authToken = await authenticateHA(page);
@@ -101,6 +102,12 @@ IF trigger_var THEN
 END_IF
 END_PROGRAM
     `.trim();
+
+    const neighbor = "input_number.st_home_persistentprogram_neighbor_counter";
+    await replaceEditorCode(page, stCode.replace("PROGRAM PersistentProgram\n", "PROGRAM PersistentProgram_Neighbor\n"));
+    await page.locator('button:has-text("Deploy")').first().click();
+    await expect(page.getByText(/Deploy successful/i).first()).toBeVisible();
+    await callService(page, "input_number", "set_value", { entity_id: neighbor, value: 42 }, authToken);
 
     await replaceEditorCode(page, stCode);
     await page.locator('button:has-text("Deploy")').first().click();
@@ -122,6 +129,7 @@ END_PROGRAM
     );
     expect(foreignHelper.entity_id).toBe(FOREIGN_HELPER_ID);
     expect(foreignHelper.state).toBe("42.0");
+    expect(Number((await getEntityState(page, neighbor, authToken)).state)).toBe(42);
   });
 
   test("should show syntax status in editor", async ({ page }) => {
@@ -138,6 +146,26 @@ END_PROGRAM
     // Verify the editor shows some code analysis info (triggers, entities, etc.)
     const analysisInfo = page.locator("text=/Trigger|Entit|Mode/i");
     await expect(analysisInfo.first()).toBeVisible({ timeout: 5000 });
+  });
+
+  test("blocks a missing entity binding before any deployment writes", async ({ page }) => {
+    const authToken = await authenticateHA(page);
+    await navigateToSTPanel(page);
+    const missing = "input_boolean.st_missing_entity";
+    await replaceEditorCode(page, `
+PROGRAM MissingBinding
+VAR
+    source AT %I* : BOOL := '${missing}';
+    target AT %Q* : BOOL := 'input_boolean.guest_mode';
+END_VAR
+target := source;
+END_PROGRAM
+    `.trim());
+
+    await page.locator('button:has-text("Deploy")').first().click();
+    await expect(page.getByText(`Entity ${missing} was not found in Home Assistant.`, { exact: false })).toBeVisible();
+    expect(await getAutomationConfig(page, "st_home_missingbinding", authToken)).toBeNull();
+    expect(await getScriptConfig(page, "st_home_missingbinding_logic", authToken)).toBeNull();
   });
 
   test("should roll back an automation when a later deploy step fails", async ({

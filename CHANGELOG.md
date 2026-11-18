@@ -5,6 +5,26 @@ All notable changes to ST for Home Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-11-18
+
+### Changed
+
+- Reorganized the editor around the active file, with a compact project explorer, collapsible diagnostics, and a responsive entity browser.
+- New installations open a blank ST program. The quickstart walks through the first deploy with two Home Assistant Toggle helpers.
+- Set the minimum Home Assistant version to 2024.7.0, which provides the static-path API used by the integration.
+
+### Fixed
+
+- Edits autosave to browser storage. File switches keep code, undo history and diagnostics tied to the active file.
+- Entity search opens matching groups. Binding buttons and drag-and-drop insert declarations into the program and report the result.
+- Code completion inserts editable, valid ST templates for PROGRAM and IF.
+- Live values clear when the source, file or connection changes. Connect again to read values for the current program.
+- Compiler errors identify the reason for blocking deploy and show the source line when available.
+- Deploy stops before writing configuration when a bound entity is missing from Home Assistant.
+- Redeploying a program preserves helpers that belong to differently named programs with an overlapping ID prefix. Configuration read failures stop deployment before it writes anything.
+
+If you are updating from 2.1.6, copy your current ST code before restarting Home Assistant. Already saved projects reopen from the same browser profile and Home Assistant URL.
+
 ## [2.1.6] - 2026-07-28
 
 ### Fixed
@@ -188,6 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source maps for error mapping
 - Error translation from HA errors to ST context
 
+[2.2.0]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.2.0
 [2.1.6]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.6
 [2.1.5]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.5
 [2.1.4]: https://github.com/Auda29/ST_HA_Automation/releases/tag/v2.1.4

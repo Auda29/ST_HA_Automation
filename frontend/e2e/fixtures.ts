@@ -283,16 +283,10 @@ export async function loginViaBrowser(page: Page): Promise<void> {
   // Navigate to HA root (will redirect to login if not authenticated)
   await page.goto(HA_URL, { waitUntil: "domcontentloaded" });
 
-  // Wait for the login form to appear
   const usernameInput = page.getByRole("textbox", { name: /username/i });
-
-  // Check if we're already logged in (no login form)
-  try {
-    await usernameInput.waitFor({ state: "visible", timeout: 5000 });
-  } catch {
-    // Already logged in, no action needed
-    return;
-  }
+  const shell = page.locator("home-assistant");
+  await expect(usernameInput.or(shell).first()).toBeVisible({ timeout: 20000 });
+  if (await shell.isVisible()) return;
 
   // Fill in credentials and submit
   await usernameInput.fill(HA_USERNAME);
@@ -306,7 +300,7 @@ export async function loginViaBrowser(page: Page): Promise<void> {
     { timeout: 20000 },
   );
   await page.waitForLoadState("domcontentloaded");
-  await expect(page.locator("home-assistant")).toHaveCount(1, {
+  await expect(shell).toBeVisible({
     timeout: 20000,
   });
 }

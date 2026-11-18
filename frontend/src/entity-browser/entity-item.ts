@@ -8,6 +8,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { EntityInfo, DragEntityData, InferredDataType } from "./types";
+import { ENTITY_BINDING_MIME_TYPE } from "../entity-binding";
 
 @customElement("st-entity-item")
 export class STEntityItem extends LitElement {
@@ -15,7 +16,7 @@ export class STEntityItem extends LitElement {
   @property({ type: String }) declare inferredType: InferredDataType;
   @property({ type: Boolean }) declare isInput: boolean;
   @property({ type: Boolean }) declare isOutput: boolean;
-  @property({ type: String }) declare currentCode: string;
+  @property({ type: Boolean }) declare hasBinding: boolean;
 
   static styles = css`
     :host {
@@ -25,168 +26,87 @@ export class STEntityItem extends LitElement {
     .entity-item {
       display: flex;
       align-items: center;
-      gap: var(--space-3, 12px);
-      padding: var(--space-3, 12px);
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 6px 4px;
+      border-top: 1px solid var(--divider-color, #ddd);
       cursor: grab;
-      border-radius: var(--radius-md, 12px);
-      transition:
-        transform var(--transition-fast, 160ms ease),
-        background var(--transition-fast, 160ms ease),
-        border-color var(--transition-fast, 160ms ease);
-      user-select: none;
-      border: 1px solid transparent;
-      margin-bottom: 6px;
-    }
-
-    .entity-item:hover {
-      background: rgba(21, 31, 39, 0.96);
-      border-color: rgba(88, 127, 146, 0.22);
-      transform: translateX(1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.24);
-    }
-
-    .entity-item:active {
-      cursor: grabbing;
-    }
-
-    .entity-item:focus-visible {
-      outline: var(--focus-ring, 2px solid rgba(91, 212, 255, 0.7));
-      outline-offset: var(--focus-ring-offset, 2px);
     }
 
     .entity-item.dragging {
-      opacity: 0.5;
-      border-style: dashed;
-      border-color: rgba(91, 212, 255, 0.5);
+      opacity: .5;
     }
 
+    .entity-icon,
     .direction-indicator {
-      width: 10px;
-      height: 10px;
+      display: inline-flex;
+      color: var(--secondary-text-color, #666);
+      --mdc-icon-size: 16px;
+    }
+
+    .direction-indicator::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      background: var(--primary-color, #03a9f4);
       border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .direction-indicator.input {
-      background: var(--status-connecting, #3aa0ff);
-      box-shadow: 0 0 8px rgba(58, 160, 255, 0.35);
-    }
-
-    .direction-indicator.output {
-      background: var(--status-paused, #ffce73);
-      box-shadow: 0 0 8px rgba(255, 206, 115, 0.35);
-    }
-
-    .entity-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(132, 212, 238, 0.95);
-      background: rgba(14, 165, 215, 0.12);
-      flex-shrink: 0;
-    }
-
-    .entity-icon ha-icon {
-      width: 18px;
-      height: 18px;
     }
 
     .entity-info {
-      flex: 1;
+      flex: 1 1 140px;
       min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .entity-name {
-      font-size: var(--font-size-md, 14px);
-      font-weight: var(--font-weight-semibold, 600);
-      color: var(--ui-text-primary, #f3f7fb);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
     }
 
-    .entity-id {
-      margin-top: 2px;
-      font-size: var(--font-size-xs, 11px);
-      color: var(--ui-text-muted, #8ea1af);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
+    .entity-id,
     .entity-state {
-      font-size: var(--font-size-sm, 12px);
-      font-weight: var(--font-weight-semibold, 600);
-      padding: 6px 10px;
-      border-radius: var(--radius-pill, 999px);
-      background: rgba(28, 39, 48, 0.92);
-      color: var(--ui-text-primary, #f3f7fb);
-      white-space: nowrap;
-      flex-shrink: 0;
+      color: var(--secondary-text-color, #666);
+      font-size: 12px;
     }
 
     .entity-state.on {
-      background: rgba(66, 214, 164, 0.16);
-      color: #8ff0c9;
-    }
-
-    .entity-state.off {
-      background: rgba(111, 124, 135, 0.22);
-      color: #c5d0d8;
+      color: var(--success-color, #2e7d32);
     }
 
     .entity-state.unavailable {
-      background: rgba(255, 107, 107, 0.16);
-      color: #ffb2b2;
+      color: var(--error-color, #b00020);
     }
 
     .entity-actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
     }
 
     .entity-action {
       min-height: 30px;
-      padding: 0 10px;
-      border-radius: var(--radius-pill, 999px);
-      border: 1px solid rgba(88, 127, 146, 0.24);
-      background: rgba(24, 35, 43, 0.94);
-      color: var(--ui-text-primary, #f3f7fb);
-      font-size: var(--font-size-xs, 11px);
-      font-weight: var(--font-weight-semibold, 600);
+      padding: 0 6px;
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 4px;
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color, #212121);
+      font: inherit;
       cursor: pointer;
-      transition:
-        background var(--transition-fast, 160ms ease),
-        border-color var(--transition-fast, 160ms ease),
-        transform var(--transition-fast, 160ms ease);
     }
 
     .entity-action:hover {
-      background: rgba(34, 48, 58, 0.96);
-      border-color: rgba(120, 173, 199, 0.44);
-      transform: translateY(-1px);
+      background: var(--secondary-background-color, #eee);
     }
 
-    .entity-action.output {
-      color: #ffdb97;
-      border-color: rgba(255, 206, 115, 0.28);
+    .entity-action:focus-visible {
+      outline: 2px solid var(--primary-color, #03a9f4);
+      outline-offset: 2px;
     }
 
     .entity-action.remove {
-      color: #ffb2b2;
-      border-color: rgba(255, 107, 107, 0.24);
+      color: var(--error-color, #b00020);
     }
   `;
-
-  constructor() {
-    super();
-    this.currentCode = "";
-  }
 
   private _handleDragStart(e: DragEvent): void {
     if (!e.dataTransfer || !this.entity) return;
@@ -202,6 +122,7 @@ export class STEntityItem extends LitElement {
     };
 
     e.dataTransfer.effectAllowed = "copy";
+    e.dataTransfer.setData(ENTITY_BINDING_MIME_TYPE, bindingSyntax);
     e.dataTransfer.setData("text/plain", bindingSyntax);
     e.dataTransfer.setData("application/json", JSON.stringify(dragData));
 
@@ -247,10 +168,6 @@ export class STEntityItem extends LitElement {
         composed: true,
       }),
     );
-  }
-
-  private _hasBinding(): boolean {
-    return !!this.currentCode && this.currentCode.includes(`'${this.entity.entityId}'`);
   }
 
   private _entityIdToVarName(entityId: string): string {
@@ -313,7 +230,7 @@ export class STEntityItem extends LitElement {
     const stateClass = this._getStateClass(this.entity.state);
     const icon = this._getEntityIcon();
     const displayName = this.entity.friendlyName || this.entity.entityId;
-    const hasBinding = this._hasBinding();
+    const hasBinding = this.hasBinding;
 
     return html`
       <div

@@ -11,7 +11,7 @@ import type {
   DeployError,
 } from './types';
 import { HAApiClient } from './ha-api';
-import { HelperManager } from './helper-manager';
+import { HelperManager, selectProgramHelpers } from './helper-manager';
 import { BackupManager } from './backup-manager';
 import {
   SchemaStorage,
@@ -47,7 +47,11 @@ export class DeployManager {
       await this.validateDeployment(result);
 
       if (options.createBackup) {
-        await this.backupManager.createBackup(result.automation.id, result.automation.alias);
+        await this.backupManager.createBackup(
+          result.automation.id,
+          transaction.programName,
+          new Set(result.helpers.map((helper) => helper.id)),
+        );
       }
 
       const operations = await this.calculateOperations(result);
@@ -214,8 +218,10 @@ export class DeployManager {
     });
 
     const helperScopePrefix = `${result.automation.id}_`;
-    const existingHelpers =
-      await this.helperManager.getExistingHelpers(helperScopePrefix);
+    const programName = result.automation.alias.replace(/^\[ST\] /, '');
+    const requiredIds = new Set(result.helpers.map((helper) => helper.id));
+    const candidates = await this.helperManager.getExistingHelpers(helperScopePrefix);
+    const existingHelpers = selectProgramHelpers(candidates, programName, requiredIds);
     const existingHelperById = new Map(
       existingHelpers.map((helper) => [helper.entityId, helper] as const),
     );

@@ -6,7 +6,7 @@
  */
 
 import { LitElement, html, css } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { subscribeEntities } from "home-assistant-js-websocket";
 import type { EntityInfo, EntityFilter, DataTypeInference } from "./types";
 import "./entity-list";
@@ -16,6 +16,7 @@ import type { EntityState } from "../online/types";
 export class STEntityBrowser extends LitElement {
   @property({ attribute: false }) declare hass?: any;
   @property({ type: String }) declare currentCode: string;
+  @state() declare private _bindingFeedback: string;
 
   private _entities: Map<string, EntityInfo> = new Map();
   private _filter: EntityFilter = {
@@ -35,244 +36,128 @@ export class STEntityBrowser extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background:
-        linear-gradient(180deg, rgba(15, 21, 27, 0.94), rgba(10, 14, 18, 0.94));
-      color: var(--ui-text-primary, #f3f7fb);
-      font-family: var(--font-ui, inherit);
+      min-height: 0;
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color, #212121);
+      font-size: 13px;
     }
 
     .header {
-      padding: 18px 16px 14px;
-      border-bottom: 1px solid var(--ui-divider-strong, rgba(88, 127, 146, 0.28));
-      background: rgba(8, 14, 20, 0.46);
-      backdrop-filter: blur(10px);
+      flex: none;
+      display: grid;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--divider-color, #ddd);
     }
 
-    .eyebrow {
-      margin-bottom: 6px;
-      color: var(--ui-text-muted, #8ea1af);
-      font-size: var(--font-size-xs, 11px);
-      font-weight: var(--font-weight-bold, 700);
-      letter-spacing: 0.11em;
-      text-transform: uppercase;
-    }
-
-    .header h2 {
-      margin: 0 0 10px;
-      font-size: 20px;
-      font-weight: var(--font-weight-semibold, 600);
-      color: var(--ui-text-primary, #f3f7fb);
+    h2 {
+      margin: 0;
+      padding-right: 36px;
+      font-size: 16px;
+      line-height: 28px;
     }
 
     .search-shell {
       position: relative;
-      margin-bottom: var(--space-3, 12px);
     }
 
-    .search-shell ha-icon {
+    .search-shell > ha-icon {
       position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--ui-text-muted, #8ea1af);
+      inset: 8px auto auto 8px;
       --mdc-icon-size: 16px;
+      pointer-events: none;
     }
 
     .search-box,
     .filter-select {
-      width: 100%;
       box-sizing: border-box;
-      min-height: 40px;
-      border: 1px solid rgba(88, 127, 146, 0.22);
-      border-radius: var(--radius-md, 12px);
-      background: rgba(25, 34, 42, 0.94);
-      color: var(--ui-text-primary, #f3f7fb);
-      font-size: var(--font-size-md, 14px);
-      font-family: inherit;
-      transition: var(--transition-fast, all 160ms ease);
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid var(--divider-color, #ddd);
+      border-radius: 4px;
+      padding: 0 6px;
+      color: inherit;
+      background: var(--card-background-color, #fff);
+      font: inherit;
     }
 
     .search-box {
-      padding: 0 36px 0 38px;
-    }
-
-    .search-box:focus,
-    .filter-select:focus {
-      outline: none;
-      border-color: rgba(71, 187, 226, 0.48);
-      box-shadow: 0 0 0 3px rgba(14, 165, 215, 0.12);
+      padding-inline: 30px;
     }
 
     .search-clear {
       position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      border: none;
+      inset: 2px 2px 2px auto;
+      padding: 0 4px;
+      border: 0;
       background: transparent;
-      color: var(--ui-text-muted, #8ea1af);
+      color: inherit;
       cursor: pointer;
-      border-radius: var(--radius-sm, 6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition-fast, all 160ms ease);
+      --mdc-icon-size: 16px;
     }
 
-    .search-clear:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--ui-text-primary, #f3f7fb);
-    }
-
-    .search-clear ha-icon {
-      --mdc-icon-size: 14px;
-    }
-
-    .drag-hint {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 12px;
-      padding: 8px 12px;
-      border-radius: var(--radius-md, 10px);
-      background: rgba(14, 165, 215, 0.08);
-      border: 1px dashed rgba(91, 212, 255, 0.3);
-      color: var(--ui-text-secondary, #b6c4cf);
-      font-size: var(--font-size-xs, 11px);
-      line-height: 1.4;
-    }
-
-    .drag-hint ha-icon {
-      --mdc-icon-size: 14px;
-      color: var(--ui-info, #6bc9ff);
-      flex-shrink: 0;
-    }
-
-    .drag-hint kbd {
-      padding: 1px 5px;
-      border: 1px solid rgba(140, 169, 193, 0.26);
-      border-radius: 4px;
-      background: rgba(9, 17, 25, 0.9);
-      color: var(--ui-text-primary, #f3f7fb);
-      font-family: var(--font-mono, monospace);
-      font-size: 10px;
-    }
-
-    .filters {
-      display: grid;
-      gap: var(--space-2, 8px);
-      grid-template-columns: minmax(0, 1fr);
-    }
-
+    .filters,
     .checkbox-row {
-      display: grid;
-      gap: var(--space-2, 8px);
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+    }
+
+    .filter-select {
+      flex: 1 1 9em;
+      width: auto;
     }
 
     .filter-checkbox {
       display: flex;
       align-items: center;
-      gap: 8px;
-      min-height: 38px;
-      padding: 0 12px;
-      border-radius: var(--radius-md, 12px);
-      background: rgba(17, 24, 30, 0.94);
-      border: 1px solid rgba(88, 127, 146, 0.18);
-      color: var(--ui-text-secondary, #b6c4cf);
-      font-size: var(--font-size-sm, 12px);
+      gap: 3px;
+      white-space: nowrap;
     }
 
-    .filter-checkbox input {
-      accent-color: var(--ui-primary, #0ea5d7);
-      margin: 0;
+    .status-bar,
+    .binding-feedback {
+      flex: none;
+      padding: 5px 12px;
+      color: var(--secondary-text-color, #666);
     }
 
     .status-bar {
-      padding: 12px 16px;
-      font-size: var(--font-size-sm, 12px);
-      color: var(--ui-text-secondary, #b6c4cf);
-      border-bottom: 1px solid rgba(88, 127, 146, 0.18);
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: var(--space-3, 12px);
-      background: rgba(7, 12, 16, 0.78);
-    }
-
-    .status-indicator {
-      display: inline-flex;
-      align-items: center;
       gap: 6px;
     }
 
-    .status-count {
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(88, 127, 146, 0.18);
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--ui-text-primary, #f3f7fb);
-      font-weight: 600;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 8px currentColor;
-    }
-
-    .status-connected {
-      color: var(--status-online, #42d6a4);
-    }
-
     .status-error {
-      color: var(--status-error, #ff6b6b);
+      color: var(--error-color, #b00020);
     }
 
-    .status-connecting {
-      color: var(--status-connecting, #6bc9ff);
-    }
-
-    .status-connecting .status-dot {
-      animation: entity-pulse 1.1s infinite;
-    }
-
-    @keyframes entity-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .status-connecting .status-dot {
-        animation: none;
-      }
+    .binding-feedback:empty {
+      padding: 0;
     }
 
     .entity-list-container {
       flex: 1;
+      min-height: 0;
       overflow: hidden;
-      padding: 8px;
     }
 
     .empty-state {
-      padding: var(--space-8, 32px) var(--space-5, 20px);
-      text-align: center;
-      color: var(--ui-text-secondary, #b6c4cf);
+      padding: 16px;
+      color: var(--secondary-text-color, #666);
     }
   `;
 
   constructor() {
     super();
     this.currentCode = "";
+    this._bindingFeedback = "";
   }
 
   connectedCallback() {
     super.connectedCallback();
-    if (this.hass?.connection) {
+    if (this.hasUpdated && this.hass?.connection) {
       this._connect();
     }
   }
@@ -282,8 +167,8 @@ export class STEntityBrowser extends LitElement {
     this._disconnect();
   }
 
-  updated(changedProperties: Map<string | number | symbol, unknown>): void {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("hass")) {
       const previous = changedProperties.get("hass");
       const previousConnection = (previous as any)?.connection;
@@ -293,13 +178,13 @@ export class STEntityBrowser extends LitElement {
         this._disconnect();
       }
 
-      if (nextConnection && !this._unsubscribe) {
+      if (nextConnection && !this._unsubscribe && this.isConnected) {
         this._connect();
       }
     }
   }
 
-  private async _connect(): Promise<void> {
+  private _connect(): void {
     if (!this.hass?.connection) {
       this._error = "Home Assistant connection not available";
       return;
@@ -317,8 +202,11 @@ export class STEntityBrowser extends LitElement {
         this._handleEntityUpdate(this.hass.states);
       }
 
-      this._unsubscribe = subscribeEntities(this.hass.connection, (entities: any) => {
-        this._handleEntityUpdate(entities);
+      const connection = this.hass.connection;
+      this._unsubscribe = subscribeEntities(connection, (entities) => {
+        if (this.isConnected && this.hass?.connection === connection) {
+          this._handleEntityUpdate(entities);
+        }
       });
       this._isConnected = true;
     } catch (error) {
@@ -327,6 +215,7 @@ export class STEntityBrowser extends LitElement {
       this._isConnected = false;
       console.error("Failed to subscribe to entities", error);
     }
+    this.requestUpdate();
   }
 
   private _disconnect(): void {
@@ -335,9 +224,22 @@ export class STEntityBrowser extends LitElement {
       this._unsubscribe = null;
     }
     this._isConnected = false;
+    this._entities.clear();
+    this._domains = [];
+    this._error = null;
+    this.requestUpdate();
   }
 
-  private _handleEntityUpdate(entities: Record<string, EntityState>): void {
+  showBindingFeedback(message: string): void {
+    this._bindingFeedback = message;
+  }
+
+  private _handleEntityUpdate(
+    entities: Record<string, Pick<EntityState, "state" | "attributes"> & {
+      lastChanged?: string;
+      last_changed?: string;
+    }>,
+  ): void {
     const entityMap = new Map<string, EntityInfo>();
     const domainSet = new Set<string>();
 
@@ -353,7 +255,7 @@ export class STEntityBrowser extends LitElement {
         friendlyName: this._getFriendlyName(entityState),
         deviceClass: entityState.attributes?.device_class as string | undefined,
         icon: this._getEntityIcon(entityState),
-        lastChanged: entityState.lastChanged,
+        lastChanged: entityState.last_changed ?? entityState.lastChanged,
       };
 
       entityMap.set(entityId, entityInfo);
@@ -364,14 +266,14 @@ export class STEntityBrowser extends LitElement {
     this.requestUpdate();
   }
 
-  private _getFriendlyName(entity: EntityState): string | undefined {
+  private _getFriendlyName(entity: Pick<EntityState, "attributes">): string | undefined {
     if (entity.attributes?.friendly_name) {
       return entity.attributes.friendly_name as string;
     }
     return undefined;
   }
 
-  private _getEntityIcon(entity: EntityState): string | undefined {
+  private _getEntityIcon(entity: Pick<EntityState, "attributes">): string | undefined {
     if (entity.attributes?.icon) {
       return entity.attributes.icon as string;
     }
@@ -484,11 +386,12 @@ export class STEntityBrowser extends LitElement {
       ? this._error
       : this._isConnected
         ? "Connected to Home Assistant"
-        : "Connecting to Home Assistant";
+        : this.hass?.connection
+          ? "Connecting to Home Assistant"
+          : "Home Assistant connection unavailable";
 
     return html`
       <div class="header">
-        <div class="eyebrow">Entity Linker</div>
         <h2>Entity Browser</h2>
         <div class="search-shell">
           <ha-icon icon="mdi:magnify"></ha-icon>
@@ -497,7 +400,7 @@ export class STEntityBrowser extends LitElement {
             type="text"
             .value=${this._filter.searchQuery}
             @input=${this._handleSearchInput}
-            placeholder="Filter entities, devices, or states"
+            placeholder="Filter entities by name or ID"
             aria-label="Search entities"
           />
           ${this._filter.searchQuery
@@ -550,22 +453,15 @@ export class STEntityBrowser extends LitElement {
             </label>
           </div>
         </div>
-        <div class="drag-hint">
-          <ha-icon icon="mdi:drag-variant"></ha-icon>
-          <span>
-            Drag is optional. Use <strong>+ Input</strong>, <strong>+ Output</strong>,
-            or <strong>Remove</strong> to edit bindings without covering the editor.
-          </span>
-        </div>
       </div>
 
       <div class="status-bar">
         <span class="status-indicator ${statusClass}">
-          <span class="status-dot"></span>
           ${statusText}
         </span>
         <span class="status-count">${entities.length} entities</span>
       </div>
+      <div class="binding-feedback" role="status" aria-live="polite">${this._bindingFeedback || ""}</div>
 
       <div class="entity-list-container">
         ${entities.length === 0
@@ -585,6 +481,11 @@ export class STEntityBrowser extends LitElement {
             `}
       </div>
     `;
+  }
+
+  async focusSearch(): Promise<void> {
+    await this.updateComplete;
+    this.shadowRoot?.querySelector<HTMLInputElement>(".search-box")?.focus();
   }
 
   private _clearSearch(): void {

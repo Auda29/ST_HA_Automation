@@ -40,7 +40,7 @@ class FakeConnection implements HAClient, HAConnection {
         return undefined as unknown as T;
       }
       const existing = this.automations.get(id);
-      if (!existing) throw new Error("automation not found");
+      if (!existing) throw { status_code: 404 };
       return existing as unknown as T;
     }
 
@@ -52,7 +52,7 @@ class FakeConnection implements HAClient, HAConnection {
         return undefined as unknown as T;
       }
       const existing = this.scripts.get(id);
-      if (!existing) throw new Error("script not found");
+      if (!existing) throw { status_code: 404 };
       return existing as unknown as T;
     }
 
@@ -97,14 +97,14 @@ describe("BackupManager", () => {
       {
         entity_id: "input_number.st_default_prog_counter",
         state: "1",
-        attributes: { friendly_name: "Counter", min: 0, max: 100 },
+        attributes: { friendly_name: "ST Prog - Counter", min: 0, max: 100 },
         last_changed: "",
         last_updated: "",
       },
       {
-        entity_id: "input_number.st_default_other_counter",
+        entity_id: "input_number.st_default_prog_other_counter",
         state: "42",
-        attributes: { friendly_name: "Other Counter", min: 0, max: 100 },
+        attributes: { friendly_name: "ST Prog_Other - Counter", min: 0, max: 100 },
         last_changed: "",
         last_updated: "",
       },
@@ -159,7 +159,7 @@ describe("BackupManager", () => {
     expect(conn.wsMessages).toContainEqual({
       type: "input_number/update",
       input_number_id: "st_default_prog_counter",
-      name: "Counter",
+      name: "ST Prog - Counter",
       initial: 1,
       min: 0,
       max: 100,

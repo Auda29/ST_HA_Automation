@@ -6,6 +6,29 @@ import type { HelperConfig } from '../analyzer/types';
 import type { HelperSyncResult, ExistingHelper, HAState } from './types';
 import { HAApiClient } from './ha-api';
 
+export function selectProgramHelpers(
+  candidates: ExistingHelper[],
+  programName: string,
+  requiredIds: ReadonlySet<string> = new Set(),
+): ExistingHelper[] {
+  const namePrefix = `st ${programName.toLowerCase()} `;
+  return candidates.filter((helper) => {
+    const name = helper.attributes.friendly_name;
+    if (typeof name === 'string' && name.toLowerCase().startsWith(namePrefix)) {
+      return true;
+    }
+    if (!requiredIds.has(helper.entityId)) return false;
+
+    if (typeof name === 'string' && /^ST /i.test(name)) {
+      throw new Error(
+        `Helper ${helper.entityId} belongs to "${name}". Choose a different program or variable name.`,
+      );
+    }
+    // Retain required legacy helpers with custom names.
+    return true;
+  });
+}
+
 export class HelperManager {
   private readonly api: HAApiClient;
   private readonly projectPrefix: string;

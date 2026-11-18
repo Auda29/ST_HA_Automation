@@ -19,7 +19,7 @@ This guide will help you get ST for Home Assistant up and running in your Home A
 
 Before you begin, ensure you have:
 
-- **Home Assistant** 2024.1.0 or newer
+- **Home Assistant** 2024.7.0 or newer and an administrator account
 - **HACS** (Home Assistant Community Store) installed - [Installation Guide](https://hacs.xyz/docs/setup/download)
 - Basic understanding of Home Assistant entities (sensors, lights, switches)
 - Familiarity with programming concepts (variables, conditions, loops)
@@ -81,11 +81,15 @@ Before you begin, ensure you have:
 
 5. Add the integration via **Settings** → **Devices & Services** → **Add Integration**
 
+### Updating from 2.1.6
+
+Before updating, copy any open ST code you need to keep into a file. In 2.1.6, editing and deploying alone did not save the file to browser storage. After updating and restarting Home Assistant, reopen the editor at the same URL in the same browser profile to load saved projects.
+
 ---
 
 ## First Program
 
-Let's create a simple automation that turns on a light when motion is detected.
+Create two **Toggle** helpers under **Settings → Devices & services → Helpers**. Name them `ST Test Input` and `ST Test Output` and check their entity IDs. The example uses these helpers so you can test without switching a physical device.
 
 ### Step 1: Open the ST Editor
 
@@ -96,32 +100,18 @@ Click on **ST Editor** in your Home Assistant sidebar.
 Enter the following code in the editor:
 
 ```iecst
-{mode: restart}
-PROGRAM Motion_Light
+PROGRAM First_Switch
 VAR
-    // Input: Motion sensor (read-only)
-    {trigger}
-    motion AT %I* : BOOL := 'binary_sensor.living_room_motion';
-    
-    // Output: Light to control
-    light AT %Q* : BOOL := 'light.living_room';
+    testInput AT %I* : BOOL := 'input_boolean.st_test_input';
+    testOutput AT %Q* : BOOL := 'input_boolean.st_test_output';
 END_VAR
-
-// Simple logic: Light follows motion
-IF motion THEN
-    light := TRUE;
-ELSE
-    light := FALSE;
-END_IF;
-
+testOutput := testInput;
 END_PROGRAM
 ```
 
 ### Step 3: Replace Entity IDs
 
-Replace the example entity IDs with your actual entities:
-- `binary_sensor.living_room_motion` → Your motion sensor
-- `light.living_room` → Your light
+Use the actual IDs shown for the input and output helpers. Keep them distinct.
 
 **Tip:** You can find your entity IDs in **Settings** → **Devices & Services** → **Entities**
 
@@ -131,7 +121,7 @@ Click the **Deploy** button to create or update the automation in Home Assistant
 
 ### Step 5: Test
 
-Trigger your motion sensor and watch the light turn on!
+Switch the input helper on and off. Check that the output helper follows both changes.
 
 ---
 
@@ -139,22 +129,7 @@ Trigger your motion sensor and watch the light turn on!
 
 ### Editor Layout
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  ST for Home Assistant                              [● ONLINE] [Deploy] │
-├──────────────────────────────────────────────────────────────────────────┤
-│  1 │ {mode: restart}                                                     │
-│  2 │ PROGRAM Motion_Light                                                │
-│  3 │ VAR                                                                 │
-│  4 │   {trigger}                                                         │
-│  5 │   motion AT %I* : BOOL := 'binary_sensor.motion';  │ TRUE  │       │
-│  6 │   light AT %Q* : BOOL := 'light.living_room';      │ ON    │       │
-│  7 │ END_VAR                                                             │
-│    │ ...                                                                 │
-├──────────────────────────────────────────────────────────────────────────┤
-│  ✓ Syntax OK │ Triggers: 1 │ Mode: restart                              │
-└──────────────────────────────────────────────────────────────────────────┘
-```
+The project explorer opens and creates ST files. Edit the selected file in the main workspace. **Entities** opens the entity browser, and **Deploy** applies the current program. Open **Diagnostics** for details when the status bar reports a problem.
 
 ### Features
 
@@ -321,30 +296,9 @@ END_PROGRAM
 
 ### Deploy Process
 
-1. Click the **Deploy** button
-2. In the current UI, deployment starts immediately; there is no separate preview dialog yet.
+Click **Deploy** to apply the current program. Home Assistant creates or updates the automation, its logic script and any generated helpers. Change **ST Test Input** to on and back to off. **ST Test Output** should follow both changes.
 
-3. The system will:
-   ```
-   ┌──────────────────────────────────────────────────────────────────┐
-   │  Deploy Preview                                                  │
-   ├──────────────────────────────────────────────────────────────────┤
-   │  Changes:                                                        │
-   │    ✚ automation.st_motion_light (create)                         │
-   │    ✚ script.st_motion_light_logic (create)                       │
-   │    ✚ input_number.st_motion_light_counter (create)               │
-   │                                                                  │
-   │  ☑ Create backup before deploy                                   │
-   │                                                                  │
-   │                              [Cancel] [Deploy]                   │
-   └──────────────────────────────────────────────────────────────────┘
-   ```
-
-   - Create a backup of existing entities
-   - Create/update the automation
-   - Create/update the logic script
-   - Create any required helpers
-   - Reload automations and scripts
+The editor saves ST source in local browser storage. Use the same browser profile and Home Assistant URL when reopening your project. Home Assistant stores the deployed configuration separately.
 
 ### After Deploying
 
@@ -356,7 +310,7 @@ Your automation is now active! You can:
 
 ### Rollback
 
-If something goes wrong, the system automatically rolls back to the previous state. You can also manually restore from a backup.
+When a deployment fails after making changes, the integration attempts to restore the previous Home Assistant configuration. Check the deployment message and Home Assistant logs for any rollback errors.
 
 ---
 

@@ -46,14 +46,7 @@ export class HAApiClient {
   async getAutomation(
     automationId: string,
   ): Promise<HAAutomationConfig | null> {
-    try {
-      return await this.client.callApi<HAAutomationConfig>(
-        "GET",
-        HAApiClient.automationPath(automationId),
-      );
-    } catch {
-      return null;
-    }
+    return this.getConfig<HAAutomationConfig>(HAApiClient.automationPath(automationId));
   }
 
   async saveAutomation(
@@ -91,13 +84,20 @@ export class HAApiClient {
   }
 
   async getScript(scriptId: string): Promise<HAScriptConfig | null> {
+    return this.getConfig<HAScriptConfig>(HAApiClient.scriptPath(scriptId));
+  }
+
+  private async getConfig<T>(path: string): Promise<T | null> {
     try {
-      return await this.client.callApi<HAScriptConfig>(
-        "GET",
-        HAApiClient.scriptPath(scriptId),
-      );
-    } catch {
-      return null;
+      return await this.client.callApi<T>("GET", path);
+    } catch (error) {
+      if (
+        error && typeof error === "object" &&
+        "status_code" in error && error.status_code === 404
+      ) {
+        return null;
+      }
+      throw error;
     }
   }
 
